@@ -1,3 +1,4 @@
+import type React from "react";
 import { AlertTriangle, CheckCircle2, Printer, RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
