@@ -119,6 +119,72 @@ export const enterprises: QuotaEnterprise[] = [
   { id: "e8", cycleId: "c2", creditCode: "913100007050125XXX", name: "上汽集团", industry: "汽车制造业", standardCodes: ["GB 17167-2022"], status: "已完成", hasData: true },
 ];
 
+// 生成约 250 家企业的批量 mock 数据，用于演示分页与大列表
+const _industries = [
+  "电力、热力生产和供应业", "黑色金属冶炼", "非金属矿物制品业", "互联网与数据服务",
+  "计算机、通信和其他电子设备", "石油加工", "化学原料制造", "汽车制造业",
+  "纺织业", "食品制造业", "医药制造业", "通用设备制造", "专用设备制造",
+  "金属制品业", "造纸及纸制品业", "印染业",
+];
+const _names = [
+  "申能", "华润", "宝武", "上电", "光明", "锦江", "百联", "建工", "城投", "国资",
+  "申通", "久事", "电气", "仪电", "纺织", "三联", "金桥", "外高桥", "陆家嘴", "张江",
+  "复星", "万科", "绿地", "中远海运", "东方", "蔚来", "和黄", "九州通", "天山", "华大",
+];
+const _suffix = ["集团", "股份", "实业", "科技", "工业", "新材料", "能源", "化工", "电子", "智造"];
+const _allStandardCodes = ["GB 21258-2024", "GB 21340-2019", "GB 17167-2022", "DB31/T 638-2024", "DB31/T 555-2022"];
+const _statuses = ["未填报", "填报中", "待审核", "已驳回", "已完成"] as const;
+
+function _seeded(seed: number) {
+  let s = seed;
+  return () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+}
+const _rand = _seeded(42);
+
+function _pick<T>(arr: readonly T[]): T {
+  return arr[Math.floor(_rand() * arr.length)];
+}
+
+const _generated: QuotaEnterprise[] = Array.from({ length: 248 }, (_, i) => {
+  const idx = 100 + i;
+  // 30% 概率适用两个标准（一 GB 一 DB），其余单标准
+  const useTwo = _rand() < 0.3;
+  let codes: string[];
+  if (useTwo) {
+    const gb = _pick(_allStandardCodes.filter((c) => c.startsWith("GB")));
+    const db = _pick(_allStandardCodes.filter((c) => c.startsWith("DB")));
+    codes = [gb, db];
+  } else {
+    codes = [_pick(_allStandardCodes)];
+  }
+  const status = _pick(_statuses);
+  return {
+    id: `e${idx}`,
+    cycleId: "c1",
+    creditCode: `913100${String(1000000 + idx).slice(0, 7)}${String.fromCharCode(65 + (idx % 26))}${idx % 10}`,
+    name: `上海${_pick(_names)}${_pick(_names)}${_pick(_suffix)}有限公司`,
+    industry: _pick(_industries),
+    standardCodes: codes,
+    status,
+    hasData: status !== "未填报",
+  };
+});
+
+enterprises.push(..._generated);
+
+// GB 优先排序，组内按编号升序
+export function sortStandardCodes(codes: string[]): string[] {
+  return [...codes].sort((a, b) => {
+    const ra = a.startsWith("GB") ? 0 : 1;
+    const rb = b.startsWith("GB") ? 0 : 1;
+    if (ra !== rb) return ra - rb;
+    return a.localeCompare(b);
+  });
+}
+
 export const sampleDetail: QuotaDetail = {
   enterpriseId: "e2",
   enterpriseName: "上海宝山钢铁股份有限公司",
