@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AuditDetailView } from "@/components/energy-quota/AuditDetailView";
-import { cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, sampleDetail, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
+import { cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
 export function CycleAndDeclaration() {
