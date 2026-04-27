@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpen, ChevronRight, Edit, Plus, Search, Upload, FileCheck2, Layers, Archive } from "lucide-react";
+import { BookOpen, ChevronRight, Edit, Plus, Search, FileCheck2, Layers, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
