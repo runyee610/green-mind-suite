@@ -364,6 +364,16 @@ export function CycleAndDeclaration() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* 历史申报记录 */}
+      <EnterpriseHistoryDialog
+        enterprise={historyTarget}
+        onClose={() => setHistoryTarget(null)}
+        onViewDetail={() => {
+          setHistoryTarget(null);
+          setDetailOpen(true);
+        }}
+      />
     </div>
   );
 }
