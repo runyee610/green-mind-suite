@@ -29,6 +29,8 @@ const App = () => (
           <Route path="/report-monthly" element={<ReportMonthly />} />
           <Route path="/report-yearly" element={<ReportYearly />} />
           <Route path="/energy-quota" element={<EnergyQuota />} />
+          <Route path="/energy-quota/standard" element={<EnergyQuota />} />
+          <Route path="/energy-quota/declaration" element={<EnergyQuota />} />
           <Route path="/archives" element={<Archives />} />
           <Route path="/dual-control" element={<DualControl />} />
           <Route path="/assets" element={<Assets />} />
