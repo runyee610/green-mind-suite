@@ -67,14 +67,16 @@ export function StandardManagement() {
         return a.code.localeCompare(b.code);
       });
 
-    const rows: { node: QuotaStandard; depth: number; childCount: number }[] = [];
+    const rows: { node: QuotaStandard; depth: number; childCount: number; seq: number | null }[] = [];
+    let topSeq = 0;
     tops.forEach((top) => {
       const children = list
         .filter((s) => s.parentId === top.id && visibleIds.has(s.id))
         .sort((a, b) => a.code.localeCompare(b.code));
-      rows.push({ node: top, depth: 0, childCount: children.length });
+      topSeq += 1;
+      rows.push({ node: top, depth: 0, childCount: children.length, seq: topSeq });
       if (expanded[top.id]) {
-        children.forEach((c) => rows.push({ node: c, depth: 1, childCount: 0 }));
+        children.forEach((c) => rows.push({ node: c, depth: 1, childCount: 0, seq: null }));
       }
     });
     return rows;
