@@ -376,6 +376,16 @@ export function CycleAndDeclaration() {
           setDetailOpen(true);
         }}
       />
+
+      {/* 新建周期 */}
+      <NewCycleDialog
+        open={newCycleOpen}
+        onOpenChange={setNewCycleOpen}
+        onCreated={(cycle) => {
+          setCycles((prev) => [cycle, ...prev]);
+          setCycleId(cycle.id);
+        }}
+      />
     </div>
   );
 }
