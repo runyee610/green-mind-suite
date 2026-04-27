@@ -278,7 +278,7 @@ export function CycleAndDeclaration() {
                       <Button size="sm" variant="ghost" className="px-2" onClick={() => { if (e.hasData) setEditStandardTarget(e); else toast.info("可直接修改标准"); }}>
                         <Edit className="mr-1 h-3 w-3" />编辑
                       </Button>
-                      <Button size="sm" variant="ghost" className="px-2" onClick={() => toast.info(`查看 ${e.name} 历史申报`)}>
+                      <Button size="sm" variant="ghost" className="px-2" onClick={() => setHistoryTarget(e)}>
                         <History className="mr-1 h-3 w-3" />历史
                       </Button>
                     </TableCell>
