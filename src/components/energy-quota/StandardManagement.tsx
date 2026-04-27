@@ -217,10 +217,9 @@ export function StandardManagement() {
             <TableHeader>
               <TableRow className="border-border/60 hover:bg-transparent">
                 <TableHead className="w-14">序号</TableHead>
-                <TableHead className="w-56">标准号</TableHead>
+                <TableHead className="w-60">标准号</TableHead>
                 <TableHead>标准名称</TableHead>
                 <TableHead className="w-36">适用年份</TableHead>
-                <TableHead className="w-24">能源输出</TableHead>
                 <TableHead className="w-32">启用状态</TableHead>
                 <TableHead className="w-20 text-right">操作</TableHead>
               </TableRow>
