@@ -1,5 +1,5 @@
 import type React from "react";
-import { AlertTriangle, CheckCircle2, Printer, RotateCcw } from "lucide-react";
+import { AlertTriangle, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,8 +26,6 @@ export function ReportDetailView({ report }: { report: MonthlyReport }) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2 pt-3">
-          <Button size="sm" className="gap-2"><CheckCircle2 className="h-4 w-4" />审核通过</Button>
-          <Button size="sm" variant="outline" className="gap-2"><RotateCcw className="h-4 w-4" />填写驳回意见</Button>
           <Button size="sm" variant="outline" className="gap-2"><Printer className="h-4 w-4" />打印PDF</Button>
         </div>
       </CardHeader>
