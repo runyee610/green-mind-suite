@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AuditDetailView } from "@/components/energy-quota/AuditDetailView";
 import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHistoryDialog";
+import { NewCycleDialog } from "@/components/energy-quota/NewCycleDialog";
 import { cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +28,7 @@ export function CycleAndDeclaration() {
   const [deleteCycleTarget, setDeleteCycleTarget] = useState<QuotaCycle | null>(null);
   const [forceCompleteTarget, setForceCompleteTarget] = useState<QuotaCycle | null>(null);
   const [historyTarget, setHistoryTarget] = useState<QuotaEnterprise | null>(null);
+  const [newCycleOpen, setNewCycleOpen] = useState(false);
   const [page, setPage] = useState(1);
   const pageSize = 15;
 
@@ -135,7 +137,7 @@ export function CycleAndDeclaration() {
             <div className="border-t border-border/60 p-4">
               <div className="mb-3 flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">所有限额周期 — 进行中优先，按起始日期降序</p>
-                <Button size="sm" onClick={() => toast.info("打开「新建限额周期」表单")}><Plus className="mr-1 h-4 w-4" />新建周期</Button>
+                <Button size="sm" onClick={() => setNewCycleOpen(true)}><Plus className="mr-1 h-4 w-4" />新建周期</Button>
               </div>
               <Table>
                 <TableHeader>
@@ -372,6 +374,16 @@ export function CycleAndDeclaration() {
         onViewDetail={() => {
           setHistoryTarget(null);
           setDetailOpen(true);
+        }}
+      />
+
+      {/* 新建周期 */}
+      <NewCycleDialog
+        open={newCycleOpen}
+        onOpenChange={setNewCycleOpen}
+        onCreated={(cycle) => {
+          setCycles((prev) => [cycle, ...prev]);
+          setCycleId(cycle.id);
         }}
       />
     </div>
