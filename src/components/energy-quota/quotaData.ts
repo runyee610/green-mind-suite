@@ -218,7 +218,7 @@ export const allIndustries = Array.from(new Set(enterprises.map((e) => e.industr
 
 export const enterpriseStatusStyle: Record<EnterpriseStatus, { dot: string; badge: string }> = {
   未填报: { dot: "bg-muted-foreground", badge: "border-muted-foreground/40 bg-muted/40 text-muted-foreground" },
-  填报中: { dot: "bg-secondary", badge: "border-secondary/40 bg-secondary/10 text-secondary" },
+  填报中: { dot: "bg-info", badge: "border-info/40 bg-info/10 text-info" },
   待审核: { dot: "bg-warning", badge: "border-warning/40 bg-warning/10 text-warning" },
   已驳回: { dot: "bg-destructive", badge: "border-destructive/40 bg-destructive/10 text-destructive" },
   已完成: { dot: "bg-success", badge: "border-success/40 bg-success/10 text-success" },
