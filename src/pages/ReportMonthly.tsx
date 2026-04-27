@@ -111,10 +111,10 @@ export default function ReportMonthly() {
     }, 320);
   };
 
-  // 子页面：详情
+  // 子页面：详情（不展示外层 title/subtitle，企业信息卡片贴顶）
   if (detailReport) {
     return (
-      <AppLayout title="节能月度报告" subtitle="月报全量详情">
+      <AppLayout hideHeader>
         <ReportDetailView report={detailReport} onBack={() => setDetailReport(null)} />
       </AppLayout>
     );
