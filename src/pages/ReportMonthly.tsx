@@ -114,17 +114,8 @@ export default function ReportMonthly() {
   // 子页面：详情
   if (detailReport) {
     return (
-      <AppLayout
-        title="月报全量详情"
-        subtitle={`${detailReport.name} · ${detailReport.month}`}
-      >
-        <div className="mb-3">
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => setDetailReport(null)}>
-            <ArrowLeft className="h-4 w-4" />
-            返回月度管理列表
-          </Button>
-        </div>
-        <ReportDetailView report={detailReport} />
+      <AppLayout title="节能月度报告" subtitle="月报全量详情">
+        <ReportDetailView report={detailReport} onBack={() => setDetailReport(null)} />
       </AppLayout>
     );
   }
