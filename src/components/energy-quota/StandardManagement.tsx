@@ -244,16 +244,6 @@ export function StandardManagement() {
                     <TableCell className="font-mono text-xs text-muted-foreground">
                       {seq ?? ""}
                     </TableCell>
-                    key={s.id}
-                    className={cn(
-                      "h-12 border-border/40",
-                      s.status === "禁用" && "opacity-65",
-                      isChild && "bg-muted/30",
-                    )}
-                  >
-                    <TableCell className="font-mono text-xs text-muted-foreground">
-                      {isChild ? "" : idx + 1 - flattened.slice(0, idx).filter((r) => r.depth > 0).length}
-                    </TableCell>
                     <TableCell className="font-mono text-xs">
                       <div
                         className="flex items-center gap-1.5"
