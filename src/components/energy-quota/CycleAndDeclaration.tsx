@@ -28,6 +28,7 @@ export function CycleAndDeclaration() {
   const [deleteCycleTarget, setDeleteCycleTarget] = useState<QuotaCycle | null>(null);
   const [forceCompleteTarget, setForceCompleteTarget] = useState<QuotaCycle | null>(null);
   const [historyTarget, setHistoryTarget] = useState<QuotaEnterprise | null>(null);
+  const [newCycleOpen, setNewCycleOpen] = useState(false);
   const [page, setPage] = useState(1);
   const pageSize = 15;
 
