@@ -269,17 +269,17 @@ export function StandardManagement() {
                           {s.code}
                         </Badge>
                         {!isChild && childCount > 0 && (
-                          <span className="ml-1 text-[11px] text-muted-foreground">({childCount} 子标准)</span>
+                          <span
+                            className="ml-1 inline-flex h-5 min-w-[22px] items-center justify-center rounded-full border border-primary/25 bg-primary/8 px-1.5 text-[11px] font-medium leading-none text-primary"
+                            title={`包含 ${childCount} 个子标准`}
+                          >
+                            {childCount}
+                          </span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm text-foreground">{s.name}</TableCell>
                     <TableCell>{renderYears(s.years)}</TableCell>
-                    <TableCell className="text-xs">
-                      {s.isEnergyOutput
-                        ? <span className="font-medium text-primary">是</span>
-                        : <span className="text-muted-foreground">否</span>}
-                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Switch
