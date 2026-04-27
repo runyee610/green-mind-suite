@@ -137,7 +137,7 @@ export function CycleAndDeclaration() {
             <div className="border-t border-border/60 p-4">
               <div className="mb-3 flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">所有限额周期 — 进行中优先，按起始日期降序</p>
-                <Button size="sm" onClick={() => toast.info("打开「新建限额周期」表单")}><Plus className="mr-1 h-4 w-4" />新建周期</Button>
+                <Button size="sm" onClick={() => setNewCycleOpen(true)}><Plus className="mr-1 h-4 w-4" />新建周期</Button>
               </div>
               <Table>
                 <TableHeader>
