@@ -170,7 +170,13 @@ export function CycleAndDeclaration() {
       <Card className="panel">
         <CardHeader className="pb-3">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="flex items-center gap-2 text-base"><Building2 className="h-4 w-4 text-secondary" />申报企业列表 <Badge variant="outline" className="ml-1 border-border/60 text-xs">{filteredEnterprises.length}</Badge></CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base text-foreground">
+              <Building2 className="h-4 w-4 text-primary" />
+              申报企业列表
+              <Badge variant="outline" className="ml-1 border-primary/30 bg-primary/8 text-primary text-xs font-medium">
+                {filteredEnterprises.length}
+              </Badge>
+            </CardTitle>
             <div className="flex flex-wrap items-center gap-2">
               <Select value={cycleId} onValueChange={setCycleId}>
                 <SelectTrigger className="h-9 w-44"><SelectValue /></SelectTrigger>
@@ -204,12 +210,12 @@ export function CycleAndDeclaration() {
             <TableHeader>
               <TableRow className="border-border/60 hover:bg-transparent">
                 <TableHead className="w-12">#</TableHead>
-                <TableHead>统一社会信用代码</TableHead>
+                <TableHead className="w-44">统一社会信用代码</TableHead>
                 <TableHead>企业名称</TableHead>
-                <TableHead>行业</TableHead>
-                <TableHead>适用标准</TableHead>
-                <TableHead className="w-24">填报状态</TableHead>
-                <TableHead className="w-44 text-right">操作</TableHead>
+                <TableHead className="w-40">行业</TableHead>
+                <TableHead className="w-48">适用标准</TableHead>
+                <TableHead className="w-28">填报状态</TableHead>
+                <TableHead className="w-56 text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -218,24 +224,46 @@ export function CycleAndDeclaration() {
                 return (
                   <TableRow key={e.id} className="h-12 border-border/40">
                     <TableCell className="font-mono text-xs text-muted-foreground">{i + 1}</TableCell>
-                    <TableCell className="font-mono text-xs">{e.creditCode}</TableCell>
-                    <TableCell className="text-sm font-medium">{e.name}</TableCell>
+                    <TableCell className="font-mono text-xs text-foreground">{e.creditCode}</TableCell>
+                    <TableCell className="text-sm font-medium text-foreground">{e.name}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{e.industry}</TableCell>
                     <TableCell className="text-xs">
                       <div className="flex flex-wrap gap-1">
-                        {e.standardCodes.map((c) => <Badge key={c} variant="outline" className="border-secondary/40 bg-secondary/10 font-mono text-[10px] text-secondary">{c}</Badge>)}
+                        {e.standardCodes.map((c) => (
+                          <Badge
+                            key={c}
+                            variant="outline"
+                            className={cn(
+                              "font-mono text-[10px] font-medium",
+                              c.startsWith("GB")
+                                ? "border-primary/30 bg-primary/10 text-primary"
+                                : "border-warning/40 bg-warning/10 text-warning",
+                            )}
+                          >
+                            {c}
+                          </Badge>
+                        ))}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1.5">
-                        <span className={cn("inline-block h-2 w-2 rounded-full", style.dot)} />
-                        <Badge variant="outline" className={cn("h-5 text-[11px]", style.badge)}>{e.status}</Badge>
-                      </div>
+                      <span className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
+                        style.badge,
+                      )}>
+                        <span className={cn("inline-block h-1.5 w-1.5 rounded-full", style.dot)} />
+                        {e.status}
+                      </span>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Button size="sm" variant="ghost" onClick={() => setDetailOpen(true)}><Eye className="mr-1 h-3 w-3" />查看</Button>
-                      <Button size="sm" variant="ghost" onClick={() => { if (e.hasData) setEditStandardTarget(e); else toast.info("可直接修改标准"); }}><Edit className="mr-1 h-3 w-3" />编辑标准</Button>
-                      <Button size="sm" variant="ghost" onClick={() => toast.info(`查看 ${e.name} 历史申报`)}><History className="mr-1 h-3 w-3" />历史</Button>
+                    <TableCell className="text-right whitespace-nowrap">
+                      <Button size="sm" variant="ghost" className="px-2" onClick={() => setDetailOpen(true)}>
+                        <Eye className="mr-1 h-3 w-3" />查看
+                      </Button>
+                      <Button size="sm" variant="ghost" className="px-2" onClick={() => { if (e.hasData) setEditStandardTarget(e); else toast.info("可直接修改标准"); }}>
+                        <Edit className="mr-1 h-3 w-3" />编辑
+                      </Button>
+                      <Button size="sm" variant="ghost" className="px-2" onClick={() => toast.info(`查看 ${e.name} 历史申报`)}>
+                        <History className="mr-1 h-3 w-3" />历史
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
