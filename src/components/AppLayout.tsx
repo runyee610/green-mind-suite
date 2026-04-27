@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface AppLayoutProps {
-  title: string;
+  title?: string;
   subtitle?: string;
+  hideHeader?: boolean;
   children: React.ReactNode;
 }
 
-export function AppLayout({ title, subtitle, children }: AppLayoutProps) {
+export function AppLayout({ title, subtitle, hideHeader = false, children }: AppLayoutProps) {
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
