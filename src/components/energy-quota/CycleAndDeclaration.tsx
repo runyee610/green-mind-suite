@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AuditDetailView } from "@/components/energy-quota/AuditDetailView";
+import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHistoryDialog";
 import { cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ export function CycleAndDeclaration() {
   const [editStandardTarget, setEditStandardTarget] = useState<QuotaEnterprise | null>(null);
   const [deleteCycleTarget, setDeleteCycleTarget] = useState<QuotaCycle | null>(null);
   const [forceCompleteTarget, setForceCompleteTarget] = useState<QuotaCycle | null>(null);
+  const [historyTarget, setHistoryTarget] = useState<QuotaEnterprise | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 15;
 
@@ -276,7 +278,7 @@ export function CycleAndDeclaration() {
                       <Button size="sm" variant="ghost" className="px-2" onClick={() => { if (e.hasData) setEditStandardTarget(e); else toast.info("可直接修改标准"); }}>
                         <Edit className="mr-1 h-3 w-3" />编辑
                       </Button>
-                      <Button size="sm" variant="ghost" className="px-2" onClick={() => toast.info(`查看 ${e.name} 历史申报`)}>
+                      <Button size="sm" variant="ghost" className="px-2" onClick={() => setHistoryTarget(e)}>
                         <History className="mr-1 h-3 w-3" />历史
                       </Button>
                     </TableCell>
@@ -362,6 +364,16 @@ export function CycleAndDeclaration() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* 历史申报记录 */}
+      <EnterpriseHistoryDialog
+        enterprise={historyTarget}
+        onClose={() => setHistoryTarget(null)}
+        onViewDetail={() => {
+          setHistoryTarget(null);
+          setDetailOpen(true);
+        }}
+      />
     </div>
   );
 }
