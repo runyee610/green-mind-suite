@@ -208,9 +208,6 @@ export function StandardManagement() {
                   {allYears.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Button size="sm" variant="outline" onClick={() => toast.info("市级账号可上传 .xlsx / .xls 标准模板")}>
-                <Upload className="mr-1 h-4 w-4" />上传模板
-              </Button>
               <Button size="sm" onClick={openCreate}><Plus className="mr-1 h-4 w-4" />新建标准</Button>
             </div>
           </div>
