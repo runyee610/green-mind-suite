@@ -223,25 +223,28 @@ export function CycleAndDeclaration() {
               <TableRow className="border-border/60 hover:bg-transparent">
                 <TableHead className="w-12">#</TableHead>
                 <TableHead className="w-44">统一社会信用代码</TableHead>
-                <TableHead>企业名称</TableHead>
-                <TableHead className="w-40">行业</TableHead>
-                <TableHead className="w-48">适用标准</TableHead>
+                <TableHead className="pr-2">企业名称</TableHead>
+                <TableHead className="w-40 pl-2">行业</TableHead>
+                <TableHead className="w-44">适用标准</TableHead>
                 <TableHead className="w-28">填报状态</TableHead>
                 <TableHead className="w-56 text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredEnterprises.map((e, i) => {
+              {pagedEnterprises.map((e, i) => {
                 const style = enterpriseStatusStyle[e.status];
+                const sortedCodes = sortStandardCodes(e.standardCodes);
                 return (
-                  <TableRow key={e.id} className="h-12 border-border/40">
-                    <TableCell className="font-mono text-xs text-muted-foreground">{i + 1}</TableCell>
+                  <TableRow key={e.id} className="border-border/40">
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {(safePage - 1) * pageSize + i + 1}
+                    </TableCell>
                     <TableCell className="font-mono text-xs text-foreground">{e.creditCode}</TableCell>
-                    <TableCell className="text-sm font-medium text-foreground">{e.name}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{e.industry}</TableCell>
+                    <TableCell className="pr-2 text-sm font-medium text-foreground">{e.name}</TableCell>
+                    <TableCell className="pl-2 text-xs text-muted-foreground">{e.industry}</TableCell>
                     <TableCell className="text-xs">
-                      <div className="flex flex-wrap gap-1">
-                        {e.standardCodes.map((c) => (
+                      <div className="flex flex-col items-start gap-1">
+                        {sortedCodes.map((c) => (
                           <Badge
                             key={c}
                             variant="outline"
@@ -285,9 +288,30 @@ export function CycleAndDeclaration() {
               )}
             </TableBody>
           </Table>
-          <div className="mt-3 text-xs text-muted-foreground">
-            可用标准：{standards.filter((s) => s.status === "启用").length} 项 · 当前过滤后企业 {filteredEnterprises.length} / 周期总数 {enterprises.filter((x) => x.cycleId === cycleId).length}
-          </div>
+
+          {/* 分页 */}
+          {filteredEnterprises.length > 0 && (
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-border/60 pt-3">
+              <div className="text-xs text-muted-foreground">
+                共 <span className="font-mono font-semibold text-foreground">{filteredEnterprises.length}</span> 家企业
+                · 第 <span className="font-mono font-semibold text-foreground">{(safePage - 1) * pageSize + 1}</span>–<span className="font-mono font-semibold text-foreground">{Math.min(safePage * pageSize, filteredEnterprises.length)}</span> 条
+                · 可用标准 {standards.filter((s) => s.status === "启用").length} 项
+              </div>
+              <div className="flex items-center gap-1">
+                <Button size="sm" variant="outline" className="h-8 px-2" disabled={safePage === 1} onClick={() => setPage(1)}>首页</Button>
+                <Button size="sm" variant="outline" className="h-8 px-2" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </Button>
+                <span className="px-2 font-mono text-xs text-foreground">
+                  {safePage} <span className="text-muted-foreground">/ {totalPages}</span>
+                </span>
+                <Button size="sm" variant="outline" className="h-8 px-2" disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+                <Button size="sm" variant="outline" className="h-8 px-2" disabled={safePage === totalPages} onClick={() => setPage(totalPages)}>末页</Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
