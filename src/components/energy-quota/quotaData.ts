@@ -85,11 +85,18 @@ export interface QuotaDetail {
 // ===== Mock Data =====
 
 export const standards: QuotaStandard[] = [
+  // 顶级 - 启用 GB
   { id: "s1", code: "GB 21258-2024", name: "燃煤发电机组单位产品能源消耗限额-热电联产", years: [2024, 2025, 2026], isEnergyOutput: true, status: "启用" },
+  { id: "s1-1", code: "GB 21258.1-2024", name: "燃煤发电机组单位产品能耗限额-超临界机组分则", parentId: "s1", years: [2024, 2025, 2026], isEnergyOutput: true, status: "启用" },
+  { id: "s1-2", code: "GB 21258.2-2024", name: "燃煤发电机组单位产品能耗限额-亚临界机组分则", parentId: "s1", years: [2024, 2025, 2026], isEnergyOutput: true, status: "启用" },
   { id: "s2", code: "GB 21340-2019", name: "平板玻璃单位产品能源消耗限额", years: [2023, 2024, 2025, 2026], isEnergyOutput: false, status: "启用" },
   { id: "s3", code: "GB 17167-2022", name: "用能单位能源计量器具配备和管理通则", years: [2025, 2026], isEnergyOutput: false, status: "启用" },
+  // 顶级 - 启用 DB
   { id: "s4", code: "DB31/T 638-2024", name: "上海市数据中心能源消耗限额", years: [2024, 2025, 2026], isEnergyOutput: false, status: "启用" },
   { id: "s5", code: "DB31/T 555-2022", name: "上海市钢铁行业能耗限额", years: [2022, 2023, 2024], isEnergyOutput: false, status: "启用" },
+  { id: "s5-1", code: "DB31/T 555.1-2022", name: "上海市钢铁行业能耗限额-粗钢分则", parentId: "s5", years: [2022, 2023, 2024], isEnergyOutput: false, status: "启用" },
+  { id: "s5-2", code: "DB31/T 555.2-2022", name: "上海市钢铁行业能耗限额-热轧分则", parentId: "s5", years: [2022, 2023, 2024], isEnergyOutput: false, status: "启用" },
+  // 顶级 - 禁用 GB / DB
   { id: "s6", code: "GB 16780-2012", name: "水泥单位产品能源消耗限额（已废止）", years: [2021, 2022], isEnergyOutput: false, status: "禁用" },
   { id: "s7", code: "DB31/T 401-2018", name: "上海市印染行业能耗限额（旧版）", years: [2021], isEnergyOutput: false, status: "禁用" },
 ];
