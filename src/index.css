@@ -2,77 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 节能降碳数智管理平台 - 深色科技感设计系统
+/* 节能降碳数智管理平台 - 政务专业风格设计系统
+   - 主面板：Paper White 浅色（科技政务风）
+   - 侧边栏：深色系
+   - 主色：Professional Deep Green (#0F5E4E)
    所有颜色必须为 HSL 格式
 */
 
 @layer base {
   :root {
-    /* 默认即为深色科技感 */
-    --background: 215 45% 7%;
-    --foreground: 180 20% 92%;
+    /* === 主面板：Paper White 政务浅色 === */
+    --background: 210 20% 98%;        /* #F8FAFC paper white */
+    --foreground: 215 28% 17%;        /* deep slate ink */
 
-    --card: 215 40% 10%;
-    --card-foreground: 180 20% 92%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
 
-    --popover: 215 45% 9%;
-    --popover-foreground: 180 20% 92%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
 
-    /* 主色：能源青绿 */
-    --primary: 160 84% 50%;
-    --primary-foreground: 215 45% 7%;
-    --primary-glow: 160 90% 60%;
+    /* 主色：Professional Deep Green #0F5E4E */
+    --primary: 168 72% 21%;
+    --primary-foreground: 210 20% 98%;
+    --primary-glow: 168 60% 35%;
 
-    /* 次要：科技蓝 */
-    --secondary: 200 90% 55%;
-    --secondary-foreground: 215 45% 7%;
+    /* 次要：政务沉稳蓝 */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 215 28% 17%;
 
-    --muted: 215 35% 14%;
-    --muted-foreground: 215 15% 60%;
+    --muted: 210 25% 95%;
+    --muted-foreground: 215 16% 45%;
 
-    --accent: 180 80% 50%;
-    --accent-foreground: 215 45% 7%;
+    --accent: 168 65% 92%;
+    --accent-foreground: 168 72% 21%;
 
-    --destructive: 0 75% 58%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --warning: 38 95% 58%;
-    --warning-foreground: 215 45% 7%;
+    --warning: 32 95% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --success: 142 70% 48%;
-    --success-foreground: 215 45% 7%;
+    --success: 142 65% 38%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 215 35% 18%;
-    --input: 215 35% 16%;
-    --ring: 160 84% 50%;
+    --border: 215 20% 90%;
+    --input: 215 20% 90%;
+    --ring: 168 72% 21%;
 
-    --radius: 0.625rem;
+    --radius: 0.5rem;
 
     /* 渐变 */
-    --gradient-primary: linear-gradient(135deg, hsl(160 84% 45%), hsl(180 85% 50%));
-    --gradient-secondary: linear-gradient(135deg, hsl(200 90% 50%), hsl(220 85% 60%));
-    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(160 90% 50% / 0.25), transparent 70%);
-    --gradient-card: linear-gradient(145deg, hsl(215 40% 11%), hsl(215 45% 8%));
-    --gradient-grid: linear-gradient(hsl(215 35% 18% / 0.6) 1px, transparent 1px),
-                     linear-gradient(90deg, hsl(215 35% 18% / 0.6) 1px, transparent 1px);
+    --gradient-primary: linear-gradient(135deg, hsl(168 72% 21%), hsl(168 60% 32%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 40% 96%), hsl(210 30% 92%));
+    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(168 72% 25% / 0.08), transparent 70%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 25% 99%));
+    --gradient-grid: linear-gradient(hsl(215 20% 90% / 0.6) 1px, transparent 1px),
+                     linear-gradient(90deg, hsl(215 20% 90% / 0.6) 1px, transparent 1px);
 
-    /* 阴影/光效 */
-    --shadow-glow: 0 0 24px hsl(160 84% 50% / 0.35);
-    --shadow-card: 0 8px 32px hsl(215 60% 3% / 0.5);
-    --shadow-elevated: 0 12px 48px hsl(215 60% 3% / 0.6), 0 0 1px hsl(160 84% 50% / 0.3);
+    /* 阴影：政务卡片轻阴影 */
+    --shadow-glow: 0 0 0 3px hsl(168 72% 21% / 0.12);
+    --shadow-card: 0 1px 2px hsl(215 28% 17% / 0.04), 0 1px 3px hsl(215 28% 17% / 0.06);
+    --shadow-elevated: 0 4px 12px hsl(215 28% 17% / 0.08), 0 2px 4px hsl(215 28% 17% / 0.04);
 
-    /* 过渡 */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Sidebar */
-    --sidebar-background: 215 50% 5%;
-    --sidebar-foreground: 180 15% 80%;
-    --sidebar-primary: 160 84% 50%;
-    --sidebar-primary-foreground: 215 45% 7%;
-    --sidebar-accent: 215 40% 12%;
-    --sidebar-accent-foreground: 160 84% 60%;
-    --sidebar-border: 215 35% 14%;
-    --sidebar-ring: 160 84% 50%;
+    /* === Sidebar：保持深色系 === */
+    --sidebar-background: 215 35% 10%;       /* deep ink */
+    --sidebar-foreground: 210 20% 80%;
+    --sidebar-primary: 168 65% 45%;          /* lighter green for dark bg */
+    --sidebar-primary-foreground: 215 35% 10%;
+    --sidebar-accent: 215 30% 16%;
+    --sidebar-accent-foreground: 168 65% 60%;
+    --sidebar-border: 215 30% 18%;
+    --sidebar-ring: 168 65% 45%;
   }
 }
 
@@ -85,15 +87,14 @@
     @apply bg-background text-foreground;
     font-feature-settings: "cv11", "ss01";
     background-image:
-      radial-gradient(ellipse at top, hsl(160 80% 30% / 0.08), transparent 60%),
-      radial-gradient(ellipse at bottom right, hsl(200 80% 30% / 0.06), transparent 60%);
+      radial-gradient(ellipse at top, hsl(168 70% 30% / 0.04), transparent 60%);
     background-attachment: fixed;
   }
 }
 
 @layer components {
   .panel {
-    @apply rounded-lg border border-border/60 bg-card/80 backdrop-blur-sm;
+    @apply rounded-lg border border-border bg-card;
     background-image: var(--gradient-card);
     box-shadow: var(--shadow-card);
   }
@@ -117,7 +118,7 @@
 
   .glow-dot {
     @apply relative inline-flex h-2 w-2 rounded-full bg-primary;
-    box-shadow: 0 0 8px hsl(var(--primary));
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.5);
   }
   .glow-dot::after {
     content: "";
