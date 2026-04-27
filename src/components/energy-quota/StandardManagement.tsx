@@ -229,11 +229,21 @@ export function StandardManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {flattened.map(({ node: s, depth, childCount }, idx) => {
+              {flattened.map(({ node: s, depth, childCount, seq }) => {
                 const isChild = depth > 0;
                 const isExpanded = expanded[s.id];
                 return (
                   <TableRow
+                    key={s.id}
+                    className={cn(
+                      "h-12 border-border/40",
+                      s.status === "禁用" && "opacity-65",
+                      isChild && "bg-muted/30",
+                    )}
+                  >
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {seq ?? ""}
+                    </TableCell>
                     key={s.id}
                     className={cn(
                       "h-12 border-border/40",
