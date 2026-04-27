@@ -74,21 +74,16 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
       <Card className="panel-glow">
         <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] uppercase tracking-wider text-muted-foreground/70">月报全量详情</div>
-            <h1 className="mt-1 text-2xl font-bold leading-tight text-foreground lg:text-3xl">
+            <h1 className="text-2xl font-bold leading-tight text-foreground lg:text-3xl">
               {report.name}
             </h1>
             <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm">
               <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
                 {detail.enterpriseType}
               </Badge>
-              <span className="font-mono text-muted-foreground">
-                统一社会信用代码：{report.code}
-              </span>
+              <span className="font-mono text-muted-foreground">{report.code}</span>
               <Separator orientation="vertical" className="h-4" />
-              <span className="text-muted-foreground">
-                {report.industry} · {report.district}
-              </span>
+              <span className="text-muted-foreground">{report.district}</span>
               <Separator orientation="vertical" className="h-4" />
               <span className="text-muted-foreground">
                 统计月份：<span className="font-mono text-foreground">{report.month}</span>
