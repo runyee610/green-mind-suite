@@ -25,6 +25,8 @@ export function CycleAndDeclaration() {
   const [editStandardTarget, setEditStandardTarget] = useState<QuotaEnterprise | null>(null);
   const [deleteCycleTarget, setDeleteCycleTarget] = useState<QuotaCycle | null>(null);
   const [forceCompleteTarget, setForceCompleteTarget] = useState<QuotaCycle | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 15;
 
   const activeCycle = cycles.find((c) => c.id === cycleId) ?? cycles[0];
   const sortedCycles = useMemo(() => [...cycles].sort((a, b) => {
@@ -40,6 +42,16 @@ export function CycleAndDeclaration() {
       return k && s;
     }),
     [enterprises, cycleId, keyword, statusFilter],
+  );
+
+  // 过滤条件变化时重置页码
+  useEffect(() => { setPage(1); }, [cycleId, keyword, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredEnterprises.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pagedEnterprises = useMemo(
+    () => filteredEnterprises.slice((safePage - 1) * pageSize, safePage * pageSize),
+    [filteredEnterprises, safePage],
   );
 
   const switchCycleStatus = (c: QuotaCycle) => {
