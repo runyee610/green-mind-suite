@@ -73,12 +73,14 @@ export function AppLayout({ title, subtitle, hideHeader = false, children }: App
           </header>
 
           <main className="flex-1 overflow-auto p-6 animate-fade-in">
-            <div className="mb-6">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
-              {subtitle && (
-                <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
-              )}
-            </div>
+            {!hideHeader && title ? (
+              <div className="mb-6">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+                {subtitle && (
+                  <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+                )}
+              </div>
+            ) : null}
             {children}
           </main>
         </div>
