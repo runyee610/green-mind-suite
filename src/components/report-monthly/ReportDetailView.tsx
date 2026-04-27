@@ -94,7 +94,7 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
           <div className="flex shrink-0 items-center gap-2">
             <Button size="sm" variant="outline" className="gap-2">
               <Printer className="h-4 w-4" />
-              打印PDF
+              导出报告
             </Button>
             {onBack ? (
               <Button size="sm" className="gap-2" onClick={onBack}>
