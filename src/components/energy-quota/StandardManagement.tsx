@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpen, ChevronRight, Edit, Plus, Search, Upload, FileCheck2, Layers, Archive } from "lucide-react";
+import { BookOpen, ChevronRight, Edit, Plus, Search, FileCheck2, Layers, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -208,9 +208,6 @@ export function StandardManagement() {
                   {allYears.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Button size="sm" variant="outline" onClick={() => toast.info("市级账号可上传 .xlsx / .xls 标准模板")}>
-                <Upload className="mr-1 h-4 w-4" />上传模板
-              </Button>
               <Button size="sm" onClick={openCreate}><Plus className="mr-1 h-4 w-4" />新建标准</Button>
             </div>
           </div>
@@ -220,10 +217,9 @@ export function StandardManagement() {
             <TableHeader>
               <TableRow className="border-border/60 hover:bg-transparent">
                 <TableHead className="w-14">序号</TableHead>
-                <TableHead className="w-56">标准号</TableHead>
+                <TableHead className="w-60">标准号</TableHead>
                 <TableHead>标准名称</TableHead>
                 <TableHead className="w-36">适用年份</TableHead>
-                <TableHead className="w-24">能源输出</TableHead>
                 <TableHead className="w-32">启用状态</TableHead>
                 <TableHead className="w-20 text-right">操作</TableHead>
               </TableRow>
@@ -273,17 +269,17 @@ export function StandardManagement() {
                           {s.code}
                         </Badge>
                         {!isChild && childCount > 0 && (
-                          <span className="ml-1 text-[11px] text-muted-foreground">({childCount} 子标准)</span>
+                          <span
+                            className="ml-1 inline-flex h-5 min-w-[22px] items-center justify-center rounded-full border border-primary/25 bg-primary/8 px-1.5 text-[11px] font-medium leading-none text-primary"
+                            title={`包含 ${childCount} 个子标准`}
+                          >
+                            {childCount}
+                          </span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm text-foreground">{s.name}</TableCell>
                     <TableCell>{renderYears(s.years)}</TableCell>
-                    <TableCell className="text-xs">
-                      {s.isEnergyOutput
-                        ? <span className="font-medium text-primary">是</span>
-                        : <span className="text-muted-foreground">否</span>}
-                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Switch
@@ -308,7 +304,7 @@ export function StandardManagement() {
                 );
               })}
               {flattened.length === 0 && (
-                <TableRow><TableCell colSpan={7} className="py-12 text-center text-sm text-muted-foreground">暂无符合条件的标准</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="py-12 text-center text-sm text-muted-foreground">暂无符合条件的标准</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
