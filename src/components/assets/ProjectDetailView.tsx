@@ -72,7 +72,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               </Button>
             )}
             <Button size="sm" variant="outline" className="gap-1">
-              <Printer className="h-3.5 w-3.5" />导出
+              <Paperclip className="h-3.5 w-3.5" />附件下载
             </Button>
           </div>
         </div>
