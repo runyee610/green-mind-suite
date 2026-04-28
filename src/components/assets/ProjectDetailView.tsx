@@ -1,4 +1,4 @@
-import { AlertTriangle, Building2, Calculator, FileText, Gauge, Link2, Printer, Target, User } from "lucide-react";
+import { AlertTriangle, Building2, Calculator, FileText, Gauge, Link2, Paperclip, Target, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
