@@ -60,9 +60,6 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2">
               <CardTitle className="truncate text-base">{project.name}</CardTitle>
-              <Badge variant="outline" className="h-6">
-                {status.label}
-              </Badge>
             </div>
             <div className="text-xs text-muted-foreground">
               项目编号 {project.id} · {project.unitName} · {project.district}
@@ -115,6 +112,8 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <Field label="中心对口人" value={<><User className="mr-1 inline h-3.5 w-3.5" />{project.contact}</>} />
                 <Field label="关联状态" value={<Badge variant="outline">{status.label}</Badge>} />
                 <Field label="已关联企业" value={project.linkedEnterpriseName} />
+                <Field label="项目地址" value={`${project.district} · ${project.unitName}`} span={3} />
+                <Field label="建设内容" value={project.buildingContent} span={3} />
               </div>
             </section>
 
@@ -127,6 +126,13 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <EnergyMetric label="批复年综合能耗（等价值）" value={project.approvedEnergy} unit="吨标煤" />
                 <EnergyMetric label="采集综合能耗（等价值）" value={project.collectedEnergy} unit="吨标煤" warn={overQuota} hint={overQuota ? `已超批复 ${fmt(exceed)} 吨标煤` : "在批复范围内"} />
+                <EnergyMetric
+                  label="采集 / 批复占比"
+                  value={project.approvedEnergy > 0 ? (project.collectedEnergy / project.approvedEnergy) * 100 : 0}
+                  unit="%"
+                  warn={overQuota}
+                  hint={overQuota ? "已超出批复能耗" : "占批复综合能耗比例"}
+                />
                 <EnergyMetric label="剩余可用节能量" value={project.remainingSaving} unit="万吨标煤" warn={project.remainingSaving < 0} hint={project.remainingSaving < 0 ? "节能量已透支" : undefined} />
                 <EnergyMetric label="2025 年度实际节能量" value={project.actualSavingTce} unit="万吨标煤" />
                 <EnergyMetric label="2025 年度实际节电量" value={project.actualSavingKwh} unit="万千瓦时" />
@@ -139,16 +145,16 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <FileText className="h-4 w-4 text-primary" />项目信息
               </h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                <Field label="所属区" value={project.district} />
                 <Field label="开工日期" value={project.startDate} mono />
                 <Field label="竣工日期" value={project.endDate} mono />
                 <Field label="投资总额" value={`${fmt(project.investment, 0)} 万元`} mono />
                 <Field label="项目类型" value={<Badge variant="secondary">{project.projectType}</Badge>} />
+                <Field label="项目状态" value={<Badge variant="outline">建设中</Badge>} />
+                <Field label="是否已申请补贴" value={<Badge variant="outline">否</Badge>} />
                 <Field label="项目联系人" value={`${project.projectContact.name} · ${project.projectContact.phone}`} />
                 <Field label="项目联系邮箱" value={project.projectContact.email} />
                 <Field label="节能审查批复时间及文号" value={project.energyReviewDoc} span={2} />
                 <Field label="环评审批批复时间及文号" value={project.eiaReviewDoc} span={2} />
-                <Field label="建设内容" value={project.buildingContent} span={3} />
                 <Field label="备注" value={project.remark} span={3} />
               </div>
             </section>
