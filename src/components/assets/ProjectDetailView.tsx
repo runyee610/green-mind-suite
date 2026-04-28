@@ -145,16 +145,16 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <FileText className="h-4 w-4 text-primary" />项目信息
               </h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                <Field label="所属区" value={project.district} />
                 <Field label="开工日期" value={project.startDate} mono />
                 <Field label="竣工日期" value={project.endDate} mono />
                 <Field label="投资总额" value={`${fmt(project.investment, 0)} 万元`} mono />
                 <Field label="项目类型" value={<Badge variant="secondary">{project.projectType}</Badge>} />
+                <Field label="项目状态" value={<Badge variant="outline">建设中</Badge>} />
+                <Field label="是否已申请补贴" value={<Badge variant="outline">否</Badge>} />
                 <Field label="项目联系人" value={`${project.projectContact.name} · ${project.projectContact.phone}`} />
                 <Field label="项目联系邮箱" value={project.projectContact.email} />
                 <Field label="节能审查批复时间及文号" value={project.energyReviewDoc} span={2} />
                 <Field label="环评审批批复时间及文号" value={project.eiaReviewDoc} span={2} />
-                <Field label="建设内容" value={project.buildingContent} span={3} />
                 <Field label="备注" value={project.remark} span={3} />
               </div>
             </section>
