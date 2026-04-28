@@ -60,9 +60,6 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2">
               <CardTitle className="truncate text-base">{project.name}</CardTitle>
-              <Badge variant="outline" className="h-6">
-                {status.label}
-              </Badge>
             </div>
             <div className="text-xs text-muted-foreground">
               项目编号 {project.id} · {project.unitName} · {project.district}
