@@ -85,7 +85,7 @@ export default function Assets() {
   // ============ 详情子页面 ============
   if (detail) {
     return (
-      <AppLayout title="固定资产管理" subtitle="项目详情">
+      <AppLayout hideHeader>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Button variant="ghost" size="sm" className="gap-1" onClick={() => setDetail(null)}>
