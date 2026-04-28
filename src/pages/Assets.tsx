@@ -190,8 +190,7 @@ export default function Assets() {
                     <TableHead className="w-20">所属区</TableHead>
                     <TableHead className="text-right">批复能耗</TableHead>
                     <TableHead className="text-right">采集能耗</TableHead>
-                    <TableHead className="w-24">关联状态</TableHead>
-                    <TableHead className="w-32">操作</TableHead>
+                    <TableHead className="w-20">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
