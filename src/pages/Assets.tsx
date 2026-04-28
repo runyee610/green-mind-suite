@@ -184,13 +184,13 @@ export default function Assets() {
               <Table>
                 <TableHeader className="sticky top-0 z-10 bg-card">
                   <TableRow>
-                    <TableHead className="w-12">序号</TableHead>
-                    <TableHead>项目名称</TableHead>
-                    <TableHead>所属单位</TableHead>
-                    <TableHead className="w-20">所属区</TableHead>
-                    <TableHead className="text-right">批复能耗</TableHead>
-                    <TableHead className="text-right">采集能耗</TableHead>
-                    <TableHead className="w-20">操作</TableHead>
+                    <TableHead className="w-14 px-3">序号</TableHead>
+                    <TableHead className="min-w-[260px] px-3">项目名称</TableHead>
+                    <TableHead className="min-w-[200px] px-3">所属单位</TableHead>
+                    <TableHead className="w-24 px-3">所属区</TableHead>
+                    <TableHead className="w-32 px-3 text-right">批复能耗</TableHead>
+                    <TableHead className="w-32 px-3 text-right">采集能耗</TableHead>
+                    <TableHead className="w-24 px-3 text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -198,21 +198,21 @@ export default function Assets() {
                     const over = p.collectedEnergy > p.approvedEnergy && p.collectedEnergy > 0;
                     return (
                       <TableRow key={p.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetail(p)}>
-                        <TableCell className="font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</TableCell>
-                        <TableCell>
+                        <TableCell className="px-3 font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</TableCell>
+                        <TableCell className="px-3">
                           <div className="font-medium text-foreground">{p.name}</div>
                           <div className="mt-0.5 font-mono text-[11px] text-muted-foreground">{p.id}</div>
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{p.unitName}</TableCell>
-                        <TableCell className="text-xs">{p.district}</TableCell>
-                        <TableCell className="text-right font-mono text-sm">{fmt(p.approvedEnergy)}</TableCell>
-                        <TableCell className={cn("text-right font-mono text-sm", over && "text-destructive font-semibold")}>
+                        <TableCell className="px-3 text-xs text-muted-foreground">{p.unitName}</TableCell>
+                        <TableCell className="px-3 text-xs">{p.district}</TableCell>
+                        <TableCell className="px-3 text-right font-mono text-sm tabular-nums">{fmt(p.approvedEnergy)}</TableCell>
+                        <TableCell className={cn("px-3 text-right font-mono text-sm tabular-nums", over && "text-destructive font-semibold")}>
                           <div className="flex items-center justify-end gap-1">
                             {over && <AlertTriangle className="h-3.5 w-3.5" />}
                             {fmt(p.collectedEnergy)}
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-3 text-right">
                           <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={(e) => { e.stopPropagation(); setDetail(p); }}>
                             <Eye className="h-3.5 w-3.5" />查看
                           </Button>
