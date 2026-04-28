@@ -199,12 +199,12 @@ export default function Assets() {
                     return (
                       <TableRow key={p.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetail(p)}>
                         <TableCell className="px-3 font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</TableCell>
-                        <TableCell className="px-3">
+                        <TableCell className="px-3 pr-1">
                           <div className="font-medium text-foreground">{p.name}</div>
                           <div className="mt-0.5 font-mono text-[11px] text-muted-foreground">{p.id}</div>
                         </TableCell>
-                        <TableCell className="px-3 text-xs text-muted-foreground">{p.unitName}</TableCell>
-                        <TableCell className="px-3 text-xs">{p.district}</TableCell>
+                        <TableCell className="px-1 text-xs text-muted-foreground">{p.unitName}</TableCell>
+                        <TableCell className="pl-1 pr-3 text-xs">{p.district}</TableCell>
                         <TableCell className="px-3 text-right font-mono text-sm tabular-nums">{fmt(p.approvedEnergy)}</TableCell>
                         <TableCell className={cn("px-3 text-right font-mono text-sm tabular-nums", over && "text-destructive font-semibold")}>
                           <div className="flex items-center justify-end gap-1">
