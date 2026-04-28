@@ -185,9 +185,9 @@ export default function Assets() {
                 <TableHeader className="sticky top-0 z-10 bg-card">
                   <TableRow>
                     <TableHead className="w-14 px-3">序号</TableHead>
-                    <TableHead className="min-w-[260px] px-3">项目名称</TableHead>
-                    <TableHead className="min-w-[200px] px-3">所属单位</TableHead>
-                    <TableHead className="w-24 px-3">所属区</TableHead>
+                    <TableHead className="min-w-[260px] px-3 pr-1">项目名称</TableHead>
+                    <TableHead className="min-w-[200px] px-1">所属单位</TableHead>
+                    <TableHead className="w-24 pl-1 pr-3">所属区</TableHead>
                     <TableHead className="w-32 px-3 text-right">批复能耗</TableHead>
                     <TableHead className="w-32 px-3 text-right">采集能耗</TableHead>
                     <TableHead className="w-24 px-3 text-right">操作</TableHead>
