@@ -82,6 +82,14 @@ export default function Assets() {
     }
   };
 
+  useEffect(() => {
+    if (detail) {
+      const main = document.querySelector("main");
+      if (main) main.scrollTo({ top: 0, behavior: "auto" });
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [detail]);
+
   // ============ 详情子页面 ============
   if (detail) {
     return (
