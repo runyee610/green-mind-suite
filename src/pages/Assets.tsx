@@ -190,14 +190,12 @@ export default function Assets() {
                     <TableHead className="w-20">所属区</TableHead>
                     <TableHead className="text-right">批复能耗</TableHead>
                     <TableHead className="text-right">采集能耗</TableHead>
-                    <TableHead className="w-24">关联状态</TableHead>
-                    <TableHead className="w-32">操作</TableHead>
+                    <TableHead className="w-20">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.map((p, i) => {
                     const over = p.collectedEnergy > p.approvedEnergy && p.collectedEnergy > 0;
-                    const status = linkStatusStyle[p.linkStatus];
                     return (
                       <TableRow key={p.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetail(p)}>
                         <TableCell className="font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</TableCell>
@@ -215,26 +213,15 @@ export default function Assets() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className={cn("border", status.badge)}>
-                            <span className={cn("mr-1 h-1.5 w-1.5 rounded-full", status.dot)} />
-                            {status.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={(e) => { e.stopPropagation(); setDetail(p); }}>
-                              <Eye className="h-3.5 w-3.5" />查看
-                            </Button>
-                            <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={(e) => { e.stopPropagation(); openLink(p); }}>
-                              <Link2 className="h-3.5 w-3.5" />关联
-                            </Button>
-                          </div>
+                          <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={(e) => { e.stopPropagation(); setDetail(p); }}>
+                            <Eye className="h-3.5 w-3.5" />查看
+                          </Button>
                         </TableCell>
                       </TableRow>
                     );
                   })}
                   {filtered.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
