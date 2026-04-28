@@ -112,6 +112,8 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <Field label="中心对口人" value={<><User className="mr-1 inline h-3.5 w-3.5" />{project.contact}</>} />
                 <Field label="关联状态" value={<Badge variant="outline">{status.label}</Badge>} />
                 <Field label="已关联企业" value={project.linkedEnterpriseName} />
+                <Field label="项目地址" value={`${project.district} · ${project.unitName}`} span={3} />
+                <Field label="建设内容" value={project.buildingContent} span={3} />
               </div>
             </section>
 
