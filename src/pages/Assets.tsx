@@ -221,7 +221,7 @@ export default function Assets() {
                     );
                   })}
                   {filtered.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
