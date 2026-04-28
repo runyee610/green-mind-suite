@@ -60,8 +60,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2">
               <CardTitle className="truncate text-base">{project.name}</CardTitle>
-              <Badge variant="outline" className={cn("h-6 border", status.badge)}>
-                <span className={cn("mr-1.5 h-1.5 w-1.5 rounded-full", status.dot)} />
+              <Badge variant="outline" className="h-6">
                 {status.label}
               </Badge>
             </div>
@@ -76,7 +75,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               </Button>
             )}
             <Button size="sm" variant="outline" className="gap-1">
-              <Printer className="h-3.5 w-3.5" />打印PDF
+              <Printer className="h-3.5 w-3.5" />导出
             </Button>
           </div>
         </div>
