@@ -126,6 +126,13 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <EnergyMetric label="批复年综合能耗（等价值）" value={project.approvedEnergy} unit="吨标煤" />
                 <EnergyMetric label="采集综合能耗（等价值）" value={project.collectedEnergy} unit="吨标煤" warn={overQuota} hint={overQuota ? `已超批复 ${fmt(exceed)} 吨标煤` : "在批复范围内"} />
+                <EnergyMetric
+                  label="采集 / 批复占比"
+                  value={project.approvedEnergy > 0 ? (project.collectedEnergy / project.approvedEnergy) * 100 : 0}
+                  unit="%"
+                  warn={overQuota}
+                  hint={overQuota ? "已超出批复能耗" : "占批复综合能耗比例"}
+                />
                 <EnergyMetric label="剩余可用节能量" value={project.remainingSaving} unit="万吨标煤" warn={project.remainingSaving < 0} hint={project.remainingSaving < 0 ? "节能量已透支" : undefined} />
                 <EnergyMetric label="2025 年度实际节能量" value={project.actualSavingTce} unit="万吨标煤" />
                 <EnergyMetric label="2025 年度实际节电量" value={project.actualSavingKwh} unit="万千瓦时" />
