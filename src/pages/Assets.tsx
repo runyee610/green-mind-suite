@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ArrowLeft, Boxes, Download, Eye, Flame, Leaf, Link2, Search, Upload, Users, FilterX } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { ImportDialog } from "@/components/assets/ImportDialog";
@@ -82,10 +82,18 @@ export default function Assets() {
     }
   };
 
+  useEffect(() => {
+    if (detail) {
+      const main = document.querySelector("main");
+      if (main) main.scrollTo({ top: 0, behavior: "auto" });
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [detail]);
+
   // ============ 详情子页面 ============
   if (detail) {
     return (
-      <AppLayout title="固定资产管理" subtitle="项目详情">
+      <AppLayout hideHeader>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Button variant="ghost" size="sm" className="gap-1" onClick={() => setDetail(null)}>

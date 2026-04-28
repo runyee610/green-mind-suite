@@ -60,8 +60,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2">
               <CardTitle className="truncate text-base">{project.name}</CardTitle>
-              <Badge variant="outline" className={cn("h-6 border", status.badge)}>
-                <span className={cn("mr-1.5 h-1.5 w-1.5 rounded-full", status.dot)} />
+              <Badge variant="outline" className="h-6">
                 {status.label}
               </Badge>
             </div>
@@ -76,7 +75,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               </Button>
             )}
             <Button size="sm" variant="outline" className="gap-1">
-              <Printer className="h-3.5 w-3.5" />打印PDF
+              <Printer className="h-3.5 w-3.5" />导出
             </Button>
           </div>
         </div>
@@ -114,7 +113,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <Field label="项目编号" value={project.id} mono />
                 <Field label="项目名称" value={project.name} span={2} />
                 <Field label="中心对口人" value={<><User className="mr-1 inline h-3.5 w-3.5" />{project.contact}</>} />
-                <Field label="关联状态" value={<Badge variant="outline" className={status.badge}>{status.label}</Badge>} />
+                <Field label="关联状态" value={<Badge variant="outline">{status.label}</Badge>} />
                 <Field label="已关联企业" value={project.linkedEnterpriseName} />
               </div>
             </section>
@@ -134,10 +133,10 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               </div>
             </section>
 
-            {/* 次要项目信息 */}
+            {/* 项目信息 */}
             <section id="project" className="scroll-mt-4">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                <FileText className="h-4 w-4 text-primary" />次要项目信息
+                <FileText className="h-4 w-4 text-primary" />项目信息
               </h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <Field label="所属区" value={project.district} />
