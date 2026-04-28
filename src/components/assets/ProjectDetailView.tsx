@@ -90,7 +90,19 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
           <ul className="space-y-1 text-xs">
             {sections.map((s) => (
               <li key={s.id}>
-                <a href={`#${s.id}`} className="flex items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+                <a
+                  href={`#${s.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const target = document.getElementById(s.id);
+                    const viewport = target?.closest("[data-radix-scroll-area-viewport]") as HTMLElement | null;
+                    if (target && viewport) {
+                      const top = target.getBoundingClientRect().top - viewport.getBoundingClientRect().top + viewport.scrollTop - 12;
+                      viewport.scrollTo({ top, behavior: "smooth" });
+                    }
+                  }}
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                >
                   <s.icon className="h-3.5 w-3.5" />
                   {s.label}
                 </a>
