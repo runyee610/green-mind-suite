@@ -133,10 +133,10 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               </div>
             </section>
 
-            {/* 次要项目信息 */}
+            {/* 项目信息 */}
             <section id="project" className="scroll-mt-4">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                <FileText className="h-4 w-4 text-primary" />次要项目信息
+                <FileText className="h-4 w-4 text-primary" />项目信息
               </h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <Field label="所属区" value={project.district} />
