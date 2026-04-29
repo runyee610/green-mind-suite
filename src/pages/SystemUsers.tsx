@@ -766,7 +766,7 @@ function DistrictSelfView({
     areaName: self.areaName,
     owner: self.owner,
     cityContact: self.cityContact,
-    phone: self.phone,
+    phone: self.phone.replace(/\*+/, (m) => "8".repeat(m.length)),
   });
   const [draft, setDraft] = useState(info);
 
@@ -904,8 +904,7 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">企业名称</TableHead>
                   <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
                   <TableHead className="h-9 text-xs">行业分类</TableHead>
-                  <TableHead className="h-9 text-xs">能耗级别</TableHead>
-                  <TableHead className="h-9 text-xs">企业负责人</TableHead>
+                  <TableHead className="h-9 text-xs">联系人</TableHead>
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
                   <TableHead className="h-9 text-xs">中心对口人</TableHead>
                   <TableHead className="h-9 text-xs">园区</TableHead>
@@ -915,7 +914,7 @@ function DistrictSelfView({
               <TableBody>
                 {pageRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={9} className="text-center text-xs text-muted-foreground py-8">
                       暂无企业数据
                     </TableCell>
                   </TableRow>
@@ -930,9 +929,8 @@ function DistrictSelfView({
                         {e.creditCode}
                       </TableCell>
                       <TableCell className="py-2">{e.industry}</TableCell>
-                      <TableCell className="py-2">{e.energyLevel}</TableCell>
                       <TableCell className="py-2">{e.owner}</TableCell>
-                      <TableCell className="py-2 font-mono">{e.phone}</TableCell>
+                      <TableCell className="py-2 font-mono">{e.phone.replace(/\*+/, (m) => "8".repeat(m.length))}</TableCell>
                       <TableCell className="py-2">{e.cityContact ?? "—"}</TableCell>
                       <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>
                       <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
