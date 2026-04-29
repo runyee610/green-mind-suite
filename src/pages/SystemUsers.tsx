@@ -1290,7 +1290,7 @@ function CreateEnterpriseDialog({
               const typeLabel = ACCOUNT_TYPE_OPTIONS.find((o) => o.value === accountType)?.label;
               toast({
                 title: "账号创建成功",
-                description: `${typeLabel} · ${organization} · ${isCity ? roleType : "管理员"} · ${account}`,
+                description: `${typeLabel}${organization ? ` · ${organization}` : ""} · ${isCity ? roleType : "管理员"} · ${account}`,
               });
               onOpenChange(false);
             }}
