@@ -562,65 +562,72 @@ function ActionButtons({
   disableLocked?: boolean;
   disableLockedReason?: string;
 }) {
-  const disableBtn = (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-7 px-2 text-xs gap-1"
-      disabled={disableLocked}
-      onClick={() =>
-        toast({
-          title: status === "启用" ? "已停用账号" : "已启用账号",
-          description: account,
-        })
-      }
-    >
-      {status === "启用" ? (
-        <ShieldOff className="h-3.5 w-3.5" />
-      ) : (
-        <ShieldCheck className="h-3.5 w-3.5" />
-      )}
-      {status === "启用" ? "禁用" : "启用"}
-    </Button>
-  );
-
   return (
-    <div className="flex items-center gap-1 justify-end">
-      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1">
-        <Pencil className="h-3.5 w-3.5" />
-        编辑
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-7 px-2 text-xs gap-1"
-        onClick={() => onChangePwd(account)}
-      >
-        <KeyRound className="h-3.5 w-3.5" />
-        修改密码
-      </Button>
-      {disableLocked ? (
-        <TooltipProvider delayDuration={150}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span>{disableBtn}</span>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              {disableLockedReason ?? "无操作权限"}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ) : (
-        disableBtn
-      )}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-7 px-2 text-xs gap-1 text-destructive hover:text-destructive"
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-        删除
-      </Button>
+    <div className="flex items-center justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1">
+            <MoreHorizontal className="h-3.5 w-3.5" />
+            更多
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-36">
+          <DropdownMenuItem className="text-xs gap-2">
+            <Pencil className="h-3.5 w-3.5" />
+            编辑
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-xs gap-2"
+            onClick={() => onChangePwd(account)}
+          >
+            <KeyRound className="h-3.5 w-3.5" />
+            修改密码
+          </DropdownMenuItem>
+          {disableLocked ? (
+            <TooltipProvider delayDuration={150}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <DropdownMenuItem disabled className="text-xs gap-2">
+                      {status === "启用" ? (
+                        <ShieldOff className="h-3.5 w-3.5" />
+                      ) : (
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                      )}
+                      {status === "启用" ? "禁用" : "启用"}
+                    </DropdownMenuItem>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="left" className="text-xs max-w-xs">
+                  {disableLockedReason ?? "无操作权限"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <DropdownMenuItem
+              className="text-xs gap-2"
+              onClick={() =>
+                toast({
+                  title: status === "启用" ? "已停用账号" : "已启用账号",
+                  description: account,
+                })
+              }
+            >
+              {status === "启用" ? (
+                <ShieldOff className="h-3.5 w-3.5" />
+              ) : (
+                <ShieldCheck className="h-3.5 w-3.5" />
+              )}
+              {status === "启用" ? "禁用" : "启用"}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-xs gap-2 text-destructive focus:text-destructive">
+            <Trash2 className="h-3.5 w-3.5" />
+            删除
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
