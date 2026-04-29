@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { CheckCircle2, Clock, Eye, FileDown, History as HistoryIcon, TrendingDown, TrendingUp, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, FileDown, History as HistoryIcon, TrendingDown, TrendingUp, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,9 +123,6 @@ export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: P
                 <TableHead className="w-24">状态</TableHead>
                 <TableHead className="w-44">适用标准</TableHead>
                 <TableHead className="w-40">单耗 / 限额</TableHead>
-                <TableHead className="w-36">提交 / 审核</TableHead>
-                <TableHead>审核意见</TableHead>
-                <TableHead className="w-24 text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -180,42 +177,6 @@ export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: P
                         </div>
                       ) : (
                         <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-mono text-[11px] text-muted-foreground">
-                      {h.reportedAt ? (
-                        <div className="flex flex-col leading-tight">
-                          <span>提：{h.reportedAt}</span>
-                          <span>审：{h.auditedAt}</span>
-                        </div>
-                      ) : (
-                        <span>—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {h.comment ? (
-                        <span className="text-destructive/90">{h.comment}</span>
-                      ) : h.status === "已完成" ? (
-                        <span className="text-muted-foreground">审核通过 · {h.auditor}</span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right whitespace-nowrap">
-                      {h.status !== "未填报" ? (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="px-2"
-                          onClick={() => {
-                            if (onViewDetail) onViewDetail(h);
-                            else toast.info(`查看 ${h.cyclePeriod} 详情`);
-                          }}
-                        >
-                          <Eye className="mr-1 h-3 w-3" />详情
-                        </Button>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </TableCell>
                   </TableRow>
