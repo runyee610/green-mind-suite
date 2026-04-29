@@ -123,9 +123,6 @@ export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: P
                 <TableHead className="w-24">状态</TableHead>
                 <TableHead className="w-44">适用标准</TableHead>
                 <TableHead className="w-40">单耗 / 限额</TableHead>
-                <TableHead className="w-36">提交 / 审核</TableHead>
-                <TableHead>审核意见</TableHead>
-                <TableHead className="w-24 text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
