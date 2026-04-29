@@ -761,12 +761,13 @@ function DistrictSelfView({
   self: DistrictUser;
   enterprises: EnterpriseUser[];
   onChangePwd: (acc: string) => void;
-  level?: "区" | "园区";
+  level?: "区" | "园区" | "集团";
 }) {
   const isPark = level === "园区";
-  const areaLabel = isPark ? "园区名称" : "行政区划";
-  const listTitle = isPark ? "园区企业列表" : "辖区企业列表";
-  const countLabel = isPark ? "园区企业数量" : "辖区企业数量";
+  const isGroup = level === "集团";
+  const areaLabel = isGroup ? "集团名称" : isPark ? "园区名称" : "行政区划";
+  const listTitle = isGroup ? "集团企业列表" : isPark ? "园区企业列表" : "辖区企业列表";
+  const countLabel = isGroup ? "集团企业数量" : isPark ? "园区企业数量" : "辖区企业数量";
 
   const [kw, setKw] = useState("");
   const [page, setPage] = useState(1);
