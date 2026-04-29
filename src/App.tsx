@@ -16,6 +16,7 @@ import Benchmark from "./pages/Benchmark.tsx";
 import Enterprise from "./pages/Enterprise.tsx";
 import System from "./pages/System.tsx";
 import SystemUsers from "./pages/SystemUsers.tsx";
+import SystemPermissions from "./pages/SystemPermissions.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/enterprise" element={<Enterprise />} />
           <Route path="/system" element={<System />} />
           <Route path="/system/users" element={<SystemUsers />} />
+          <Route path="/system/permissions" element={<SystemPermissions />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

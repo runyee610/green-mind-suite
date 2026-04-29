@@ -16,6 +16,7 @@ import {
   BookOpen,
   ClipboardList,
   ChevronDown,
+  ShieldCheck,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -71,6 +72,7 @@ export const navItems: NavItem[] = [
     icon: Settings,
     children: [
       { title: "用户管理", url: "/system/users", icon: ClipboardList },
+      { title: "权限配置中心", url: "/system/permissions", icon: ShieldCheck },
     ],
   },
 ];
