@@ -912,14 +912,14 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">联系人</TableHead>
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
                   <TableHead className="h-9 text-xs">中心对口人</TableHead>
-                  <TableHead className="h-9 text-xs">{isPark ? "所属区" : "园区"}</TableHead>
+                  {!isPark && <TableHead className="h-9 text-xs">园区</TableHead>}
                   <TableHead className="h-9 text-xs">集团</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {pageRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={isPark ? 8 : 9} className="text-center text-xs text-muted-foreground py-8">
                       暂无企业数据
                     </TableCell>
                   </TableRow>
@@ -937,7 +937,7 @@ function DistrictSelfView({
                       <TableCell className="py-2">{e.owner}</TableCell>
                       <TableCell className="py-2 font-mono">{e.phone.replace(/\*+/, (m) => "8".repeat(m.length))}</TableCell>
                       <TableCell className="py-2">{e.cityContact ?? "—"}</TableCell>
-                      <TableCell className="py-2 text-muted-foreground">{(isPark ? e.district : e.park) ?? "—"}</TableCell>
+                      {!isPark && <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>}
                       <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
                     </TableRow>
                   ))
