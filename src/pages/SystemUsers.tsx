@@ -449,6 +449,7 @@ export default function SystemUsers() {
         accountName={pwdTarget}
       />
       <CreateEnterpriseDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <EnterpriseListDialog user={entListUser} onOpenChange={(o) => !o && setEntListUser(null)} />
     </AppLayout>
   );
 }
