@@ -15,6 +15,7 @@ import GreenMfg from "./pages/GreenMfg.tsx";
 import Benchmark from "./pages/Benchmark.tsx";
 import Enterprise from "./pages/Enterprise.tsx";
 import System from "./pages/System.tsx";
+import SystemUsers from "./pages/SystemUsers.tsx";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/benchmark" element={<Benchmark />} />
           <Route path="/enterprise" element={<Enterprise />} />
           <Route path="/system" element={<System />} />
+          <Route path="/system/users" element={<SystemUsers />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
