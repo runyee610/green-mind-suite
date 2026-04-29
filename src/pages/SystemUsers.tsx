@@ -728,7 +728,193 @@ function CityTable({
   );
 }
 
-function DistrictTable({
+function DistrictSelfView({
+  self,
+  enterprises,
+  onChangePwd,
+}: {
+  self: DistrictUser;
+  enterprises: EnterpriseUser[];
+  onChangePwd: (acc: string) => void;
+}) {
+  const [kw, setKw] = useState("");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
+
+  // 辖区企业：按 self.areaName 匹配 district 字段
+  const inDistrict = useMemo(
+    () => enterprises.filter((e) => e.district === self.areaName),
+    [enterprises, self.areaName],
+  );
+  const filtered = useMemo(
+    () =>
+      inDistrict.filter(
+        (e) =>
+          !kw ||
+          e.enterpriseName.includes(kw) ||
+          e.creditCode.includes(kw) ||
+          e.owner.includes(kw),
+      ),
+    [inDistrict, kw],
+  );
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const curPage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
+
+  return (
+    <div className="space-y-4">
+      {/* 本账号信息 */}
+      <Card className="border-border/60">
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-muted/30">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <ShieldCheck className="h-4 w-4 text-primary" />
+              本账号信息
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs gap-1"
+              onClick={() => onChangePwd(self.account)}
+            >
+              <KeyRound className="h-3.5 w-3.5" />
+              修改密码
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 px-4 py-4 text-xs">
+            <InfoItem label="账号" value={self.account} />
+            <InfoItem label="行政区划" value={self.areaName} />
+            <InfoItem label="层级" value={self.level} />
+            <InfoItem label="负责人" value={self.owner} />
+            <InfoItem label="中心对口人" value={self.cityContact} />
+            <InfoItem label="联系电话" value={self.phone} />
+            <InfoItem
+              label="辖区企业数量"
+              value={`${inDistrict.length} 家`}
+            />
+            <InfoItem
+              label="账号状态"
+              value={
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      self.status === "启用" ? "bg-emerald-500" : "bg-muted-foreground/50",
+                    )}
+                  />
+                  {self.status}
+                </span>
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 辖区企业列表 */}
+      <Card className="border-border/60">
+        <CardContent className="p-0">
+          <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
+            <div className="text-sm font-medium">
+              辖区企业列表
+              <span className="ml-2 text-xs text-muted-foreground">
+                共 {filtered.length} 家
+              </span>
+            </div>
+            <div className="ml-auto relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                value={kw}
+                onChange={(e) => {
+                  setKw(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="搜索企业名称 / 信用代码 / 负责人"
+                className="h-8 w-72 pl-8 text-xs"
+              />
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
+                  <TableHead className="h-9 text-xs w-[60px]">序号</TableHead>
+                  <TableHead className="h-9 text-xs">企业名称</TableHead>
+                  <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
+                  <TableHead className="h-9 text-xs">行业分类</TableHead>
+                  <TableHead className="h-9 text-xs">能耗级别</TableHead>
+                  <TableHead className="h-9 text-xs">企业负责人</TableHead>
+                  <TableHead className="h-9 text-xs">联系电话</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pageRows.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
+                      暂无企业数据
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  pageRows.map((e, idx) => (
+                    <TableRow key={e.id} className="text-xs">
+                      <TableCell className="py-2 text-muted-foreground">
+                        {(curPage - 1) * PAGE_SIZE + idx + 1}
+                      </TableCell>
+                      <TableCell className="py-2 font-medium">{e.enterpriseName}</TableCell>
+                      <TableCell className="py-2 font-mono text-muted-foreground">
+                        {e.creditCode}
+                      </TableCell>
+                      <TableCell className="py-2">{e.industry}</TableCell>
+                      <TableCell className="py-2">{e.energyLevel}</TableCell>
+                      <TableCell className="py-2">{e.owner}</TableCell>
+                      <TableCell className="py-2 font-mono">{e.phone}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-between px-4 py-2 border-t border-border text-xs text-muted-foreground">
+            <span>共 {filtered.length} 条</span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs"
+                disabled={curPage <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                上一页
+              </Button>
+              <span className="px-2">
+                {curPage} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs"
+                disabled={curPage >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                下一页
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function InfoItem({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-muted-foreground text-[11px]">{label}</span>
+      <span className="text-foreground">{value}</span>
+    </div>
+  );
+}
+
+
   rows,
   level,
   onChangePwd,
