@@ -1019,7 +1019,21 @@ function CreateEnterpriseDialog({
   const [password, setPassword] = useState(genRandomPassword());
 
   const codeValid = CREDIT_CODE_RE.test(creditCode);
-  const accountValid = /^[A-Za-z][A-Za-z0-9]{5,19}$/.test(account);
+  // 长度 6-20，字母或字母数字组合（至少含一个字母），不分大小写
+  const accountFormatValid = /^(?=.*[A-Za-z])[A-Za-z0-9]{6,20}$/.test(account);
+  // 系统唯一性校验（与所有已存在账号比对，不分大小写）
+  const takenAccounts = useMemo(
+    () =>
+      new Set<string>([
+        ...cityUsers.map((u) => u.account.toLowerCase()),
+        ...districtUsers.map((u) => u.account.toLowerCase()),
+        ...groupUsers.map((u) => u.account.toLowerCase()),
+        ...enterpriseUsers.map((u) => u.account.toLowerCase()),
+      ]),
+    [],
+  );
+  const accountUnique = account.length === 0 || !takenAccounts.has(account.toLowerCase());
+  const accountValid = accountFormatValid && accountUnique;
 
   const reset = () => {
     setCreditCode("");
