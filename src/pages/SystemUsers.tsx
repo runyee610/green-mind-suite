@@ -343,8 +343,21 @@ export default function SystemUsers() {
         />
       )}
 
+      {/* 园区管理员：仅展示本账号信息 + 园区企业列表 */}
+      {view === "park_admin" && (
+        <DistrictSelfView
+          level="园区"
+          self={districtUsers.find((d) => d.level === "园区") ?? districtUsers[0]}
+          enterprises={enterpriseUsers}
+          onChangePwd={(acc) => {
+            setPwdTarget(acc);
+            setPwdOpen(true);
+          }}
+        />
+      )}
+
       {/* 工具栏 */}
-      {view !== "district_admin" && (
+      {view !== "district_admin" && view !== "park_admin" && (
       <Card className="border-border/60">
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
@@ -427,24 +440,6 @@ export default function SystemUsers() {
                 )}
                 groupByDepartment={groupByDept && deptFilter === "all"}
                 onViewEnterprises={(u) => setEntListUser(u)}
-                onChangePwd={(acc) => {
-                  setPwdTarget(acc);
-                  setPwdOpen(true);
-                }}
-              />
-            )}
-            {view === "park_admin" && (
-              <DistrictTable
-                level="园区"
-                rows={districtUsers.filter(
-                  (r) =>
-                    r.level === "园区" &&
-                    (statusFilter === "all" || r.status === statusFilter) &&
-                    (!keyword ||
-                      r.areaName.includes(keyword) ||
-                      r.owner.includes(keyword) ||
-                      r.account.includes(keyword)),
-                )}
                 onChangePwd={(acc) => {
                   setPwdTarget(acc);
                   setPwdOpen(true);
@@ -750,11 +745,18 @@ function DistrictSelfView({
   self,
   enterprises,
   onChangePwd,
+  level = "区",
 }: {
   self: DistrictUser;
   enterprises: EnterpriseUser[];
   onChangePwd: (acc: string) => void;
+  level?: "区" | "园区";
 }) {
+  const isPark = level === "园区";
+  const areaLabel = isPark ? "园区名称" : "行政区划";
+  const listTitle = isPark ? "园区企业列表" : "辖区企业列表";
+  const countLabel = isPark ? "园区企业数量" : "辖区企业数量";
+
   const [kw, setKw] = useState("");
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
@@ -770,21 +772,24 @@ function DistrictSelfView({
   });
   const [draft, setDraft] = useState(info);
 
-  // 辖区企业：按 self.areaName 匹配 district 字段
-  const inDistrict = useMemo(
-    () => enterprises.filter((e) => e.district === info.areaName),
-    [enterprises, info.areaName],
+  // 范围内企业：区按 district 字段；园区按 park 字段
+  const inScope = useMemo(
+    () =>
+      enterprises.filter((e) =>
+        isPark ? e.park === info.areaName : e.district === info.areaName,
+      ),
+    [enterprises, info.areaName, isPark],
   );
   const filtered = useMemo(
     () =>
-      inDistrict.filter(
+      inScope.filter(
         (e) =>
           !kw ||
           e.enterpriseName.includes(kw) ||
           e.creditCode.includes(kw) ||
           e.owner.includes(kw),
       ),
-    [inDistrict, kw],
+    [inScope, kw],
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const curPage = Math.min(page, totalPages);
@@ -806,7 +811,7 @@ function DistrictSelfView({
 
   const fields: { key: keyof typeof info; label: string }[] = [
     { key: "account", label: "账号" },
-    { key: "areaName", label: "行政区划" },
+    { key: "areaName", label: areaLabel },
     { key: "owner", label: "负责人" },
     { key: "cityContact", label: "中心对口人" },
     { key: "phone", label: "联系电话" },
@@ -868,7 +873,7 @@ function DistrictSelfView({
                 )}
               </div>
             ))}
-            <InfoItem label="辖区企业数量" value={`${inDistrict.length} 家`} />
+            <InfoItem label={countLabel} value={`${inScope.length} 家`} />
           </div>
         </CardContent>
       </Card>
@@ -878,7 +883,7 @@ function DistrictSelfView({
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
             <div className="text-sm font-medium">
-              辖区企业列表
+              {listTitle}
               <span className="ml-2 text-xs text-muted-foreground">
                 共 {filtered.length} 家
               </span>
@@ -907,7 +912,7 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">联系人</TableHead>
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
                   <TableHead className="h-9 text-xs">中心对口人</TableHead>
-                  <TableHead className="h-9 text-xs">园区</TableHead>
+                  <TableHead className="h-9 text-xs">{isPark ? "所属区" : "园区"}</TableHead>
                   <TableHead className="h-9 text-xs">集团</TableHead>
                 </TableRow>
               </TableHeader>
@@ -932,7 +937,7 @@ function DistrictSelfView({
                       <TableCell className="py-2">{e.owner}</TableCell>
                       <TableCell className="py-2 font-mono">{e.phone.replace(/\*+/, (m) => "8".repeat(m.length))}</TableCell>
                       <TableCell className="py-2">{e.cityContact ?? "—"}</TableCell>
-                      <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground">{(isPark ? e.district : e.park) ?? "—"}</TableCell>
                       <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
                     </TableRow>
                   ))
