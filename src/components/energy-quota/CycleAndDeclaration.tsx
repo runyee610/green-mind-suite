@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Building2, Calendar, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Edit, Eye, FileDown, History, Plus, Search, Trash2 } from "lucide-react";
+import { AlertTriangle, Building2, Calendar, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Edit, Eye, FileDown, History, MoreHorizontal, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -277,12 +277,21 @@ export function CycleAndDeclaration() {
                       <Button size="sm" variant="ghost" className="px-2" onClick={() => setDetailOpen(true)}>
                         <Eye className="mr-1 h-3 w-3" />查看
                       </Button>
-                      <Button size="sm" variant="ghost" className="px-2" onClick={() => { if (e.hasData) setEditStandardTarget(e); else toast.info("可直接修改标准"); }}>
-                        <Edit className="mr-1 h-3 w-3" />编辑
-                      </Button>
-                      <Button size="sm" variant="ghost" className="px-2" onClick={() => setHistoryTarget(e)}>
-                        <History className="mr-1 h-3 w-3" />历史
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="ghost" className="px-2">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => { if (e.hasData) setEditStandardTarget(e); else toast.info("可直接修改标准"); }}>
+                            <Edit className="mr-2 h-3.5 w-3.5" />编辑
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setHistoryTarget(e)}>
+                            <History className="mr-2 h-3.5 w-3.5" />历史
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 );
