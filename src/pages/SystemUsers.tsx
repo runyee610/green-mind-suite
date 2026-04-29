@@ -12,6 +12,8 @@ import {
   Download,
   Filter,
   MoreHorizontal,
+  Check,
+  X,
 } from "lucide-react";
 import {
   DropdownMenu,
