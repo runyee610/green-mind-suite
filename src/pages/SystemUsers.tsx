@@ -86,16 +86,23 @@ const ROLE_OPTIONS: { value: ViewRole; label: string; scope: string }[] = [
 
 // ===== 模拟数据 =====
 
+interface EnterpriseLite {
+  name: string;
+  creditCode: string;
+  owner: string;
+  phone: string;
+}
+
 interface CityUser {
   id: string;
   account: string;
   name: string;
-  department: string; // 所属科室
-  role: "市管理员" | "科室管理员" | "对口人";
+  department: string; // 所属组织
+  role: "市管理员" | "管理员" | "对口人";
   managedEnterprises: number;
   phone: string;
   status: "启用" | "停用";
-  enterpriseList?: string[]; // 对口企业列表
+  enterpriseList?: EnterpriseLite[]; // 对口企业列表
 }
 
 interface DistrictUser {
@@ -134,13 +141,14 @@ interface EnterpriseUser {
 }
 
 const CITY_DEPARTMENTS = [
-  "市发改委-能源科",
-  "市发改委-环资处",
-  "市经信局-节能处",
-  "市经信局-绿色制造处",
-  "市生态环境局-大气处",
-  "市住建委-建筑节能处",
+  "市经信委",
+  "市发改委",
   "市统计局-能源统计处",
+  "节能处-综合办公室",
+  "节能处-能碳监测科",
+  "节能处-节能监察科",
+  "节能处-能效管理科",
+  "节能处-宣教推广科",
 ];
 
 const SAMPLE_ENTERPRISES = [
@@ -149,6 +157,9 @@ const SAMPLE_ENTERPRISES = [
   "华东电力设备制造", "上汽大众动力总成", "金桥半导体", "临港新能源科技",
   "申能燃机发电", "宝冶建设集团", "光明乳业制造基地", "晨光文具制造",
   "三爱富新材料", "华虹半导体", "外高桥造船", "振华重工制造",
+  "上海石化股份", "巴斯夫聚氨酯", "赛科石化", "高桥石化",
+  "氯碱化工", "天原化工", "氟化工股份", "氯碱新材料",
+  "华谊精细化工", "中石化上海", "中石油上海", "申能集团动力",
 ];
 
 const CITY_FIRST_NAMES = ["张", "李", "王", "陈", "刘", "杨", "黄", "周", "吴", "徐", "孙", "胡", "朱", "高", "林", "何", "郭", "马", "罗", "梁"];
