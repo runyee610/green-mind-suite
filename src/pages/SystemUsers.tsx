@@ -10,7 +10,6 @@ import {
   Trash2,
   Pencil,
   Download,
-  Upload,
   Filter,
   MoreHorizontal,
 } from "lucide-react";
