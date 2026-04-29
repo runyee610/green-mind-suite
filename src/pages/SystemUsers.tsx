@@ -992,7 +992,26 @@ function ChangePasswordDialog({
   );
 }
 
-// ===== 新建企业账号弹窗 =====
+// ===== 新建账号弹窗 =====
+
+type AccountType = "city" | "district" | "park" | "group" | "enterprise";
+
+const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
+  { value: "city", label: "市" },
+  { value: "district", label: "区" },
+  { value: "park", label: "园区" },
+  { value: "group", label: "集团" },
+  { value: "enterprise", label: "企业" },
+];
+
+// 各账号类型对应的"组织"候选（来源：现有系统数据）
+const ORG_OPTIONS_BY_TYPE: Record<AccountType, string[]> = {
+  city: CITY_DEPARTMENTS,
+  district: districtUsers.filter((d) => d.level === "区").map((d) => d.areaName),
+  park: districtUsers.filter((d) => d.level === "园区").map((d) => d.areaName),
+  group: groupUsers.map((g) => g.groupName),
+  enterprise: enterpriseUsers.map((e) => e.enterpriseName),
+};
 
 function CreateEnterpriseDialog({
   open,
@@ -1001,15 +1020,19 @@ function CreateEnterpriseDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
+  const [accountType, setAccountType] = useState<AccountType | "">("");
+  const [organization, setOrganization] = useState("");
+  const [roleType, setRoleType] = useState<"管理员" | "对口人">("管理员");
   const [creditCode, setCreditCode] = useState("");
   const [enterpriseName, setEnterpriseName] = useState("");
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState(genRandomPassword());
 
+  const isEnterprise = accountType === "enterprise";
+  const isCity = accountType === "city";
+
   const codeValid = CREDIT_CODE_RE.test(creditCode);
-  // 长度 6-20，字母或字母数字组合（至少含一个字母），不分大小写
   const accountFormatValid = /^(?=.*[A-Za-z])[A-Za-z0-9]{6,20}$/.test(account);
-  // 系统唯一性校验（与所有已存在账号比对，不分大小写）
   const takenAccounts = useMemo(
     () =>
       new Set<string>([
@@ -1024,11 +1047,22 @@ function CreateEnterpriseDialog({
   const accountValid = accountFormatValid && accountUnique;
 
   const reset = () => {
+    setAccountType("");
+    setOrganization("");
+    setRoleType("管理员");
     setCreditCode("");
     setEnterpriseName("");
     setAccount("");
     setPassword(genRandomPassword());
   };
+
+  const orgOptions = accountType ? ORG_OPTIONS_BY_TYPE[accountType] : [];
+
+  const canSubmit =
+    !!accountType &&
+    !!organization &&
+    accountValid &&
+    (!isEnterprise || (codeValid && enterpriseName.trim().length > 0));
 
   return (
     <Dialog
@@ -1042,55 +1076,143 @@ function CreateEnterpriseDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base">
             <Plus className="h-4 w-4 text-primary" />
-            新建企业账号
+            新建账号
           </DialogTitle>
           <DialogDescription className="text-xs">
-            创建后系统自动下发初始密码，企业管理员首次登录需修改
+            创建后系统自动下发初始密码，账号管理员首次登录需修改
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
+          {/* 账号类型 */}
           <div className="space-y-1.5">
             <Label className="text-xs">
-              统一社会信用代码 <span className="text-destructive">*</span>
+              账号 <span className="text-destructive">*</span>
             </Label>
-            <Input
-              value={creditCode}
-              onChange={(e) => setCreditCode(e.target.value.toUpperCase())}
-              placeholder="18 位字母 + 数字组合"
-              maxLength={18}
-              className="h-9 font-mono text-sm"
-            />
-            <p
-              className={cn(
-                "text-[11px]",
-                creditCode.length === 0
-                  ? "text-muted-foreground"
-                  : codeValid
-                    ? "text-emerald-600"
-                    : "text-destructive",
+            <div className="flex flex-wrap gap-1.5">
+              {ACCOUNT_TYPE_OPTIONS.map((opt) => {
+                const active = accountType === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => {
+                      setAccountType(opt.value);
+                      setOrganization("");
+                      setRoleType(opt.value === "city" ? "管理员" : "管理员");
+                    }}
+                    className={cn(
+                      "h-8 px-3 rounded-md border text-xs transition-colors",
+                      active
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-background text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 组织 */}
+          {accountType && (
+            <div className="space-y-1.5">
+              <Label className="text-xs">
+                组织 <span className="text-destructive">*</span>
+              </Label>
+              <Select value={organization} onValueChange={setOrganization}>
+                <SelectTrigger className="h-9 text-sm">
+                  <SelectValue placeholder="请选择组织" />
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {orgOptions.map((o) => (
+                    <SelectItem key={o} value={o} className="text-sm">
+                      {o}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* 角色：仅市级时可选；其他默认为管理员 */}
+          {accountType && (
+            <div className="space-y-1.5">
+              <Label className="text-xs">
+                角色 <span className="text-destructive">*</span>
+              </Label>
+              {isCity ? (
+                <Select
+                  value={roleType}
+                  onValueChange={(v) => setRoleType(v as "管理员" | "对口人")}
+                  disabled={!organization}
+                >
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder={organization ? "请选择角色" : "请先选择组织"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="管理员" className="text-sm">管理员</SelectItem>
+                    <SelectItem value="对口人" className="text-sm">对口人</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  value="管理员"
+                  readOnly
+                  className="h-9 text-sm bg-muted/40"
+                />
               )}
-            >
-              {creditCode.length === 0
-                ? "示例：91310000123456789X"
-                : codeValid
-                  ? "✓ 信用代码格式正确"
-                  : `✗ 当前 ${creditCode.length}/18 位，格式不符合 GB 32100 规范`}
-            </p>
-          </div>
+            </div>
+          )}
 
-          <div className="space-y-1.5">
-            <Label className="text-xs">
-              企业名称 <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              value={enterpriseName}
-              onChange={(e) => setEnterpriseName(e.target.value)}
-              placeholder="请输入工商注册全称"
-              className="h-9 text-sm"
-            />
-          </div>
+          {/* 企业专属字段：统一社会信用代码 + 企业名称 */}
+          {isEnterprise && (
+            <>
+              <div className="space-y-1.5">
+                <Label className="text-xs">
+                  统一社会信用代码 <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  value={creditCode}
+                  onChange={(e) => setCreditCode(e.target.value.toUpperCase())}
+                  placeholder="18 位字母 + 数字组合"
+                  maxLength={18}
+                  className="h-9 font-mono text-sm"
+                />
+                <p
+                  className={cn(
+                    "text-[11px]",
+                    creditCode.length === 0
+                      ? "text-muted-foreground"
+                      : codeValid
+                        ? "text-emerald-600"
+                        : "text-destructive",
+                  )}
+                >
+                  {creditCode.length === 0
+                    ? "示例：91310000123456789X"
+                    : codeValid
+                      ? "✓ 信用代码格式正确"
+                      : `✗ 当前 ${creditCode.length}/18 位，格式不符合 GB 32100 规范`}
+                </p>
+              </div>
 
+              <div className="space-y-1.5">
+                <Label className="text-xs">
+                  企业名称 <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  value={enterpriseName}
+                  onChange={(e) => setEnterpriseName(e.target.value)}
+                  placeholder="请输入工商注册全称"
+                  className="h-9 text-sm"
+                />
+              </div>
+            </>
+          )}
+
+          {/* 账户名 */}
           <div className="space-y-1.5">
             <Label className="text-xs">
               账户名 <span className="text-destructive">*</span>
@@ -1122,6 +1244,7 @@ function CreateEnterpriseDialog({
             </p>
           </div>
 
+          {/* 默认密码 */}
           <div className="space-y-1.5">
             <Label className="text-xs">默认密码</Label>
             <div className="flex gap-2">
@@ -1153,11 +1276,12 @@ function CreateEnterpriseDialog({
           </Button>
           <Button
             size="sm"
-            disabled={!codeValid || !accountValid || !enterpriseName.trim()}
+            disabled={!canSubmit}
             onClick={() => {
+              const typeLabel = ACCOUNT_TYPE_OPTIONS.find((o) => o.value === accountType)?.label;
               toast({
-                title: "企业账号创建成功",
-                description: `${enterpriseName} · 账户 ${account}`,
+                title: "账号创建成功",
+                description: `${typeLabel} · ${organization} · ${isCity ? roleType : "管理员"} · ${account}`,
               });
               onOpenChange(false);
             }}
