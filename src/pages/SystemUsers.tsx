@@ -1058,9 +1058,18 @@ function CreateEnterpriseDialog({
 
   const orgOptions = accountType ? ORG_OPTIONS_BY_TYPE[accountType] : [];
 
+  const ORG_LABEL_BY_TYPE: Record<AccountType, string> = {
+    city: "组织",
+    district: "行政区划",
+    park: "园区",
+    group: "集团",
+    enterprise: "",
+  };
+  const orgLabel = accountType ? ORG_LABEL_BY_TYPE[accountType] : "组织";
+
   const canSubmit =
     !!accountType &&
-    !!organization &&
+    (isEnterprise || !!organization) &&
     accountValid &&
     (!isEnterprise || (codeValid && enterpriseName.trim().length > 0));
 
