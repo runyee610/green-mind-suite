@@ -917,7 +917,7 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">联系人</TableHead>
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
                   <TableHead className="h-9 text-xs">中心对口人</TableHead>
-                  <TableHead className="h-9 text-xs">园区</TableHead>
+                  <TableHead className="h-9 text-xs">{isPark ? "所属区" : "园区"}</TableHead>
                   <TableHead className="h-9 text-xs">集团</TableHead>
                 </TableRow>
               </TableHeader>
