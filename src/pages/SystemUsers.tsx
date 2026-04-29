@@ -1124,15 +1124,15 @@ function CreateEnterpriseDialog({
             </div>
           </div>
 
-          {/* 组织 */}
-          {accountType && (
+          {/* 组织 / 行政区划 / 园区 / 集团（企业类型不展示） */}
+          {accountType && !isEnterprise && (
             <div className="space-y-1.5">
               <Label className="text-xs">
-                组织 <span className="text-destructive">*</span>
+                {orgLabel} <span className="text-destructive">*</span>
               </Label>
               <Select value={organization} onValueChange={setOrganization}>
                 <SelectTrigger className="h-9 text-sm">
-                  <SelectValue placeholder="请选择组织" />
+                  <SelectValue placeholder={`请选择${orgLabel}`} />
                 </SelectTrigger>
                 <SelectContent className="max-h-72">
                   {orgOptions.map((o) => (
