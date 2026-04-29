@@ -313,7 +313,20 @@ export default function SystemUsers() {
         </CardContent>
       </Card>
 
+      {/* 区管理员：仅展示本账号信息 + 辖区企业列表 */}
+      {view === "district_admin" && (
+        <DistrictSelfView
+          self={districtUsers.find((d) => d.level === "区") ?? districtUsers[0]}
+          enterprises={enterpriseUsers}
+          onChangePwd={(acc) => {
+            setPwdTarget(acc);
+            setPwdOpen(true);
+          }}
+        />
+      )}
+
       {/* 工具栏 */}
+      {view !== "district_admin" && (
       <Card className="border-border/60">
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
