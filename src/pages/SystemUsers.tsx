@@ -1110,7 +1110,7 @@ function CreateEnterpriseDialog({
             <Input
               value={account}
               onChange={(e) => setAccount(e.target.value)}
-              placeholder="6-20 位，字母开头，可含数字"
+              placeholder="6-20 位，字母或字母数字组合，不分大小写"
               maxLength={20}
               className="h-9 font-mono text-sm"
             />
@@ -1124,7 +1124,13 @@ function CreateEnterpriseDialog({
                     : "text-destructive",
               )}
             >
-              规则：长度 6-20 位，字母或字母数字组合，不分大小写
+              {account.length === 0
+                ? "规则：长度 6-20 位，字母或字母数字组合，不分大小写，且系统唯一"
+                : !accountFormatValid
+                  ? "✗ 格式不符合：长度 6-20 位，仅允许字母或字母+数字组合，且至少含一个字母"
+                  : !accountUnique
+                    ? "✗ 该账号已被占用，请更换"
+                    : "✓ 账号格式正确，系统唯一"}
             </p>
           </div>
 
