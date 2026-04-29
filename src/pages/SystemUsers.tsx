@@ -356,8 +356,35 @@ export default function SystemUsers() {
         />
       )}
 
+      {/* 集团管理员：仅展示本账号信息 + 集团企业列表 */}
+      {view === "group_admin" && (() => {
+        const g = groupUsers[0];
+        const groupSelf: DistrictUser = {
+          id: g.id,
+          account: g.account,
+          areaName: g.groupName,
+          level: "区",
+          owner: g.owner,
+          cityContact: "—",
+          enterpriseCount: enterpriseUsers.filter((e) => e.group === g.groupName).length,
+          phone: g.phone,
+          status: g.status,
+        };
+        return (
+          <DistrictSelfView
+            level="集团"
+            self={groupSelf}
+            enterprises={enterpriseUsers}
+            onChangePwd={(acc) => {
+              setPwdTarget(acc);
+              setPwdOpen(true);
+            }}
+          />
+        );
+      })()}
+
       {/* 工具栏 */}
-      {view !== "district_admin" && view !== "park_admin" && (
+      {view !== "district_admin" && view !== "park_admin" && view !== "group_admin" && (
       <Card className="border-border/60">
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
@@ -440,22 +467,6 @@ export default function SystemUsers() {
                 )}
                 groupByDepartment={groupByDept && deptFilter === "all"}
                 onViewEnterprises={(u) => setEntListUser(u)}
-                onChangePwd={(acc) => {
-                  setPwdTarget(acc);
-                  setPwdOpen(true);
-                }}
-              />
-            )}
-            {view === "group_admin" && (
-              <GroupTable
-                rows={groupUsers.filter(
-                  (r) =>
-                    (statusFilter === "all" || r.status === statusFilter) &&
-                    (!keyword ||
-                      r.groupName.includes(keyword) ||
-                      r.owner.includes(keyword) ||
-                      r.account.includes(keyword)),
-                )}
                 onChangePwd={(acc) => {
                   setPwdTarget(acc);
                   setPwdOpen(true);
@@ -750,12 +761,13 @@ function DistrictSelfView({
   self: DistrictUser;
   enterprises: EnterpriseUser[];
   onChangePwd: (acc: string) => void;
-  level?: "区" | "园区";
+  level?: "区" | "园区" | "集团";
 }) {
   const isPark = level === "园区";
-  const areaLabel = isPark ? "园区名称" : "行政区划";
-  const listTitle = isPark ? "园区企业列表" : "辖区企业列表";
-  const countLabel = isPark ? "园区企业数量" : "辖区企业数量";
+  const isGroup = level === "集团";
+  const areaLabel = isGroup ? "集团名称" : isPark ? "园区名称" : "行政区划";
+  const listTitle = isGroup ? "集团企业列表" : isPark ? "园区企业列表" : "辖区企业列表";
+  const countLabel = isGroup ? "集团企业数量" : isPark ? "园区企业数量" : "辖区企业数量";
 
   const [kw, setKw] = useState("");
   const [page, setPage] = useState(1);
@@ -772,13 +784,17 @@ function DistrictSelfView({
   });
   const [draft, setDraft] = useState(info);
 
-  // 范围内企业：区按 district 字段；园区按 park 字段
+  // 范围内企业：区按 district；园区按 park；集团按 group
   const inScope = useMemo(
     () =>
       enterprises.filter((e) =>
-        isPark ? e.park === info.areaName : e.district === info.areaName,
+        isGroup
+          ? e.group === info.areaName
+          : isPark
+          ? e.park === info.areaName
+          : e.district === info.areaName,
       ),
-    [enterprises, info.areaName, isPark],
+    [enterprises, info.areaName, isPark, isGroup],
   );
   const filtered = useMemo(
     () =>
@@ -913,13 +929,13 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
                   <TableHead className="h-9 text-xs">中心对口人</TableHead>
                   {!isPark && <TableHead className="h-9 text-xs">园区</TableHead>}
-                  <TableHead className="h-9 text-xs">集团</TableHead>
+                  {!isGroup && <TableHead className="h-9 text-xs">集团</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {pageRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={isPark ? 8 : 9} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={9 - (isPark ? 1 : 0) - (isGroup ? 1 : 0)} className="text-center text-xs text-muted-foreground py-8">
                       暂无企业数据
                     </TableCell>
                   </TableRow>
@@ -938,7 +954,7 @@ function DistrictSelfView({
                       <TableCell className="py-2 font-mono">{e.phone.replace(/\*+/, (m) => "8".repeat(m.length))}</TableCell>
                       <TableCell className="py-2">{e.cityContact ?? "—"}</TableCell>
                       {!isPark && <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>}
-                      <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
+                      {!isGroup && <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>}
                     </TableRow>
                   ))
                 )}
