@@ -904,8 +904,7 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">企业名称</TableHead>
                   <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
                   <TableHead className="h-9 text-xs">行业分类</TableHead>
-                  <TableHead className="h-9 text-xs">能耗级别</TableHead>
-                  <TableHead className="h-9 text-xs">企业负责人</TableHead>
+                  <TableHead className="h-9 text-xs">联系人</TableHead>
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
                   <TableHead className="h-9 text-xs">中心对口人</TableHead>
                   <TableHead className="h-9 text-xs">园区</TableHead>
