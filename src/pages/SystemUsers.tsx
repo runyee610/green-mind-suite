@@ -384,7 +384,7 @@ export default function SystemUsers() {
       })()}
 
       {/* 工具栏 */}
-      {view !== "district_admin" && view !== "park_admin" && (
+      {view !== "district_admin" && view !== "park_admin" && view !== "group_admin" && (
       <Card className="border-border/60">
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
