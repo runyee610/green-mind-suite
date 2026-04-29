@@ -1100,78 +1100,598 @@ function GroupTable({
   );
 }
 
-function EnterpriseTable({
-  rows,
-  canDisableHighEnergy,
-  currentRoleLabel,
+// ===== 企业管理员：本企业信息视图 =====
+
+interface EnterpriseProfile {
+  // 基础
+  creditCode: string;
+  enterpriseName: string;
+  enterpriseType: string;
+  industry: string;
+  energyTypes: string[];
+  productName: string;
+  unitProductEnergy: string;
+  // 对口人
+  cityContact: { name: string; phone: string };
+  districtContact: { name: string; phone: string };
+  parkContact: { name: string; phone: string };
+  groupContact: { name: string; phone: string };
+  // 联系
+  address: string;
+  zipCode: string;
+  officePhone: string;
+  fax: string;
+  email: string;
+  registerDate: string;
+  registerCapital: string;
+  legalRep: string;
+  contactPerson: string;
+  contactPhone: string;
+  // 归属
+  park: string;
+  domain: string;
+  isCentralEnterprise: boolean;
+  centralGroup: string;
+  group: string;
+  // 能源管理
+  energyLevel: string;
+  isWanjia: boolean;
+  isKeyEnergyUser: boolean;
+  enableObsoleteMgmt: boolean;
+  energyMgmtOrg: string;
+  hasEnergyControlCenter: boolean;
+  hasEnergyMgmtCert: boolean;
+  energyMgmtCertDate: string;
+  energyMgmtCertOrg: string;
+  energyMgmtCode: string;
+  // 标签
+  tags: string[];
+}
+
+const SAMPLE_PROFILE: EnterpriseProfile = {
+  creditCode: "913100007123456789",
+  enterpriseName: "华谊化工有限公司",
+  enterpriseType: "有限责任公司（国有控股）",
+  industry: "化学原料和化学制品制造业（C26）",
+  energyTypes: ["电力", "天然气", "蒸汽", "原煤"],
+  productName: "聚氯乙烯（PVC）树脂",
+  unitProductEnergy: "0.42 吨标煤/吨产品",
+  cityContact: { name: "王思源", phone: "021-23110001" },
+  districtContact: { name: "周建国", phone: "021-63095500" },
+  parkContact: { name: "张志强", phone: "021-67891234" },
+  groupContact: { name: "黄志勇", phone: "021-52375555" },
+  address: "上海市金山区上海化学工业园区芳甸路 1088 号",
+  zipCode: "201507",
+  officePhone: "021-67896000",
+  fax: "021-67896001",
+  email: "service@huayichem.com",
+  registerDate: "1998-06-18",
+  registerCapital: "186,000.00",
+  legalRep: "顾建华",
+  contactPerson: "陈思敏",
+  contactPhone: "13800138001",
+  park: "上海化学工业园",
+  domain: "石油化工",
+  isCentralEnterprise: false,
+  centralGroup: "—",
+  group: "华谊集团",
+  energyLevel: "2000吨标煤及以上",
+  isWanjia: true,
+  isKeyEnergyUser: true,
+  enableObsoleteMgmt: true,
+  energyMgmtOrg: "能源与环保管理部",
+  hasEnergyControlCenter: true,
+  hasEnergyMgmtCert: true,
+  energyMgmtCertDate: "2022-09-15",
+  energyMgmtCertOrg: "中国质量认证中心（CQC）",
+  energyMgmtCode: "JN-SH-3101-0086",
+  tags: ["重点用能单位", "万家企业", "石化龙头", "ISO50001", "市级节能示范"],
+};
+
+interface DeptRow {
+  id: number;
+  type: "部门" | "子项目";
+  name: string;
+  product: string;
+}
+const SAMPLE_DEPTS: DeptRow[] = [
+  { id: 1, type: "部门", name: "聚氯乙烯一车间", product: "PVC 树脂" },
+  { id: 2, type: "部门", name: "聚氯乙烯二车间", product: "PVC 树脂" },
+  { id: 3, type: "子项目", name: "氯碱装置", product: "烧碱、氯气" },
+  { id: 4, type: "部门", name: "动力车间", product: "蒸汽、压缩空气" },
+  { id: 5, type: "部门", name: "污水处理站", product: "—" },
+  { id: 6, type: "子项目", name: "余热回收装置", product: "蒸汽" },
+];
+
+interface PersonRow {
+  id: number;
+  name: string;
+  dept: string;
+  role: string;
+  isHead: boolean;
+  isLeader: boolean;
+  isManager: boolean;
+  phone: string;
+  position: string;
+  title: string;
+  email: string;
+  experience: string;
+  filingDate: string;
+}
+const SAMPLE_PEOPLE: PersonRow[] = [
+  { id: 1, name: "顾建华", dept: "总经办", role: "企业管理员", isHead: true, isLeader: true, isManager: true, phone: "13800138001", position: "总经理", title: "高级工程师", email: "guhua@huayichem.com", experience: "28 年", filingDate: "2020-03-12" },
+  { id: 2, name: "陈思敏", dept: "能源与环保管理部", role: "能源管理岗", isHead: false, isLeader: true, isManager: true, phone: "13700137002", position: "部门经理", title: "高级工程师", email: "chensm@huayichem.com", experience: "16 年", filingDate: "2020-03-12" },
+  { id: 3, name: "李文斌", dept: "能源与环保管理部", role: "碳排放管理岗", isHead: false, isLeader: false, isManager: true, phone: "13600136003", position: "主管", title: "工程师", email: "liwb@huayichem.com", experience: "9 年", filingDate: "2022-07-08" },
+  { id: 4, name: "周慧敏", dept: "动力车间", role: "能源管理员", isHead: false, isLeader: false, isManager: false, phone: "13500135004", position: "班组长", title: "工程师", email: "zhouhm@huayichem.com", experience: "12 年", filingDate: "2021-11-20" },
+];
+
+interface CertRow {
+  id: number;
+  name: string;
+  type: "能源管理岗位证书" | "碳排放管理岗位证书";
+  certNo: string;
+  issuer: string;
+  issueDate: string;
+}
+const SAMPLE_CERTS: CertRow[] = [
+  { id: 1, name: "陈思敏", type: "能源管理岗位证书", certNo: "NYGL-2021-031245", issuer: "中国节能协会", issueDate: "2021-05-18" },
+  { id: 2, name: "李文斌", type: "碳排放管理岗位证书", certNo: "TPGL-2022-008812", issuer: "中国质量认证中心", issueDate: "2022-08-22" },
+  { id: 3, name: "周慧敏", type: "能源管理岗位证书", certNo: "NYGL-2022-019987", issuer: "中国节能协会", issueDate: "2022-04-09" },
+];
+
+function EnterpriseSelfView({
+  self,
   onChangePwd,
 }: {
-  rows: EnterpriseUser[];
-  canDisableHighEnergy: boolean;
-  currentRoleLabel: string;
+  self: EnterpriseUser;
   onChangePwd: (acc: string) => void;
 }) {
+  const profile = SAMPLE_PROFILE;
+  const [editing, setEditing] = useState(false);
+
+  const YesNo = ({ v }: { v: boolean }) => (
+    <Badge
+      variant="outline"
+      className={cn(
+        "text-[11px] font-normal",
+        v
+          ? "border-emerald-500/40 text-emerald-600 bg-emerald-500/5"
+          : "border-muted-foreground/30 text-muted-foreground bg-muted/20",
+      )}
+    >
+      {v ? "是" : "否"}
+    </Badge>
+  );
+
+  const Section = ({
+    icon,
+    title,
+    children,
+  }: {
+    icon: React.ReactNode;
+    title: string;
+    children: React.ReactNode;
+  }) => (
+    <Card className="border-border/60">
+      <CardContent className="p-0">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-muted/30 text-sm font-medium">
+          {icon}
+          {title}
+        </div>
+        <div className="px-4 py-4">{children}</div>
+      </CardContent>
+    </Card>
+  );
+
+  const Field = ({ label, value, mono = false }: { label: string; value: React.ReactNode; mono?: boolean }) => (
+    <div className="flex flex-col gap-1">
+      <span className="text-muted-foreground text-[11px]">{label}</span>
+      <span className={cn("text-foreground text-xs", mono && "font-mono")}>{value}</span>
+    </div>
+  );
+
+  const ContactBlock = ({ title, name, phone }: { title: string; name: string; phone: string }) => (
+    <div className="rounded-md border border-border/60 bg-muted/20 px-3 py-2.5">
+      <div className="text-[11px] text-muted-foreground mb-1.5">{title}</div>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-medium text-foreground">{name}</span>
+        <span className="text-xs font-mono text-muted-foreground">{phone}</span>
+      </div>
+    </div>
+  );
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-muted/40">
-          <TableHead className="h-9 text-xs">账号</TableHead>
-          <TableHead className="h-9 text-xs">企业名称</TableHead>
-          <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
-          <TableHead className="h-9 text-xs">能耗级别</TableHead>
-          <TableHead className="h-9 text-xs">行业分类</TableHead>
-          <TableHead className="h-9 text-xs">所属区</TableHead>
-          <TableHead className="h-9 text-xs">负责人</TableHead>
-          <TableHead className="h-9 text-xs">状态</TableHead>
-          <TableHead className="h-9 text-xs text-right">操作</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((r) => {
-          const isHighEnergy = r.energyLevel === "2000吨标煤及以上";
-          const lockDisable = isHighEnergy && !canDisableHighEnergy;
-          return (
-            <TableRow key={r.id} className="text-xs">
-              <TableCell className="py-2 font-mono">{r.account}</TableCell>
-              <TableCell className="py-2 font-medium">{r.enterpriseName}</TableCell>
-              <TableCell className="py-2 font-mono text-muted-foreground">
-                {r.creditCode}
-              </TableCell>
-              <TableCell className="py-2">
-                <Badge
+    <div className="space-y-4">
+      {/* 顶部：账号 + 操作 */}
+      <Card className="border-border/60">
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+                <Building2 className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-foreground">{profile.enterpriseName}</div>
+                <div className="text-[11px] text-muted-foreground mt-0.5">
+                  账号：<span className="font-mono">{self.account}</span> · 信用代码：
+                  <span className="font-mono">{profile.creditCode}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <StatusBadge status={self.status} />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs gap-1"
+                onClick={() => onChangePwd(self.account)}
+              >
+                <KeyRound className="h-3.5 w-3.5" />
+                修改密码
+              </Button>
+              {editing ? (
+                <>
+                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setEditing(false)}>
+                    <X className="h-3.5 w-3.5" />
+                    取消
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs gap-1"
+                    onClick={() => {
+                      setEditing(false);
+                      toast({ title: "已保存", description: "本企业信息已更新" });
+                    }}
+                  >
+                    <Check className="h-3.5 w-3.5" />
+                    保存
+                  </Button>
+                </>
+              ) : (
+                <Button
                   variant="outline"
-                  className={cn(
-                    "text-[11px] font-normal",
-                    isHighEnergy
-                      ? "border-amber-500/50 text-amber-600 bg-amber-500/5"
-                      : r.energyLevel === "1000-2000吨标煤"
-                        ? "border-blue-500/40 text-blue-600 bg-blue-500/5"
-                        : "border-muted-foreground/30 text-muted-foreground",
-                  )}
+                  size="sm"
+                  className="h-7 text-xs gap-1"
+                  onClick={() => setEditing(true)}
                 >
-                  {r.energyLevel}
-                </Badge>
-              </TableCell>
-              <TableCell className="py-2 text-muted-foreground">{r.industry}</TableCell>
-              <TableCell className="py-2">{r.district}</TableCell>
-              <TableCell className="py-2">{r.owner}</TableCell>
-              <TableCell className="py-2">
-                <StatusBadge status={r.status} />
-              </TableCell>
-              <TableCell className="py-2">
-                <ActionButtons
-                  account={r.account}
-                  status={r.status}
-                  onChangePwd={onChangePwd}
-                  disableLocked={lockDisable}
-                  disableLockedReason={`「2000 吨标煤及以上」企业仅市级 / 平台管理员可禁用，当前角色为「${currentRoleLabel}」`}
-                />
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                  <Pencil className="h-3.5 w-3.5" />
+                  编辑信息
+                </Button>
+              )}
+            </div>
+          </div>
+          {/* 标签条 */}
+          <div className="flex flex-wrap items-center gap-1.5 px-4 py-3">
+            <Tag className="h-3.5 w-3.5 text-muted-foreground mr-1" />
+            <span className="text-[11px] text-muted-foreground mr-1">企业标签</span>
+            {profile.tags.map((t) => (
+              <Badge
+                key={t}
+                variant="outline"
+                className="text-[11px] font-normal border-primary/30 text-primary bg-primary/5"
+              >
+                {t}
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="basic" className="w-full">
+        <TabsList className="h-9">
+          <TabsTrigger value="basic" className="text-xs">基础信息</TabsTrigger>
+          <TabsTrigger value="contact" className="text-xs">联系与对口人</TabsTrigger>
+          <TabsTrigger value="energy" className="text-xs">能源管理</TabsTrigger>
+          <TabsTrigger value="dept" className="text-xs">部门</TabsTrigger>
+          <TabsTrigger value="people" className="text-xs">人员与岗位</TabsTrigger>
+        </TabsList>
+
+        {/* 基础信息 */}
+        <TabsContent value="basic" className="space-y-4 mt-3">
+          <Section icon={<Building2 className="h-4 w-4 text-primary" />} title="企业基础信息">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3">
+              <Field label="统一社会信用代码" value={profile.creditCode} mono />
+              <Field label="企业名称" value={profile.enterpriseName} />
+              <Field label="企业类型" value={profile.enterpriseType} />
+              <Field label="所属行业" value={profile.industry} />
+              <Field label="所属领域" value={profile.domain} />
+              <Field label="所属区" value={self.district} />
+              <Field label="工业园区" value={profile.park} />
+              <Field label="所属集团" value={profile.group} />
+              <Field
+                label="是否央企"
+                value={<YesNo v={profile.isCentralEnterprise} />}
+              />
+              <Field label="所属央企集团" value={profile.centralGroup} />
+              <Field label="法人代表" value={profile.legalRep} />
+              <Field label="注册日期" value={profile.registerDate} />
+              <Field label="注册资本（万元）" value={profile.registerCapital} mono />
+            </div>
+          </Section>
+
+          <Section icon={<Zap className="h-4 w-4 text-primary" />} title="能源品种与产品">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3">
+              <div className="md:col-span-1">
+                <span className="text-muted-foreground text-[11px]">能源品种</span>
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                  {profile.energyTypes.map((t) => (
+                    <Badge
+                      key={t}
+                      variant="outline"
+                      className="text-[11px] font-normal border-amber-500/40 text-amber-600 bg-amber-500/5"
+                    >
+                      {t}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <Field label="产品名称" value={profile.productName} />
+              <Field label="单位产品能耗" value={profile.unitProductEnergy} mono />
+            </div>
+          </Section>
+        </TabsContent>
+
+        {/* 联系与对口人 */}
+        <TabsContent value="contact" className="space-y-4 mt-3">
+          <Section icon={<UsersIcon className="h-4 w-4 text-primary" />} title="对口人信息">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <ContactBlock title="中心对口人" name={profile.cityContact.name} phone={profile.cityContact.phone} />
+              <ContactBlock title="区对口人" name={profile.districtContact.name} phone={profile.districtContact.phone} />
+              <ContactBlock title="园区对口人" name={profile.parkContact.name} phone={profile.parkContact.phone} />
+              <ContactBlock title="集团对口人" name={profile.groupContact.name} phone={profile.groupContact.phone} />
+            </div>
+          </Section>
+
+          <Section icon={<Briefcase className="h-4 w-4 text-primary" />} title="企业联系方式">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3">
+              <div className="md:col-span-3">
+                <Field label="地址" value={profile.address} />
+              </div>
+              <Field label="邮编" value={profile.zipCode} mono />
+              <Field label="联系电话（区号）" value={profile.officePhone} mono />
+              <Field label="传真" value={profile.fax} mono />
+              <Field label="电子邮箱" value={profile.email} />
+              <Field label="联系人" value={profile.contactPerson} />
+              <Field label="联系人电话" value={profile.contactPhone} mono />
+            </div>
+          </Section>
+        </TabsContent>
+
+        {/* 能源管理 */}
+        <TabsContent value="energy" className="space-y-4 mt-3">
+          <Section icon={<Zap className="h-4 w-4 text-primary" />} title="能源管理基本属性">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3">
+              <Field
+                label="能耗级别"
+                value={
+                  <Badge
+                    variant="outline"
+                    className="text-[11px] font-normal border-amber-500/50 text-amber-600 bg-amber-500/5"
+                  >
+                    {profile.energyLevel}
+                  </Badge>
+                }
+              />
+              <Field label="是否万家" value={<YesNo v={profile.isWanjia} />} />
+              <Field label="是否为重点用能单位" value={<YesNo v={profile.isKeyEnergyUser} />} />
+              <Field
+                label="是否启用淘汰设备工艺管理"
+                value={<YesNo v={profile.enableObsoleteMgmt} />}
+              />
+              <Field label="能源管理机构名称" value={profile.energyMgmtOrg} />
+              <Field
+                label="是否建设能源管控中心"
+                value={<YesNo v={profile.hasEnergyControlCenter} />}
+              />
+              <Field label="节能管理编码" value={profile.energyMgmtCode} mono />
+            </div>
+          </Section>
+
+          <Section icon={<Award className="h-4 w-4 text-primary" />} title="能源管理体系认证">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3">
+              <Field
+                label="是否通过能源管理体系认证"
+                value={<YesNo v={profile.hasEnergyMgmtCert} />}
+              />
+              <Field label="认证时间" value={profile.energyMgmtCertDate} />
+              <Field label="认证机构" value={profile.energyMgmtCertOrg} />
+            </div>
+          </Section>
+        </TabsContent>
+
+        {/* 部门 */}
+        <TabsContent value="dept" className="mt-3">
+          <Card className="border-border/60">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                <div className="text-sm font-medium">
+                  部门列表
+                  <span className="ml-2 text-xs text-muted-foreground">共 {SAMPLE_DEPTS.length} 项</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+                    <Plus className="h-3.5 w-3.5" />
+                    新建子项目
+                  </Button>
+                  <Button size="sm" className="h-7 text-xs gap-1">
+                    <Plus className="h-3.5 w-3.5" />
+                    新建部门
+                  </Button>
+                </div>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/40 hover:bg-muted/40">
+                    <TableHead className="h-9 text-xs w-[60px]">序号</TableHead>
+                    <TableHead className="h-9 text-xs">部门类型</TableHead>
+                    <TableHead className="h-9 text-xs">部门名称</TableHead>
+                    <TableHead className="h-9 text-xs">产品</TableHead>
+                    <TableHead className="h-9 text-xs text-right">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {SAMPLE_DEPTS.map((d, i) => (
+                    <TableRow key={d.id} className="text-xs">
+                      <TableCell className="py-2 text-muted-foreground">{i + 1}</TableCell>
+                      <TableCell className="py-2">
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-[11px] font-normal",
+                            d.type === "部门"
+                              ? "border-blue-500/40 text-blue-600 bg-blue-500/5"
+                              : "border-purple-500/40 text-purple-600 bg-purple-500/5",
+                          )}
+                        >
+                          {d.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 font-medium">{d.name}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground">{d.product}</TableCell>
+                      <TableCell className="py-2 text-right">
+                        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
+                          <Pencil className="h-3.5 w-3.5" />
+                          编辑
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-destructive hover:text-destructive">
+                          <Trash2 className="h-3.5 w-3.5" />
+                          删除
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* 人员与岗位 */}
+        <TabsContent value="people" className="space-y-4 mt-3">
+          <Card className="border-border/60">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                <div className="text-sm font-medium">
+                  人员列表
+                  <span className="ml-2 text-xs text-muted-foreground">共 {SAMPLE_PEOPLE.length} 人</span>
+                </div>
+                <Button size="sm" className="h-7 text-xs gap-1">
+                  <Plus className="h-3.5 w-3.5" />
+                  新增人员
+                </Button>
+              </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/40 hover:bg-muted/40">
+                      <TableHead className="h-9 text-xs w-[56px]">序号</TableHead>
+                      <TableHead className="h-9 text-xs">姓名</TableHead>
+                      <TableHead className="h-9 text-xs">部门</TableHead>
+                      <TableHead className="h-9 text-xs">角色</TableHead>
+                      <TableHead className="h-9 text-xs">岗位标识</TableHead>
+                      <TableHead className="h-9 text-xs">电话</TableHead>
+                      <TableHead className="h-9 text-xs">职务 / 职称</TableHead>
+                      <TableHead className="h-9 text-xs">邮箱</TableHead>
+                      <TableHead className="h-9 text-xs whitespace-nowrap">工作经验</TableHead>
+                      <TableHead className="h-9 text-xs whitespace-nowrap">备案日期</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {SAMPLE_PEOPLE.map((p, i) => (
+                      <TableRow key={p.id} className="text-xs">
+                        <TableCell className="py-2 text-muted-foreground">{i + 1}</TableCell>
+                        <TableCell className="py-2 font-medium">{p.name}</TableCell>
+                        <TableCell className="py-2">{p.dept}</TableCell>
+                        <TableCell className="py-2">{p.role}</TableCell>
+                        <TableCell className="py-2">
+                          <div className="flex flex-wrap gap-1">
+                            {p.isHead && (
+                              <Badge variant="outline" className="text-[10px] font-normal border-primary/40 text-primary bg-primary/5">
+                                主管
+                              </Badge>
+                            )}
+                            {p.isLeader && (
+                              <Badge variant="outline" className="text-[10px] font-normal border-emerald-500/40 text-emerald-600 bg-emerald-500/5">
+                                负责人
+                              </Badge>
+                            )}
+                            {p.isManager && (
+                              <Badge variant="outline" className="text-[10px] font-normal border-blue-500/40 text-blue-600 bg-blue-500/5">
+                                管理人员
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 font-mono">{p.phone}</TableCell>
+                        <TableCell className="py-2 whitespace-nowrap">
+                          {p.position}
+                          <span className="text-muted-foreground"> / {p.title}</span>
+                        </TableCell>
+                        <TableCell className="py-2 text-muted-foreground">{p.email}</TableCell>
+                        <TableCell className="py-2 whitespace-nowrap">{p.experience}</TableCell>
+                        <TableCell className="py-2 whitespace-nowrap text-muted-foreground">{p.filingDate}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/60">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Award className="h-4 w-4 text-primary" />
+                  岗位备案 · 证书登记
+                  <span className="ml-1 text-xs text-muted-foreground">共 {SAMPLE_CERTS.length} 项</span>
+                </div>
+                <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+                  <Plus className="h-3.5 w-3.5" />
+                  登记证书
+                </Button>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/40 hover:bg-muted/40">
+                    <TableHead className="h-9 text-xs w-[56px]">序号</TableHead>
+                    <TableHead className="h-9 text-xs">姓名</TableHead>
+                    <TableHead className="h-9 text-xs">证书类型</TableHead>
+                    <TableHead className="h-9 text-xs">证书编号</TableHead>
+                    <TableHead className="h-9 text-xs">发证机构</TableHead>
+                    <TableHead className="h-9 text-xs whitespace-nowrap">发证日期</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {SAMPLE_CERTS.map((c, i) => (
+                    <TableRow key={c.id} className="text-xs">
+                      <TableCell className="py-2 text-muted-foreground">{i + 1}</TableCell>
+                      <TableCell className="py-2 font-medium">{c.name}</TableCell>
+                      <TableCell className="py-2">
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-[11px] font-normal",
+                            c.type === "能源管理岗位证书"
+                              ? "border-amber-500/40 text-amber-600 bg-amber-500/5"
+                              : "border-emerald-500/40 text-emerald-600 bg-emerald-500/5",
+                          )}
+                        >
+                          {c.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 font-mono text-muted-foreground">{c.certNo}</TableCell>
+                      <TableCell className="py-2">{c.issuer}</TableCell>
+                      <TableCell className="py-2 whitespace-nowrap text-muted-foreground">{c.issueDate}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
 
