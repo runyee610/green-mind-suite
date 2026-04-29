@@ -14,7 +14,14 @@ import {
   MoreHorizontal,
   Check,
   X,
+  Building2,
+  Users as UsersIcon,
+  Tag,
+  Zap,
+  Award,
+  Briefcase,
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
