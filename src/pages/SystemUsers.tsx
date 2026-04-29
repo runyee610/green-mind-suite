@@ -171,6 +171,19 @@ function genName(seed: number): string {
   return f + g;
 }
 
+const ENT_OWNER_FIRST = ["顾", "胡", "林", "梁", "范", "高", "王", "李", "赵", "钱", "孙", "周"];
+const ENT_OWNER_GIVEN = ["建华", "建军", "文博", "慧敏", "晓琳", "明月", "海涛", "若曦", "瑞泽", "云飞", "佳怡"];
+
+function genEnterprise(seed: number): EnterpriseLite {
+  const name = SAMPLE_ENTERPRISES[seed % SAMPLE_ENTERPRISES.length];
+  const owner =
+    ENT_OWNER_FIRST[seed % ENT_OWNER_FIRST.length] +
+    ENT_OWNER_GIVEN[(seed * 5) % ENT_OWNER_GIVEN.length];
+  const code = `9131000${String(1000000000 + (seed * 73856093) % 8999999999).slice(0, 11)}`;
+  const phone = `13${8 + (seed % 2)}${String(10000000 + (seed * 4567) % 89999999).slice(0, 8)}`;
+  return { name, creditCode: code.slice(0, 18), owner, phone };
+}
+
 function genCityUsers(): CityUser[] {
   const list: CityUser[] = [];
   let idx = 0;
@@ -180,20 +193,23 @@ function genCityUsers(): CityUser[] {
       idx++;
       const isHead = i === 0;
       const isAdmin = di === 0 && i === 0;
-      const role: CityUser["role"] = isAdmin ? "市管理员" : isHead ? "科室管理员" : "对口人";
-      const entCount = role === "市管理员" ? 1287 : role === "科室管理员" ? 200 + ((idx * 37) % 300) : 20 + ((idx * 13) % 80);
-      const enterpriseList = SAMPLE_ENTERPRISES
-        .slice()
-        .sort(() => ((idx * 17) % 7) - 3)
-        .slice(0, Math.min(entCount, 12));
+      const role: CityUser["role"] = isAdmin ? "市管理员" : isHead ? "管理员" : "对口人";
+      const entCount = role === "市管理员" ? 1287 : role === "管理员" ? 200 + ((idx * 37) % 300) : 20 + ((idx * 13) % 80);
+      // 生成对口企业完整明细（与展示数量一致，最多 80 家以保证演示分页）
+      const listSize = Math.min(entCount, 80);
+      const enterpriseList: EnterpriseLite[] = Array.from({ length: listSize }, (_, k) =>
+        genEnterprise(idx * 31 + k * 7),
+      );
+      // 账号：字母开头 + 数字，6-20 位，全局唯一
+      const account = `gov${String.fromCharCode(97 + di)}${String(idx).padStart(4, "0")}`;
       list.push({
         id: `C${String(idx).padStart(3, "0")}`,
-        account: `city_${dept.split("-")[1] ?? "adm"}_${String(i + 1).padStart(2, "0")}`.replace(/[^\w]/g, "_"),
+        account,
         name: genName(idx),
         department: dept,
         role,
         managedEnterprises: entCount,
-        phone: `13${(8 + (idx % 2))}****${String(1000 + (idx * 73) % 9000)}`,
+        phone: `13${8 + (idx % 2)}${String(10000000 + (idx * 73856) % 89999999).slice(0, 8)}`,
         status: idx % 17 === 0 ? "停用" : "启用",
         enterpriseList,
       });
