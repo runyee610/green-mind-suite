@@ -48,6 +48,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -79,7 +87,7 @@ interface CityUser {
   managedEnterprises: number;
   phone: string;
   status: "启用" | "停用";
-  lastLogin: string;
+  enterpriseList?: string[]; // 对口企业列表
 }
 
 interface DistrictUser {
@@ -117,12 +125,65 @@ interface EnterpriseUser {
   status: "启用" | "停用";
 }
 
-const cityUsers: CityUser[] = [
-  { id: "C001", account: "city_admin01", name: "张明远", department: "市发改委-能源科", role: "市管理员", managedEnterprises: 1287, phone: "138****8821", status: "启用", lastLogin: "2026-04-29 08:42" },
-  { id: "C002", account: "city_dep_es", name: "李静怡", department: "市经信局-节能处", role: "科室管理员", managedEnterprises: 642, phone: "139****1102", status: "启用", lastLogin: "2026-04-28 17:20" },
-  { id: "C003", account: "city_contact01", name: "王思源", department: "市发改委-能源科", role: "对口人", managedEnterprises: 320, phone: "137****6655", status: "启用", lastLogin: "2026-04-29 09:11" },
-  { id: "C004", account: "city_contact02", name: "陈雨涵", department: "市生态环境局", role: "对口人", managedEnterprises: 198, phone: "136****4480", status: "停用", lastLogin: "2026-04-12 10:08" },
+const CITY_DEPARTMENTS = [
+  "市发改委-能源科",
+  "市发改委-环资处",
+  "市经信局-节能处",
+  "市经信局-绿色制造处",
+  "市生态环境局-大气处",
+  "市住建委-建筑节能处",
+  "市统计局-能源统计处",
 ];
+
+const SAMPLE_ENTERPRISES = [
+  "华谊化工有限公司", "宝山钢铁股份有限公司", "中芯国际集成电路", "申永纸业有限公司",
+  "锦华纺织有限公司", "永和食品制造有限公司", "上海石化炼油厂", "东方汽轮机厂",
+  "华东电力设备制造", "上汽大众动力总成", "金桥半导体", "临港新能源科技",
+  "申能燃机发电", "宝冶建设集团", "光明乳业制造基地", "晨光文具制造",
+  "三爱富新材料", "华虹半导体", "外高桥造船", "振华重工制造",
+];
+
+const CITY_FIRST_NAMES = ["张", "李", "王", "陈", "刘", "杨", "黄", "周", "吴", "徐", "孙", "胡", "朱", "高", "林", "何", "郭", "马", "罗", "梁"];
+const CITY_GIVEN_NAMES = ["明远", "静怡", "思源", "雨涵", "建国", "晓燕", "宏伟", "云飞", "丹丹", "志勇", "晓东", "丽华", "建华", "建军", "文博", "慧敏", "晓琳", "明月", "海涛", "若曦", "天宇", "梓萱", "佳怡", "瑞泽"];
+
+function genName(seed: number): string {
+  const f = CITY_FIRST_NAMES[seed % CITY_FIRST_NAMES.length];
+  const g = CITY_GIVEN_NAMES[(seed * 7) % CITY_GIVEN_NAMES.length];
+  return f + g;
+}
+
+function genCityUsers(): CityUser[] {
+  const list: CityUser[] = [];
+  let idx = 0;
+  CITY_DEPARTMENTS.forEach((dept, di) => {
+    const count = 9 + (di % 3); // 9~11 人
+    for (let i = 0; i < count; i++) {
+      idx++;
+      const isHead = i === 0;
+      const isAdmin = di === 0 && i === 0;
+      const role: CityUser["role"] = isAdmin ? "市管理员" : isHead ? "科室管理员" : "对口人";
+      const entCount = role === "市管理员" ? 1287 : role === "科室管理员" ? 200 + ((idx * 37) % 300) : 20 + ((idx * 13) % 80);
+      const enterpriseList = SAMPLE_ENTERPRISES
+        .slice()
+        .sort(() => ((idx * 17) % 7) - 3)
+        .slice(0, Math.min(entCount, 12));
+      list.push({
+        id: `C${String(idx).padStart(3, "0")}`,
+        account: `city_${dept.split("-")[1] ?? "adm"}_${String(i + 1).padStart(2, "0")}`.replace(/[^\w]/g, "_"),
+        name: genName(idx),
+        department: dept,
+        role,
+        managedEnterprises: entCount,
+        phone: `13${(8 + (idx % 2))}****${String(1000 + (idx * 73) % 9000)}`,
+        status: idx % 17 === 0 ? "停用" : "启用",
+        enterpriseList,
+      });
+    }
+  });
+  return list;
+}
+
+const cityUsers: CityUser[] = genCityUsers();
 
 const districtUsers: DistrictUser[] = [
   { id: "D001", account: "huangpu_admin", areaName: "黄浦区", level: "区", owner: "周建国", cityContact: "王思源", enterpriseCount: 86, phone: "138****0011", status: "启用" },
@@ -170,11 +231,14 @@ export default function SystemUsers() {
   const [view, setView] = useState<ViewRole>("city_admin");
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [deptFilter, setDeptFilter] = useState<string>("all");
+  const [groupByDept, setGroupByDept] = useState<boolean>(true);
 
   // 弹窗
   const [pwdOpen, setPwdOpen] = useState(false);
   const [pwdTarget, setPwdTarget] = useState<string>("");
   const [createOpen, setCreateOpen] = useState(false);
+  const [entListUser, setEntListUser] = useState<CityUser | null>(null);
 
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
@@ -238,6 +302,35 @@ export default function SystemUsers() {
                 <SelectItem value="停用">停用</SelectItem>
               </SelectContent>
             </Select>
+            {view === "city_admin" && (
+              <>
+                <Select value={deptFilter} onValueChange={setDeptFilter}>
+                  <SelectTrigger className="h-8 w-44 text-xs">
+                    <SelectValue placeholder="科室" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全部科室</SelectItem>
+                    {CITY_DEPARTMENTS.map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <button
+                  onClick={() => setGroupByDept((v) => !v)}
+                  className={cn(
+                    "h-8 px-2.5 rounded-md border text-xs inline-flex items-center gap-1.5 transition-colors",
+                    groupByDept
+                      ? "border-primary/40 bg-primary/5 text-primary"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <Filter className="h-3.5 w-3.5" />
+                  按科室分组
+                </button>
+              </>
+            )}
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
               <Filter className="h-3.5 w-3.5" />
               高级筛选
@@ -272,11 +365,14 @@ export default function SystemUsers() {
                 rows={cityUsers.filter(
                   (r) =>
                     (statusFilter === "all" || r.status === statusFilter) &&
+                    (deptFilter === "all" || r.department === deptFilter) &&
                     (!keyword ||
                       r.name.includes(keyword) ||
                       r.account.includes(keyword) ||
                       r.department.includes(keyword)),
                 )}
+                groupByDepartment={groupByDept && deptFilter === "all"}
+                onViewEnterprises={(u) => setEntListUser(u)}
                 onChangePwd={(acc) => {
                   setPwdTarget(acc);
                   setPwdOpen(true);
@@ -361,6 +457,7 @@ export default function SystemUsers() {
         accountName={pwdTarget}
       />
       <CreateEnterpriseDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <EnterpriseListDialog user={entListUser} onOpenChange={(o) => !o && setEntListUser(null)} />
     </AppLayout>
   );
 }
@@ -382,7 +479,20 @@ function tableCount(v: ViewRole) {
 
 // ===== 表格组件 =====
 
-function StatusBadge({ status }: { status: "启用" | "停用" }) {
+function StatusBadge({ status, subtle = false }: { status: "启用" | "停用"; subtle?: boolean }) {
+  if (subtle) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+        <span
+          className={cn(
+            "inline-block h-1.5 w-1.5 rounded-full",
+            status === "启用" ? "bg-emerald-500/70" : "bg-muted-foreground/40",
+          )}
+        />
+        {status}
+      </span>
+    );
+  }
   return (
     <Badge
       variant="outline"
@@ -483,51 +593,94 @@ function ActionButtons({
 function CityTable({
   rows,
   onChangePwd,
+  onViewEnterprises,
+  groupByDepartment,
 }: {
   rows: CityUser[];
   onChangePwd: (acc: string) => void;
+  onViewEnterprises: (u: CityUser) => void;
+  groupByDepartment: boolean;
 }) {
+  const groups = useMemo(() => {
+    if (!groupByDepartment) return [{ dept: "__all__", items: rows }];
+    const map = new Map<string, CityUser[]>();
+    rows.forEach((r) => {
+      if (!map.has(r.department)) map.set(r.department, []);
+      map.get(r.department)!.push(r);
+    });
+    return Array.from(map.entries()).map(([dept, items]) => ({ dept, items }));
+  }, [rows, groupByDepartment]);
+
+  const renderHeader = () => (
+    <TableHeader>
+      <TableRow className="bg-muted/40">
+        <TableHead className="h-9 text-xs">账号</TableHead>
+        <TableHead className="h-9 text-xs whitespace-nowrap">姓名</TableHead>
+        {!groupByDepartment && <TableHead className="h-9 text-xs">所属科室</TableHead>}
+        <TableHead className="h-9 text-xs">角色</TableHead>
+        <TableHead className="h-9 text-xs text-right whitespace-nowrap">对口企业</TableHead>
+        <TableHead className="h-9 text-xs">手机号</TableHead>
+        <TableHead className="h-9 text-xs">状态</TableHead>
+        <TableHead className="h-9 text-xs text-right">操作</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+
+  const renderRow = (r: CityUser) => (
+    <TableRow key={r.id} className="text-xs">
+      <TableCell className="py-2 font-mono text-foreground">{r.account}</TableCell>
+      <TableCell className="py-2 whitespace-nowrap">{r.name}</TableCell>
+      {!groupByDepartment && <TableCell className="py-2">{r.department}</TableCell>}
+      <TableCell className="py-2">
+        <Badge variant="secondary" className="text-[11px] font-normal">
+          {r.role}
+        </Badge>
+      </TableCell>
+      <TableCell className="py-2 text-right">
+        <button
+          onClick={() => onViewEnterprises(r)}
+          className="font-mono text-primary hover:underline"
+        >
+          {r.managedEnterprises.toLocaleString()}
+        </button>
+      </TableCell>
+      <TableCell className="py-2 font-mono text-muted-foreground">{r.phone}</TableCell>
+      <TableCell className="py-2">
+        <StatusBadge status={r.status} subtle />
+      </TableCell>
+      <TableCell className="py-2">
+        <ActionButtons account={r.account} status={r.status} onChangePwd={onChangePwd} />
+      </TableCell>
+    </TableRow>
+  );
+
+  if (!groupByDepartment) {
+    return (
+      <Table>
+        {renderHeader()}
+        <TableBody>{rows.map(renderRow)}</TableBody>
+      </Table>
+    );
+  }
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-muted/40">
-          <TableHead className="h-9 text-xs">账号</TableHead>
-          <TableHead className="h-9 text-xs">姓名</TableHead>
-          <TableHead className="h-9 text-xs">所属科室</TableHead>
-          <TableHead className="h-9 text-xs">角色</TableHead>
-          <TableHead className="h-9 text-xs text-right">管辖企业数量</TableHead>
-          <TableHead className="h-9 text-xs">手机号</TableHead>
-          <TableHead className="h-9 text-xs">状态</TableHead>
-          <TableHead className="h-9 text-xs">最近登录</TableHead>
-          <TableHead className="h-9 text-xs text-right">操作</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((r) => (
-          <TableRow key={r.id} className="text-xs">
-            <TableCell className="py-2 font-mono text-foreground">{r.account}</TableCell>
-            <TableCell className="py-2">{r.name}</TableCell>
-            <TableCell className="py-2">{r.department}</TableCell>
-            <TableCell className="py-2">
-              <Badge variant="secondary" className="text-[11px] font-normal">
-                {r.role}
-              </Badge>
-            </TableCell>
-            <TableCell className="py-2 text-right font-mono">
-              {r.managedEnterprises.toLocaleString()}
-            </TableCell>
-            <TableCell className="py-2 font-mono text-muted-foreground">{r.phone}</TableCell>
-            <TableCell className="py-2">
-              <StatusBadge status={r.status} />
-            </TableCell>
-            <TableCell className="py-2 font-mono text-muted-foreground">{r.lastLogin}</TableCell>
-            <TableCell className="py-2">
-              <ActionButtons account={r.account} status={r.status} onChangePwd={onChangePwd} />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div>
+      {groups.map((g) => (
+        <div key={g.dept} className="border-b border-border last:border-b-0">
+          <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border-b border-border">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="text-xs font-medium text-foreground">{g.dept}</span>
+            <Badge variant="outline" className="text-[10px] font-normal text-muted-foreground">
+              {g.items.length} 人
+            </Badge>
+          </div>
+          <Table>
+            {renderHeader()}
+            <TableBody>{g.items.map(renderRow)}</TableBody>
+          </Table>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -964,5 +1117,67 @@ function CreateEnterpriseDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function EnterpriseListDialog({
+  user,
+  onOpenChange,
+}: {
+  user: CityUser | null;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const open = !!user;
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
+        <SheetHeader className="p-5 pb-3 border-b border-border">
+          <SheetTitle className="text-base">对口企业列表</SheetTitle>
+          <SheetDescription className="text-xs">
+            {user ? (
+              <>
+                <span className="text-foreground font-medium">{user.name}</span>
+                <span className="mx-1 text-muted-foreground">·</span>
+                <span className="text-muted-foreground">{user.department}</span>
+                <span className="mx-1 text-muted-foreground">·</span>
+                <span className="text-muted-foreground">{user.role}</span>
+              </>
+            ) : null}
+          </SheetDescription>
+        </SheetHeader>
+        <div className="px-5 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            共 <span className="font-mono text-foreground">{user?.managedEnterprises.toLocaleString() ?? 0}</span> 家对口企业
+          </span>
+          <span className="text-[11px]">展示前 {user?.enterpriseList?.length ?? 0} 家</span>
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="divide-y divide-border">
+            {(user?.enterpriseList ?? []).map((name, i) => (
+              <div
+                key={name + i}
+                className="flex items-center justify-between px-5 py-2.5 text-xs hover:bg-muted/40 transition-colors"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-mono text-muted-foreground tabular-nums w-6">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="truncate text-foreground">{name}</span>
+                </div>
+                <Badge variant="outline" className="text-[10px] font-normal text-muted-foreground shrink-0">
+                  对口
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+        <div className="p-4 border-t border-border flex justify-end gap-2">
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
+            <Download className="h-3.5 w-3.5" />
+            导出名单
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
