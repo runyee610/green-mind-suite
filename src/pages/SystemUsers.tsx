@@ -935,7 +935,7 @@ function DistrictSelfView({
               <TableBody>
                 {pageRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={isPark ? 8 : 9} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={9 - (isPark ? 1 : 0) - (isGroup ? 1 : 0)} className="text-center text-xs text-muted-foreground py-8">
                       暂无企业数据
                     </TableCell>
                   </TableRow>
