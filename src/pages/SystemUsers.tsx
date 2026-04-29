@@ -784,13 +784,17 @@ function DistrictSelfView({
   });
   const [draft, setDraft] = useState(info);
 
-  // 范围内企业：区按 district 字段；园区按 park 字段
+  // 范围内企业：区按 district；园区按 park；集团按 group
   const inScope = useMemo(
     () =>
       enterprises.filter((e) =>
-        isPark ? e.park === info.areaName : e.district === info.areaName,
+        isGroup
+          ? e.group === info.areaName
+          : isPark
+          ? e.park === info.areaName
+          : e.district === info.areaName,
       ),
-    [enterprises, info.areaName, isPark],
+    [enterprises, info.areaName, isPark, isGroup],
   );
   const filtered = useMemo(
     () =>
