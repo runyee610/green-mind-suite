@@ -366,16 +366,7 @@ export default function SystemUsers() {
                 </button>
               </>
             )}
-            <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
-              <Filter className="h-3.5 w-3.5" />
-              高级筛选
-            </Button>
-
             <div className="ml-auto flex items-center gap-2">
-              <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
-                <Upload className="h-3.5 w-3.5" />
-                批量导入
-              </Button>
               <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
                 <Download className="h-3.5 w-3.5" />
                 导出
@@ -386,9 +377,7 @@ export default function SystemUsers() {
                 onClick={() => setCreateOpen(true)}
               >
                 <Plus className="h-3.5 w-3.5" />
-                {view === "enterprise_admin" || view === "city_admin"
-                  ? "新建企业账号"
-                  : "新建账号"}
+                新建账号
               </Button>
             </div>
           </div>
