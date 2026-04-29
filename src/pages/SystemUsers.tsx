@@ -435,7 +435,20 @@ function tableCount(v: ViewRole) {
 
 // ===== 表格组件 =====
 
-function StatusBadge({ status }: { status: "启用" | "停用" }) {
+function StatusBadge({ status, subtle = false }: { status: "启用" | "停用"; subtle?: boolean }) {
+  if (subtle) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+        <span
+          className={cn(
+            "inline-block h-1.5 w-1.5 rounded-full",
+            status === "启用" ? "bg-emerald-500/70" : "bg-muted-foreground/40",
+          )}
+        />
+        {status}
+      </span>
+    );
+  }
   return (
     <Badge
       variant="outline"
