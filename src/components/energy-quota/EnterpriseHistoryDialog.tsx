@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { CheckCircle2, Clock, Eye, FileDown, History as HistoryIcon, TrendingDown, TrendingUp, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, FileDown, History as HistoryIcon, TrendingDown, TrendingUp, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
