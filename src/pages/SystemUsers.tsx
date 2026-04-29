@@ -117,12 +117,65 @@ interface EnterpriseUser {
   status: "启用" | "停用";
 }
 
-const cityUsers: CityUser[] = [
-  { id: "C001", account: "city_admin01", name: "张明远", department: "市发改委-能源科", role: "市管理员", managedEnterprises: 1287, phone: "138****8821", status: "启用", lastLogin: "2026-04-29 08:42" },
-  { id: "C002", account: "city_dep_es", name: "李静怡", department: "市经信局-节能处", role: "科室管理员", managedEnterprises: 642, phone: "139****1102", status: "启用", lastLogin: "2026-04-28 17:20" },
-  { id: "C003", account: "city_contact01", name: "王思源", department: "市发改委-能源科", role: "对口人", managedEnterprises: 320, phone: "137****6655", status: "启用", lastLogin: "2026-04-29 09:11" },
-  { id: "C004", account: "city_contact02", name: "陈雨涵", department: "市生态环境局", role: "对口人", managedEnterprises: 198, phone: "136****4480", status: "停用", lastLogin: "2026-04-12 10:08" },
+const CITY_DEPARTMENTS = [
+  "市发改委-能源科",
+  "市发改委-环资处",
+  "市经信局-节能处",
+  "市经信局-绿色制造处",
+  "市生态环境局-大气处",
+  "市住建委-建筑节能处",
+  "市统计局-能源统计处",
 ];
+
+const SAMPLE_ENTERPRISES = [
+  "华谊化工有限公司", "宝山钢铁股份有限公司", "中芯国际集成电路", "申永纸业有限公司",
+  "锦华纺织有限公司", "永和食品制造有限公司", "上海石化炼油厂", "东方汽轮机厂",
+  "华东电力设备制造", "上汽大众动力总成", "金桥半导体", "临港新能源科技",
+  "申能燃机发电", "宝冶建设集团", "光明乳业制造基地", "晨光文具制造",
+  "三爱富新材料", "华虹半导体", "外高桥造船", "振华重工制造",
+];
+
+const CITY_FIRST_NAMES = ["张", "李", "王", "陈", "刘", "杨", "黄", "周", "吴", "徐", "孙", "胡", "朱", "高", "林", "何", "郭", "马", "罗", "梁"];
+const CITY_GIVEN_NAMES = ["明远", "静怡", "思源", "雨涵", "建国", "晓燕", "宏伟", "云飞", "丹丹", "志勇", "晓东", "丽华", "建华", "建军", "文博", "慧敏", "晓琳", "明月", "海涛", "若曦", "天宇", "梓萱", "佳怡", "瑞泽"];
+
+function genName(seed: number): string {
+  const f = CITY_FIRST_NAMES[seed % CITY_FIRST_NAMES.length];
+  const g = CITY_GIVEN_NAMES[(seed * 7) % CITY_GIVEN_NAMES.length];
+  return f + g;
+}
+
+function genCityUsers(): CityUser[] {
+  const list: CityUser[] = [];
+  let idx = 0;
+  CITY_DEPARTMENTS.forEach((dept, di) => {
+    const count = 9 + (di % 3); // 9~11 人
+    for (let i = 0; i < count; i++) {
+      idx++;
+      const isHead = i === 0;
+      const isAdmin = di === 0 && i === 0;
+      const role: CityUser["role"] = isAdmin ? "市管理员" : isHead ? "科室管理员" : "对口人";
+      const entCount = role === "市管理员" ? 1287 : role === "科室管理员" ? 200 + ((idx * 37) % 300) : 20 + ((idx * 13) % 80);
+      const enterpriseList = SAMPLE_ENTERPRISES
+        .slice()
+        .sort(() => ((idx * 17) % 7) - 3)
+        .slice(0, Math.min(entCount, 12));
+      list.push({
+        id: `C${String(idx).padStart(3, "0")}`,
+        account: `city_${dept.split("-")[1] ?? "adm"}_${String(i + 1).padStart(2, "0")}`.replace(/[^\w]/g, "_"),
+        name: genName(idx),
+        department: dept,
+        role,
+        managedEnterprises: entCount,
+        phone: `13${(8 + (idx % 2))}****${String(1000 + (idx * 73) % 9000)}`,
+        status: idx % 17 === 0 ? "停用" : "启用",
+        enterpriseList,
+      });
+    }
+  });
+  return list;
+}
+
+const cityUsers: CityUser[] = genCityUsers();
 
 const districtUsers: DistrictUser[] = [
   { id: "D001", account: "huangpu_admin", areaName: "黄浦区", level: "区", owner: "周建国", cityContact: "王思源", enterpriseCount: 86, phone: "138****0011", status: "启用" },
