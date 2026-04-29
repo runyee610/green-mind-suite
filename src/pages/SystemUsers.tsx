@@ -137,6 +137,9 @@ interface EnterpriseUser {
   owner: string;
   phone: string;
   status: "启用" | "停用";
+  cityContact?: string; // 中心对口人
+  park?: string; // 所属园区
+  group?: string; // 所属集团
 }
 
 const CITY_DEPARTMENTS = [
