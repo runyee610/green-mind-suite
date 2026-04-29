@@ -356,6 +356,33 @@ export default function SystemUsers() {
         />
       )}
 
+      {/* 集团管理员：仅展示本账号信息 + 集团企业列表 */}
+      {view === "group_admin" && (() => {
+        const g = groupUsers[0];
+        const groupSelf: DistrictUser = {
+          id: g.id,
+          account: g.account,
+          areaName: g.groupName,
+          level: "区",
+          owner: g.owner,
+          cityContact: "—",
+          enterpriseCount: enterpriseUsers.filter((e) => e.group === g.groupName).length,
+          phone: g.phone,
+          status: g.status,
+        };
+        return (
+          <DistrictSelfView
+            level="集团"
+            self={groupSelf}
+            enterprises={enterpriseUsers}
+            onChangePwd={(acc) => {
+              setPwdTarget(acc);
+              setPwdOpen(true);
+            }}
+          />
+        );
+      })()}
+
       {/* 工具栏 */}
       {view !== "district_admin" && view !== "park_admin" && (
       <Card className="border-border/60">
