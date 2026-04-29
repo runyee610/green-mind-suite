@@ -484,24 +484,6 @@ export default function SystemUsers() {
                 }}
               />
             )}
-            {view === "enterprise_admin" && (
-              <EnterpriseTable
-                rows={enterpriseUsers.filter(
-                  (r) =>
-                    (statusFilter === "all" || r.status === statusFilter) &&
-                    (!keyword ||
-                      r.enterpriseName.includes(keyword) ||
-                      r.account.includes(keyword) ||
-                      r.creditCode.includes(keyword)),
-                )}
-                canDisableHighEnergy={canDisableHighEnergy}
-                currentRoleLabel={currentRoleLabel}
-                onChangePwd={(acc) => {
-                  setPwdTarget(acc);
-                  setPwdOpen(true);
-                }}
-              />
-            )}
           </div>
 
           {/* 分页脚 */}
