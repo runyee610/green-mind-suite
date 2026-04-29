@@ -301,8 +301,6 @@ export default function SystemUsers() {
 
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
-  // 仅市级/平台管理员可禁用 2000 吨标煤及以上的企业
-  const canDisableHighEnergy = view === "city_admin";
 
   return (
     <AppLayout title="用户管理" subtitle="多级账户体系下的账号、角色与权限管理">
