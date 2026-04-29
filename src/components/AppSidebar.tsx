@@ -65,7 +65,14 @@ export const navItems: NavItem[] = [
   { title: "绿色制造管理", url: "/green-mfg", icon: Leaf },
   { title: "设备对标管理", url: "/benchmark", icon: Crosshair },
   { title: "企业管理", url: "/enterprise", icon: Building2 },
-  { title: "系统管理", url: "/system", icon: Settings },
+  {
+    title: "系统管理",
+    url: "/system",
+    icon: Settings,
+    children: [
+      { title: "用户管理", url: "/system/users", icon: ClipboardList },
+    ],
+  },
 ];
 
 export function AppSidebar() {
