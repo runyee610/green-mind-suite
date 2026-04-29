@@ -12,7 +12,15 @@ import {
   Download,
   Upload,
   Filter,
+  MoreHorizontal,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -78,16 +86,23 @@ const ROLE_OPTIONS: { value: ViewRole; label: string; scope: string }[] = [
 
 // ===== 模拟数据 =====
 
+interface EnterpriseLite {
+  name: string;
+  creditCode: string;
+  owner: string;
+  phone: string;
+}
+
 interface CityUser {
   id: string;
   account: string;
   name: string;
-  department: string; // 所属科室
-  role: "市管理员" | "科室管理员" | "对口人";
+  department: string; // 所属组织
+  role: "市管理员" | "管理员" | "对口人";
   managedEnterprises: number;
   phone: string;
   status: "启用" | "停用";
-  enterpriseList?: string[]; // 对口企业列表
+  enterpriseList?: EnterpriseLite[]; // 对口企业列表
 }
 
 interface DistrictUser {
@@ -126,13 +141,14 @@ interface EnterpriseUser {
 }
 
 const CITY_DEPARTMENTS = [
-  "市发改委-能源科",
-  "市发改委-环资处",
-  "市经信局-节能处",
-  "市经信局-绿色制造处",
-  "市生态环境局-大气处",
-  "市住建委-建筑节能处",
+  "市经信委",
+  "市发改委",
   "市统计局-能源统计处",
+  "节能处-综合办公室",
+  "节能处-能碳监测科",
+  "节能处-节能监察科",
+  "节能处-能效管理科",
+  "节能处-宣教推广科",
 ];
 
 const SAMPLE_ENTERPRISES = [
@@ -141,6 +157,9 @@ const SAMPLE_ENTERPRISES = [
   "华东电力设备制造", "上汽大众动力总成", "金桥半导体", "临港新能源科技",
   "申能燃机发电", "宝冶建设集团", "光明乳业制造基地", "晨光文具制造",
   "三爱富新材料", "华虹半导体", "外高桥造船", "振华重工制造",
+  "上海石化股份", "巴斯夫聚氨酯", "赛科石化", "高桥石化",
+  "氯碱化工", "天原化工", "氟化工股份", "氯碱新材料",
+  "华谊精细化工", "中石化上海", "中石油上海", "申能集团动力",
 ];
 
 const CITY_FIRST_NAMES = ["张", "李", "王", "陈", "刘", "杨", "黄", "周", "吴", "徐", "孙", "胡", "朱", "高", "林", "何", "郭", "马", "罗", "梁"];
@@ -152,6 +171,19 @@ function genName(seed: number): string {
   return f + g;
 }
 
+const ENT_OWNER_FIRST = ["顾", "胡", "林", "梁", "范", "高", "王", "李", "赵", "钱", "孙", "周"];
+const ENT_OWNER_GIVEN = ["建华", "建军", "文博", "慧敏", "晓琳", "明月", "海涛", "若曦", "瑞泽", "云飞", "佳怡"];
+
+function genEnterprise(seed: number): EnterpriseLite {
+  const name = SAMPLE_ENTERPRISES[seed % SAMPLE_ENTERPRISES.length];
+  const owner =
+    ENT_OWNER_FIRST[seed % ENT_OWNER_FIRST.length] +
+    ENT_OWNER_GIVEN[(seed * 5) % ENT_OWNER_GIVEN.length];
+  const code = `9131000${String(1000000000 + (seed * 73856093) % 8999999999).slice(0, 11)}`;
+  const phone = `13${8 + (seed % 2)}${String(10000000 + (seed * 4567) % 89999999).slice(0, 8)}`;
+  return { name, creditCode: code.slice(0, 18), owner, phone };
+}
+
 function genCityUsers(): CityUser[] {
   const list: CityUser[] = [];
   let idx = 0;
@@ -161,20 +193,23 @@ function genCityUsers(): CityUser[] {
       idx++;
       const isHead = i === 0;
       const isAdmin = di === 0 && i === 0;
-      const role: CityUser["role"] = isAdmin ? "市管理员" : isHead ? "科室管理员" : "对口人";
-      const entCount = role === "市管理员" ? 1287 : role === "科室管理员" ? 200 + ((idx * 37) % 300) : 20 + ((idx * 13) % 80);
-      const enterpriseList = SAMPLE_ENTERPRISES
-        .slice()
-        .sort(() => ((idx * 17) % 7) - 3)
-        .slice(0, Math.min(entCount, 12));
+      const role: CityUser["role"] = isAdmin ? "市管理员" : isHead ? "管理员" : "对口人";
+      const entCount = role === "市管理员" ? 1287 : role === "管理员" ? 200 + ((idx * 37) % 300) : 20 + ((idx * 13) % 80);
+      // 生成对口企业完整明细（与展示数量一致，最多 80 家以保证演示分页）
+      const listSize = Math.min(entCount, 80);
+      const enterpriseList: EnterpriseLite[] = Array.from({ length: listSize }, (_, k) =>
+        genEnterprise(idx * 31 + k * 7),
+      );
+      // 账号：字母开头 + 数字，6-20 位，全局唯一
+      const account = `gov${String.fromCharCode(97 + di)}${String(idx).padStart(4, "0")}`;
       list.push({
         id: `C${String(idx).padStart(3, "0")}`,
-        account: `city_${dept.split("-")[1] ?? "adm"}_${String(i + 1).padStart(2, "0")}`.replace(/[^\w]/g, "_"),
+        account,
         name: genName(idx),
         department: dept,
         role,
         managedEnterprises: entCount,
-        phone: `13${(8 + (idx % 2))}****${String(1000 + (idx * 73) % 9000)}`,
+        phone: `13${8 + (idx % 2)}${String(10000000 + (idx * 73856) % 89999999).slice(0, 8)}`,
         status: idx % 17 === 0 ? "停用" : "启用",
         enterpriseList,
       });
@@ -306,10 +341,10 @@ export default function SystemUsers() {
               <>
                 <Select value={deptFilter} onValueChange={setDeptFilter}>
                   <SelectTrigger className="h-8 w-44 text-xs">
-                    <SelectValue placeholder="科室" />
+                    <SelectValue placeholder="组织" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">全部科室</SelectItem>
+                    <SelectItem value="all">全部组织</SelectItem>
                     {CITY_DEPARTMENTS.map((d) => (
                       <SelectItem key={d} value={d}>
                         {d}
@@ -327,7 +362,7 @@ export default function SystemUsers() {
                   )}
                 >
                   <Filter className="h-3.5 w-3.5" />
-                  按科室分组
+                  按组织分组
                 </button>
               </>
             )}
@@ -527,65 +562,72 @@ function ActionButtons({
   disableLocked?: boolean;
   disableLockedReason?: string;
 }) {
-  const disableBtn = (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-7 px-2 text-xs gap-1"
-      disabled={disableLocked}
-      onClick={() =>
-        toast({
-          title: status === "启用" ? "已停用账号" : "已启用账号",
-          description: account,
-        })
-      }
-    >
-      {status === "启用" ? (
-        <ShieldOff className="h-3.5 w-3.5" />
-      ) : (
-        <ShieldCheck className="h-3.5 w-3.5" />
-      )}
-      {status === "启用" ? "禁用" : "启用"}
-    </Button>
-  );
-
   return (
-    <div className="flex items-center gap-1 justify-end">
-      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1">
-        <Pencil className="h-3.5 w-3.5" />
-        编辑
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-7 px-2 text-xs gap-1"
-        onClick={() => onChangePwd(account)}
-      >
-        <KeyRound className="h-3.5 w-3.5" />
-        修改密码
-      </Button>
-      {disableLocked ? (
-        <TooltipProvider delayDuration={150}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span>{disableBtn}</span>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              {disableLockedReason ?? "无操作权限"}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ) : (
-        disableBtn
-      )}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-7 px-2 text-xs gap-1 text-destructive hover:text-destructive"
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-        删除
-      </Button>
+    <div className="flex items-center justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1">
+            <MoreHorizontal className="h-3.5 w-3.5" />
+            更多
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-36">
+          <DropdownMenuItem className="text-xs gap-2">
+            <Pencil className="h-3.5 w-3.5" />
+            编辑
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-xs gap-2"
+            onClick={() => onChangePwd(account)}
+          >
+            <KeyRound className="h-3.5 w-3.5" />
+            修改密码
+          </DropdownMenuItem>
+          {disableLocked ? (
+            <TooltipProvider delayDuration={150}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <DropdownMenuItem disabled className="text-xs gap-2">
+                      {status === "启用" ? (
+                        <ShieldOff className="h-3.5 w-3.5" />
+                      ) : (
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                      )}
+                      {status === "启用" ? "禁用" : "启用"}
+                    </DropdownMenuItem>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="left" className="text-xs max-w-xs">
+                  {disableLockedReason ?? "无操作权限"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <DropdownMenuItem
+              className="text-xs gap-2"
+              onClick={() =>
+                toast({
+                  title: status === "启用" ? "已停用账号" : "已启用账号",
+                  description: account,
+                })
+              }
+            >
+              {status === "启用" ? (
+                <ShieldOff className="h-3.5 w-3.5" />
+              ) : (
+                <ShieldCheck className="h-3.5 w-3.5" />
+              )}
+              {status === "启用" ? "禁用" : "启用"}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-xs gap-2 text-destructive focus:text-destructive">
+            <Trash2 className="h-3.5 w-3.5" />
+            删除
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
@@ -616,7 +658,7 @@ function CityTable({
       <TableRow className="bg-muted/40">
         <TableHead className="h-9 text-xs">账号</TableHead>
         <TableHead className="h-9 text-xs whitespace-nowrap">姓名</TableHead>
-        {!groupByDepartment && <TableHead className="h-9 text-xs">所属科室</TableHead>}
+        {!groupByDepartment && <TableHead className="h-9 text-xs">所属组织</TableHead>}
         <TableHead className="h-9 text-xs">角色</TableHead>
         <TableHead className="h-9 text-xs text-right whitespace-nowrap">对口企业</TableHead>
         <TableHead className="h-9 text-xs">手机号</TableHead>
@@ -977,7 +1019,21 @@ function CreateEnterpriseDialog({
   const [password, setPassword] = useState(genRandomPassword());
 
   const codeValid = CREDIT_CODE_RE.test(creditCode);
-  const accountValid = /^[A-Za-z][A-Za-z0-9]{5,19}$/.test(account);
+  // 长度 6-20，字母或字母数字组合（至少含一个字母），不分大小写
+  const accountFormatValid = /^(?=.*[A-Za-z])[A-Za-z0-9]{6,20}$/.test(account);
+  // 系统唯一性校验（与所有已存在账号比对，不分大小写）
+  const takenAccounts = useMemo(
+    () =>
+      new Set<string>([
+        ...cityUsers.map((u) => u.account.toLowerCase()),
+        ...districtUsers.map((u) => u.account.toLowerCase()),
+        ...groupUsers.map((u) => u.account.toLowerCase()),
+        ...enterpriseUsers.map((u) => u.account.toLowerCase()),
+      ]),
+    [],
+  );
+  const accountUnique = account.length === 0 || !takenAccounts.has(account.toLowerCase());
+  const accountValid = accountFormatValid && accountUnique;
 
   const reset = () => {
     setCreditCode("");
@@ -1054,7 +1110,7 @@ function CreateEnterpriseDialog({
             <Input
               value={account}
               onChange={(e) => setAccount(e.target.value)}
-              placeholder="6-20 位，字母开头，可含数字"
+              placeholder="6-20 位，字母或字母数字组合，不分大小写"
               maxLength={20}
               className="h-9 font-mono text-sm"
             />
@@ -1068,7 +1124,13 @@ function CreateEnterpriseDialog({
                     : "text-destructive",
               )}
             >
-              规则：长度 6-20 位，字母或字母数字组合，不分大小写
+              {account.length === 0
+                ? "规则：长度 6-20 位，字母或字母数字组合，不分大小写，且系统唯一"
+                : !accountFormatValid
+                  ? "✗ 格式不符合：长度 6-20 位，仅允许字母或字母+数字组合，且至少含一个字母"
+                  : !accountUnique
+                    ? "✗ 该账号已被占用，请更换"
+                    : "✓ 账号格式正确，系统唯一"}
             </p>
           </div>
 
@@ -1128,11 +1190,32 @@ function EnterpriseListDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const open = !!user;
+  const [kw, setKw] = useState("");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 15;
+
+  // 重置搜索/页码
+  const userId = user?.id ?? "";
+  useMemo(() => {
+    setKw("");
+    setPage(1);
+  }, [userId]);
+
+  const all = user?.enterpriseList ?? [];
+  const filtered = useMemo(() => {
+    const k = kw.trim().toLowerCase();
+    if (!k) return all;
+    return all.filter((e) => e.name.toLowerCase().includes(k));
+  }, [all, kw]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const curPage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
+      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col">
         <SheetHeader className="p-5 pb-3 border-b border-border">
-          <SheetTitle className="text-base">对口企业列表</SheetTitle>
+          <SheetTitle className="text-base">企业列表</SheetTitle>
           <SheetDescription className="text-xs">
             {user ? (
               <>
@@ -1145,37 +1228,98 @@ function EnterpriseListDialog({
             ) : null}
           </SheetDescription>
         </SheetHeader>
-        <div className="px-5 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
-          <span>
-            共 <span className="font-mono text-foreground">{user?.managedEnterprises.toLocaleString() ?? 0}</span> 家对口企业
-          </span>
-          <span className="text-[11px]">展示前 {user?.enterpriseList?.length ?? 0} 家</span>
-        </div>
-        <ScrollArea className="flex-1">
-          <div className="divide-y divide-border">
-            {(user?.enterpriseList ?? []).map((name, i) => (
-              <div
-                key={name + i}
-                className="flex items-center justify-between px-5 py-2.5 text-xs hover:bg-muted/40 transition-colors"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-mono text-muted-foreground tabular-nums w-6">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="truncate text-foreground">{name}</span>
-                </div>
-                <Badge variant="outline" className="text-[10px] font-normal text-muted-foreground shrink-0">
-                  对口
-                </Badge>
-              </div>
-            ))}
+
+        <div className="px-5 py-3 border-b border-border flex items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              value={kw}
+              onChange={(e) => {
+                setKw(e.target.value);
+                setPage(1);
+              }}
+              placeholder="按企业名称模糊检索"
+              className="h-8 pl-8 text-xs"
+            />
           </div>
+          <span className="text-[11px] text-muted-foreground whitespace-nowrap">
+            共 <span className="font-mono text-foreground">{filtered.length.toLocaleString()}</span> 家
+            {kw && (
+              <>
+                <span className="mx-1">/</span>
+                总 <span className="font-mono text-foreground">{all.length.toLocaleString()}</span>
+              </>
+            )}
+          </span>
+        </div>
+
+        <ScrollArea className="flex-1">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40">
+                <TableHead className="h-9 text-xs w-12">#</TableHead>
+                <TableHead className="h-9 text-xs">企业名称</TableHead>
+                <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
+                <TableHead className="h-9 text-xs">企业负责人</TableHead>
+                <TableHead className="h-9 text-xs">联系电话</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pageRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">
+                    暂无匹配的企业
+                  </TableCell>
+                </TableRow>
+              ) : (
+                pageRows.map((e, i) => (
+                  <TableRow key={e.creditCode + i} className="text-xs">
+                    <TableCell className="py-2 font-mono text-muted-foreground tabular-nums">
+                      {(curPage - 1) * PAGE_SIZE + i + 1}
+                    </TableCell>
+                    <TableCell className="py-2 text-foreground">{e.name}</TableCell>
+                    <TableCell className="py-2 font-mono text-muted-foreground">
+                      {e.creditCode}
+                    </TableCell>
+                    <TableCell className="py-2">{e.owner}</TableCell>
+                    <TableCell className="py-2 font-mono text-muted-foreground">
+                      {e.phone}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </ScrollArea>
-        <div className="p-4 border-t border-border flex justify-end gap-2">
-          <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
-            <Download className="h-3.5 w-3.5" />
-            导出名单
-          </Button>
+
+        <div className="px-5 py-2.5 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            第 <span className="font-mono text-foreground">{curPage}</span> / {totalPages} 页
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={curPage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              上一页
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={curPage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              下一页
+            </Button>
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 ml-2">
+              <Download className="h-3.5 w-3.5" />
+              导出
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
