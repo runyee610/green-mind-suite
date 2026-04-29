@@ -1119,3 +1119,65 @@ function CreateEnterpriseDialog({
     </Dialog>
   );
 }
+
+function EnterpriseListDialog({
+  user,
+  onOpenChange,
+}: {
+  user: CityUser | null;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const open = !!user;
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
+        <SheetHeader className="p-5 pb-3 border-b border-border">
+          <SheetTitle className="text-base">对口企业列表</SheetTitle>
+          <SheetDescription className="text-xs">
+            {user ? (
+              <>
+                <span className="text-foreground font-medium">{user.name}</span>
+                <span className="mx-1 text-muted-foreground">·</span>
+                <span className="text-muted-foreground">{user.department}</span>
+                <span className="mx-1 text-muted-foreground">·</span>
+                <span className="text-muted-foreground">{user.role}</span>
+              </>
+            ) : null}
+          </SheetDescription>
+        </SheetHeader>
+        <div className="px-5 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            共 <span className="font-mono text-foreground">{user?.managedEnterprises.toLocaleString() ?? 0}</span> 家对口企业
+          </span>
+          <span className="text-[11px]">展示前 {user?.enterpriseList?.length ?? 0} 家</span>
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="divide-y divide-border">
+            {(user?.enterpriseList ?? []).map((name, i) => (
+              <div
+                key={name + i}
+                className="flex items-center justify-between px-5 py-2.5 text-xs hover:bg-muted/40 transition-colors"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-mono text-muted-foreground tabular-nums w-6">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="truncate text-foreground">{name}</span>
+                </div>
+                <Badge variant="outline" className="text-[10px] font-normal text-muted-foreground shrink-0">
+                  对口
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+        <div className="p-4 border-t border-border flex justify-end gap-2">
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
+            <Download className="h-3.5 w-3.5" />
+            导出名单
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
