@@ -929,7 +929,7 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
                   <TableHead className="h-9 text-xs">中心对口人</TableHead>
                   {!isPark && <TableHead className="h-9 text-xs">园区</TableHead>}
-                  <TableHead className="h-9 text-xs">集团</TableHead>
+                  {!isGroup && <TableHead className="h-9 text-xs">集团</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
