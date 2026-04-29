@@ -357,11 +357,14 @@ export default function SystemUsers() {
                 rows={cityUsers.filter(
                   (r) =>
                     (statusFilter === "all" || r.status === statusFilter) &&
+                    (deptFilter === "all" || r.department === deptFilter) &&
                     (!keyword ||
                       r.name.includes(keyword) ||
                       r.account.includes(keyword) ||
                       r.department.includes(keyword)),
                 )}
+                groupByDepartment={groupByDept && deptFilter === "all"}
+                onViewEnterprises={(u) => setEntListUser(u)}
                 onChangePwd={(acc) => {
                   setPwdTarget(acc);
                   setPwdOpen(true);
