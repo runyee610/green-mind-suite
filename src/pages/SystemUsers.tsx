@@ -415,12 +415,12 @@ export default function SystemUsers() {
                 }}
               />
             )}
-            {(view === "district_admin" || view === "park_admin") && (
+            {view === "park_admin" && (
               <DistrictTable
-                level={view === "district_admin" ? "区" : "园区"}
+                level="园区"
                 rows={districtUsers.filter(
                   (r) =>
-                    (view === "district_admin" ? r.level === "区" : r.level === "园区") &&
+                    r.level === "园区" &&
                     (statusFilter === "all" || r.status === statusFilter) &&
                     (!keyword ||
                       r.areaName.includes(keyword) ||
