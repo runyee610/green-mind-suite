@@ -913,8 +913,7 @@ function InfoItem({ label, value }: { label: string; value: React.ReactNode }) {
     </div>
   );
 }
-
-
+function DistrictTable({
   rows,
   level,
   onChangePwd,
