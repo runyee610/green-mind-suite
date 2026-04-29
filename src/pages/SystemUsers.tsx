@@ -651,7 +651,7 @@ function CityTable({
       <TableRow className="bg-muted/40">
         <TableHead className="h-9 text-xs">账号</TableHead>
         <TableHead className="h-9 text-xs whitespace-nowrap">姓名</TableHead>
-        {!groupByDepartment && <TableHead className="h-9 text-xs">所属科室</TableHead>}
+        {!groupByDepartment && <TableHead className="h-9 text-xs">所属组织</TableHead>}
         <TableHead className="h-9 text-xs">角色</TableHead>
         <TableHead className="h-9 text-xs text-right whitespace-nowrap">对口企业</TableHead>
         <TableHead className="h-9 text-xs">手机号</TableHead>
