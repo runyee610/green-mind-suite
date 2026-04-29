@@ -1400,7 +1400,7 @@ function EnterpriseSelfView({
                 label="是否央企"
                 value={<YesNo v={profile.isCentralEnterprise} />}
               />
-              <Field label="所属央企集团" value={profile.centralGroup} />
+              
               <Field label="法人代表" value={profile.legalRep} />
               <Field label="注册日期" value={profile.registerDate} />
               <Field label="注册资本（万元）" value={profile.registerCapital} mono />
