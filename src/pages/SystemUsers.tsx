@@ -766,7 +766,7 @@ function DistrictSelfView({
     areaName: self.areaName,
     owner: self.owner,
     cityContact: self.cityContact,
-    phone: self.phone,
+    phone: self.phone.replace(/\*+/, (m) => "8".repeat(m.length)),
   });
   const [draft, setDraft] = useState(info);
 
