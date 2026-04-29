@@ -343,8 +343,21 @@ export default function SystemUsers() {
         />
       )}
 
+      {/* 园区管理员：仅展示本账号信息 + 园区企业列表 */}
+      {view === "park_admin" && (
+        <DistrictSelfView
+          level="园区"
+          self={districtUsers.find((d) => d.level === "园区") ?? districtUsers[0]}
+          enterprises={enterpriseUsers}
+          onChangePwd={(acc) => {
+            setPwdTarget(acc);
+            setPwdOpen(true);
+          }}
+        />
+      )}
+
       {/* 工具栏 */}
-      {view !== "district_admin" && (
+      {view !== "district_admin" && view !== "park_admin" && (
       <Card className="border-border/60">
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
