@@ -49,7 +49,15 @@ type NavItem = {
 
 export const navItems: NavItem[] = [
   { title: "全景监测", url: "/", icon: LayoutDashboard },
-  { title: "节能月度报告", url: "/report-monthly", icon: FileBarChart },
+  {
+    title: "节能月度报告",
+    url: "/report-monthly",
+    icon: FileBarChart,
+    children: [
+      { title: "政府侧 · 月报管理", url: "/report-monthly", icon: ClipboardList },
+      { title: "企业侧 · 月报填报", url: "/report-monthly/filling", icon: BookOpen },
+    ],
+  },
   { title: "节能年度报告", url: "/report-yearly", icon: CalendarRange },
   {
     title: "能源限额报告",

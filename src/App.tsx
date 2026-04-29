@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ReportMonthly from "./pages/ReportMonthly.tsx";
+import ReportMonthlyFilling from "./pages/ReportMonthlyFilling.tsx";
 import ReportYearly from "./pages/ReportYearly.tsx";
 import EnergyQuota from "./pages/EnergyQuota.tsx";
 import Archives from "./pages/Archives.tsx";
@@ -29,6 +30,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/report-monthly" element={<ReportMonthly />} />
+          <Route path="/report-monthly/filling" element={<ReportMonthlyFilling />} />
           <Route path="/report-yearly" element={<ReportYearly />} />
           <Route path="/energy-quota" element={<EnergyQuota />} />
           <Route path="/energy-quota/standard" element={<EnergyQuota />} />
