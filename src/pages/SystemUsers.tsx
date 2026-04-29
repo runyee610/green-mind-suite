@@ -942,7 +942,7 @@ function DistrictSelfView({
                       <TableCell className="py-2">{e.owner}</TableCell>
                       <TableCell className="py-2 font-mono">{e.phone.replace(/\*+/, (m) => "8".repeat(m.length))}</TableCell>
                       <TableCell className="py-2">{e.cityContact ?? "—"}</TableCell>
-                      <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground">{(isPark ? e.district : e.park) ?? "—"}</TableCell>
                       <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
                     </TableRow>
                   ))
