@@ -878,7 +878,7 @@ function DistrictSelfView({
                 )}
               </div>
             ))}
-            <InfoItem label="辖区企业数量" value={`${inDistrict.length} 家`} />
+            <InfoItem label={countLabel} value={`${inScope.length} 家`} />
           </div>
         </CardContent>
       </Card>
