@@ -759,10 +759,21 @@ function DistrictSelfView({
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
 
+  // 可编辑的本账号信息（前端态）
+  const [editing, setEditing] = useState(false);
+  const [info, setInfo] = useState({
+    account: self.account,
+    areaName: self.areaName,
+    owner: self.owner,
+    cityContact: self.cityContact,
+    phone: self.phone,
+  });
+  const [draft, setDraft] = useState(info);
+
   // 辖区企业：按 self.areaName 匹配 district 字段
   const inDistrict = useMemo(
-    () => enterprises.filter((e) => e.district === self.areaName),
-    [enterprises, self.areaName],
+    () => enterprises.filter((e) => e.district === info.areaName),
+    [enterprises, info.areaName],
   );
   const filtered = useMemo(
     () =>
@@ -779,6 +790,28 @@ function DistrictSelfView({
   const curPage = Math.min(page, totalPages);
   const pageRows = filtered.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
 
+  const startEdit = () => {
+    setDraft(info);
+    setEditing(true);
+  };
+  const cancelEdit = () => {
+    setDraft(info);
+    setEditing(false);
+  };
+  const saveEdit = () => {
+    setInfo(draft);
+    setEditing(false);
+    toast({ title: "已保存", description: "本账号信息已更新" });
+  };
+
+  const fields: { key: keyof typeof info; label: string }[] = [
+    { key: "account", label: "账号" },
+    { key: "areaName", label: "行政区划" },
+    { key: "owner", label: "负责人" },
+    { key: "cityContact", label: "中心对口人" },
+    { key: "phone", label: "联系电话" },
+  ];
+
   return (
     <div className="space-y-4">
       {/* 本账号信息 */}
@@ -789,41 +822,53 @@ function DistrictSelfView({
               <ShieldCheck className="h-4 w-4 text-primary" />
               本账号信息
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 text-xs gap-1"
-              onClick={() => onChangePwd(self.account)}
-            >
-              <KeyRound className="h-3.5 w-3.5" />
-              修改密码
-            </Button>
+            <div className="flex items-center gap-2">
+              {editing ? (
+                <>
+                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={cancelEdit}>
+                    <X className="h-3.5 w-3.5" />
+                    取消
+                  </Button>
+                  <Button size="sm" className="h-7 text-xs gap-1" onClick={saveEdit}>
+                    <Check className="h-3.5 w-3.5" />
+                    保存
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs gap-1"
+                    onClick={() => onChangePwd(info.account)}
+                  >
+                    <KeyRound className="h-3.5 w-3.5" />
+                    修改密码
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={startEdit}>
+                    <Pencil className="h-3.5 w-3.5" />
+                    编辑信息
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 px-4 py-4 text-xs">
-            <InfoItem label="账号" value={self.account} />
-            <InfoItem label="行政区划" value={self.areaName} />
-            <InfoItem label="层级" value={self.level} />
-            <InfoItem label="负责人" value={self.owner} />
-            <InfoItem label="中心对口人" value={self.cityContact} />
-            <InfoItem label="联系电话" value={self.phone} />
-            <InfoItem
-              label="辖区企业数量"
-              value={`${inDistrict.length} 家`}
-            />
-            <InfoItem
-              label="账号状态"
-              value={
-                <span className="inline-flex items-center gap-1.5">
-                  <span
-                    className={cn(
-                      "h-1.5 w-1.5 rounded-full",
-                      self.status === "启用" ? "bg-emerald-500" : "bg-muted-foreground/50",
-                    )}
+            {fields.map((f) => (
+              <div key={f.key} className="flex flex-col gap-1">
+                <span className="text-muted-foreground text-[11px]">{f.label}</span>
+                {editing ? (
+                  <Input
+                    value={draft[f.key]}
+                    onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
+                    className="h-8 text-xs"
                   />
-                  {self.status}
-                </span>
-              }
-            />
+                ) : (
+                  <span className="text-foreground">{info[f.key]}</span>
+                )}
+              </div>
+            ))}
+            <InfoItem label="辖区企业数量" value={`${inDistrict.length} 家`} />
           </div>
         </CardContent>
       </Card>
@@ -862,12 +907,15 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">能耗级别</TableHead>
                   <TableHead className="h-9 text-xs">企业负责人</TableHead>
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
+                  <TableHead className="h-9 text-xs">中心对口人</TableHead>
+                  <TableHead className="h-9 text-xs">园区</TableHead>
+                  <TableHead className="h-9 text-xs">集团</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {pageRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={10} className="text-center text-xs text-muted-foreground py-8">
                       暂无企业数据
                     </TableCell>
                   </TableRow>
@@ -885,6 +933,9 @@ function DistrictSelfView({
                       <TableCell className="py-2">{e.energyLevel}</TableCell>
                       <TableCell className="py-2">{e.owner}</TableCell>
                       <TableCell className="py-2 font-mono">{e.phone}</TableCell>
+                      <TableCell className="py-2">{e.cityContact ?? "—"}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
                     </TableRow>
                   ))
                 )}
