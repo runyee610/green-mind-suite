@@ -446,24 +446,6 @@ export default function SystemUsers() {
                 }}
               />
             )}
-            {view === "park_admin" && (
-              <DistrictTable
-                level="园区"
-                rows={districtUsers.filter(
-                  (r) =>
-                    r.level === "园区" &&
-                    (statusFilter === "all" || r.status === statusFilter) &&
-                    (!keyword ||
-                      r.areaName.includes(keyword) ||
-                      r.owner.includes(keyword) ||
-                      r.account.includes(keyword)),
-                )}
-                onChangePwd={(acc) => {
-                  setPwdTarget(acc);
-                  setPwdOpen(true);
-                }}
-              />
-            )}
             {view === "group_admin" && (
               <GroupTable
                 rows={groupUsers.filter(
