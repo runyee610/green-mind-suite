@@ -79,7 +79,7 @@ interface CityUser {
   managedEnterprises: number;
   phone: string;
   status: "启用" | "停用";
-  lastLogin: string;
+  enterpriseList?: string[]; // 对口企业列表
 }
 
 interface DistrictUser {
