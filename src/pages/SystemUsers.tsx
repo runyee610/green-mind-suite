@@ -750,11 +750,18 @@ function DistrictSelfView({
   self,
   enterprises,
   onChangePwd,
+  level = "区",
 }: {
   self: DistrictUser;
   enterprises: EnterpriseUser[];
   onChangePwd: (acc: string) => void;
+  level?: "区" | "园区";
 }) {
+  const isPark = level === "园区";
+  const areaLabel = isPark ? "园区名称" : "行政区划";
+  const listTitle = isPark ? "园区企业列表" : "辖区企业列表";
+  const countLabel = isPark ? "园区企业数量" : "辖区企业数量";
+
   const [kw, setKw] = useState("");
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
@@ -770,21 +777,24 @@ function DistrictSelfView({
   });
   const [draft, setDraft] = useState(info);
 
-  // 辖区企业：按 self.areaName 匹配 district 字段
-  const inDistrict = useMemo(
-    () => enterprises.filter((e) => e.district === info.areaName),
-    [enterprises, info.areaName],
+  // 范围内企业：区按 district 字段；园区按 park 字段
+  const inScope = useMemo(
+    () =>
+      enterprises.filter((e) =>
+        isPark ? e.park === info.areaName : e.district === info.areaName,
+      ),
+    [enterprises, info.areaName, isPark],
   );
   const filtered = useMemo(
     () =>
-      inDistrict.filter(
+      inScope.filter(
         (e) =>
           !kw ||
           e.enterpriseName.includes(kw) ||
           e.creditCode.includes(kw) ||
           e.owner.includes(kw),
       ),
-    [inDistrict, kw],
+    [inScope, kw],
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const curPage = Math.min(page, totalPages);
@@ -806,7 +816,7 @@ function DistrictSelfView({
 
   const fields: { key: keyof typeof info; label: string }[] = [
     { key: "account", label: "账号" },
-    { key: "areaName", label: "行政区划" },
+    { key: "areaName", label: areaLabel },
     { key: "owner", label: "负责人" },
     { key: "cityContact", label: "中心对口人" },
     { key: "phone", label: "联系电话" },
