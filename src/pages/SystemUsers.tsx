@@ -888,7 +888,7 @@ function DistrictSelfView({
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
             <div className="text-sm font-medium">
-              辖区企业列表
+              {listTitle}
               <span className="ml-2 text-xs text-muted-foreground">
                 共 {filtered.length} 家
               </span>
