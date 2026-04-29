@@ -473,22 +473,6 @@ export default function SystemUsers() {
                 }}
               />
             )}
-            {view === "group_admin" && (
-              <GroupTable
-                rows={groupUsers.filter(
-                  (r) =>
-                    (statusFilter === "all" || r.status === statusFilter) &&
-                    (!keyword ||
-                      r.groupName.includes(keyword) ||
-                      r.owner.includes(keyword) ||
-                      r.account.includes(keyword)),
-                )}
-                onChangePwd={(acc) => {
-                  setPwdTarget(acc);
-                  setPwdOpen(true);
-                }}
-              />
-            )}
             {view === "enterprise_admin" && (
               <EnterpriseTable
                 rows={enterpriseUsers.filter(
