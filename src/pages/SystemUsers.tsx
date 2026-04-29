@@ -1058,9 +1058,18 @@ function CreateEnterpriseDialog({
 
   const orgOptions = accountType ? ORG_OPTIONS_BY_TYPE[accountType] : [];
 
+  const ORG_LABEL_BY_TYPE: Record<AccountType, string> = {
+    city: "组织",
+    district: "行政区划",
+    park: "园区",
+    group: "集团",
+    enterprise: "",
+  };
+  const orgLabel = accountType ? ORG_LABEL_BY_TYPE[accountType] : "组织";
+
   const canSubmit =
     !!accountType &&
-    !!organization &&
+    (isEnterprise || !!organization) &&
     accountValid &&
     (!isEnterprise || (codeValid && enterpriseName.trim().length > 0));
 
@@ -1115,15 +1124,15 @@ function CreateEnterpriseDialog({
             </div>
           </div>
 
-          {/* 组织 */}
-          {accountType && (
+          {/* 组织 / 行政区划 / 园区 / 集团（企业类型不展示） */}
+          {accountType && !isEnterprise && (
             <div className="space-y-1.5">
               <Label className="text-xs">
-                组织 <span className="text-destructive">*</span>
+                {orgLabel} <span className="text-destructive">*</span>
               </Label>
               <Select value={organization} onValueChange={setOrganization}>
                 <SelectTrigger className="h-9 text-sm">
-                  <SelectValue placeholder="请选择组织" />
+                  <SelectValue placeholder={`请选择${orgLabel}`} />
                 </SelectTrigger>
                 <SelectContent className="max-h-72">
                   {orgOptions.map((o) => (
@@ -1281,7 +1290,7 @@ function CreateEnterpriseDialog({
               const typeLabel = ACCOUNT_TYPE_OPTIONS.find((o) => o.value === accountType)?.label;
               toast({
                 title: "账号创建成功",
-                description: `${typeLabel} · ${organization} · ${isCity ? roleType : "管理员"} · ${account}`,
+                description: `${typeLabel}${organization ? ` · ${organization}` : ""} · ${isCity ? roleType : "管理员"} · ${account}`,
               });
               onOpenChange(false);
             }}
