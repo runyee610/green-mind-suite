@@ -294,6 +294,35 @@ export default function SystemUsers() {
                 <SelectItem value="停用">停用</SelectItem>
               </SelectContent>
             </Select>
+            {view === "city_admin" && (
+              <>
+                <Select value={deptFilter} onValueChange={setDeptFilter}>
+                  <SelectTrigger className="h-8 w-44 text-xs">
+                    <SelectValue placeholder="科室" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全部科室</SelectItem>
+                    {CITY_DEPARTMENTS.map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <button
+                  onClick={() => setGroupByDept((v) => !v)}
+                  className={cn(
+                    "h-8 px-2.5 rounded-md border text-xs inline-flex items-center gap-1.5 transition-colors",
+                    groupByDept
+                      ? "border-primary/40 bg-primary/5 text-primary"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <Filter className="h-3.5 w-3.5" />
+                  按科室分组
+                </button>
+              </>
+            )}
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
               <Filter className="h-3.5 w-3.5" />
               高级筛选
