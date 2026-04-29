@@ -223,11 +223,14 @@ export default function SystemUsers() {
   const [view, setView] = useState<ViewRole>("city_admin");
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [deptFilter, setDeptFilter] = useState<string>("all");
+  const [groupByDept, setGroupByDept] = useState<boolean>(true);
 
   // 弹窗
   const [pwdOpen, setPwdOpen] = useState(false);
   const [pwdTarget, setPwdTarget] = useState<string>("");
   const [createOpen, setCreateOpen] = useState(false);
+  const [entListUser, setEntListUser] = useState<CityUser | null>(null);
 
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
