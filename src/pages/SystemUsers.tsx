@@ -1105,6 +1105,7 @@ interface EnterpriseProfile {
   creditCode: string;
   enterpriseName: string;
   enterpriseType: string;
+  monthlyReportIndustry: string;
   industry: string;
   energyTypes: string[];
   productName: string;
@@ -1149,7 +1150,8 @@ interface EnterpriseProfile {
 const SAMPLE_PROFILE: EnterpriseProfile = {
   creditCode: "913100007123456789",
   enterpriseName: "华谊化工有限公司",
-  enterpriseType: "有限责任公司（国有控股）",
+  enterpriseType: "非能源加工转换工业企业",
+  monthlyReportIndustry: "化工",
   industry: "化学原料和化学制品制造业（C26）",
   energyTypes: ["电力", "天然气", "蒸汽", "原煤"],
   productName: "聚氯乙烯（PVC）树脂",
@@ -1390,7 +1392,6 @@ function EnterpriseSelfView({
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3">
               <Field label="统一社会信用代码" value={profile.creditCode} mono />
               <Field label="企业名称" value={profile.enterpriseName} />
-              <Field label="企业类型" value={profile.enterpriseType} />
               <Field label="所属行业" value={profile.industry} />
               <Field label="所属领域" value={profile.domain} />
               <Field label="所属区" value={self.district} />
@@ -1409,6 +1410,8 @@ function EnterpriseSelfView({
 
           <Section icon={<Zap className="h-4 w-4 text-primary" />} title="能源品种与产品">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3">
+              <Field label="企业类型" value={profile.enterpriseType} />
+              <Field label="温报行业类型" value={profile.monthlyReportIndustry} />
               <div className="md:col-span-1">
                 <span className="text-muted-foreground text-[11px]">能源品种</span>
                 <div className="flex flex-wrap gap-1.5 mt-1.5">
