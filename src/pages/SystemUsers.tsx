@@ -536,51 +536,94 @@ function ActionButtons({
 function CityTable({
   rows,
   onChangePwd,
+  onViewEnterprises,
+  groupByDepartment,
 }: {
   rows: CityUser[];
   onChangePwd: (acc: string) => void;
+  onViewEnterprises: (u: CityUser) => void;
+  groupByDepartment: boolean;
 }) {
+  const groups = useMemo(() => {
+    if (!groupByDepartment) return [{ dept: "__all__", items: rows }];
+    const map = new Map<string, CityUser[]>();
+    rows.forEach((r) => {
+      if (!map.has(r.department)) map.set(r.department, []);
+      map.get(r.department)!.push(r);
+    });
+    return Array.from(map.entries()).map(([dept, items]) => ({ dept, items }));
+  }, [rows, groupByDepartment]);
+
+  const renderHeader = () => (
+    <TableHeader>
+      <TableRow className="bg-muted/40">
+        <TableHead className="h-9 text-xs">账号</TableHead>
+        <TableHead className="h-9 text-xs whitespace-nowrap">姓名</TableHead>
+        {!groupByDepartment && <TableHead className="h-9 text-xs">所属科室</TableHead>}
+        <TableHead className="h-9 text-xs">角色</TableHead>
+        <TableHead className="h-9 text-xs text-right whitespace-nowrap">对口企业</TableHead>
+        <TableHead className="h-9 text-xs">手机号</TableHead>
+        <TableHead className="h-9 text-xs">状态</TableHead>
+        <TableHead className="h-9 text-xs text-right">操作</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+
+  const renderRow = (r: CityUser) => (
+    <TableRow key={r.id} className="text-xs">
+      <TableCell className="py-2 font-mono text-foreground">{r.account}</TableCell>
+      <TableCell className="py-2 whitespace-nowrap">{r.name}</TableCell>
+      {!groupByDepartment && <TableCell className="py-2">{r.department}</TableCell>}
+      <TableCell className="py-2">
+        <Badge variant="secondary" className="text-[11px] font-normal">
+          {r.role}
+        </Badge>
+      </TableCell>
+      <TableCell className="py-2 text-right">
+        <button
+          onClick={() => onViewEnterprises(r)}
+          className="font-mono text-primary hover:underline"
+        >
+          {r.managedEnterprises.toLocaleString()}
+        </button>
+      </TableCell>
+      <TableCell className="py-2 font-mono text-muted-foreground">{r.phone}</TableCell>
+      <TableCell className="py-2">
+        <StatusBadge status={r.status} />
+      </TableCell>
+      <TableCell className="py-2">
+        <ActionButtons account={r.account} status={r.status} onChangePwd={onChangePwd} />
+      </TableCell>
+    </TableRow>
+  );
+
+  if (!groupByDepartment) {
+    return (
+      <Table>
+        {renderHeader()}
+        <TableBody>{rows.map(renderRow)}</TableBody>
+      </Table>
+    );
+  }
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-muted/40">
-          <TableHead className="h-9 text-xs">账号</TableHead>
-          <TableHead className="h-9 text-xs">姓名</TableHead>
-          <TableHead className="h-9 text-xs">所属科室</TableHead>
-          <TableHead className="h-9 text-xs">角色</TableHead>
-          <TableHead className="h-9 text-xs text-right">管辖企业数量</TableHead>
-          <TableHead className="h-9 text-xs">手机号</TableHead>
-          <TableHead className="h-9 text-xs">状态</TableHead>
-          <TableHead className="h-9 text-xs">最近登录</TableHead>
-          <TableHead className="h-9 text-xs text-right">操作</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((r) => (
-          <TableRow key={r.id} className="text-xs">
-            <TableCell className="py-2 font-mono text-foreground">{r.account}</TableCell>
-            <TableCell className="py-2">{r.name}</TableCell>
-            <TableCell className="py-2">{r.department}</TableCell>
-            <TableCell className="py-2">
-              <Badge variant="secondary" className="text-[11px] font-normal">
-                {r.role}
-              </Badge>
-            </TableCell>
-            <TableCell className="py-2 text-right font-mono">
-              {r.managedEnterprises.toLocaleString()}
-            </TableCell>
-            <TableCell className="py-2 font-mono text-muted-foreground">{r.phone}</TableCell>
-            <TableCell className="py-2">
-              <StatusBadge status={r.status} />
-            </TableCell>
-            <TableCell className="py-2 font-mono text-muted-foreground">{r.lastLogin}</TableCell>
-            <TableCell className="py-2">
-              <ActionButtons account={r.account} status={r.status} onChangePwd={onChangePwd} />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div>
+      {groups.map((g) => (
+        <div key={g.dept} className="border-b border-border last:border-b-0">
+          <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border-b border-border">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="text-xs font-medium text-foreground">{g.dept}</span>
+            <Badge variant="outline" className="text-[10px] font-normal text-muted-foreground">
+              {g.items.length} 人
+            </Badge>
+          </div>
+          <Table>
+            {renderHeader()}
+            <TableBody>{g.items.map(renderRow)}</TableBody>
+          </Table>
+        </div>
+      ))}
+    </div>
   );
 }
 
