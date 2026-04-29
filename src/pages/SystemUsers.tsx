@@ -1170,11 +1170,32 @@ function EnterpriseListDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const open = !!user;
+  const [kw, setKw] = useState("");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 15;
+
+  // 重置搜索/页码
+  const userId = user?.id ?? "";
+  useMemo(() => {
+    setKw("");
+    setPage(1);
+  }, [userId]);
+
+  const all = user?.enterpriseList ?? [];
+  const filtered = useMemo(() => {
+    const k = kw.trim().toLowerCase();
+    if (!k) return all;
+    return all.filter((e) => e.name.toLowerCase().includes(k));
+  }, [all, kw]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const curPage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
+      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col">
         <SheetHeader className="p-5 pb-3 border-b border-border">
-          <SheetTitle className="text-base">对口企业列表</SheetTitle>
+          <SheetTitle className="text-base">企业列表</SheetTitle>
           <SheetDescription className="text-xs">
             {user ? (
               <>
@@ -1187,37 +1208,98 @@ function EnterpriseListDialog({
             ) : null}
           </SheetDescription>
         </SheetHeader>
-        <div className="px-5 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
-          <span>
-            共 <span className="font-mono text-foreground">{user?.managedEnterprises.toLocaleString() ?? 0}</span> 家对口企业
-          </span>
-          <span className="text-[11px]">展示前 {user?.enterpriseList?.length ?? 0} 家</span>
-        </div>
-        <ScrollArea className="flex-1">
-          <div className="divide-y divide-border">
-            {(user?.enterpriseList ?? []).map((name, i) => (
-              <div
-                key={name + i}
-                className="flex items-center justify-between px-5 py-2.5 text-xs hover:bg-muted/40 transition-colors"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-mono text-muted-foreground tabular-nums w-6">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="truncate text-foreground">{name}</span>
-                </div>
-                <Badge variant="outline" className="text-[10px] font-normal text-muted-foreground shrink-0">
-                  对口
-                </Badge>
-              </div>
-            ))}
+
+        <div className="px-5 py-3 border-b border-border flex items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              value={kw}
+              onChange={(e) => {
+                setKw(e.target.value);
+                setPage(1);
+              }}
+              placeholder="按企业名称模糊检索"
+              className="h-8 pl-8 text-xs"
+            />
           </div>
+          <span className="text-[11px] text-muted-foreground whitespace-nowrap">
+            共 <span className="font-mono text-foreground">{filtered.length.toLocaleString()}</span> 家
+            {kw && (
+              <>
+                <span className="mx-1">/</span>
+                总 <span className="font-mono text-foreground">{all.length.toLocaleString()}</span>
+              </>
+            )}
+          </span>
+        </div>
+
+        <ScrollArea className="flex-1">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40">
+                <TableHead className="h-9 text-xs w-12">#</TableHead>
+                <TableHead className="h-9 text-xs">企业名称</TableHead>
+                <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
+                <TableHead className="h-9 text-xs">企业负责人</TableHead>
+                <TableHead className="h-9 text-xs">联系电话</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pageRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">
+                    暂无匹配的企业
+                  </TableCell>
+                </TableRow>
+              ) : (
+                pageRows.map((e, i) => (
+                  <TableRow key={e.creditCode + i} className="text-xs">
+                    <TableCell className="py-2 font-mono text-muted-foreground tabular-nums">
+                      {(curPage - 1) * PAGE_SIZE + i + 1}
+                    </TableCell>
+                    <TableCell className="py-2 text-foreground">{e.name}</TableCell>
+                    <TableCell className="py-2 font-mono text-muted-foreground">
+                      {e.creditCode}
+                    </TableCell>
+                    <TableCell className="py-2">{e.owner}</TableCell>
+                    <TableCell className="py-2 font-mono text-muted-foreground">
+                      {e.phone}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </ScrollArea>
-        <div className="p-4 border-t border-border flex justify-end gap-2">
-          <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
-            <Download className="h-3.5 w-3.5" />
-            导出名单
-          </Button>
+
+        <div className="px-5 py-2.5 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            第 <span className="font-mono text-foreground">{curPage}</span> / {totalPages} 页
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={curPage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              上一页
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={curPage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              下一页
+            </Button>
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 ml-2">
+              <Download className="h-3.5 w-3.5" />
+              导出
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
