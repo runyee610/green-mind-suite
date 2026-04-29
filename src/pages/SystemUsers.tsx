@@ -237,12 +237,25 @@ const groupUsers: GroupUser[] = [
 ];
 
 const enterpriseUsers: EnterpriseUser[] = [
-  { id: "E001", account: "huayi_chem01", enterpriseName: "华谊化工有限公司", creditCode: "913100007123456789", energyLevel: "2000吨标煤及以上", industry: "化学原料和化学制品制造业", district: "金山区", owner: "顾建华", phone: "138****8001", status: "启用" },
-  { id: "E002", account: "baoshan_steel", enterpriseName: "宝山钢铁股份有限公司", creditCode: "913100001234567890", energyLevel: "2000吨标煤及以上", industry: "黑色金属冶炼和压延加工业", district: "宝山区", owner: "胡建军", phone: "138****8002", status: "启用" },
-  { id: "E003", account: "smic_fab", enterpriseName: "中芯国际集成电路", creditCode: "913100009876543210", energyLevel: "2000吨标煤及以上", industry: "计算机、通信和其他电子设备制造业", district: "浦东新区", owner: "林文博", phone: "138****8003", status: "启用" },
-  { id: "E004", account: "syp_paper", enterpriseName: "申永纸业有限公司", creditCode: "913100005566778899", energyLevel: "1000-2000吨标煤", industry: "造纸和纸制品业", district: "青浦区", owner: "梁慧敏", phone: "138****8004", status: "启用" },
-  { id: "E005", account: "jh_textile", enterpriseName: "锦华纺织有限公司", creditCode: "913100003344556677", energyLevel: "1000吨标煤以下", industry: "纺织业", district: "松江区", owner: "范晓琳", phone: "138****8005", status: "停用" },
-  { id: "E006", account: "yh_food", enterpriseName: "永和食品制造有限公司", creditCode: "913100002233445566", energyLevel: "1000吨标煤以下", industry: "食品制造业", district: "嘉定区", owner: "高明月", phone: "138****8006", status: "启用" },
+  { id: "E001", account: "huayi_chem01", enterpriseName: "华谊化工有限公司", creditCode: "913100007123456789", energyLevel: "2000吨标煤及以上", industry: "化学原料和化学制品制造业", district: "金山区", owner: "顾建华", phone: "13800138001", status: "启用", cityContact: "王思源", park: "上海化学工业园", group: "华谊集团" },
+  { id: "E002", account: "baoshan_steel", enterpriseName: "宝山钢铁股份有限公司", creditCode: "913100001234567890", energyLevel: "2000吨标煤及以上", industry: "黑色金属冶炼和压延加工业", district: "宝山区", owner: "胡建军", phone: "13800138002", status: "启用", cityContact: "陈雨涵", park: "宝山钢铁产业园", group: "宝武钢铁集团" },
+  { id: "E003", account: "smic_fab", enterpriseName: "中芯国际集成电路", creditCode: "913100009876543210", energyLevel: "2000吨标煤及以上", industry: "计算机、通信和其他电子设备制造业", district: "浦东新区", owner: "林文博", phone: "13800138003", status: "启用", cityContact: "王思源", park: "张江高科园区", group: "—" },
+  { id: "E004", account: "syp_paper", enterpriseName: "申永纸业有限公司", creditCode: "913100005566778899", energyLevel: "1000-2000吨标煤", industry: "造纸和纸制品业", district: "青浦区", owner: "梁慧敏", phone: "13800138004", status: "启用", cityContact: "陈雨涵", park: "青浦工业园", group: "—" },
+  { id: "E005", account: "jh_textile", enterpriseName: "锦华纺织有限公司", creditCode: "913100003344556677", energyLevel: "1000吨标煤以下", industry: "纺织业", district: "松江区", owner: "范晓琳", phone: "13800138005", status: "停用", cityContact: "王思源", park: "松江出口加工区", group: "—" },
+  { id: "E006", account: "yh_food", enterpriseName: "永和食品制造有限公司", creditCode: "913100002233445566", energyLevel: "1000吨标煤以下", industry: "食品制造业", district: "嘉定区", owner: "高明月", phone: "13800138006", status: "启用", cityContact: "陈雨涵", park: "嘉定工业区", group: "光明集团" },
+  // 黄浦区 辖区企业（区管理员演示数据）
+  { id: "E101", account: "hp_printing", enterpriseName: "黄浦印务集团有限公司", creditCode: "913101010001110011", energyLevel: "1000-2000吨标煤", industry: "印刷和记录媒介复制业", district: "黄浦区", owner: "陈志远", phone: "13900139001", status: "启用", cityContact: "王思源", park: "外滩金融商务区", group: "上海文化传媒集团" },
+  { id: "E102", account: "hp_pharma", enterpriseName: "黄浦医药制造股份", creditCode: "913101010001110022", energyLevel: "2000吨标煤及以上", industry: "医药制造业", district: "黄浦区", owner: "苏婉清", phone: "13900139002", status: "启用", cityContact: "王思源", park: "—", group: "上药集团" },
+  { id: "E103", account: "hp_textile", enterpriseName: "申城针织有限公司", creditCode: "913101010001110033", energyLevel: "1000吨标煤以下", industry: "纺织服装、服饰业", district: "黄浦区", owner: "周慧敏", phone: "13900139003", status: "启用", cityContact: "陈雨涵", park: "—", group: "—" },
+  { id: "E104", account: "hp_machine", enterpriseName: "上海精密机械制造厂", creditCode: "913101010001110044", energyLevel: "1000-2000吨标煤", industry: "通用设备制造业", district: "黄浦区", owner: "李建国", phone: "13900139004", status: "启用", cityContact: "陈雨涵", park: "南外滩制造业园", group: "上海电气集团" },
+  { id: "E105", account: "hp_chem", enterpriseName: "黄浦精细化工有限公司", creditCode: "913101010001110055", energyLevel: "2000吨标煤及以上", industry: "化学原料和化学制品制造业", district: "黄浦区", owner: "张文斌", phone: "13900139005", status: "启用", cityContact: "王思源", park: "—", group: "华谊集团" },
+  { id: "E106", account: "hp_food", enterpriseName: "老城厢食品工业公司", creditCode: "913101010001110066", energyLevel: "1000吨标煤以下", industry: "食品制造业", district: "黄浦区", owner: "钱明珠", phone: "13900139006", status: "启用", cityContact: "陈雨涵", park: "—", group: "光明集团" },
+  { id: "E107", account: "hp_print2", enterpriseName: "外滩印刷厂", creditCode: "913101010001110077", energyLevel: "1000吨标煤以下", industry: "印刷和记录媒介复制业", district: "黄浦区", owner: "黄文翰", phone: "13900139007", status: "停用", cityContact: "王思源", park: "—", group: "—" },
+  { id: "E108", account: "hp_paper", enterpriseName: "黄浦造纸有限责任公司", creditCode: "913101010001110088", energyLevel: "1000-2000吨标煤", industry: "造纸和纸制品业", district: "黄浦区", owner: "孙佳怡", phone: "13900139008", status: "启用", cityContact: "陈雨涵", park: "—", group: "—" },
+  { id: "E109", account: "hp_metal", enterpriseName: "申江有色金属加工", creditCode: "913101010001110099", energyLevel: "2000吨标煤及以上", industry: "有色金属冶炼和压延加工业", district: "黄浦区", owner: "罗振华", phone: "13900139009", status: "启用", cityContact: "王思源", park: "南外滩制造业园", group: "—" },
+  { id: "E110", account: "hp_glass", enterpriseName: "上海玻璃制品厂", creditCode: "913101010001110100", energyLevel: "1000吨标煤以下", industry: "非金属矿物制品业", district: "黄浦区", owner: "韩雪梅", phone: "13900139010", status: "启用", cityContact: "陈雨涵", park: "—", group: "—" },
+  { id: "E111", account: "hp_pharma2", enterpriseName: "申城生物制药", creditCode: "913101010001110111", energyLevel: "1000-2000吨标煤", industry: "医药制造业", district: "黄浦区", owner: "赵瑞祥", phone: "13900139011", status: "启用", cityContact: "王思源", park: "—", group: "上药集团" },
+  { id: "E112", account: "hp_furniture", enterpriseName: "黄浦家具制造有限公司", creditCode: "913101010001110122", energyLevel: "1000吨标煤以下", industry: "家具制造业", district: "黄浦区", owner: "马思齐", phone: "13900139012", status: "启用", cityContact: "陈雨涵", park: "—", group: "—" },
 ];
 
 // ===== 工具函数 =====
