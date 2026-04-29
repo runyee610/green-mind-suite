@@ -602,7 +602,7 @@ function CityTable({
       </TableCell>
       <TableCell className="py-2 font-mono text-muted-foreground">{r.phone}</TableCell>
       <TableCell className="py-2">
-        <StatusBadge status={r.status} />
+        <StatusBadge status={r.status} subtle />
       </TableCell>
       <TableCell className="py-2">
         <ActionButtons account={r.account} status={r.status} onChangePwd={onChangePwd} />
