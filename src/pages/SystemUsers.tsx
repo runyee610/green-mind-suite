@@ -341,10 +341,10 @@ export default function SystemUsers() {
               <>
                 <Select value={deptFilter} onValueChange={setDeptFilter}>
                   <SelectTrigger className="h-8 w-44 text-xs">
-                    <SelectValue placeholder="科室" />
+                    <SelectValue placeholder="组织" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">全部科室</SelectItem>
+                    <SelectItem value="all">全部组织</SelectItem>
                     {CITY_DEPARTMENTS.map((d) => (
                       <SelectItem key={d} value={d}>
                         {d}
@@ -362,7 +362,7 @@ export default function SystemUsers() {
                   )}
                 >
                   <Filter className="h-3.5 w-3.5" />
-                  按科室分组
+                  按组织分组
                 </button>
               </>
             )}
