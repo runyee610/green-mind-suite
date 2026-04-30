@@ -1239,7 +1239,7 @@ const SAMPLE_CERTS: CertRow[] = [
   { id: 3, name: "周慧敏", type: "能源管理岗位证书", certNo: "NYGL-2022-019987", issuer: "中国节能协会", issueDate: "2022-04-09" },
 ];
 
-function EnterpriseSelfView({
+export function EnterpriseSelfView({
   self,
   onChangePwd,
 }: {
