@@ -42,6 +42,7 @@ const App = () => (
           <Route path="/green-mfg" element={<GreenMfg />} />
           <Route path="/benchmark" element={<Benchmark />} />
           <Route path="/enterprise" element={<Enterprise />} />
+          <Route path="/enterprise-detail/:key" element={<EnterpriseDetail />} />
           <Route path="/system" element={<System />} />
           <Route path="/system/users" element={<SystemUsers />} />
           <Route path="/system/permissions" element={<SystemPermissions />} />
