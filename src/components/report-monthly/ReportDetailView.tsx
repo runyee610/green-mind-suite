@@ -341,7 +341,7 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
             last={round(steamUnitLast, 6)}
             rate={changeRate(steamUnitCurr, steamUnitLast)}
             formula="蒸汽综合能耗（等价值） ÷ 蒸汽产量"
-            source={`F.蒸汽综合能耗 ${detail.steamEnergyYTD} tce ÷ 蒸汽产量 ${detail.steamOutputYTD.toLocaleString()} 吨`}
+            source={`蒸汽综合能耗 ${detail.steamEnergyYTD} tce ÷ 蒸汽产量 ${detail.steamOutputYTD.toLocaleString()} 吨`}
           />
         </div>
       </DetailSection>
