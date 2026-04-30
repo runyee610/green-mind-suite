@@ -15,6 +15,7 @@ import Assets from "./pages/Assets.tsx";
 import GreenMfg from "./pages/GreenMfg.tsx";
 import Benchmark from "./pages/Benchmark.tsx";
 import Enterprise from "./pages/Enterprise.tsx";
+import EnterpriseDetail from "./pages/EnterpriseDetail.tsx";
 import System from "./pages/System.tsx";
 import SystemUsers from "./pages/SystemUsers.tsx";
 import SystemPermissions from "./pages/SystemPermissions.tsx";
