@@ -47,7 +47,8 @@ export default function EnterpriseDetail() {
     <AppLayout
       title="企业详情"
       subtitle={`查看 ${ent.enterpriseName} 的完整档案信息`}
-      headerExtra={
+    >
+      <div className="mb-3">
         <Button
           variant="outline"
           size="sm"
@@ -57,8 +58,7 @@ export default function EnterpriseDetail() {
           <ArrowLeft className="h-3.5 w-3.5" />
           返回
         </Button>
-      }
-    >
+      </div>
       <EnterpriseSelfView
         self={ent}
         onChangePwd={(acc) =>
