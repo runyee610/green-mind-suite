@@ -294,16 +294,57 @@ export default function ReportMonthlyFilling() {
                           {energy.map((row) => {
                             const r = rateOf(row.consumptionYTD, row.consumptionYTDLast);
                             const abnormal = r !== null && Math.abs(r) > 10 && row.consumptionYTD > 0;
+                            if (row.isGreen) {
+                              return (
+                                <>
+                                  <TableRow key={`${row.id}-label`} className="hover:bg-success/5">
+                                    <TableCell colSpan={8} className="bg-success/10 py-2">
+                                      <div className="flex items-center gap-2 whitespace-nowrap text-sm font-semibold text-success">
+                                        <Leaf className="h-4 w-4" />
+                                        {row.name}
+                                        <Badge variant="outline" className="h-5 border-success/40 bg-success/15 px-1.5 text-[10px] text-success">
+                                          可在综合能耗中扣除
+                                        </Badge>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                  <TableRow key={row.id} className="align-top bg-success/[0.03]">
+                                    <TableCell className="text-muted-foreground">—</TableCell>
+                                    <TableCell className="text-muted-foreground">{row.unit}</TableCell>
+                                    <TableCell>
+                                      <NumInput value={row.consumptionYTD} onChange={(v) => updateEnergy(row.id, "consumptionYTD", v)} placeholder="本月填写" />
+                                      <div className="mt-1 font-mono text-[11px] text-muted-foreground">去年 {row.consumptionYTDLast.toLocaleString()}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <span className={cn("inline-flex items-center rounded border px-1.5 py-0.5 font-mono text-[11px]", abnormal ? "border-destructive/40 bg-destructive/10 text-destructive" : "border-border bg-muted/40 text-muted-foreground")}>
+                                        {fmtRate(r)}
+                                      </span>
+                                    </TableCell>
+                                    <TableCell>
+                                      <NumInput value={row.materialYTD} onChange={(v) => updateEnergy(row.id, "materialYTD", v)} />
+                                      <div className="mt-1 font-mono text-[11px] text-muted-foreground">去年 {row.materialYTDLast.toLocaleString()}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <NumInput value={row.nonIndustrialYTD} onChange={(v) => updateEnergy(row.id, "nonIndustrialYTD", v)} />
+                                      <div className="mt-1 font-mono text-[11px] text-muted-foreground">去年 {row.nonIndustrialYTDLast.toLocaleString()}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <NumInput value={row.outputYTD} onChange={(v) => updateEnergy(row.id, "outputYTD", v)} />
+                                      <div className="mt-1 font-mono text-[11px] text-muted-foreground">去年 {row.outputYTDLast.toLocaleString()}</div>
+                                    </TableCell>
+                                    <TableCell className="font-mono text-[11px] text-muted-foreground">
+                                      <div>等价 {row.coefEquivalent}</div>
+                                      <div>当量 {row.coefStandard}</div>
+                                    </TableCell>
+                                  </TableRow>
+                                </>
+                              );
+                            }
                             return (
                               <TableRow key={row.id} className="align-top">
                                 <TableCell>
                                   <div className="flex items-center gap-1.5 font-medium">
                                     {row.name}
-                                    {row.isGreen ? (
-                                      <Badge variant="outline" className="h-5 gap-1 border-success/40 bg-success/10 px-1.5 text-[10px] text-success">
-                                        <Leaf className="h-2.5 w-2.5" />绿色
-                                      </Badge>
-                                    ) : null}
                                   </div>
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">{row.unit}</TableCell>
