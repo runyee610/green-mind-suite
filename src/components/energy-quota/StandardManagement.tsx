@@ -128,18 +128,23 @@ export function StandardManagement() {
   };
 
   const renderYears = (years: number[]) => {
-    if (years.length <= 1) {
-      return <span className="font-mono text-xs text-foreground">{years[0] ? `${years[0]} 年度` : "-"}</span>;
-    }
+    if (!years.length) return <span className="text-xs text-muted-foreground">-</span>;
+    const label = years.length === 1 ? `${years[0]} 年度` : `多年度（${years.length}）`;
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge variant="outline" className="cursor-help border-primary/30 bg-primary/8 text-primary font-medium">
-            多年度（{years.length}）
+          <Badge
+            variant="outline"
+            className="cursor-help border-primary/30 bg-primary/8 text-primary font-medium font-mono"
+          >
+            {label}
           </Badge>
         </TooltipTrigger>
-        <TooltipContent>
-          <div className="font-mono text-xs">{years.join("、")}</div>
+        <TooltipContent side="top">
+          <div className="font-mono text-xs leading-relaxed">
+            <div className="mb-1 text-[10px] text-muted-foreground">适用年份</div>
+            {years.slice().sort((a, b) => a - b).join("、")}
+          </div>
         </TooltipContent>
       </Tooltip>
     );
