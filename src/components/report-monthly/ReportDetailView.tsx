@@ -255,52 +255,9 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
           />
         </div>
       </DetailSection>
-        <div className="grid gap-3 md:grid-cols-2">
-          <DualField
-            label="综合能耗（等价值）"
-            unit="吨标准煤"
-            kind="computed"
-            current={round(totalEqCurr)}
-            last={round(totalEqLast)}
-            rate={changeRate(totalEqCurr, totalEqLast)}
-            formula="企业消费等价值总量 − 外供等价值总量"
-            source={`B.合计（总量等价值）${round(sumConsEqCurr)} − 外供等价值总量 ${round(sumOutEqCurr)}`}
-          />
-          <DualField
-            label="综合能耗（当量值）"
-            unit="吨标准煤"
-            kind="computed"
-            current={round(totalStCurr)}
-            last={round(totalStLast)}
-            rate={changeRate(totalStCurr, totalStLast)}
-            formula="企业消费当量值总量 − 外供当量值总量"
-            source={`B.合计（总量当量值）${round(sumConsStCurr)} − 外供当量值总量 ${round(sumOutStCurr)}`}
-          />
-          <DualField
-            label="综合能耗（扣除绿电绿证可再生能源 - 等价值）"
-            unit="吨标准煤"
-            kind="computed"
-            current={round(totalEqExGreenCurr)}
-            last={round(totalEqExGreenLast)}
-            rate={changeRate(totalEqExGreenCurr, totalEqExGreenLast)}
-            formula="综合能耗等价值 − ∑(绿电+绿证+可再生能源) × 等价值折标系数"
-            source={`综合能耗等价值 ${round(totalEqCurr)} − 绿色能源等价值合计 ${round(greenEqCurr)}`}
-          />
-          <DualField
-            label="综合能耗（扣除绿电绿证可再生能源 - 当量值）"
-            unit="吨标准煤"
-            kind="computed"
-            current={round(totalStExGreenCurr)}
-            last={round(totalStExGreenLast)}
-            rate={changeRate(totalStExGreenCurr, totalStExGreenLast)}
-            formula="综合能耗当量值 − ∑(绿电+绿证+可再生能源) × 当量值折标系数"
-            source={`综合能耗当量值 ${round(totalStCurr)} − 绿色能源当量值合计 ${round(greenStCurr)}`}
-          />
-        </div>
-      </DetailSection>
 
-      {/* === D. 工业产值与单位能耗 === */}
-      <DetailSection icon={Factory} title="D. 工业产值与单位能耗">
+      {/* === 工业产值与单位能耗 === */}
+      <DetailSection id="section-output" icon={Factory} title="工业产值与单位能耗">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           <DualField
             label="工业生产总值"
