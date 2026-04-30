@@ -74,6 +74,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 // ===== 角色与视图定义 =====
 
@@ -135,7 +136,7 @@ interface GroupUser {
   status: "启用" | "停用";
 }
 
-interface EnterpriseUser {
+export interface EnterpriseUser {
   id: string;
   account: string;
   enterpriseName: string;
@@ -245,7 +246,7 @@ const groupUsers: GroupUser[] = [
   { id: "G003", account: "shdz_group", groupName: "上海电气集团", owner: "郑丽华", subsidiaries: ["电气重工", "电气风电", "电气输配电"], phone: "138****7003", status: "启用" },
 ];
 
-const enterpriseUsers: EnterpriseUser[] = [
+export const enterpriseUsers: EnterpriseUser[] = [
   { id: "E001", account: "huayi_chem01", enterpriseName: "华谊化工有限公司", creditCode: "913100007123456789", energyLevel: "2000吨标煤及以上", industry: "化学原料和化学制品制造业", district: "金山区", owner: "顾建华", phone: "13800138001", status: "启用", cityContact: "王思源", park: "上海化学工业园", group: "华谊集团" },
   { id: "E002", account: "baoshan_steel", enterpriseName: "宝山钢铁股份有限公司", creditCode: "913100001234567890", energyLevel: "2000吨标煤及以上", industry: "黑色金属冶炼和压延加工业", district: "宝山区", owner: "胡建军", phone: "13800138002", status: "启用", cityContact: "陈雨涵", park: "宝山钢铁产业园", group: "宝武钢铁集团" },
   { id: "E003", account: "smic_fab", enterpriseName: "中芯国际集成电路", creditCode: "913100009876543210", energyLevel: "2000吨标煤及以上", industry: "计算机、通信和其他电子设备制造业", district: "浦东新区", owner: "林文博", phone: "13800138003", status: "启用", cityContact: "王思源", park: "张江高科园区", group: "—" },
@@ -943,7 +944,14 @@ function DistrictSelfView({
                       <TableCell className="py-2 text-muted-foreground">
                         {(curPage - 1) * PAGE_SIZE + idx + 1}
                       </TableCell>
-                      <TableCell className="py-2 font-medium">{e.enterpriseName}</TableCell>
+                      <TableCell className="py-2 font-medium">
+                        <Link
+                          to={`/enterprise-detail/${encodeURIComponent(e.enterpriseName)}`}
+                          className="text-primary hover:underline"
+                        >
+                          {e.enterpriseName}
+                        </Link>
+                      </TableCell>
                       <TableCell className="py-2 font-mono text-muted-foreground">
                         {e.creditCode}
                       </TableCell>
@@ -1073,9 +1081,17 @@ function GroupTable({
             <TableCell className="py-2">
               <div className="flex flex-wrap gap-1 max-w-md">
                 {r.subsidiaries.slice(0, 3).map((s) => (
-                  <Badge key={s} variant="outline" className="text-[10px] font-normal">
-                    {s}
-                  </Badge>
+                  <Link
+                    key={s}
+                    to={`/enterprise-detail/${encodeURIComponent(s)}`}
+                  >
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] font-normal cursor-pointer hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors"
+                    >
+                      {s}
+                    </Badge>
+                  </Link>
                 ))}
                 {r.subsidiaries.length > 3 && (
                   <Badge variant="secondary" className="text-[10px] font-normal">
@@ -1239,7 +1255,7 @@ const SAMPLE_CERTS: CertRow[] = [
   { id: 3, name: "周慧敏", type: "能源管理岗位证书", certNo: "NYGL-2022-019987", issuer: "中国节能协会", issueDate: "2022-04-09" },
 ];
 
-function EnterpriseSelfView({
+export function EnterpriseSelfView({
   self,
   onChangePwd,
 }: {
@@ -2206,7 +2222,14 @@ function EnterpriseListDialog({
                     <TableCell className="py-2 font-mono text-muted-foreground tabular-nums">
                       {(curPage - 1) * PAGE_SIZE + i + 1}
                     </TableCell>
-                    <TableCell className="py-2 text-foreground">{e.name}</TableCell>
+                    <TableCell className="py-2 text-foreground">
+                      <Link
+                        to={`/enterprise-detail/${encodeURIComponent(e.name)}`}
+                        className="text-primary hover:underline"
+                      >
+                        {e.name}
+                      </Link>
+                    </TableCell>
                     <TableCell className="py-2 font-mono text-muted-foreground">
                       {e.creditCode}
                     </TableCell>

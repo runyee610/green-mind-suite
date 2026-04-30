@@ -15,6 +15,7 @@ import Assets from "./pages/Assets.tsx";
 import GreenMfg from "./pages/GreenMfg.tsx";
 import Benchmark from "./pages/Benchmark.tsx";
 import Enterprise from "./pages/Enterprise.tsx";
+import EnterpriseDetail from "./pages/EnterpriseDetail.tsx";
 import System from "./pages/System.tsx";
 import SystemUsers from "./pages/SystemUsers.tsx";
 import SystemPermissions from "./pages/SystemPermissions.tsx";
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/green-mfg" element={<GreenMfg />} />
           <Route path="/benchmark" element={<Benchmark />} />
           <Route path="/enterprise" element={<Enterprise />} />
+          <Route path="/enterprise-detail/:key" element={<EnterpriseDetail />} />
           <Route path="/system" element={<System />} />
           <Route path="/system/users" element={<SystemUsers />} />
           <Route path="/system/permissions" element={<SystemPermissions />} />
