@@ -1081,9 +1081,17 @@ function GroupTable({
             <TableCell className="py-2">
               <div className="flex flex-wrap gap-1 max-w-md">
                 {r.subsidiaries.slice(0, 3).map((s) => (
-                  <Badge key={s} variant="outline" className="text-[10px] font-normal">
-                    {s}
-                  </Badge>
+                  <Link
+                    key={s}
+                    to={`/enterprise-detail/${encodeURIComponent(s)}`}
+                  >
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] font-normal cursor-pointer hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors"
+                    >
+                      {s}
+                    </Badge>
+                  </Link>
                 ))}
                 {r.subsidiaries.length > 3 && (
                   <Badge variant="secondary" className="text-[10px] font-normal">
