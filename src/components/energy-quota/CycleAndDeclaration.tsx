@@ -86,10 +86,28 @@ export function CycleAndDeclaration() {
     setDeleteCycleTarget(null);
   };
 
-  const confirmEditStandard = () => {
+  const confirmEditStandard = (codes: string[]) => {
     if (!editStandardTarget) return;
-    toast.success(`已修改 ${editStandardTarget.name} 的适用标准，原填报数据已清空`);
-    setEnterprises((prev) => prev.map((e) => (e.id === editStandardTarget.id ? { ...e, status: "未填报", hasData: false } : e)));
+    const wasHasData = editStandardTarget.hasData;
+    const changed =
+      codes.length !== editStandardTarget.standardCodes.length ||
+      codes.some((c) => !editStandardTarget.standardCodes.includes(c));
+    setEnterprises((prev) =>
+      prev.map((e) =>
+        e.id === editStandardTarget.id
+          ? {
+              ...e,
+              standardCodes: [...codes],
+              ...(wasHasData && changed ? { status: "未填报" as const, hasData: false } : {}),
+            }
+          : e,
+      ),
+    );
+    if (wasHasData && changed) {
+      toast.success(`已修改 ${editStandardTarget.name} 的适用标准，原填报数据已清空`);
+    } else {
+      toast.success(`已更新 ${editStandardTarget.name} 的适用标准`);
+    }
     setEditStandardTarget(null);
   };
 
