@@ -122,8 +122,19 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
         </span>
       </div>
 
-      {/* === A. 能源品种明细表 === */}
-      <DetailSection icon={Flame} title="A. 能源品种消费明细" subtitle="能源品种与计量单位继承自企业基本信息所勾选的能源品种">
+      {/* === 锚点导航 === */}
+      <AnchorNav
+        items={[
+          { id: "section-energy-detail", label: "能源品种消费明细" },
+          { id: "section-total-energy", label: "综合能耗" },
+          { id: "section-output", label: "工业产值与单位能耗" },
+          { id: "section-carbon", label: "碳排放" },
+          { id: "section-steam", label: "蒸汽相关指标" },
+        ]}
+      />
+
+      {/* === 能源品种明细表 === */}
+      <DetailSection id="section-energy-detail" icon={Flame} title="能源品种消费明细" subtitle="能源品种与计量单位继承自企业基本信息所勾选的能源品种">
         <div className="overflow-x-auto rounded-md border border-border">
           <Table>
             <TableHeader>
