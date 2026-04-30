@@ -617,18 +617,29 @@ function ComputedHint({ label, value, formula }: { label: string; value: string;
   );
 }
 
-function CalcRow({ label, value, unit, icon: Icon, highlight }: { label: string; value: string; unit?: string; icon: typeof Sigma; highlight?: boolean }) {
-  return (
-    <div className="flex items-start justify-between gap-2">
+function CalcRow({ label, value, unit, icon: Icon, highlight, formula }: { label: string; value: string; unit?: string; icon: typeof Sigma; highlight?: boolean; formula?: string }) {
+  const content = (
+    <div className={cn("flex items-start justify-between gap-2 rounded px-1 py-0.5", formula && "cursor-help hover:bg-primary/5")}>
       <div className="flex items-center gap-1.5 text-muted-foreground">
         <Icon className="h-3 w-3" />
         <span>{label}</span>
+        {formula ? <HelpCircle className="h-2.5 w-2.5 text-muted-foreground/60" /> : null}
       </div>
       <div className={cn("text-right font-mono text-xs", highlight ? "font-semibold text-primary" : "text-foreground")}>
         {value}
         {unit ? <span className="ml-1 text-[10px] text-muted-foreground">{unit}</span> : null}
       </div>
     </div>
+  );
+  if (!formula) return content;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{content}</TooltipTrigger>
+      <TooltipContent side="left" className="max-w-xs text-xs">
+        <div className="text-[10px] uppercase tracking-wide text-primary">计算公式</div>
+        <div className="mt-0.5 font-mono">{formula}</div>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
