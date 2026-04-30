@@ -245,7 +245,7 @@ const groupUsers: GroupUser[] = [
   { id: "G003", account: "shdz_group", groupName: "上海电气集团", owner: "郑丽华", subsidiaries: ["电气重工", "电气风电", "电气输配电"], phone: "138****7003", status: "启用" },
 ];
 
-const enterpriseUsers: EnterpriseUser[] = [
+export const enterpriseUsers: EnterpriseUser[] = [
   { id: "E001", account: "huayi_chem01", enterpriseName: "华谊化工有限公司", creditCode: "913100007123456789", energyLevel: "2000吨标煤及以上", industry: "化学原料和化学制品制造业", district: "金山区", owner: "顾建华", phone: "13800138001", status: "启用", cityContact: "王思源", park: "上海化学工业园", group: "华谊集团" },
   { id: "E002", account: "baoshan_steel", enterpriseName: "宝山钢铁股份有限公司", creditCode: "913100001234567890", energyLevel: "2000吨标煤及以上", industry: "黑色金属冶炼和压延加工业", district: "宝山区", owner: "胡建军", phone: "13800138002", status: "启用", cityContact: "陈雨涵", park: "宝山钢铁产业园", group: "宝武钢铁集团" },
   { id: "E003", account: "smic_fab", enterpriseName: "中芯国际集成电路", creditCode: "913100009876543210", energyLevel: "2000吨标煤及以上", industry: "计算机、通信和其他电子设备制造业", district: "浦东新区", owner: "林文博", phone: "13800138003", status: "启用", cityContact: "王思源", park: "张江高科园区", group: "—" },
