@@ -944,7 +944,14 @@ function DistrictSelfView({
                       <TableCell className="py-2 text-muted-foreground">
                         {(curPage - 1) * PAGE_SIZE + idx + 1}
                       </TableCell>
-                      <TableCell className="py-2 font-medium">{e.enterpriseName}</TableCell>
+                      <TableCell className="py-2 font-medium">
+                        <Link
+                          to={`/enterprise-detail/${encodeURIComponent(e.enterpriseName)}`}
+                          className="text-primary hover:underline"
+                        >
+                          {e.enterpriseName}
+                        </Link>
+                      </TableCell>
                       <TableCell className="py-2 font-mono text-muted-foreground">
                         {e.creditCode}
                       </TableCell>
