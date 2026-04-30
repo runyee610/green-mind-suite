@@ -74,6 +74,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 // ===== 角色与视图定义 =====
 
