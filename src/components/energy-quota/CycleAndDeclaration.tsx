@@ -303,8 +303,8 @@ export function CycleAndDeclaration() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => { if (e.hasData) setEditStandardTarget(e); else toast.info("可直接修改标准"); }}>
-                            <Edit className="mr-2 h-3.5 w-3.5" />编辑
+                          <DropdownMenuItem onClick={() => setEditStandardTarget(e)}>
+                            <Edit className="mr-2 h-3.5 w-3.5" />编辑标准
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setHistoryTarget(e)}>
                             <History className="mr-2 h-3.5 w-3.5" />历史
