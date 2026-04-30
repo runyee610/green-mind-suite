@@ -135,7 +135,7 @@ interface GroupUser {
   status: "启用" | "停用";
 }
 
-interface EnterpriseUser {
+export interface EnterpriseUser {
   id: string;
   account: string;
   enterpriseName: string;
