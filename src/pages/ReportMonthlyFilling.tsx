@@ -505,23 +505,44 @@ export default function ReportMonthlyFilling() {
             </div>
 
             {/* 右侧实时计算面板 */}
-            <aside className="space-y-3 lg:sticky lg:top-4 lg:self-start">
-              <Card className="border-primary/30 bg-primary/[0.03]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <Calculator className="h-4 w-4 text-primary" /> 实时计算结果
+            <aside className="space-y-3 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+              <Card className="border-2 border-primary/40 bg-gradient-to-br from-primary/[0.06] to-primary/[0.02] shadow-lg ring-1 ring-primary/20">
+                <CardHeader className="sticky top-0 z-10 rounded-t-lg border-b border-primary/20 bg-primary/10 pb-2 backdrop-blur">
+                  <CardTitle className="flex items-center justify-between gap-2 text-sm">
+                    <span className="flex items-center gap-2">
+                      <Calculator className="h-4 w-4 text-primary" />
+                      <span className="text-primary">实时计算结果</span>
+                    </span>
+                    <Badge variant="outline" className="h-5 gap-1 border-primary/40 bg-background px-1.5 text-[10px] text-primary">
+                      <Sparkles className="h-2.5 w-2.5" />实时
+                    </Badge>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2.5 text-xs">
-                  <CalcRow label="合计（总量等价值）" value={`${round(calc.consEqCurr)} tce`} icon={Sigma} />
-                  <CalcRow label="合计（总量当量值）" value={`${round(calc.consStCurr)} tce`} icon={Sigma} />
+                <CardContent className="space-y-3 py-3 text-xs">
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">① 总量合计</div>
+                    <CalcRow label="总量（等价值）" value={`${round(calc.consEqCurr)} tce`} icon={Sigma} formula="∑ 各能源消费量 × 等价折标系数" />
+                    <CalcRow label="总量（当量值）" value={`${round(calc.consStCurr)} tce`} icon={Sigma} formula="∑ 各能源消费量 × 当量折标系数" />
+                  </div>
                   <Separator />
-                  <CalcRow label="综合能耗（等价值）" value={`${round(calc.totalEqCurr)} tce`} icon={Database} highlight />
-                  <CalcRow label="综合能耗（当量值）" value={`${round(calc.totalStCurr)} tce`} icon={Database} highlight />
-                  <CalcRow label="扣除绿电（等价值）" value={`${round(calc.totalEqExGreenCurr)} tce`} icon={Leaf} />
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">② 综合能耗（扣除外供）</div>
+                    <CalcRow label="综合能耗（等价值）" value={`${round(calc.totalEqCurr)} tce`} icon={Database} highlight formula="总量（等价值） − 外供量（等价值）" />
+                    <CalcRow label="综合能耗（当量值）" value={`${round(calc.totalStCurr)} tce`} icon={Database} highlight formula="总量（当量值） − 外供量（当量值）" />
+                  </div>
+                  <div className="space-y-1.5 rounded-md border border-success/40 bg-success/[0.07] p-2">
+                    <div className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-success">
+                      <Leaf className="h-3 w-3" />③ 扣除绿电后综合能耗
+                    </div>
+                    <CalcRow label="扣除绿电（等价值）" value={`${round(calc.totalEqExGreenCurr)} tce`} icon={Leaf} formula="综合能耗（等价值） − 绿电消费量 × 等价折标系数" />
+                    <CalcRow label="扣除绿电（当量值）" value={`${round(calc.totalStExGreenCurr)} tce`} icon={Leaf} formula="综合能耗（当量值） − 绿电消费量 × 当量折标系数" />
+                  </div>
                   <Separator />
-                  <CalcRow label="万元产值能耗（等价值）" value={`${round(calc.unitEq, 4)}`} unit="吨标煤/万元" icon={Factory} />
-                  <CalcRow label="万元产值能耗（当量值）" value={`${round(calc.unitSt, 4)}`} unit="吨标煤/万元" icon={Factory} />
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">④ 万元产值能耗</div>
+                    <CalcRow label="单耗（等价值）" value={`${round(calc.unitEq, 4)}`} unit="吨标煤/万元" icon={Factory} formula="综合能耗（等价值） ÷ 工业生产总值" />
+                    <CalcRow label="单耗（当量值）" value={`${round(calc.unitSt, 4)}`} unit="吨标煤/万元" icon={Factory} formula="综合能耗（当量值） ÷ 工业生产总值" />
+                  </div>
                 </CardContent>
               </Card>
 
@@ -535,7 +556,7 @@ export default function ReportMonthlyFilling() {
                   <p>• 所有数值为<strong className="text-foreground">本年 1 月至本月累计</strong>，非单月数据。</p>
                   <p>• 标<Badge variant="outline" className="mx-0.5 h-4 border-success/40 bg-success/10 px-1 text-[10px] text-success">填报</Badge>字段需手填；标<Badge variant="outline" className="mx-0.5 h-4 border-primary/40 bg-primary/10 px-1 text-[10px] text-primary">计算</Badge>字段系统自动计算。</p>
                   <p>• 同比变化&gt;10% 会高亮预警，请确认数据无误。</p>
-                  <p>• 草稿可随时保存，截止前可多次修改。</p>
+                  <p>• 鼠标悬停每一项可查看<strong className="text-foreground">完整公式</strong>，计算过程透明可溯。</p>
                 </CardContent>
               </Card>
             </aside>
