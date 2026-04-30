@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -294,16 +294,57 @@ export default function ReportMonthlyFilling() {
                           {energy.map((row) => {
                             const r = rateOf(row.consumptionYTD, row.consumptionYTDLast);
                             const abnormal = r !== null && Math.abs(r) > 10 && row.consumptionYTD > 0;
+                            if (row.isGreen) {
+                              return (
+                                <Fragment key={row.id}>
+                                  <TableRow className="hover:bg-success/5">
+                                    <TableCell colSpan={8} className="bg-success/10 py-2">
+                                      <div className="flex items-center gap-2 whitespace-nowrap text-sm font-semibold text-success">
+                                        <Leaf className="h-4 w-4" />
+                                        {row.name}
+                                        <Badge variant="outline" className="h-5 border-success/40 bg-success/15 px-1.5 text-[10px] text-success">
+                                          可在综合能耗中扣除
+                                        </Badge>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                  <TableRow key={row.id} className="align-top bg-success/[0.03]">
+                                    <TableCell className="text-muted-foreground">—</TableCell>
+                                    <TableCell className="text-muted-foreground">{row.unit}</TableCell>
+                                    <TableCell>
+                                      <NumInput value={row.consumptionYTD} onChange={(v) => updateEnergy(row.id, "consumptionYTD", v)} placeholder="本月填写" />
+                                      <div className="mt-1 font-mono text-[11px] text-muted-foreground">去年 {row.consumptionYTDLast.toLocaleString()}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <span className={cn("inline-flex items-center rounded border px-1.5 py-0.5 font-mono text-[11px]", abnormal ? "border-destructive/40 bg-destructive/10 text-destructive" : "border-border bg-muted/40 text-muted-foreground")}>
+                                        {fmtRate(r)}
+                                      </span>
+                                    </TableCell>
+                                    <TableCell>
+                                      <NumInput value={row.materialYTD} onChange={(v) => updateEnergy(row.id, "materialYTD", v)} />
+                                      <div className="mt-1 font-mono text-[11px] text-muted-foreground">去年 {row.materialYTDLast.toLocaleString()}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <NumInput value={row.nonIndustrialYTD} onChange={(v) => updateEnergy(row.id, "nonIndustrialYTD", v)} />
+                                      <div className="mt-1 font-mono text-[11px] text-muted-foreground">去年 {row.nonIndustrialYTDLast.toLocaleString()}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <NumInput value={row.outputYTD} onChange={(v) => updateEnergy(row.id, "outputYTD", v)} />
+                                      <div className="mt-1 font-mono text-[11px] text-muted-foreground">去年 {row.outputYTDLast.toLocaleString()}</div>
+                                    </TableCell>
+                                    <TableCell className="font-mono text-[11px] text-muted-foreground">
+                                      <div>等价 {row.coefEquivalent}</div>
+                                      <div>当量 {row.coefStandard}</div>
+                                    </TableCell>
+                                  </TableRow>
+                                </Fragment>
+                              );
+                            }
                             return (
                               <TableRow key={row.id} className="align-top">
                                 <TableCell>
                                   <div className="flex items-center gap-1.5 font-medium">
                                     {row.name}
-                                    {row.isGreen ? (
-                                      <Badge variant="outline" className="h-5 gap-1 border-success/40 bg-success/10 px-1.5 text-[10px] text-success">
-                                        <Leaf className="h-2.5 w-2.5" />绿色
-                                      </Badge>
-                                    ) : null}
                                   </div>
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">{row.unit}</TableCell>
@@ -464,23 +505,44 @@ export default function ReportMonthlyFilling() {
             </div>
 
             {/* 右侧实时计算面板 */}
-            <aside className="space-y-3 lg:sticky lg:top-4 lg:self-start">
-              <Card className="border-primary/30 bg-primary/[0.03]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <Calculator className="h-4 w-4 text-primary" /> 实时计算结果
+            <aside className="space-y-3 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+              <Card className="border-2 border-primary/40 bg-gradient-to-br from-primary/[0.06] to-primary/[0.02] shadow-lg ring-1 ring-primary/20">
+                <CardHeader className="sticky top-0 z-10 rounded-t-lg border-b border-primary/20 bg-primary/10 pb-2 backdrop-blur">
+                  <CardTitle className="flex items-center justify-between gap-2 text-sm">
+                    <span className="flex items-center gap-2">
+                      <Calculator className="h-4 w-4 text-primary" />
+                      <span className="text-primary">实时计算结果</span>
+                    </span>
+                    <Badge variant="outline" className="h-5 gap-1 border-primary/40 bg-background px-1.5 text-[10px] text-primary">
+                      <Sparkles className="h-2.5 w-2.5" />实时
+                    </Badge>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2.5 text-xs">
-                  <CalcRow label="合计（总量等价值）" value={`${round(calc.consEqCurr)} tce`} icon={Sigma} />
-                  <CalcRow label="合计（总量当量值）" value={`${round(calc.consStCurr)} tce`} icon={Sigma} />
+                <CardContent className="space-y-3 py-3 text-xs">
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">① 总量合计</div>
+                    <CalcRow label="总量（等价值）" value={`${round(calc.consEqCurr)} tce`} icon={Sigma} formula="∑ 各能源消费量 × 等价折标系数" />
+                    <CalcRow label="总量（当量值）" value={`${round(calc.consStCurr)} tce`} icon={Sigma} formula="∑ 各能源消费量 × 当量折标系数" />
+                  </div>
                   <Separator />
-                  <CalcRow label="综合能耗（等价值）" value={`${round(calc.totalEqCurr)} tce`} icon={Database} highlight />
-                  <CalcRow label="综合能耗（当量值）" value={`${round(calc.totalStCurr)} tce`} icon={Database} highlight />
-                  <CalcRow label="扣除绿电（等价值）" value={`${round(calc.totalEqExGreenCurr)} tce`} icon={Leaf} />
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">② 综合能耗（扣除外供）</div>
+                    <CalcRow label="综合能耗（等价值）" value={`${round(calc.totalEqCurr)} tce`} icon={Database} highlight formula="总量（等价值） − 外供量（等价值）" />
+                    <CalcRow label="综合能耗（当量值）" value={`${round(calc.totalStCurr)} tce`} icon={Database} highlight formula="总量（当量值） − 外供量（当量值）" />
+                  </div>
+                  <div className="space-y-1.5 rounded-md border border-success/40 bg-success/[0.07] p-2">
+                    <div className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-success">
+                      <Leaf className="h-3 w-3" />③ 扣除绿电后综合能耗
+                    </div>
+                    <CalcRow label="扣除绿电（等价值）" value={`${round(calc.totalEqExGreenCurr)} tce`} icon={Leaf} formula="综合能耗（等价值） − 绿电消费量 × 等价折标系数" />
+                    <CalcRow label="扣除绿电（当量值）" value={`${round(calc.totalStExGreenCurr)} tce`} icon={Leaf} formula="综合能耗（当量值） − 绿电消费量 × 当量折标系数" />
+                  </div>
                   <Separator />
-                  <CalcRow label="万元产值能耗（等价值）" value={`${round(calc.unitEq, 4)}`} unit="吨标煤/万元" icon={Factory} />
-                  <CalcRow label="万元产值能耗（当量值）" value={`${round(calc.unitSt, 4)}`} unit="吨标煤/万元" icon={Factory} />
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">④ 万元产值能耗</div>
+                    <CalcRow label="单耗（等价值）" value={`${round(calc.unitEq, 4)}`} unit="吨标煤/万元" icon={Factory} formula="综合能耗（等价值） ÷ 工业生产总值" />
+                    <CalcRow label="单耗（当量值）" value={`${round(calc.unitSt, 4)}`} unit="吨标煤/万元" icon={Factory} formula="综合能耗（当量值） ÷ 工业生产总值" />
+                  </div>
                 </CardContent>
               </Card>
 
@@ -494,7 +556,7 @@ export default function ReportMonthlyFilling() {
                   <p>• 所有数值为<strong className="text-foreground">本年 1 月至本月累计</strong>，非单月数据。</p>
                   <p>• 标<Badge variant="outline" className="mx-0.5 h-4 border-success/40 bg-success/10 px-1 text-[10px] text-success">填报</Badge>字段需手填；标<Badge variant="outline" className="mx-0.5 h-4 border-primary/40 bg-primary/10 px-1 text-[10px] text-primary">计算</Badge>字段系统自动计算。</p>
                   <p>• 同比变化&gt;10% 会高亮预警，请确认数据无误。</p>
-                  <p>• 草稿可随时保存，截止前可多次修改。</p>
+                  <p>• 鼠标悬停每一项可查看<strong className="text-foreground">完整公式</strong>，计算过程透明可溯。</p>
                 </CardContent>
               </Card>
             </aside>
@@ -555,18 +617,29 @@ function ComputedHint({ label, value, formula }: { label: string; value: string;
   );
 }
 
-function CalcRow({ label, value, unit, icon: Icon, highlight }: { label: string; value: string; unit?: string; icon: typeof Sigma; highlight?: boolean }) {
-  return (
-    <div className="flex items-start justify-between gap-2">
+function CalcRow({ label, value, unit, icon: Icon, highlight, formula }: { label: string; value: string; unit?: string; icon: typeof Sigma; highlight?: boolean; formula?: string }) {
+  const content = (
+    <div className={cn("flex items-start justify-between gap-2 rounded px-1 py-0.5", formula && "cursor-help hover:bg-primary/5")}>
       <div className="flex items-center gap-1.5 text-muted-foreground">
         <Icon className="h-3 w-3" />
         <span>{label}</span>
+        {formula ? <HelpCircle className="h-2.5 w-2.5 text-muted-foreground/60" /> : null}
       </div>
       <div className={cn("text-right font-mono text-xs", highlight ? "font-semibold text-primary" : "text-foreground")}>
         {value}
         {unit ? <span className="ml-1 text-[10px] text-muted-foreground">{unit}</span> : null}
       </div>
     </div>
+  );
+  if (!formula) return content;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{content}</TooltipTrigger>
+      <TooltipContent side="left" className="max-w-xs text-xs">
+        <div className="text-[10px] uppercase tracking-wide text-primary">计算公式</div>
+        <div className="mt-0.5 font-mono">{formula}</div>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
