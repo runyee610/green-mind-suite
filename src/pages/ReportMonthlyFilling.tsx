@@ -296,8 +296,8 @@ export default function ReportMonthlyFilling() {
                             const abnormal = r !== null && Math.abs(r) > 10 && row.consumptionYTD > 0;
                             if (row.isGreen) {
                               return (
-                                <>
-                                  <TableRow key={`${row.id}-label`} className="hover:bg-success/5">
+                                <Fragment key={row.id}>
+                                  <TableRow className="hover:bg-success/5">
                                     <TableCell colSpan={8} className="bg-success/10 py-2">
                                       <div className="flex items-center gap-2 whitespace-nowrap text-sm font-semibold text-success">
                                         <Leaf className="h-4 w-4" />
