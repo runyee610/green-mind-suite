@@ -2222,7 +2222,14 @@ function EnterpriseListDialog({
                     <TableCell className="py-2 font-mono text-muted-foreground tabular-nums">
                       {(curPage - 1) * PAGE_SIZE + i + 1}
                     </TableCell>
-                    <TableCell className="py-2 text-foreground">{e.name}</TableCell>
+                    <TableCell className="py-2 text-foreground">
+                      <Link
+                        to={`/enterprise-detail/${encodeURIComponent(e.name)}`}
+                        className="text-primary hover:underline"
+                      >
+                        {e.name}
+                      </Link>
+                    </TableCell>
                     <TableCell className="py-2 font-mono text-muted-foreground">
                       {e.creditCode}
                     </TableCell>
