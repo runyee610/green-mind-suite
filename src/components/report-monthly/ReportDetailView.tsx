@@ -290,8 +290,8 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
         </div>
       </DetailSection>
 
-      {/* === E. 碳排放 === */}
-      <DetailSection icon={Sparkles} title="E. 碳排放（选填）">
+      {/* === 碳排放 === */}
+      <DetailSection id="section-carbon" icon={Sparkles} title="碳排放（选填）">
         <div className="grid gap-3 md:grid-cols-2">
           <DualField
             label="综合碳排放量"
@@ -309,13 +309,13 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
             last={unitCarbonLast === null ? "—" : round(unitCarbonLast, 4)}
             rate={unitCarbonCurr !== null && unitCarbonLast !== null ? changeRate(unitCarbonCurr, unitCarbonLast) : undefined}
             formula="综合碳排放量 ÷ 工业生产总值"
-            source="E.综合碳排放量 ÷ D.工业生产总值"
+            source="综合碳排放量 ÷ 工业生产总值"
           />
         </div>
       </DetailSection>
 
-      {/* === F. 蒸汽 === */}
-      <DetailSection icon={Flame} title="F. 蒸汽相关指标">
+      {/* === 蒸汽 === */}
+      <DetailSection id="section-steam" icon={Flame} title="蒸汽相关指标">
         <div className="grid gap-3 md:grid-cols-3">
           <DualField
             label="蒸汽综合能耗（等价值）"
