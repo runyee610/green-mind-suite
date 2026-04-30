@@ -337,7 +337,7 @@ export default function ReportMonthlyFilling() {
                                       <div>当量 {row.coefStandard}</div>
                                     </TableCell>
                                   </TableRow>
-                                </>
+                                </Fragment>
                               );
                             }
                             return (
