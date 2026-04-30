@@ -353,18 +353,20 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
 }
 
 function DetailSection({
+  id,
   icon: Icon,
   title,
   subtitle,
   children,
 }: {
+  id?: string;
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   subtitle?: string;
   children: React.ReactNode;
 }) {
   return (
-    <Card className="panel">
+    <Card id={id} className="panel scroll-mt-24">
       <CardContent className="space-y-3 p-4">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
@@ -381,3 +383,27 @@ function DetailSection({
     </Card>
   );
 }
+
+function AnchorNav({ items }: { items: { id: string; label: string }[] }) {
+  const handleClick = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  return (
+    <div className="sticky top-0 z-20 -mx-1 flex flex-wrap items-center gap-2 rounded-md border border-border bg-background/85 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <span className="text-xs text-muted-foreground">快速跳转：</span>
+      {items.map((item) => (
+        <a
+          key={item.id}
+          href={`#${item.id}`}
+          onClick={(e) => handleClick(e, item.id)}
+          className="rounded-md border border-border bg-muted/40 px-2.5 py-1 text-xs text-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  );
+}
+
