@@ -122,8 +122,19 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
         </span>
       </div>
 
-      {/* === A. 能源品种明细表 === */}
-      <DetailSection icon={Flame} title="A. 能源品种消费明细" subtitle="能源品种与计量单位继承自企业基本信息所勾选的能源品种">
+      {/* === 锚点导航 === */}
+      <AnchorNav
+        items={[
+          { id: "section-energy-detail", label: "能源品种消费明细" },
+          { id: "section-total-energy", label: "综合能耗" },
+          { id: "section-output", label: "工业产值与单位能耗" },
+          { id: "section-carbon", label: "碳排放" },
+          { id: "section-steam", label: "蒸汽相关指标" },
+        ]}
+      />
+
+      {/* === 能源品种明细表 === */}
+      <DetailSection id="section-energy-detail" icon={Flame} title="能源品种消费明细" subtitle="能源品种与计量单位继承自企业基本信息所勾选的能源品种">
         <div className="overflow-x-auto rounded-md border border-border">
           <Table>
             <TableHeader>
@@ -199,34 +210,8 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
         </p>
       </DetailSection>
 
-      {/* === B. 总量合计（计算项）=== */}
-      <DetailSection icon={Sigma} title="B. 总量合计">
-        <div className="grid gap-3 md:grid-cols-2">
-          <DualField
-            label="合计（总量等价值）"
-            unit="tce"
-            kind="computed"
-            current={round(sumConsEqCurr)}
-            last={round(sumConsEqLast)}
-            rate={changeRate(sumConsEqCurr, sumConsEqLast)}
-            formula="∑ (各能源品种企业消费量 × 等价值折标系数)"
-            source="A 表中各能源品种「企业消费量」与「折标系数（等价值）」"
-          />
-          <DualField
-            label="合计（总量当量值）"
-            unit="tce"
-            kind="computed"
-            current={round(sumConsStCurr)}
-            last={round(sumConsStLast)}
-            rate={changeRate(sumConsStCurr, sumConsStLast)}
-            formula="∑ (各能源品种企业消费量 × 当量值折标系数)"
-            source="A 表中各能源品种「企业消费量」与「折标系数（当量值）」"
-          />
-        </div>
-      </DetailSection>
-
-      {/* === C. 综合能耗 === */}
-      <DetailSection icon={Database} title="C. 综合能耗">
+      {/* === 综合能耗 === */}
+      <DetailSection id="section-total-energy" icon={Database} title="综合能耗">
         <div className="grid gap-3 md:grid-cols-2">
           <DualField
             label="综合能耗（等价值）"
@@ -236,7 +221,7 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
             last={round(totalEqLast)}
             rate={changeRate(totalEqCurr, totalEqLast)}
             formula="企业消费等价值总量 − 外供等价值总量"
-            source={`B.合计（总量等价值）${round(sumConsEqCurr)} − 外供等价值总量 ${round(sumOutEqCurr)}`}
+            source={`企业消费等价值总量 ${round(sumConsEqCurr)} − 外供等价值总量 ${round(sumOutEqCurr)}`}
           />
           <DualField
             label="综合能耗（当量值）"
@@ -246,7 +231,7 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
             last={round(totalStLast)}
             rate={changeRate(totalStCurr, totalStLast)}
             formula="企业消费当量值总量 − 外供当量值总量"
-            source={`B.合计（总量当量值）${round(sumConsStCurr)} − 外供当量值总量 ${round(sumOutStCurr)}`}
+            source={`企业消费当量值总量 ${round(sumConsStCurr)} − 外供当量值总量 ${round(sumOutStCurr)}`}
           />
           <DualField
             label="综合能耗（扣除绿电绿证可再生能源 - 等价值）"
@@ -271,8 +256,8 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
         </div>
       </DetailSection>
 
-      {/* === D. 工业产值与单位能耗 === */}
-      <DetailSection icon={Factory} title="D. 工业产值与单位能耗">
+      {/* === 工业产值与单位能耗 === */}
+      <DetailSection id="section-output" icon={Factory} title="工业产值与单位能耗">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           <DualField
             label="工业生产总值"
@@ -305,8 +290,8 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
         </div>
       </DetailSection>
 
-      {/* === E. 碳排放 === */}
-      <DetailSection icon={Sparkles} title="E. 碳排放（选填）">
+      {/* === 碳排放 === */}
+      <DetailSection id="section-carbon" icon={Sparkles} title="碳排放（选填）">
         <div className="grid gap-3 md:grid-cols-2">
           <DualField
             label="综合碳排放量"
@@ -324,13 +309,13 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
             last={unitCarbonLast === null ? "—" : round(unitCarbonLast, 4)}
             rate={unitCarbonCurr !== null && unitCarbonLast !== null ? changeRate(unitCarbonCurr, unitCarbonLast) : undefined}
             formula="综合碳排放量 ÷ 工业生产总值"
-            source="E.综合碳排放量 ÷ D.工业生产总值"
+            source="综合碳排放量 ÷ 工业生产总值"
           />
         </div>
       </DetailSection>
 
-      {/* === F. 蒸汽 === */}
-      <DetailSection icon={Flame} title="F. 蒸汽相关指标">
+      {/* === 蒸汽 === */}
+      <DetailSection id="section-steam" icon={Flame} title="蒸汽相关指标">
         <div className="grid gap-3 md:grid-cols-3">
           <DualField
             label="蒸汽综合能耗（等价值）"
@@ -356,7 +341,7 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
             last={round(steamUnitLast, 6)}
             rate={changeRate(steamUnitCurr, steamUnitLast)}
             formula="蒸汽综合能耗（等价值） ÷ 蒸汽产量"
-            source={`F.蒸汽综合能耗 ${detail.steamEnergyYTD} tce ÷ 蒸汽产量 ${detail.steamOutputYTD.toLocaleString()} 吨`}
+            source={`蒸汽综合能耗 ${detail.steamEnergyYTD} tce ÷ 蒸汽产量 ${detail.steamOutputYTD.toLocaleString()} 吨`}
           />
         </div>
       </DetailSection>
@@ -368,18 +353,20 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
 }
 
 function DetailSection({
+  id,
   icon: Icon,
   title,
   subtitle,
   children,
 }: {
+  id?: string;
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   subtitle?: string;
   children: React.ReactNode;
 }) {
   return (
-    <Card className="panel">
+    <Card id={id} className="panel scroll-mt-24">
       <CardContent className="space-y-3 p-4">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
@@ -396,3 +383,27 @@ function DetailSection({
     </Card>
   );
 }
+
+function AnchorNav({ items }: { items: { id: string; label: string }[] }) {
+  const handleClick = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  return (
+    <div className="sticky top-0 z-20 -mx-1 flex flex-wrap items-center gap-2 rounded-md border border-border bg-background/85 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <span className="text-xs text-muted-foreground">快速跳转：</span>
+      {items.map((item) => (
+        <a
+          key={item.id}
+          href={`#${item.id}`}
+          onClick={(e) => handleClick(e, item.id)}
+          className="rounded-md border border-border bg-muted/40 px-2.5 py-1 text-xs text-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  );
+}
+
