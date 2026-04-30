@@ -347,21 +347,12 @@ export function CycleAndDeclaration() {
         </CardContent>
       </Card>
 
-      {/* 编辑标准警告 */}
-      <AlertDialog open={!!editStandardTarget} onOpenChange={(o) => !o && setEditStandardTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-warning"><AlertTriangle className="h-5 w-5" />修改适用标准</AlertDialogTitle>
-            <AlertDialogDescription>
-              企业「{editStandardTarget?.name}」已按当前标准填报数据。<span className="font-semibold text-destructive">修改适用标准将清空已填报数据</span>，且不可恢复。确认继续？
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmEditStandard} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">确认修改并清空</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* 修改企业适用标准 */}
+      <EditEnterpriseStandardDialog
+        enterprise={editStandardTarget}
+        onClose={() => setEditStandardTarget(null)}
+        onConfirm={confirmEditStandard}
+      />
 
       {/* 删除周期确认 */}
       <AlertDialog open={!!deleteCycleTarget} onOpenChange={(o) => !o && setDeleteCycleTarget(null)}>
