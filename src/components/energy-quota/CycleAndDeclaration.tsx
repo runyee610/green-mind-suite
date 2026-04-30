@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AuditDetailView } from "@/components/energy-quota/AuditDetailView";
 import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHistoryDialog";
+import { EditEnterpriseStandardDialog } from "@/components/energy-quota/EditEnterpriseStandardDialog";
 import { NewCycleDialog } from "@/components/energy-quota/NewCycleDialog";
 import { cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
@@ -85,10 +86,28 @@ export function CycleAndDeclaration() {
     setDeleteCycleTarget(null);
   };
 
-  const confirmEditStandard = () => {
+  const confirmEditStandard = (codes: string[]) => {
     if (!editStandardTarget) return;
-    toast.success(`已修改 ${editStandardTarget.name} 的适用标准，原填报数据已清空`);
-    setEnterprises((prev) => prev.map((e) => (e.id === editStandardTarget.id ? { ...e, status: "未填报", hasData: false } : e)));
+    const wasHasData = editStandardTarget.hasData;
+    const changed =
+      codes.length !== editStandardTarget.standardCodes.length ||
+      codes.some((c) => !editStandardTarget.standardCodes.includes(c));
+    setEnterprises((prev) =>
+      prev.map((e) =>
+        e.id === editStandardTarget.id
+          ? {
+              ...e,
+              standardCodes: [...codes],
+              ...(wasHasData && changed ? { status: "未填报" as const, hasData: false } : {}),
+            }
+          : e,
+      ),
+    );
+    if (wasHasData && changed) {
+      toast.success(`已修改 ${editStandardTarget.name} 的适用标准，原填报数据已清空`);
+    } else {
+      toast.success(`已更新 ${editStandardTarget.name} 的适用标准`);
+    }
     setEditStandardTarget(null);
   };
 
@@ -284,8 +303,8 @@ export function CycleAndDeclaration() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => { if (e.hasData) setEditStandardTarget(e); else toast.info("可直接修改标准"); }}>
-                            <Edit className="mr-2 h-3.5 w-3.5" />编辑
+                          <DropdownMenuItem onClick={() => setEditStandardTarget(e)}>
+                            <Edit className="mr-2 h-3.5 w-3.5" />编辑标准
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setHistoryTarget(e)}>
                             <History className="mr-2 h-3.5 w-3.5" />历史
@@ -328,21 +347,12 @@ export function CycleAndDeclaration() {
         </CardContent>
       </Card>
 
-      {/* 编辑标准警告 */}
-      <AlertDialog open={!!editStandardTarget} onOpenChange={(o) => !o && setEditStandardTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-warning"><AlertTriangle className="h-5 w-5" />修改适用标准</AlertDialogTitle>
-            <AlertDialogDescription>
-              企业「{editStandardTarget?.name}」已按当前标准填报数据。<span className="font-semibold text-destructive">修改适用标准将清空已填报数据</span>，且不可恢复。确认继续？
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmEditStandard} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">确认修改并清空</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* 修改企业适用标准 */}
+      <EditEnterpriseStandardDialog
+        enterprise={editStandardTarget}
+        onClose={() => setEditStandardTarget(null)}
+        onConfirm={confirmEditStandard}
+      />
 
       {/* 删除周期确认 */}
       <AlertDialog open={!!deleteCycleTarget} onOpenChange={(o) => !o && setDeleteCycleTarget(null)}>
