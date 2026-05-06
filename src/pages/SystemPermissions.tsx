@@ -430,151 +430,163 @@ export default function SystemPermissions() {
                 </div>
               </div>
 
-              {/* 页面卡片列表 */}
+              {/* 权限树 */}
+              <div className="flex items-center gap-3 mb-2 px-2 text-[11px] text-muted-foreground">
+                <span>图例：</span>
+                <span className="inline-flex items-center gap-1"><Eye className="h-3 w-3 text-blue-500" />查看</span>
+                <span className="inline-flex items-center gap-1"><Pencil className="h-3 w-3 text-amber-500" />编辑</span>
+                <span className="inline-flex items-center gap-1"><Download className="h-3 w-3 text-emerald-500" />导出</span>
+                <span className="inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-purple-500" />审核</span>
+                <span className="inline-flex items-center gap-1"><Upload className="h-3 w-3 text-cyan-500" />上传</span>
+                <span className="ml-auto inline-flex items-center gap-1"><Lock className="h-3 w-3" />含字段级控制</span>
+              </div>
               <ScrollArea className="h-[560px] pr-2">
-                <div className="space-y-3">
+                <div className="rounded-lg border border-border/60 divide-y divide-border/60">
                   {filteredPages.map((p) => {
                     const state = pageState(p);
+                    const expanded = expandedFields.has(p.id);
+                    const checkedActs = p.actions.filter((a) => currentPerms.has(a.id)).length;
                     return (
-                      <div
-                        key={p.id}
-                        className={cn(
-                          "rounded-lg border transition",
-                          state === "all"
-                            ? "border-primary/40 bg-primary/[0.03]"
-                            : state === "some"
-                              ? "border-amber-500/40 bg-amber-500/[0.03]"
-                              : "border-border/60",
-                        )}
-                      >
-                        {/* 页面头 */}
-                        <div className="flex items-center gap-3 p-3 border-b border-border/40">
+                      <div key={p.id}>
+                        {/* L1 页面行 */}
+                        <div
+                          className={cn(
+                            "flex items-center gap-2 px-3 py-2.5 hover:bg-muted/40 transition",
+                            state === "all" && "bg-primary/[0.04]",
+                            state === "some" && "bg-amber-500/[0.04]",
+                          )}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => toggleFieldsExpand(p.id)}
+                            className="h-5 w-5 inline-flex items-center justify-center rounded hover:bg-muted text-muted-foreground"
+                          >
+                            {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                          </button>
                           <Checkbox
                             checked={state === "all" ? true : state === "some" ? "indeterminate" : false}
                             onCheckedChange={(v) => togglePage(p, !!v)}
                             className="h-4 w-4"
                           />
-                          <div className="flex-1 min-w-0">
+                          <button
+                            type="button"
+                            onClick={() => toggleFieldsExpand(p.id)}
+                            className="flex-1 min-w-0 text-left"
+                          >
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-semibold">{p.name}</span>
-                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">页面</Badge>
-                              {state === "all" && (
-                                <Badge className="text-[10px] px-1.5 py-0 h-4 bg-primary/15 text-primary border-0">
-                                  全部已开
-                                </Badge>
-                              )}
-                              {state === "some" && (
-                                <Badge className="text-[10px] px-1.5 py-0 h-4 bg-amber-500/15 text-amber-600 border-0">
-                                  部分开启
-                                </Badge>
-                              )}
+                              <span className="text-[11px] text-muted-foreground truncate">{p.desc}</span>
                             </div>
-                            <div className="text-[11px] text-muted-foreground mt-0.5">{p.desc}</div>
-                          </div>
-                          <div className="text-[11px] text-muted-foreground">
-                            {p.actions.filter((a) => currentPerms.has(a.id)).length} / {p.actions.length} 项操作
+                          </button>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-[11px] text-muted-foreground tabular-nums">
+                              {checkedActs}/{p.actions.length}
+                            </span>
+                            {state === "all" && (
+                              <Badge className="text-[10px] px-1.5 py-0 h-4 bg-primary/15 text-primary border-0">全部</Badge>
+                            )}
+                            {state === "some" && (
+                              <Badge className="text-[10px] px-1.5 py-0 h-4 bg-amber-500/15 text-amber-600 border-0">部分</Badge>
+                            )}
                           </div>
                         </div>
 
-                        {/* 操作 chips */}
-                        <div className="p-3">
-                          <div className="flex flex-wrap gap-2">
+                        {/* L2 操作行 */}
+                        {expanded && (
+                          <div className="bg-muted/20 border-t border-border/40">
                             {p.actions.map((a) => {
                               const checked = currentPerms.has(a.id);
                               const style = ACTION_STYLES[a.kind];
                               const Icon = style.icon;
                               const hasFields = !!a.fields?.length;
-                              const open = expandedFields.has(a.id);
+                              const fOpen = expandedFields.has(a.id);
+                              const checkedFields = a.fields?.filter((f) => currentPerms.has(f.id)).length ?? 0;
+                              const totalFields = a.fields?.length ?? 0;
+                              const fState: "all" | "some" | "none" = !hasFields
+                                ? checked ? "all" : "none"
+                                : checkedFields === 0
+                                  ? "none"
+                                  : checkedFields === totalFields
+                                    ? "all"
+                                    : "some";
                               return (
-                                <div key={a.id} className="flex flex-col">
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
+                                <div key={a.id}>
+                                  <div className="flex items-center gap-2 pl-10 pr-3 py-2 hover:bg-muted/40 transition border-t border-border/30 first:border-t-0">
+                                    {hasFields ? (
                                       <button
                                         type="button"
-                                        onClick={() => toggleAction(p, a, !checked)}
-                                        className={cn(
-                                          "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition",
-                                          checked ? style.activeCls : style.cls + " hover:bg-muted/60",
-                                        )}
+                                        onClick={() => toggleFieldsExpand(a.id)}
+                                        className="h-5 w-5 inline-flex items-center justify-center rounded hover:bg-muted text-muted-foreground"
                                       >
-                                        <Checkbox
-                                          checked={checked}
-                                          onCheckedChange={(v) => toggleAction(p, a, !!v)}
-                                          onClick={(e) => e.stopPropagation()}
-                                          className="h-3.5 w-3.5"
-                                        />
-                                        <Icon className="h-3.5 w-3.5" />
-                                        <span className="font-medium">{a.name}</span>
-                                        {hasFields && (
-                                          <span
-                                            role="button"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              toggleFieldsExpand(a.id);
-                                            }}
-                                            className="ml-1 inline-flex items-center gap-0.5 rounded bg-background/60 px-1 py-0.5 text-[10px] text-muted-foreground hover:text-foreground"
-                                          >
-                                            <Lock className="h-2.5 w-2.5" />
-                                            高级
-                                            {open ? <ChevronDown className="h-2.5 w-2.5" /> : <ChevronRight className="h-2.5 w-2.5" />}
-                                          </span>
-                                        )}
+                                        {fOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                                       </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top" className="text-xs">
-                                      {a.desc}
-                                    </TooltipContent>
-                                  </Tooltip>
+                                    ) : (
+                                      <span className="h-5 w-5 inline-flex items-center justify-center text-muted-foreground/40">·</span>
+                                    )}
+                                    <Checkbox
+                                      checked={fState === "all" ? true : fState === "some" ? "indeterminate" : false}
+                                      onCheckedChange={(v) => toggleAction(p, a, !!v)}
+                                      className="h-4 w-4"
+                                    />
+                                    <span
+                                      className={cn(
+                                        "inline-flex items-center justify-center h-5 w-5 rounded",
+                                        checked ? style.activeCls : "text-muted-foreground",
+                                      )}
+                                    >
+                                      <Icon className="h-3.5 w-3.5" />
+                                    </span>
+                                    <span className="text-sm font-medium">{a.name}</span>
+                                    <span className="text-[11px] text-muted-foreground truncate">{a.desc}</span>
+                                    {hasFields && (
+                                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 ml-1">
+                                        <Lock className="h-2.5 w-2.5 mr-0.5" />
+                                        字段 {checkedFields}/{totalFields}
+                                      </Badge>
+                                    )}
+                                  </div>
 
-                                  {/* 字段级权限（默认折叠） */}
-                                  {hasFields && open && (
-                                    <div className="mt-1.5 ml-1 rounded-md border border-dashed border-border/60 bg-muted/30 p-2">
-                                      <div className="flex items-center gap-1 mb-1.5 text-[10px] text-muted-foreground">
-                                        <Lock className="h-2.5 w-2.5" />
-                                        字段级控制（默认全开，取消勾选可屏蔽）
-                                      </div>
-                                      <div className="flex flex-wrap gap-1.5">
-                                        {a.fields!.map((f) => {
-                                          const fchecked = currentPerms.has(f.id);
-                                          return (
-                                            <Tooltip key={f.id}>
-                                              <TooltipTrigger asChild>
-                                                <label
-                                                  className={cn(
-                                                    "inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] cursor-pointer",
-                                                    fchecked
-                                                      ? "border-primary/40 bg-background text-foreground"
-                                                      : "border-border/40 bg-muted/40 text-muted-foreground line-through",
-                                                  )}
-                                                >
-                                                  <Checkbox
-                                                    checked={fchecked}
-                                                    onCheckedChange={(v) => toggleField(p, a, f.id, !!v)}
-                                                    className="h-3 w-3"
-                                                  />
-                                                  {f.name}
-                                                  {f.sensitive && (
-                                                    <Badge className="text-[9px] px-1 py-0 h-3 bg-destructive/15 text-destructive border-0">
-                                                      敏感
-                                                    </Badge>
-                                                  )}
-                                                  {f.desc && <HelpCircle className="h-2.5 w-2.5 text-muted-foreground" />}
-                                                </label>
-                                              </TooltipTrigger>
-                                              <TooltipContent className="text-xs">
-                                                {f.desc ?? f.name}
-                                              </TooltipContent>
-                                            </Tooltip>
-                                          );
-                                        })}
-                                      </div>
+                                  {/* L3 字段行 */}
+                                  {hasFields && fOpen && (
+                                    <div className="bg-background/60 border-t border-border/30">
+                                      {a.fields!.map((f) => {
+                                        const fchecked = currentPerms.has(f.id);
+                                        return (
+                                          <div
+                                            key={f.id}
+                                            className="flex items-center gap-2 pl-[68px] pr-3 py-1.5 hover:bg-muted/40 transition border-t border-border/20 first:border-t-0"
+                                          >
+                                            <Checkbox
+                                              checked={fchecked}
+                                              onCheckedChange={(v) => toggleField(p, a, f.id, !!v)}
+                                              className="h-3.5 w-3.5"
+                                            />
+                                            <span className={cn("text-xs", !fchecked && "text-muted-foreground line-through")}>
+                                              {f.name}
+                                            </span>
+                                            {f.sensitive && (
+                                              <Badge className="text-[9px] px-1 py-0 h-3.5 bg-destructive/15 text-destructive border-0">
+                                                敏感
+                                              </Badge>
+                                            )}
+                                            {f.desc && (
+                                              <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                  <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                                                </TooltipTrigger>
+                                                <TooltipContent className="text-xs">{f.desc}</TooltipContent>
+                                              </Tooltip>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
                                     </div>
                                   )}
                                 </div>
                               );
                             })}
                           </div>
-                        </div>
+                        )}
                       </div>
                     );
                   })}
