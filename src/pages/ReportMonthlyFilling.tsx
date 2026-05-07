@@ -534,9 +534,6 @@ export default function ReportMonthlyFilling() {
                     <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
                   )}
                   {enterpriseType === "telecom" && <DataCenterFillingSection />}
-                  ) : (
-                    <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
-                  )}
                 </div>
               )}
 
