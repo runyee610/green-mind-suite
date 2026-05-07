@@ -353,41 +353,68 @@ function PgRow({
   onLast: (v: number) => void;
 }) {
   return (
-    <div className="rounded-md border border-success/40 bg-success/[0.04] p-3">
-      <div className="flex items-center justify-between">
-        <div>
-          <Label className="text-sm font-medium text-foreground">{label}</Label>
-          <span className="ml-2 text-[11px] text-muted-foreground">单位：{unit}</span>
-        </div>
-        <Badge variant="outline" className="h-5 border-success/40 bg-success/10 px-1.5 text-[10px] text-success">
-          企业填报
-        </Badge>
-      </div>
-      <div className="mt-2 grid gap-2 md:grid-cols-2">
-        <div>
-          <div className="text-[11px] text-muted-foreground">今年累计</div>
-          <Input
-            type="number"
-            value={curr || ""}
-            onChange={(e) => onCurr(Number(e.target.value) || 0)}
-            placeholder="本月填写"
-            className="mt-1 h-9 font-mono"
-          />
-        </div>
-        <div>
-          <div className="text-[11px] text-muted-foreground">去年同期</div>
-          <Input
-            type="number"
-            value={last || ""}
-            onChange={(e) => onLast(Number(e.target.value) || 0)}
-            className="mt-1 h-9 font-mono text-muted-foreground"
-          />
-        </div>
-      </div>
+    <div className="grid gap-2 md:grid-cols-2">
+      <FieldBox
+        label={`${label}（今年累计）`}
+        unit={unit}
+        value={curr}
+        onChange={onCurr}
+        kind="input"
+      />
+      <FieldBox
+        label={`${label}（去年同期）`}
+        unit={unit}
+        value={last}
+        onChange={onLast}
+        kind="muted"
+      />
     </div>
   );
 }
 
+function FieldBox({
+  label,
+  unit,
+  value,
+  onChange,
+  kind,
+}: {
+  label: string;
+  unit: string;
+  value: number;
+  onChange: (v: number) => void;
+  kind: "input" | "muted";
+}) {
+  const muted = kind === "muted";
+  return (
+    <div
+      className={
+        muted
+          ? "rounded-md border border-border bg-muted/30 p-3"
+          : "rounded-md border border-success/40 bg-success/[0.06] p-3"
+      }
+    >
+      <div className="flex items-center justify-between">
+        <Label className="text-xs text-foreground">{label}</Label>
+        {muted ? null : (
+          <Badge variant="outline" className="h-5 border-success/40 bg-success/10 px-1.5 text-[10px] text-success">
+            企业填报
+          </Badge>
+        )}
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <Input
+          type="number"
+          value={value || ""}
+          onChange={(e) => onChange(Number(e.target.value) || 0)}
+          placeholder={muted ? "" : "本月填写"}
+          className={muted ? "h-9 font-mono text-muted-foreground" : "h-9 font-mono"}
+        />
+        <span className="shrink-0 text-xs text-muted-foreground">{unit}</span>
+      </div>
+    </div>
+  );
+}
 function ComputedRow({ label, value, formula }: { label: string; value: string; formula: string }) {
   return (
     <div className="rounded-md border border-primary/30 bg-primary/[0.05] p-3">
