@@ -451,7 +451,7 @@ export default function ReportMonthlyFilling() {
                   <Card>
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-base">
-                        <Sparkles className="h-4 w-4 text-primary" /> 碳排放（选填）
+                        <Sparkles className="h-4 w-4 text-primary" /> 综合碳排放量{enterpriseType !== "telecom" && "（选填）"}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4 md:grid-cols-2">
@@ -484,23 +484,52 @@ export default function ReportMonthlyFilling() {
                   ) : enterpriseType === "non_energy" ? (
                     <NonEnergyFillingSection />
                   ) : enterpriseType === "telecom" ? (
-                    <Card>
-                      <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <Sparkles className="h-4 w-4 text-primary" /> 万元产值碳排放量
-                          <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
-                            电信企业 专属
-                          </Badge>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <ComputedHint
-                          label="万元产值碳排放量"
-                          value={`${round(output.curr ? carbon.curr / output.curr : 0, 6)} 吨CO₂/万元`}
-                          formula="综合碳排放量 ÷ 电信业务总量"
-                        />
-                      </CardContent>
-                    </Card>
+                    (() => {
+                      const unitCurr = output.curr ? carbon.curr / output.curr : 0;
+                      const unitLast = output.last ? carbon.last / output.last : 0;
+                      const r = rateOf(unitCurr, unitLast);
+                      const abnormal = r !== null && Math.abs(r) > 10;
+                      return (
+                        <Card>
+                          <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base">
+                              <Sparkles className="h-4 w-4 text-primary" /> 万元产值碳排放量
+                              <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
+                                电信企业 专属
+                              </Badge>
+                              <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
+                                系统计算
+                              </Badge>
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-3">
+                            <div className="grid gap-3 md:grid-cols-3">
+                              <div className="rounded-md border border-primary/30 bg-primary/[0.05] p-3">
+                                <Label className="text-xs text-muted-foreground">今年累计</Label>
+                                <div className="mt-1 font-mono text-base font-semibold text-primary">
+                                  {round(unitCurr, 6)} <span className="text-[11px] text-muted-foreground">吨CO₂/万元</span>
+                                </div>
+                              </div>
+                              <div className="rounded-md border border-border bg-muted/30 p-3">
+                                <Label className="text-xs text-muted-foreground">去年累计</Label>
+                                <div className="mt-1 font-mono text-base font-semibold text-muted-foreground">
+                                  {round(unitLast, 6)} <span className="text-[11px]">吨CO₂/万元</span>
+                                </div>
+                              </div>
+                              <div className="rounded-md border border-border bg-muted/30 p-3">
+                                <Label className="text-xs text-muted-foreground">变化率</Label>
+                                <div className={cn("mt-1 font-mono text-base font-semibold", abnormal ? "text-destructive" : "text-foreground")}>
+                                  {fmtRate(r)}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-[11px] text-muted-foreground">
+                              公式：综合碳排放量 ÷ 电信业务总量；变化率 =（今年累计 − 去年累计）÷ 去年累计 × 100%
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })()
                   ) : (
                     <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
                   )}
