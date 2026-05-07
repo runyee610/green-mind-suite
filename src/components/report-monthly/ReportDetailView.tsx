@@ -122,17 +122,6 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
         </span>
       </div>
 
-      {/* === 锚点导航 === */}
-      <AnchorNav
-        items={[
-          { id: "section-energy-detail", label: "能源品种消费明细" },
-          { id: "section-total-energy", label: "综合能耗" },
-          { id: "section-output", label: "工业产值与单位能耗" },
-          { id: "section-carbon", label: "碳排放" },
-          { id: "section-steam", label: "蒸汽相关指标" },
-        ]}
-      />
-
       {/* === 能源品种明细表 === */}
       <DetailSection id="section-energy-detail" icon={Flame} title="能源品种消费明细" subtitle="能源品种与计量单位继承自企业基本信息所勾选的能源品种">
         <div className="overflow-x-auto rounded-md border border-border">
@@ -381,29 +370,6 @@ function DetailSection({
         {children}
       </CardContent>
     </Card>
-  );
-}
-
-function AnchorNav({ items }: { items: { id: string; label: string }[] }) {
-  const handleClick = (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-  return (
-    <div className="sticky top-0 z-20 -mx-1 flex flex-wrap items-center gap-2 rounded-md border border-border bg-background/85 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <span className="text-xs text-muted-foreground">快速跳转：</span>
-      {items.map((item) => (
-        <a
-          key={item.id}
-          href={`#${item.id}`}
-          onClick={(e) => handleClick(e, item.id)}
-          className="rounded-md border border-border bg-muted/40 px-2.5 py-1 text-xs text-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
-        >
-          {item.label}
-        </a>
-      ))}
-    </div>
   );
 }
 
