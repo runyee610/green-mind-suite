@@ -32,6 +32,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import {
+  ENTERPRISE_TYPES,
+  EnterpriseTypeSwitcher,
+  SpecialFieldsPlaceholder,
+  TYPE_HAS_STEAM,
+  type EnterpriseTypeId,
+} from "@/components/report-monthly/EnterpriseTypeSwitcher";
 
 // ============= 类型 =============
 type EnergyRow = {
@@ -77,6 +84,9 @@ type StepId = (typeof STEPS)[number]["id"];
 
 export default function ReportMonthlyFilling() {
   const [step, setStep] = useState<StepId>("basic");
+  const [enterpriseType, setEnterpriseType] = useState<EnterpriseTypeId>(TYPE_HAS_STEAM);
+  const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
+  const showSteam = enterpriseType === TYPE_HAS_STEAM;
   const [energy, setEnergy] = useState<EnergyRow[]>(initialEnergy);
   const [output, setOutput] = useState({ curr: 0, last: 1688000 });
   const [carbon, setCarbon] = useState({ curr: 0, last: 268900 });
