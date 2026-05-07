@@ -348,6 +348,8 @@ export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STE
         <PowerGenDetailSection />
       ) : showPowerSupply ? (
         <PowerSupplyDetailSection />
+      ) : showNonEnergy ? (
+        <NonEnergyDetailSection />
       ) : (
         <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
       )}
