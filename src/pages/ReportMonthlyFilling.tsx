@@ -180,6 +180,7 @@ export default function ReportMonthlyFilling() {
     <AppLayout title="节能月报 · 企业填报" subtitle="按步骤填写本月能源消费、产值与节能措施，系统自动计算综合指标">
       <TooltipProvider delayDuration={150}>
         <div className="space-y-4">
+          <EnterpriseTypeSwitcher value={enterpriseType} onChange={setEnterpriseType} />
           {/* 顶部信息条 */}
           <Card className="panel-glow">
             <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
