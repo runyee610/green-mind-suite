@@ -451,7 +451,7 @@ export default function ReportMonthlyFilling() {
                   <Card>
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-base">
-                        <Sparkles className="h-4 w-4 text-primary" /> 碳排放（选填）
+                        <Sparkles className="h-4 w-4 text-primary" /> 综合碳排放量{enterpriseType !== "telecom" && "（选填）"}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4 md:grid-cols-2">
