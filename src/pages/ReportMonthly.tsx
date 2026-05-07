@@ -20,9 +20,16 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import {
+  ENTERPRISE_TYPES,
+  EnterpriseTypeSwitcher,
+  TYPE_HAS_STEAM,
+  type EnterpriseTypeId,
+} from "@/components/report-monthly/EnterpriseTypeSwitcher";
 
 export default function ReportMonthly() {
   const [detailReport, setDetailReport] = useState<MonthlyReport | null>(null);
+  const [enterpriseType, setEnterpriseType] = useState<EnterpriseTypeId>(TYPE_HAS_STEAM);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [filters, setFilters] = useState({
     keyword: "",
