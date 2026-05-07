@@ -79,20 +79,22 @@ export function DualField({
   return (
     <div
       className={cn(
-        "rounded-md border p-3",
-        isComputed ? "border-primary/30 bg-primary/[0.04]" : "border-success/40 bg-success/[0.06]",
+        "rounded-md border-2 border-l-4 p-3 transition-colors",
+        isComputed
+          ? "border-primary/40 border-l-primary bg-primary/[0.08]"
+          : "border-success/50 border-l-success bg-success/[0.10]",
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="truncate text-xs leading-tight text-foreground">{label}</div>
+          <div className="truncate text-xs font-medium leading-tight text-foreground">{label}</div>
           {unit ? <div className="mt-0.5 text-[10px] text-muted-foreground">单位：{unit}</div> : null}
         </div>
         <KindBadge kind={kind} formula={formula} source={source} />
       </div>
 
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <ValueCell label="今年累计" value={current} highlight={isComputed} />
+        <ValueCell label="今年累计" value={current} highlight={isComputed} input={!isComputed} />
         <ValueCell label="去年累计" value={last} muted />
       </div>
 
