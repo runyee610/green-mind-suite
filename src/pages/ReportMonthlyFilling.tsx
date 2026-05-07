@@ -92,7 +92,7 @@ const SPECIAL_STEP_BY_TYPE: Record<EnterpriseTypeId, { label: string; desc: stri
 
 
 
-type StepId = (typeof STEPS)[number]["id"];
+type StepId = (typeof BASE_STEPS)[number]["id"];
 
 export default function ReportMonthlyFilling() {
   const [step, setStep] = useState<StepId>("basic");
