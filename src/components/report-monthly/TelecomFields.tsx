@@ -129,10 +129,10 @@ function FieldBox({
 }: { label: string; unit: string; value: number; onChange: (v: number) => void; muted?: boolean }) {
   return (
     <div className={muted ? "rounded-md border border-border bg-muted/30 p-3" : "rounded-md border border-success/40 bg-success/[0.06] p-3"}>
-      <div className="flex items-center justify-between">
-        <Label className="text-xs text-foreground">{label}</Label>
+      <div className="flex items-center justify-between gap-2">
+        <Label className="whitespace-nowrap text-xs text-foreground">{label}</Label>
         {!muted && (
-          <Badge variant="outline" className="h-5 border-success/40 bg-success/10 px-1.5 text-[10px] text-success">
+          <Badge variant="outline" className="h-5 shrink-0 border-success/40 bg-success/10 px-1.5 text-[10px] text-success">
             企业填报
           </Badge>
         )}
@@ -154,15 +154,15 @@ function FieldBox({
 function ComputedRow({ label, value, formula }: { label: string; value: string; formula: string }) {
   return (
     <div className="rounded-md border border-primary/30 bg-primary/[0.05] p-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Calculator className="h-3.5 w-3.5 text-primary" />
-          <Label className="text-sm font-medium text-foreground">{label}</Label>
-          <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <Calculator className="h-3.5 w-3.5 shrink-0 text-primary" />
+          <Label className="whitespace-nowrap text-sm font-medium text-foreground">{label}</Label>
+          <Badge variant="outline" className="h-5 shrink-0 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
             系统计算
           </Badge>
         </div>
-        <div className="font-mono text-sm font-semibold text-primary">{value}</div>
+        <div className="shrink-0 font-mono text-sm font-semibold text-primary">{value}</div>
       </div>
       <div className="mt-1 text-[11px] text-muted-foreground">公式：{formula}</div>
     </div>
