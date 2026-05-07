@@ -314,8 +314,8 @@ export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STE
             current={unitCarbonCurr === null ? "—" : round(unitCarbonCurr, 4)}
             last={unitCarbonLast === null ? "—" : round(unitCarbonLast, 4)}
             rate={unitCarbonCurr !== null && unitCarbonLast !== null ? changeRate(unitCarbonCurr, unitCarbonLast) : undefined}
-            formula="综合碳排放量 ÷ 工业生产总值"
-            source="综合碳排放量 ÷ 工业生产总值"
+            formula={showTelecom ? "综合碳排放量 ÷ 电信业务总量" : "综合碳排放量 ÷ 工业生产总值"}
+            source={showTelecom ? "综合碳排放量 ÷ 电信业务总量" : "综合碳排放量 ÷ 工业生产总值"}
           />
         </div>
       </DetailSection>
