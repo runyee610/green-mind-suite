@@ -36,15 +36,17 @@ export function SingleField({
   return (
     <div
       className={cn(
-        "rounded-md border p-3",
-        isComputed ? "border-primary/30 bg-primary/[0.04]" : "border-success/40 bg-success/[0.06]",
+        "rounded-md border-2 border-l-4 p-3",
+        isComputed
+          ? "border-primary/40 border-l-primary bg-primary/[0.08]"
+          : "border-success/50 border-l-success bg-success/[0.10]",
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="text-xs leading-tight text-muted-foreground">{label}</span>
+        <span className="text-xs font-medium leading-tight text-foreground">{label}</span>
         <KindBadge kind={kind} formula={formula} source={source} />
       </div>
-      <div className={cn("mt-2 font-mono text-base font-semibold", isComputed ? "text-primary" : "text-foreground")}>
+      <div className={cn("mt-2 font-mono text-base font-semibold", isComputed ? "text-primary" : "text-success")}>
         {fmt(value)}
         {unit ? <span className="ml-1 text-xs font-normal text-muted-foreground">{unit}</span> : null}
       </div>
@@ -79,20 +81,22 @@ export function DualField({
   return (
     <div
       className={cn(
-        "rounded-md border p-3",
-        isComputed ? "border-primary/30 bg-primary/[0.04]" : "border-success/40 bg-success/[0.06]",
+        "rounded-md border-2 border-l-4 p-3 transition-colors",
+        isComputed
+          ? "border-primary/40 border-l-primary bg-primary/[0.08]"
+          : "border-success/50 border-l-success bg-success/[0.10]",
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="truncate text-xs leading-tight text-foreground">{label}</div>
+          <div className="truncate text-xs font-medium leading-tight text-foreground">{label}</div>
           {unit ? <div className="mt-0.5 text-[10px] text-muted-foreground">单位：{unit}</div> : null}
         </div>
         <KindBadge kind={kind} formula={formula} source={source} />
       </div>
 
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <ValueCell label="今年累计" value={current} highlight={isComputed} />
+        <ValueCell label="今年累计" value={current} highlight={isComputed} input={!isComputed} />
         <ValueCell label="去年累计" value={last} muted />
       </div>
 
@@ -115,16 +119,20 @@ export function DualField({
   );
 }
 
-function ValueCell({ label, value, highlight, muted }: { label: string; value: number | string; highlight?: boolean; muted?: boolean }) {
+function ValueCell({ label, value, highlight, muted, input }: { label: string; value: number | string; highlight?: boolean; muted?: boolean; input?: boolean }) {
   return (
-    <div className={cn("rounded border border-border/60 bg-background/60 px-2 py-1.5")}>
+    <div className={cn(
+      "rounded border px-2 py-1.5",
+      muted ? "border-border bg-muted/40" : input ? "border-success/40 bg-success/15" : "border-primary/40 bg-primary/15",
+    )}>
       <div className="text-[10px] text-muted-foreground">{label}</div>
       <div
         className={cn(
           "mt-0.5 font-mono text-sm font-semibold tabular-nums",
           highlight && "text-primary",
           muted && "text-muted-foreground",
-          !highlight && !muted && "text-foreground",
+          input && "text-success",
+          !highlight && !muted && !input && "text-foreground",
         )}
       >
         {fmt(value)}
