@@ -39,6 +39,7 @@ import {
   TYPE_HAS_STEAM,
   type EnterpriseTypeId,
 } from "@/components/report-monthly/EnterpriseTypeSwitcher";
+import { PowerGenFillingSection } from "@/components/report-monthly/PowerGenFields";
 
 // ============= 类型 =============
 type EnergyRow = {
@@ -445,6 +446,8 @@ export default function ReportMonthlyFilling() {
                         <ComputedHint label="蒸汽单位产量综合能耗" value={`${round(steam.outputCurr ? steam.energyCurr / steam.outputCurr : 0, 6)} tce/吨`} formula="蒸汽综合能耗 ÷ 蒸汽产量" />
                       </CardContent>
                     </Card>
+                  ) : enterpriseType === "power_gen" ? (
+                    <PowerGenFillingSection />
                   ) : (
                     <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
                   )}
