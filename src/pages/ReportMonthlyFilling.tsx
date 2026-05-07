@@ -483,6 +483,24 @@ export default function ReportMonthlyFilling() {
                     <PowerSupplyFillingSection />
                   ) : enterpriseType === "non_energy" ? (
                     <NonEnergyFillingSection />
+                  ) : enterpriseType === "telecom" ? (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <Sparkles className="h-4 w-4 text-primary" /> 万元产值碳排放量
+                          <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
+                            电信企业 专属
+                          </Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ComputedHint
+                          label="万元产值碳排放量"
+                          value={`${round(output.curr ? carbon.curr / output.curr : 0, 6)} 吨CO₂/万元`}
+                          formula="综合碳排放量 ÷ 电信业务总量"
+                        />
+                      </CardContent>
+                    </Card>
                   ) : (
                     <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
                   )}
