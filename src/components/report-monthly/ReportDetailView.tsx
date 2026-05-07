@@ -18,9 +18,11 @@ import {
 } from "./detailFields";
 import type { MonthlyReport } from "./monthlyReportData";
 import { ENTERPRISE_TYPES, SpecialFieldsPlaceholder, TYPE_HAS_STEAM, type EnterpriseTypeId } from "./EnterpriseTypeSwitcher";
+import { PowerGenDetailSection } from "./PowerGenFields";
 
 export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STEAM }: { report: MonthlyReport; onBack?: () => void; enterpriseType?: EnterpriseTypeId }) {
   const showSteam = enterpriseType === TYPE_HAS_STEAM;
+  const showPowerGen = enterpriseType === "power_gen";
   const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
   const detail = buildDetailForReport(report.name);
   const v = detail.energyVarieties;
@@ -306,7 +308,7 @@ export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STE
         </div>
       </DetailSection>
 
-      {/* === 蒸汽（仅特定企业类型） === */}
+      {/* === 特殊字段：按企业类型差异化 === */}
       {showSteam ? (
         <DetailSection id="section-steam" icon={Flame} title={`蒸汽相关指标（${enterpriseTypeLabel} 专属）`}>
           <div className="grid gap-3 md:grid-cols-3">
@@ -338,6 +340,8 @@ export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STE
             />
           </div>
         </DetailSection>
+      ) : showPowerGen ? (
+        <PowerGenDetailSection />
       ) : (
         <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
       )}
