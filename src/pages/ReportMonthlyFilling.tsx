@@ -42,6 +42,7 @@ import {
 import { PowerGenFillingSection } from "@/components/report-monthly/PowerGenFields";
 import { PowerSupplyFillingSection } from "@/components/report-monthly/PowerSupplyFields";
 import { NonEnergyFillingSection } from "@/components/report-monthly/NonEnergyFields";
+import { TelecomFillingSection } from "@/components/report-monthly/TelecomFields";
 
 // ============= 类型 =============
 type EnergyRow = {
@@ -101,9 +102,12 @@ export default function ReportMonthlyFilling() {
   const [enterpriseType, setEnterpriseType] = useState<EnterpriseTypeId>(TYPE_HAS_STEAM);
   const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
   const showSteam = enterpriseType === TYPE_HAS_STEAM;
-  const STEPS = BASE_STEPS.map((s) =>
-    s.id === "carbon" ? { ...s, ...SPECIAL_STEP_BY_TYPE[enterpriseType] } : s,
-  );
+  const STEPS = BASE_STEPS.map((s) => {
+    if (s.id === "carbon") return { ...s, ...SPECIAL_STEP_BY_TYPE[enterpriseType] };
+    if (s.id === "output" && enterpriseType === "telecom")
+      return { ...s, label: "电信业务总量", desc: "填写电信业务总量与单位能耗" };
+    return s;
+  });
   const [energy, setEnergy] = useState<EnergyRow[]>(initialEnergy);
   const [output, setOutput] = useState({ curr: 0, last: 1688000 });
   const [carbon, setCarbon] = useState({ curr: 0, last: 268900 });
@@ -416,19 +420,30 @@ export default function ReportMonthlyFilling() {
               )}
 
               {step === "output" && (
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Factory className="h-4 w-4 text-primary" /> 工业产值
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid gap-4 md:grid-cols-2">
-                    <FieldNum label="工业生产总值（今年累计）" unit="万元" value={output.curr} onChange={(v) => setOutput((s) => ({ ...s, curr: v }))} required />
-                    <FieldNum label="工业生产总值（去年同期）" unit="万元" value={output.last} onChange={(v) => setOutput((s) => ({ ...s, last: v }))} muted />
-                    <ComputedHint label="万元产值能耗（等价值）" value={`${round(calc.unitEq, 4)} 吨标煤/万元`} formula="综合能耗（等价值） ÷ 工业生产总值" />
-                    <ComputedHint label="万元产值能耗（当量值）" value={`${round(calc.unitSt, 4)} 吨标煤/万元`} formula="综合能耗（当量值） ÷ 工业生产总值" />
-                  </CardContent>
-                </Card>
+                enterpriseType === "telecom" ? (
+                  <TelecomFillingSection
+                    totalCurr={output.curr}
+                    totalLast={output.last}
+                    onTotalCurr={(v) => setOutput((s) => ({ ...s, curr: v }))}
+                    onTotalLast={(v) => setOutput((s) => ({ ...s, last: v }))}
+                    unitEq={calc.unitEq}
+                    unitSt={calc.unitSt}
+                  />
+                ) : (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Factory className="h-4 w-4 text-primary" /> 工业产值
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 md:grid-cols-2">
+                      <FieldNum label="工业生产总值（今年累计）" unit="万元" value={output.curr} onChange={(v) => setOutput((s) => ({ ...s, curr: v }))} required />
+                      <FieldNum label="工业生产总值（去年同期）" unit="万元" value={output.last} onChange={(v) => setOutput((s) => ({ ...s, last: v }))} muted />
+                      <ComputedHint label="万元产值能耗（等价值）" value={`${round(calc.unitEq, 4)} 吨标煤/万元`} formula="综合能耗（等价值） ÷ 工业生产总值" />
+                      <ComputedHint label="万元产值能耗（当量值）" value={`${round(calc.unitSt, 4)} 吨标煤/万元`} formula="综合能耗（当量值） ÷ 工业生产总值" />
+                    </CardContent>
+                  </Card>
+                )
               )}
 
               {step === "carbon" && (
