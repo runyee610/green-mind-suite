@@ -427,20 +427,27 @@ export default function ReportMonthlyFilling() {
                       <FieldNum label="综合碳排放量（去年同期）" unit="吨二氧化碳" value={carbon.last} onChange={(v) => setCarbon((s) => ({ ...s, last: v }))} muted />
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Flame className="h-4 w-4 text-primary" /> 蒸汽相关指标
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2">
-                      <FieldNum label="蒸汽综合能耗（今年累计）" unit="tce" value={steam.energyCurr} onChange={(v) => setSteam((s) => ({ ...s, energyCurr: v }))} />
-                      <FieldNum label="蒸汽综合能耗（去年同期）" unit="tce" value={steam.energyLast} onChange={(v) => setSteam((s) => ({ ...s, energyLast: v }))} muted />
-                      <FieldNum label="蒸汽产量（今年累计）" unit="吨" value={steam.outputCurr} onChange={(v) => setSteam((s) => ({ ...s, outputCurr: v }))} />
-                      <FieldNum label="蒸汽产量（去年同期）" unit="吨" value={steam.outputLast} onChange={(v) => setSteam((s) => ({ ...s, outputLast: v }))} muted />
-                      <ComputedHint label="蒸汽单位产量综合能耗" value={`${round(steam.outputCurr ? steam.energyCurr / steam.outputCurr : 0, 6)} tce/吨`} formula="蒸汽综合能耗 ÷ 蒸汽产量" />
-                    </CardContent>
-                  </Card>
+                  {showSteam ? (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <Flame className="h-4 w-4 text-primary" /> 蒸汽相关指标
+                          <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
+                            {enterpriseTypeLabel} 专属
+                          </Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="grid gap-4 md:grid-cols-2">
+                        <FieldNum label="蒸汽综合能耗（今年累计）" unit="tce" value={steam.energyCurr} onChange={(v) => setSteam((s) => ({ ...s, energyCurr: v }))} />
+                        <FieldNum label="蒸汽综合能耗（去年同期）" unit="tce" value={steam.energyLast} onChange={(v) => setSteam((s) => ({ ...s, energyLast: v }))} muted />
+                        <FieldNum label="蒸汽产量（今年累计）" unit="吨" value={steam.outputCurr} onChange={(v) => setSteam((s) => ({ ...s, outputCurr: v }))} />
+                        <FieldNum label="蒸汽产量（去年同期）" unit="吨" value={steam.outputLast} onChange={(v) => setSteam((s) => ({ ...s, outputLast: v }))} muted />
+                        <ComputedHint label="蒸汽单位产量综合能耗" value={`${round(steam.outputCurr ? steam.energyCurr / steam.outputCurr : 0, 6)} tce/吨`} formula="蒸汽综合能耗 ÷ 蒸汽产量" />
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
+                  )}
                 </div>
               )}
 
