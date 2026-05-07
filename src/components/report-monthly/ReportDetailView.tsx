@@ -17,8 +17,11 @@ import {
   sumStandard,
 } from "./detailFields";
 import type { MonthlyReport } from "./monthlyReportData";
+import { ENTERPRISE_TYPES, SpecialFieldsPlaceholder, TYPE_HAS_STEAM, type EnterpriseTypeId } from "./EnterpriseTypeSwitcher";
 
-export function ReportDetailView({ report, onBack }: { report: MonthlyReport; onBack?: () => void }) {
+export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STEAM }: { report: MonthlyReport; onBack?: () => void; enterpriseType?: EnterpriseTypeId }) {
+  const showSteam = enterpriseType === TYPE_HAS_STEAM;
+  const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
   const detail = buildDetailForReport(report.name);
   const v = detail.energyVarieties;
 
