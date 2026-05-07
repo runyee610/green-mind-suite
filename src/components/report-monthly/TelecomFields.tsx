@@ -106,9 +106,11 @@ export function TelecomFillingSection({
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-2">
-        <FieldBox label="电信业务总量（今年累计）" unit="万元" value={totalCurr} onChange={onTotalCurr} />
-        <FieldBox label="电信业务总量（去年累计）" unit="万元" value={totalLast} onChange={onTotalLast} muted />
+      <CardContent className="space-y-3">
+        <div className="grid gap-3 md:grid-cols-2">
+          <FieldBox label="电信业务总量（今年累计）" unit="万元" value={totalCurr} onChange={onTotalCurr} />
+          <FieldBox label="电信业务总量（去年累计）" unit="万元" value={totalLast} onChange={onTotalLast} muted />
+        </div>
         <ComputedRow
           label="单位电信业务总量能耗（等价值）"
           value={`${round(unitEq, 4)} 吨标煤/万元`}
