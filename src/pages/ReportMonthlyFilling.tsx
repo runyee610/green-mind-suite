@@ -88,7 +88,7 @@ const SPECIAL_STEP_BY_TYPE: Record<EnterpriseTypeId, { label: string; desc: stri
   power_gen: { label: "碳排与电力生产", desc: "碳排放（选填）+ 电力生产专属指标" },
   power_supply: { label: "碳排与供电", desc: "碳排放（选填）+ 供电企业专属指标" },
   energy_convert: { label: "碳排与蒸汽", desc: "碳排放（选填）+ 蒸汽相关指标" },
-  non_energy: { label: "碳排放", desc: "碳排放（选填）" },
+  non_energy: { label: "碳排与产品能耗", desc: "碳排放（选填）+ 分产品单位产量综合能耗" },
   telecom: { label: "碳排与电信", desc: "碳排放（选填）+ 电信企业专属指标" },
 };
 
