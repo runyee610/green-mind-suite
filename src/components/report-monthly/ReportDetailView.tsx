@@ -20,6 +20,7 @@ import type { MonthlyReport } from "./monthlyReportData";
 import { ENTERPRISE_TYPES, SpecialFieldsPlaceholder, TYPE_HAS_STEAM, type EnterpriseTypeId } from "./EnterpriseTypeSwitcher";
 import { PowerGenDetailSection } from "./PowerGenFields";
 import { PowerSupplyDetailSection } from "./PowerSupplyFields";
+import { NonEnergyDetailSection } from "./NonEnergyFields";
 
 export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STEAM }: { report: MonthlyReport; onBack?: () => void; enterpriseType?: EnterpriseTypeId }) {
   const showSteam = enterpriseType === TYPE_HAS_STEAM;
