@@ -466,6 +466,8 @@ export default function ReportMonthlyFilling() {
                     <PowerGenFillingSection />
                   ) : enterpriseType === "power_supply" ? (
                     <PowerSupplyFillingSection />
+                  ) : enterpriseType === "non_energy" ? (
+                    <NonEnergyFillingSection />
                   ) : (
                     <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
                   )}
