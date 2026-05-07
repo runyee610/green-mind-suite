@@ -21,12 +21,14 @@ import { ENTERPRISE_TYPES, SpecialFieldsPlaceholder, TYPE_HAS_STEAM, type Enterp
 import { PowerGenDetailSection } from "./PowerGenFields";
 import { PowerSupplyDetailSection } from "./PowerSupplyFields";
 import { NonEnergyDetailSection } from "./NonEnergyFields";
+import { TelecomDetailSection } from "./TelecomFields";
 
 export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STEAM }: { report: MonthlyReport; onBack?: () => void; enterpriseType?: EnterpriseTypeId }) {
   const showSteam = enterpriseType === TYPE_HAS_STEAM;
   const showPowerGen = enterpriseType === "power_gen";
   const showPowerSupply = enterpriseType === "power_supply";
   const showNonEnergy = enterpriseType === "non_energy";
+  const showTelecom = enterpriseType === "telecom";
   const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
   const detail = buildDetailForReport(report.name);
   const v = detail.energyVarieties;
@@ -254,39 +256,45 @@ export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STE
         </div>
       </DetailSection>
 
-      {/* === 工业产值与单位能耗 === */}
-      <DetailSection id="section-output" icon={Factory} title="工业产值与单位能耗">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <DualField
-            label="工业生产总值"
-            unit="万元"
-            kind="input"
-            current={detail.industrialOutputYTD}
-            last={detail.industrialOutputYTDLast}
-            rate={changeRate(detail.industrialOutputYTD, detail.industrialOutputYTDLast)}
-          />
-          <DualField
-            label="万元产值能耗（等价值）"
-            unit="吨标煤/万元"
-            kind="computed"
-            current={round(unitEqCurr, 4)}
-            last={round(unitEqLast, 4)}
-            rate={changeRate(unitEqCurr, unitEqLast)}
-            formula="综合能耗（等价值） ÷ 工业生产总值"
-            source={`综合能耗等价值 ${round(totalEqCurr)} tce ÷ 工业生产总值 ${detail.industrialOutputYTD.toLocaleString()} 万元`}
-          />
-          <DualField
-            label="万元产值能耗（当量值）"
-            unit="吨标煤/万元"
-            kind="computed"
-            current={round(unitStCurr, 4)}
-            last={round(unitStLast, 4)}
-            rate={changeRate(unitStCurr, unitStLast)}
-            formula="综合能耗（当量值） ÷ 工业生产总值"
-            source={`综合能耗当量值 ${round(totalStCurr)} tce ÷ 工业生产总值 ${detail.industrialOutputYTD.toLocaleString()} 万元`}
-          />
-        </div>
-      </DetailSection>
+      {/* === 工业产值 / 电信业务总量 与单位能耗 === */}
+      {showTelecom ? (
+        <DetailSection id="section-output" icon={Factory} title="电信业务总量与单位能耗">
+          <TelecomDetailSection />
+        </DetailSection>
+      ) : (
+        <DetailSection id="section-output" icon={Factory} title="工业产值与单位能耗">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <DualField
+              label="工业生产总值"
+              unit="万元"
+              kind="input"
+              current={detail.industrialOutputYTD}
+              last={detail.industrialOutputYTDLast}
+              rate={changeRate(detail.industrialOutputYTD, detail.industrialOutputYTDLast)}
+            />
+            <DualField
+              label="万元产值能耗（等价值）"
+              unit="吨标煤/万元"
+              kind="computed"
+              current={round(unitEqCurr, 4)}
+              last={round(unitEqLast, 4)}
+              rate={changeRate(unitEqCurr, unitEqLast)}
+              formula="综合能耗（等价值） ÷ 工业生产总值"
+              source={`综合能耗等价值 ${round(totalEqCurr)} tce ÷ 工业生产总值 ${detail.industrialOutputYTD.toLocaleString()} 万元`}
+            />
+            <DualField
+              label="万元产值能耗（当量值）"
+              unit="吨标煤/万元"
+              kind="computed"
+              current={round(unitStCurr, 4)}
+              last={round(unitStLast, 4)}
+              rate={changeRate(unitStCurr, unitStLast)}
+              formula="综合能耗（当量值） ÷ 工业生产总值"
+              source={`综合能耗当量值 ${round(totalStCurr)} tce ÷ 工业生产总值 ${detail.industrialOutputYTD.toLocaleString()} 万元`}
+            />
+          </div>
+        </DetailSection>
+      )}
 
       {/* === 碳排放 === */}
       <DetailSection id="section-carbon" icon={Sparkles} title="碳排放（选填）">
