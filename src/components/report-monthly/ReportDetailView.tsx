@@ -17,8 +17,11 @@ import {
   sumStandard,
 } from "./detailFields";
 import type { MonthlyReport } from "./monthlyReportData";
+import { ENTERPRISE_TYPES, SpecialFieldsPlaceholder, TYPE_HAS_STEAM, type EnterpriseTypeId } from "./EnterpriseTypeSwitcher";
 
-export function ReportDetailView({ report, onBack }: { report: MonthlyReport; onBack?: () => void }) {
+export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STEAM }: { report: MonthlyReport; onBack?: () => void; enterpriseType?: EnterpriseTypeId }) {
+  const showSteam = enterpriseType === TYPE_HAS_STEAM;
+  const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
   const detail = buildDetailForReport(report.name);
   const v = detail.energyVarieties;
 
@@ -303,37 +306,41 @@ export function ReportDetailView({ report, onBack }: { report: MonthlyReport; on
         </div>
       </DetailSection>
 
-      {/* === 蒸汽 === */}
-      <DetailSection id="section-steam" icon={Flame} title="蒸汽相关指标">
-        <div className="grid gap-3 md:grid-cols-3">
-          <DualField
-            label="蒸汽综合能耗（等价值）"
-            unit="tce"
-            kind="input"
-            current={detail.steamEnergyYTD}
-            last={detail.steamEnergyYTDLast}
-            rate={changeRate(detail.steamEnergyYTD, detail.steamEnergyYTDLast)}
-          />
-          <DualField
-            label="蒸汽产量"
-            unit="吨"
-            kind="input"
-            current={detail.steamOutputYTD}
-            last={detail.steamOutputYTDLast}
-            rate={changeRate(detail.steamOutputYTD, detail.steamOutputYTDLast)}
-          />
-          <DualField
-            label="蒸汽单位产量综合能耗（等价值）"
-            unit="tce/吨"
-            kind="computed"
-            current={round(steamUnitCurr, 6)}
-            last={round(steamUnitLast, 6)}
-            rate={changeRate(steamUnitCurr, steamUnitLast)}
-            formula="蒸汽综合能耗（等价值） ÷ 蒸汽产量"
-            source={`蒸汽综合能耗 ${detail.steamEnergyYTD} tce ÷ 蒸汽产量 ${detail.steamOutputYTD.toLocaleString()} 吨`}
-          />
-        </div>
-      </DetailSection>
+      {/* === 蒸汽（仅特定企业类型） === */}
+      {showSteam ? (
+        <DetailSection id="section-steam" icon={Flame} title={`蒸汽相关指标（${enterpriseTypeLabel} 专属）`}>
+          <div className="grid gap-3 md:grid-cols-3">
+            <DualField
+              label="蒸汽综合能耗（等价值）"
+              unit="tce"
+              kind="input"
+              current={detail.steamEnergyYTD}
+              last={detail.steamEnergyYTDLast}
+              rate={changeRate(detail.steamEnergyYTD, detail.steamEnergyYTDLast)}
+            />
+            <DualField
+              label="蒸汽产量"
+              unit="吨"
+              kind="input"
+              current={detail.steamOutputYTD}
+              last={detail.steamOutputYTDLast}
+              rate={changeRate(detail.steamOutputYTD, detail.steamOutputYTDLast)}
+            />
+            <DualField
+              label="蒸汽单位产量综合能耗（等价值）"
+              unit="tce/吨"
+              kind="computed"
+              current={round(steamUnitCurr, 6)}
+              last={round(steamUnitLast, 6)}
+              rate={changeRate(steamUnitCurr, steamUnitLast)}
+              formula="蒸汽综合能耗（等价值） ÷ 蒸汽产量"
+              source={`蒸汽综合能耗 ${detail.steamEnergyYTD} tce ÷ 蒸汽产量 ${detail.steamOutputYTD.toLocaleString()} 吨`}
+            />
+          </div>
+        </DetailSection>
+      ) : (
+        <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
+      )}
 
       {/* 兼容防止未使用警告 */}
       <span className="hidden">{SingleField.name}</span>

@@ -32,6 +32,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import {
+  ENTERPRISE_TYPES,
+  EnterpriseTypeSwitcher,
+  SpecialFieldsPlaceholder,
+  TYPE_HAS_STEAM,
+  type EnterpriseTypeId,
+} from "@/components/report-monthly/EnterpriseTypeSwitcher";
 
 // ============= 类型 =============
 type EnergyRow = {
@@ -77,6 +84,9 @@ type StepId = (typeof STEPS)[number]["id"];
 
 export default function ReportMonthlyFilling() {
   const [step, setStep] = useState<StepId>("basic");
+  const [enterpriseType, setEnterpriseType] = useState<EnterpriseTypeId>(TYPE_HAS_STEAM);
+  const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
+  const showSteam = enterpriseType === TYPE_HAS_STEAM;
   const [energy, setEnergy] = useState<EnergyRow[]>(initialEnergy);
   const [output, setOutput] = useState({ curr: 0, last: 1688000 });
   const [carbon, setCarbon] = useState({ curr: 0, last: 268900 });
@@ -170,6 +180,7 @@ export default function ReportMonthlyFilling() {
     <AppLayout title="节能月报 · 企业填报" subtitle="按步骤填写本月能源消费、产值与节能措施，系统自动计算综合指标">
       <TooltipProvider delayDuration={150}>
         <div className="space-y-4">
+          <EnterpriseTypeSwitcher value={enterpriseType} onChange={setEnterpriseType} />
           {/* 顶部信息条 */}
           <Card className="panel-glow">
             <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
@@ -416,20 +427,27 @@ export default function ReportMonthlyFilling() {
                       <FieldNum label="综合碳排放量（去年同期）" unit="吨二氧化碳" value={carbon.last} onChange={(v) => setCarbon((s) => ({ ...s, last: v }))} muted />
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Flame className="h-4 w-4 text-primary" /> 蒸汽相关指标
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2">
-                      <FieldNum label="蒸汽综合能耗（今年累计）" unit="tce" value={steam.energyCurr} onChange={(v) => setSteam((s) => ({ ...s, energyCurr: v }))} />
-                      <FieldNum label="蒸汽综合能耗（去年同期）" unit="tce" value={steam.energyLast} onChange={(v) => setSteam((s) => ({ ...s, energyLast: v }))} muted />
-                      <FieldNum label="蒸汽产量（今年累计）" unit="吨" value={steam.outputCurr} onChange={(v) => setSteam((s) => ({ ...s, outputCurr: v }))} />
-                      <FieldNum label="蒸汽产量（去年同期）" unit="吨" value={steam.outputLast} onChange={(v) => setSteam((s) => ({ ...s, outputLast: v }))} muted />
-                      <ComputedHint label="蒸汽单位产量综合能耗" value={`${round(steam.outputCurr ? steam.energyCurr / steam.outputCurr : 0, 6)} tce/吨`} formula="蒸汽综合能耗 ÷ 蒸汽产量" />
-                    </CardContent>
-                  </Card>
+                  {showSteam ? (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <Flame className="h-4 w-4 text-primary" /> 蒸汽相关指标
+                          <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
+                            {enterpriseTypeLabel} 专属
+                          </Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="grid gap-4 md:grid-cols-2">
+                        <FieldNum label="蒸汽综合能耗（今年累计）" unit="tce" value={steam.energyCurr} onChange={(v) => setSteam((s) => ({ ...s, energyCurr: v }))} />
+                        <FieldNum label="蒸汽综合能耗（去年同期）" unit="tce" value={steam.energyLast} onChange={(v) => setSteam((s) => ({ ...s, energyLast: v }))} muted />
+                        <FieldNum label="蒸汽产量（今年累计）" unit="吨" value={steam.outputCurr} onChange={(v) => setSteam((s) => ({ ...s, outputCurr: v }))} />
+                        <FieldNum label="蒸汽产量（去年同期）" unit="吨" value={steam.outputLast} onChange={(v) => setSteam((s) => ({ ...s, outputLast: v }))} muted />
+                        <ComputedHint label="蒸汽单位产量综合能耗" value={`${round(steam.outputCurr ? steam.energyCurr / steam.outputCurr : 0, 6)} tce/吨`} formula="蒸汽综合能耗 ÷ 蒸汽产量" />
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
+                  )}
                 </div>
               )}
 

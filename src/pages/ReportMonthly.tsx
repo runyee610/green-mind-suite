@@ -20,9 +20,16 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import {
+  ENTERPRISE_TYPES,
+  EnterpriseTypeSwitcher,
+  TYPE_HAS_STEAM,
+  type EnterpriseTypeId,
+} from "@/components/report-monthly/EnterpriseTypeSwitcher";
 
 export default function ReportMonthly() {
   const [detailReport, setDetailReport] = useState<MonthlyReport | null>(null);
+  const [enterpriseType, setEnterpriseType] = useState<EnterpriseTypeId>(TYPE_HAS_STEAM);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [filters, setFilters] = useState({
     keyword: "",
@@ -115,7 +122,14 @@ export default function ReportMonthly() {
   if (detailReport) {
     return (
       <AppLayout hideHeader>
-        <ReportDetailView report={detailReport} onBack={() => setDetailReport(null)} />
+        <div className="space-y-3">
+          <EnterpriseTypeSwitcher value={enterpriseType} onChange={setEnterpriseType} />
+          <ReportDetailView
+            report={detailReport}
+            onBack={() => setDetailReport(null)}
+            enterpriseType={enterpriseType}
+          />
+        </div>
       </AppLayout>
     );
   }
@@ -123,6 +137,7 @@ export default function ReportMonthly() {
   return (
     <AppLayout title="节能月度报告" subtitle="政府侧重点用能单位月报监管与全量字段导出">
       <section className="space-y-4">
+        <EnterpriseTypeSwitcher value={enterpriseType} onChange={setEnterpriseType} />
         {/* KPI 卡片 */}
         <div className="grid gap-3 md:grid-cols-3">
           {stats.map((item) => (
