@@ -79,114 +79,203 @@ export function PowerGenDetailSection() {
   return (
     <div className="space-y-4">
       <PowerSection icon={Zap} title="发电与供电指标" subtitle="电力生产企业 专属">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <DualField label="发电耗用标准煤量" unit="吨标煤" kind="input" current={d.coalForGen.curr} last={d.coalForGen.last} rate={rate(d.coalForGen.curr, d.coalForGen.last)} />
-          <DualField label="供电量" unit="万kWh" kind="input" current={d.supply.curr} last={d.supply.last} rate={rate(d.supply.curr, d.supply.last)} />
-          <DualField
-            label="供电标准煤耗"
-            unit="gce/kWh"
-            kind="computed"
-            current={round(supplyCoalRateCurr, 2)}
-            last={round(supplyCoalRateLast, 2)}
-            rate={rate(supplyCoalRateCurr, supplyCoalRateLast)}
-            formula="发电耗用标准煤量 ÷ 供电量 × 100"
-            source={`${d.coalForGen.curr} ÷ ${d.supply.curr} × 100`}
-          />
-          <DualField label="发电量" unit="万kWh" kind="input" current={d.generation.curr} last={d.generation.last} rate={rate(d.generation.curr, d.generation.last)} />
-          <DualField
-            label="发电标准煤耗"
-            unit="gce/kWh"
-            kind="computed"
-            current={round(genCoalRateCurr, 2)}
-            last={round(genCoalRateLast, 2)}
-            rate={rate(genCoalRateCurr, genCoalRateLast)}
-            formula="发电耗用标准煤量 ÷ 发电量 × 100"
-            source={`${d.coalForGen.curr} ÷ ${d.generation.curr} × 100`}
-          />
-          <DualField label="发电设备装机容量" unit="MW" kind="input" current={d.capacity.curr} last={d.capacity.last} rate={rate(d.capacity.curr, d.capacity.last)} />
-          <DualField
-            label="发电设备平均利用小时"
-            unit="h"
-            kind="computed"
-            current={round(avgHoursCurr, 2)}
-            last={round(avgHoursLast, 2)}
-            rate={rate(avgHoursCurr, avgHoursLast)}
-            formula="发电量 ÷ 发电设备装机容量"
-            source={`${d.generation.curr} ÷ ${d.capacity.curr}`}
-          />
-          <DualField label="发电厂用电量" unit="万kWh" kind="input" current={d.plantUse.curr} last={d.plantUse.last} rate={rate(d.plantUse.curr, d.plantUse.last)} />
-          <DualField
-            label="发电厂用电率"
-            unit="%"
-            kind="computed"
-            current={round(plantUseRateCurr, 2)}
-            last={round(plantUseRateLast, 2)}
-            rate={rate(plantUseRateCurr, plantUseRateLast)}
-            formula="发电厂用电量 ÷ 发电量 × 100%"
-            source={`${d.plantUse.curr} ÷ ${d.generation.curr} × 100%`}
-          />
-          <DualField label="上网电量" unit="万kWh" kind="input" current={d.toGrid.curr} last={d.toGrid.last} rate={rate(d.toGrid.curr, d.toGrid.last)} />
-          <DualField
-            label="综合厂用电率"
-            unit="%"
-            kind="computed"
-            current={round(compUseRateCurr, 2)}
-            last={round(compUseRateLast, 2)}
-            rate={rate(compUseRateCurr, compUseRateLast)}
-            formula="(1 − 上网电量 ÷ 发电量) × 100%"
-            source={`(1 − ${d.toGrid.curr} ÷ ${d.generation.curr}) × 100%`}
-          />
+        <div className="space-y-3">
+          <SubGroup title="① 煤耗与电量" desc="发电耗用煤量与上下游电量之间的派生煤耗指标">
+            <InputsBlock>
+              <DualField label="发电耗用标准煤量" unit="吨标煤" kind="input" current={d.coalForGen.curr} last={d.coalForGen.last} rate={rate(d.coalForGen.curr, d.coalForGen.last)} />
+              <DualField label="发电量" unit="万kWh" kind="input" current={d.generation.curr} last={d.generation.last} rate={rate(d.generation.curr, d.generation.last)} />
+              <DualField label="供电量" unit="万kWh" kind="input" current={d.supply.curr} last={d.supply.last} rate={rate(d.supply.curr, d.supply.last)} />
+            </InputsBlock>
+            <ComputedBlock>
+              <DualField
+                label="发电标准煤耗"
+                unit="gce/kWh"
+                kind="computed"
+                current={round(genCoalRateCurr, 2)}
+                last={round(genCoalRateLast, 2)}
+                rate={rate(genCoalRateCurr, genCoalRateLast)}
+                formula="发电耗用标准煤量 ÷ 发电量 × 100"
+                source={`${d.coalForGen.curr} ÷ ${d.generation.curr} × 100`}
+              />
+              <DualField
+                label="供电标准煤耗"
+                unit="gce/kWh"
+                kind="computed"
+                current={round(supplyCoalRateCurr, 2)}
+                last={round(supplyCoalRateLast, 2)}
+                rate={rate(supplyCoalRateCurr, supplyCoalRateLast)}
+                formula="发电耗用标准煤量 ÷ 供电量 × 100"
+                source={`${d.coalForGen.curr} ÷ ${d.supply.curr} × 100`}
+              />
+            </ComputedBlock>
+          </SubGroup>
+
+          <SubGroup title="② 装机与利用小时" desc="装机容量与发电量决定设备平均利用小时">
+            <InputsBlock>
+              <DualField label="发电设备装机容量" unit="MW" kind="input" current={d.capacity.curr} last={d.capacity.last} rate={rate(d.capacity.curr, d.capacity.last)} />
+              <DualField label="发电量（参与计算）" unit="万kWh" kind="input" current={d.generation.curr} last={d.generation.last} rate={rate(d.generation.curr, d.generation.last)} />
+            </InputsBlock>
+            <ComputedBlock>
+              <DualField
+                label="发电设备平均利用小时"
+                unit="h"
+                kind="computed"
+                current={round(avgHoursCurr, 2)}
+                last={round(avgHoursLast, 2)}
+                rate={rate(avgHoursCurr, avgHoursLast)}
+                formula="发电量 ÷ 发电设备装机容量"
+                source={`${d.generation.curr} ÷ ${d.capacity.curr}`}
+              />
+            </ComputedBlock>
+          </SubGroup>
+
+          <SubGroup title="③ 厂用电与上网电量" desc="发电厂自用电与外送上网电量推导厂用电率">
+            <InputsBlock>
+              <DualField label="发电厂用电量" unit="万kWh" kind="input" current={d.plantUse.curr} last={d.plantUse.last} rate={rate(d.plantUse.curr, d.plantUse.last)} />
+              <DualField label="上网电量" unit="万kWh" kind="input" current={d.toGrid.curr} last={d.toGrid.last} rate={rate(d.toGrid.curr, d.toGrid.last)} />
+            </InputsBlock>
+            <ComputedBlock>
+              <DualField
+                label="发电厂用电率"
+                unit="%"
+                kind="computed"
+                current={round(plantUseRateCurr, 2)}
+                last={round(plantUseRateLast, 2)}
+                rate={rate(plantUseRateCurr, plantUseRateLast)}
+                formula="发电厂用电量 ÷ 发电量 × 100%"
+                source={`${d.plantUse.curr} ÷ ${d.generation.curr} × 100%`}
+              />
+              <DualField
+                label="综合厂用电率"
+                unit="%"
+                kind="computed"
+                current={round(compUseRateCurr, 2)}
+                last={round(compUseRateLast, 2)}
+                rate={rate(compUseRateCurr, compUseRateLast)}
+                formula="(1 − 上网电量 ÷ 发电量) × 100%"
+                source={`(1 − ${d.toGrid.curr} ÷ ${d.generation.curr}) × 100%`}
+              />
+            </ComputedBlock>
+          </SubGroup>
         </div>
       </PowerSection>
 
       <PowerSection icon={Flame} title="供热指标">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <DualField label="供热耗用标准煤量" unit="吨标煤" kind="input" current={d.coalForHeat.curr} last={d.coalForHeat.last} rate={rate(d.coalForHeat.curr, d.coalForHeat.last)} />
-          <DualField label="供热量" unit="百万千焦" kind="input" current={d.heatSupply.curr} last={d.heatSupply.last} rate={rate(d.heatSupply.curr, d.heatSupply.last)} />
-          <DualField
-            label="供热标准煤耗"
-            unit="kgce/GJ"
-            kind="computed"
-            current={round(heatCoalRateCurr, 2)}
-            last={round(heatCoalRateLast, 2)}
-            rate={rate(heatCoalRateCurr, heatCoalRateLast)}
-            formula="供热耗用标准煤量 ÷ 供热量 × 100%"
-            source={`${d.coalForHeat.curr} ÷ ${d.heatSupply.curr} × 100%`}
-          />
-          <DualField label="热电联产综合效率" unit="%" kind="input" current={d.cogenEff.curr} last={d.cogenEff.last} rate={rate(d.cogenEff.curr, d.cogenEff.last)} />
-        </div>
+        <SubGroup title="供热煤耗与效率" desc="供热耗煤量与供热量推导煤耗，热电联产效率独立填报">
+          <InputsBlock>
+            <DualField label="供热耗用标准煤量" unit="吨标煤" kind="input" current={d.coalForHeat.curr} last={d.coalForHeat.last} rate={rate(d.coalForHeat.curr, d.coalForHeat.last)} />
+            <DualField label="供热量" unit="百万千焦" kind="input" current={d.heatSupply.curr} last={d.heatSupply.last} rate={rate(d.heatSupply.curr, d.heatSupply.last)} />
+            <DualField label="热电联产综合效率" unit="%" kind="input" current={d.cogenEff.curr} last={d.cogenEff.last} rate={rate(d.cogenEff.curr, d.cogenEff.last)} />
+          </InputsBlock>
+          <ComputedBlock>
+            <DualField
+              label="供热标准煤耗"
+              unit="kgce/GJ"
+              kind="computed"
+              current={round(heatCoalRateCurr, 2)}
+              last={round(heatCoalRateLast, 2)}
+              rate={rate(heatCoalRateCurr, heatCoalRateLast)}
+              formula="供热耗用标准煤量 ÷ 供热量 × 100%"
+              source={`${d.coalForHeat.curr} ÷ ${d.heatSupply.curr} × 100%`}
+            />
+          </ComputedBlock>
+        </SubGroup>
       </PowerSection>
 
       <PowerSection icon={Bolt} title="外购电量与单位产量综合能耗">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <DualField label="外购电量" unit="万kWh" kind="input" current={d.purchasedElec.curr} last={d.purchasedElec.last} rate={rate(d.purchasedElec.curr, d.purchasedElec.last)} />
-          <DualField label="电力综合能耗（等价值）" unit="tce" kind="input" current={d.elecEnergyEq.curr} last={d.elecEnergyEq.last} rate={rate(d.elecEnergyEq.curr, d.elecEnergyEq.last)} />
-          <DualField label="电力产量" unit="万kWh" kind="input" current={d.elecOutput.curr} last={d.elecOutput.last} rate={rate(d.elecOutput.curr, d.elecOutput.last)} />
-          <DualField
-            label="电力单位产量综合能耗（等价值）"
-            unit="tce/万kWh"
-            kind="computed"
-            current={round(elecUnitCurr, 4)}
-            last={round(elecUnitLast, 4)}
-            rate={rate(elecUnitCurr, elecUnitLast)}
-            formula="电力综合能耗（等价值） ÷ 电力产量"
-            source={`${d.elecEnergyEq.curr} ÷ ${d.elecOutput.curr}`}
-          />
-          <DualField label="热力综合能耗（当量值）" unit="tce" kind="input" current={d.heatEnergyStd.curr} last={d.heatEnergyStd.last} rate={rate(d.heatEnergyStd.curr, d.heatEnergyStd.last)} />
-          <DualField label="热力产量" unit="百万千焦" kind="input" current={d.heatOutput.curr} last={d.heatOutput.last} rate={rate(d.heatOutput.curr, d.heatOutput.last)} />
-          <DualField
-            label="热力单位产量综合能耗（当量值）"
-            unit="tce/GJ"
-            kind="computed"
-            current={round(heatUnitCurr, 4)}
-            last={round(heatUnitLast, 4)}
-            rate={rate(heatUnitCurr, heatUnitLast)}
-            formula="热力综合能耗（当量值） ÷ 热力产量"
-            source={`${d.heatEnergyStd.curr} ÷ ${d.heatOutput.curr}`}
-          />
+        <div className="space-y-3">
+          <div className="rounded-md border border-border/60 bg-muted/20 p-3">
+            <div className="text-xs font-semibold text-foreground">外购电量</div>
+            <div className="mt-2">
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <DualField label="外购电量" unit="万kWh" kind="input" current={d.purchasedElec.curr} last={d.purchasedElec.last} rate={rate(d.purchasedElec.curr, d.purchasedElec.last)} />
+              </div>
+            </div>
+          </div>
+
+          <SubGroup title="① 电力单位产量综合能耗" desc="电力综合能耗与电力产量推导单位产量能耗（等价值）">
+            <InputsBlock>
+              <DualField label="电力综合能耗（等价值）" unit="tce" kind="input" current={d.elecEnergyEq.curr} last={d.elecEnergyEq.last} rate={rate(d.elecEnergyEq.curr, d.elecEnergyEq.last)} />
+              <DualField label="电力产量" unit="万kWh" kind="input" current={d.elecOutput.curr} last={d.elecOutput.last} rate={rate(d.elecOutput.curr, d.elecOutput.last)} />
+            </InputsBlock>
+            <ComputedBlock>
+              <DualField
+                label="电力单位产量综合能耗（等价值）"
+                unit="tce/万kWh"
+                kind="computed"
+                current={round(elecUnitCurr, 4)}
+                last={round(elecUnitLast, 4)}
+                rate={rate(elecUnitCurr, elecUnitLast)}
+                formula="电力综合能耗（等价值） ÷ 电力产量"
+                source={`${d.elecEnergyEq.curr} ÷ ${d.elecOutput.curr}`}
+              />
+            </ComputedBlock>
+          </SubGroup>
+
+          <SubGroup title="② 热力单位产量综合能耗" desc="热力综合能耗与热力产量推导单位产量能耗（当量值）">
+            <InputsBlock>
+              <DualField label="热力综合能耗（当量值）" unit="tce" kind="input" current={d.heatEnergyStd.curr} last={d.heatEnergyStd.last} rate={rate(d.heatEnergyStd.curr, d.heatEnergyStd.last)} />
+              <DualField label="热力产量" unit="百万千焦" kind="input" current={d.heatOutput.curr} last={d.heatOutput.last} rate={rate(d.heatOutput.curr, d.heatOutput.last)} />
+            </InputsBlock>
+            <ComputedBlock>
+              <DualField
+                label="热力单位产量综合能耗（当量值）"
+                unit="tce/GJ"
+                kind="computed"
+                current={round(heatUnitCurr, 4)}
+                last={round(heatUnitLast, 4)}
+                rate={rate(heatUnitCurr, heatUnitLast)}
+                formula="热力综合能耗（当量值） ÷ 热力产量"
+                source={`${d.heatEnergyStd.curr} ÷ ${d.heatOutput.curr}`}
+              />
+            </ComputedBlock>
+          </SubGroup>
         </div>
       </PowerSection>
     </div>
+  );
+}
+
+function SubGroup({ title, desc, children }: { title: string; desc?: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-md border border-border/60 bg-muted/20 p-3">
+      <div className="mb-2 flex items-baseline gap-2">
+        <h4 className="text-xs font-semibold text-foreground">{title}</h4>
+        {desc ? <span className="text-[11px] text-muted-foreground">{desc}</span> : null}
+      </div>
+      <div className="grid gap-3 lg:grid-cols-[1fr_auto_1fr] lg:items-stretch">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function InputsBlock({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-success">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" />
+        填报项
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">{children}</div>
+    </div>
+  );
+}
+
+function ComputedBlock({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <div className="hidden self-center text-primary lg:flex">
+        <ArrowRight className="h-5 w-5" />
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-primary">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          系统计算
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2">{children}</div>
+      </div>
+    </>
   );
 }
 
