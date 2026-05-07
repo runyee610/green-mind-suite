@@ -117,16 +117,20 @@ export function DualField({
   );
 }
 
-function ValueCell({ label, value, highlight, muted }: { label: string; value: number | string; highlight?: boolean; muted?: boolean }) {
+function ValueCell({ label, value, highlight, muted, input }: { label: string; value: number | string; highlight?: boolean; muted?: boolean; input?: boolean }) {
   return (
-    <div className={cn("rounded border border-border/60 bg-background/60 px-2 py-1.5")}>
+    <div className={cn(
+      "rounded border px-2 py-1.5",
+      muted ? "border-border bg-muted/40" : input ? "border-success/40 bg-success/15" : "border-primary/40 bg-primary/15",
+    )}>
       <div className="text-[10px] text-muted-foreground">{label}</div>
       <div
         className={cn(
           "mt-0.5 font-mono text-sm font-semibold tabular-nums",
           highlight && "text-primary",
           muted && "text-muted-foreground",
-          !highlight && !muted && "text-foreground",
+          input && "text-success",
+          !highlight && !muted && !input && "text-foreground",
         )}
       >
         {fmt(value)}
