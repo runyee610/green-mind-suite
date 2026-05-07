@@ -463,6 +463,8 @@ export default function ReportMonthlyFilling() {
                     </Card>
                   ) : enterpriseType === "power_gen" ? (
                     <PowerGenFillingSection />
+                  ) : enterpriseType === "power_supply" ? (
+                    <PowerSupplyFillingSection />
                   ) : (
                     <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
                   )}
