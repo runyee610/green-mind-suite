@@ -41,6 +41,7 @@ import {
 } from "@/components/report-monthly/EnterpriseTypeSwitcher";
 import { PowerGenFillingSection } from "@/components/report-monthly/PowerGenFields";
 import { PowerSupplyFillingSection } from "@/components/report-monthly/PowerSupplyFields";
+import { NonEnergyFillingSection } from "@/components/report-monthly/NonEnergyFields";
 
 // ============= 类型 =============
 type EnergyRow = {
