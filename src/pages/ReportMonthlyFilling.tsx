@@ -43,6 +43,7 @@ import { PowerGenFillingSection } from "@/components/report-monthly/PowerGenFiel
 import { PowerSupplyFillingSection } from "@/components/report-monthly/PowerSupplyFields";
 import { NonEnergyFillingSection } from "@/components/report-monthly/NonEnergyFields";
 import { TelecomFillingSection } from "@/components/report-monthly/TelecomFields";
+import { DataCenterFillingSection } from "@/components/report-monthly/DataCenterFields";
 
 // ============= 类型 =============
 type EnergyRow = {
@@ -533,6 +534,7 @@ export default function ReportMonthlyFilling() {
                   ) : (
                     <SpecialFieldsPlaceholder typeLabel={enterpriseTypeLabel} />
                   )}
+                  {enterpriseType === "telecom" && <DataCenterFillingSection />}
                 </div>
               )}
 
