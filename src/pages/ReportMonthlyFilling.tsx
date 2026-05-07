@@ -90,7 +90,7 @@ const SPECIAL_STEP_BY_TYPE: Record<EnterpriseTypeId, { label: string; desc: stri
   telecom: { label: "碳排与电信", desc: "碳排放（选填）+ 电信企业专属指标" },
 };
 
-const STEPS = BASE_STEPS;
+
 
 type StepId = (typeof STEPS)[number]["id"];
 
