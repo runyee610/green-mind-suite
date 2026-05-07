@@ -26,6 +26,7 @@ export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STE
   const showSteam = enterpriseType === TYPE_HAS_STEAM;
   const showPowerGen = enterpriseType === "power_gen";
   const showPowerSupply = enterpriseType === "power_supply";
+  const showNonEnergy = enterpriseType === "non_energy";
   const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
   const detail = buildDetailForReport(report.name);
   const v = detail.energyVarieties;
