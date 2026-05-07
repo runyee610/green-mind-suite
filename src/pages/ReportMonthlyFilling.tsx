@@ -72,7 +72,7 @@ const round = (n: number, d = 2) => Math.round(n * 10 ** d) / 10 ** d;
 const rateOf = (a: number, b: number): number | null => (b ? round(((a - b) / b) * 100, 2) : null);
 const fmtRate = (r: number | null) => (r === null ? "—" : `${r > 0 ? "+" : ""}${r.toFixed(2)}%`);
 
-const STEPS = [
+const BASE_STEPS = [
   { id: "basic", label: "基础信息", icon: Info, desc: "确认企业与统计周期" },
   { id: "energy", label: "能源消费", icon: Flame, desc: "按品种填写消费量" },
   { id: "output", label: "工业产值", icon: Factory, desc: "填写产值与产量" },
@@ -80,6 +80,17 @@ const STEPS = [
   { id: "measure", label: "节能措施", icon: Leaf, desc: "本月节能动作" },
   { id: "review", label: "预览提交", icon: FileCheck2, desc: "核对后提交审核" },
 ] as const;
+
+/** 不同企业类型在第 4 步的专属字段标题 */
+const SPECIAL_STEP_BY_TYPE: Record<EnterpriseTypeId, { label: string; desc: string }> = {
+  power_gen: { label: "碳排与电力生产", desc: "碳排放（选填）+ 电力生产专属指标" },
+  power_supply: { label: "碳排与供电", desc: "碳排放（选填）+ 供电企业专属指标" },
+  energy_convert: { label: "碳排与蒸汽", desc: "碳排放（选填）+ 蒸汽相关指标" },
+  non_energy: { label: "碳排放", desc: "碳排放（选填）" },
+  telecom: { label: "碳排与电信", desc: "碳排放（选填）+ 电信企业专属指标" },
+};
+
+const STEPS = BASE_STEPS;
 
 type StepId = (typeof STEPS)[number]["id"];
 
