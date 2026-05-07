@@ -99,6 +99,9 @@ export default function ReportMonthlyFilling() {
   const [enterpriseType, setEnterpriseType] = useState<EnterpriseTypeId>(TYPE_HAS_STEAM);
   const enterpriseTypeLabel = ENTERPRISE_TYPES.find((t) => t.id === enterpriseType)?.label ?? "";
   const showSteam = enterpriseType === TYPE_HAS_STEAM;
+  const STEPS = BASE_STEPS.map((s) =>
+    s.id === "carbon" ? { ...s, ...SPECIAL_STEP_BY_TYPE[enterpriseType] } : s,
+  );
   const [energy, setEnergy] = useState<EnergyRow[]>(initialEnergy);
   const [output, setOutput] = useState({ curr: 0, last: 1688000 });
   const [carbon, setCarbon] = useState({ curr: 0, last: 268900 });
