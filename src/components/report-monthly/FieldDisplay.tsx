@@ -36,15 +36,17 @@ export function SingleField({
   return (
     <div
       className={cn(
-        "rounded-md border p-3",
-        isComputed ? "border-primary/30 bg-primary/[0.04]" : "border-success/40 bg-success/[0.06]",
+        "rounded-md border-2 border-l-4 p-3",
+        isComputed
+          ? "border-primary/40 border-l-primary bg-primary/[0.08]"
+          : "border-success/50 border-l-success bg-success/[0.10]",
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="text-xs leading-tight text-muted-foreground">{label}</span>
+        <span className="text-xs font-medium leading-tight text-foreground">{label}</span>
         <KindBadge kind={kind} formula={formula} source={source} />
       </div>
-      <div className={cn("mt-2 font-mono text-base font-semibold", isComputed ? "text-primary" : "text-foreground")}>
+      <div className={cn("mt-2 font-mono text-base font-semibold", isComputed ? "text-primary" : "text-success")}>
         {fmt(value)}
         {unit ? <span className="ml-1 text-xs font-normal text-muted-foreground">{unit}</span> : null}
       </div>
