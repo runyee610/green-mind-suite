@@ -633,6 +633,10 @@ export default function SystemUsers() {
                     e.creditCode.includes(keyword) ||
                     e.owner.includes(keyword),
                 )}
+                onChangePwd={(acc) => {
+                  setPwdTarget(acc);
+                  setPwdOpen(true);
+                }}
               />
             )}
           </div>
@@ -697,7 +701,13 @@ function cityTabCount(t: "users" | "district" | "park" | "group" | "enterprise")
   }
 }
 
-function EnterpriseTable({ rows }: { rows: EnterpriseUser[] }) {
+function EnterpriseTable({
+  rows,
+  onChangePwd,
+}: {
+  rows: EnterpriseUser[];
+  onChangePwd?: (acc: string) => void;
+}) {
   return (
     <Table>
       <TableHeader>
@@ -712,12 +722,13 @@ function EnterpriseTable({ rows }: { rows: EnterpriseUser[] }) {
           <TableHead className="h-9 text-xs">联系人</TableHead>
           <TableHead className="h-9 text-xs">联系电话</TableHead>
           <TableHead className="h-9 text-xs">状态</TableHead>
+          {onChangePwd && <TableHead className="h-9 text-xs text-right">操作</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
         {rows.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={10} className="text-center text-xs text-muted-foreground py-8">
+            <TableCell colSpan={onChangePwd ? 11 : 10} className="text-center text-xs text-muted-foreground py-8">
               暂无企业数据
             </TableCell>
           </TableRow>
@@ -741,6 +752,11 @@ function EnterpriseTable({ rows }: { rows: EnterpriseUser[] }) {
               <TableCell className="py-2">{e.owner}</TableCell>
               <TableCell className="py-2 font-mono text-muted-foreground">{e.phone}</TableCell>
               <TableCell className="py-2"><StatusBadge status={e.status} subtle /></TableCell>
+              {onChangePwd && (
+                <TableCell className="py-2">
+                  <ActionButtons account={e.account} status={e.status} onChangePwd={onChangePwd} />
+                </TableCell>
+              )}
             </TableRow>
           ))
         )}
@@ -1326,26 +1342,35 @@ function GroupTable({
             </TableCell>
             <TableCell className="py-2">{r.owner}</TableCell>
             <TableCell className="py-2">
-              <div className="flex flex-wrap gap-1 max-w-md">
-                {r.subsidiaries.slice(0, 3).map((s) => (
-                  <Link
-                    key={s}
-                    to={`/enterprise-detail/${encodeURIComponent(s)}`}
-                  >
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] font-normal cursor-pointer hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors"
+              {onDrill ? (
+                <button
+                  onClick={() => onDrill(r)}
+                  className="text-primary hover:underline tabular-nums"
+                >
+                  {r.subsidiaries.length} 家
+                </button>
+              ) : (
+                <div className="flex flex-wrap gap-1 max-w-md">
+                  {r.subsidiaries.slice(0, 3).map((s) => (
+                    <Link
+                      key={s}
+                      to={`/enterprise-detail/${encodeURIComponent(s)}`}
                     >
-                      {s}
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] font-normal cursor-pointer hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors"
+                      >
+                        {s}
+                      </Badge>
+                    </Link>
+                  ))}
+                  {r.subsidiaries.length > 3 && (
+                    <Badge variant="secondary" className="text-[10px] font-normal">
+                      +{r.subsidiaries.length - 3}
                     </Badge>
-                  </Link>
-                ))}
-                {r.subsidiaries.length > 3 && (
-                  <Badge variant="secondary" className="text-[10px] font-normal">
-                    +{r.subsidiaries.length - 3}
-                  </Badge>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </TableCell>
             <TableCell className="py-2 font-mono text-muted-foreground">{r.phone}</TableCell>
             <TableCell className="py-2">
