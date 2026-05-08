@@ -1330,6 +1330,8 @@ function GroupTable({
           <TableHead className="h-9 text-xs">账号</TableHead>
           <TableHead className="h-9 text-xs">集团名称</TableHead>
           <TableHead className="h-9 text-xs">集团负责人</TableHead>
+          <TableHead className="h-9 text-xs">地址</TableHead>
+          <TableHead className="h-9 text-xs">中心对口人</TableHead>
           <TableHead className="h-9 text-xs">管辖下属企业</TableHead>
           <TableHead className="h-9 text-xs">手机号</TableHead>
           <TableHead className="h-9 text-xs">状态</TableHead>
