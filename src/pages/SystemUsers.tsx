@@ -406,31 +406,125 @@ export default function SystemUsers() {
         />
       )}
 
-      {/* 工具栏 */}
-      {view !== "district_admin" && view !== "park_admin" && view !== "group_admin" && view !== "enterprise_admin" && (
+      {/* 市管理员：下钻查看某区/园区/集团下属企业（同区/集团管理员视角） */}
+      {view === "city_admin" && drillDistrict && (
+        <div className="mb-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs gap-1"
+            onClick={() => setDrillDistrict(null)}
+          >
+            ← 返回{drillDistrict.level === "园区" ? "园区列表" : "区列表"}
+          </Button>
+        </div>
+      )}
+      {view === "city_admin" && drillDistrict && (
+        <DistrictSelfView
+          level={drillDistrict.level}
+          self={drillDistrict}
+          enterprises={enterpriseUsers}
+          onChangePwd={(acc) => {
+            setPwdTarget(acc);
+            setPwdOpen(true);
+          }}
+        />
+      )}
+      {view === "city_admin" && drillGroup && !drillDistrict && (() => {
+        const g = drillGroup;
+        const groupSelf: DistrictUser = {
+          id: g.id,
+          account: g.account,
+          areaName: g.groupName,
+          level: "区",
+          owner: g.owner,
+          cityContact: "—",
+          enterpriseCount: enterpriseUsers.filter((e) => e.group === g.groupName).length,
+          phone: g.phone,
+          status: g.status,
+        };
+        return (
+          <>
+            <div className="mb-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs gap-1"
+                onClick={() => setDrillGroup(null)}
+              >
+                ← 返回集团列表
+              </Button>
+            </div>
+            <DistrictSelfView
+              level="集团"
+              self={groupSelf}
+              enterprises={enterpriseUsers}
+              onChangePwd={(acc) => {
+                setPwdTarget(acc);
+                setPwdOpen(true);
+              }}
+            />
+          </>
+        );
+      })()}
+
+      {/* 市管理员主面板（未下钻时） */}
+      {view === "city_admin" && !drillDistrict && !drillGroup && (
       <Card className="border-border/60">
         <CardContent className="p-0">
+          {/* 子标签 */}
+          <div className="flex items-center gap-1 border-b border-border px-4 pt-3">
+            {[
+              { v: "users", label: "用户账号" },
+              { v: "district", label: "区列表" },
+              { v: "park", label: "园区列表" },
+              { v: "group", label: "集团列表" },
+              { v: "enterprise", label: "企业列表" },
+            ].map((t) => (
+              <button
+                key={t.v}
+                onClick={() => setCityTab(t.v as typeof cityTab)}
+                className={cn(
+                  "h-8 px-3 text-xs rounded-t-md border-b-2 -mb-px transition-colors",
+                  cityTab === t.v
+                    ? "border-primary text-primary font-medium"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="搜索账号 / 名称 / 负责人"
+                placeholder={
+                  cityTab === "users"
+                    ? "搜索账号 / 名称 / 负责人"
+                    : cityTab === "enterprise"
+                    ? "搜索企业名称 / 信用代码 / 负责人"
+                    : "搜索名称 / 账号 / 负责人"
+                }
                 className="h-8 w-64 pl-8 text-xs"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="h-8 w-28 text-xs">
-                <SelectValue placeholder="状态" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">全部状态</SelectItem>
-                <SelectItem value="启用">启用</SelectItem>
-                <SelectItem value="停用">停用</SelectItem>
-              </SelectContent>
-            </Select>
-            {view === "city_admin" && (
+            {cityTab === "users" && (
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-8 w-28 text-xs">
+                  <SelectValue placeholder="状态" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全部状态</SelectItem>
+                  <SelectItem value="启用">启用</SelectItem>
+                  <SelectItem value="停用">停用</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+            {cityTab === "users" && (
               <>
                 <Select value={deptFilter} onValueChange={setDeptFilter}>
                   <SelectTrigger className="h-8 w-44 text-xs">
@@ -477,7 +571,7 @@ export default function SystemUsers() {
 
           {/* 表格区 */}
           <div className="overflow-x-auto">
-            {view === "city_admin" && (
+            {cityTab === "users" && (
               <CityTable
                 rows={cityUsers.filter(
                   (r) =>
@@ -496,12 +590,57 @@ export default function SystemUsers() {
                 }}
               />
             )}
+            {(cityTab === "district" || cityTab === "park") && (
+              <DistrictTable
+                rows={districtUsers.filter(
+                  (r) =>
+                    r.level === (cityTab === "park" ? "园区" : "区") &&
+                    (!keyword ||
+                      r.areaName.includes(keyword) ||
+                      r.account.includes(keyword) ||
+                      r.owner.includes(keyword)),
+                )}
+                level={cityTab === "park" ? "园区" : "区"}
+                onChangePwd={(acc) => {
+                  setPwdTarget(acc);
+                  setPwdOpen(true);
+                }}
+                onDrill={(r) => setDrillDistrict(r)}
+              />
+            )}
+            {cityTab === "group" && (
+              <GroupTable
+                rows={groupUsers.filter(
+                  (r) =>
+                    !keyword ||
+                    r.groupName.includes(keyword) ||
+                    r.account.includes(keyword) ||
+                    r.owner.includes(keyword),
+                )}
+                onChangePwd={(acc) => {
+                  setPwdTarget(acc);
+                  setPwdOpen(true);
+                }}
+                onDrill={(r) => setDrillGroup(r)}
+              />
+            )}
+            {cityTab === "enterprise" && (
+              <EnterpriseTable
+                rows={enterpriseUsers.filter(
+                  (e) =>
+                    !keyword ||
+                    e.enterpriseName.includes(keyword) ||
+                    e.creditCode.includes(keyword) ||
+                    e.owner.includes(keyword),
+                )}
+              />
+            )}
           </div>
 
           {/* 分页脚 */}
           <div className="flex items-center justify-between px-4 py-2 border-t border-border text-xs text-muted-foreground">
             <span>
-              共 {tableCount(view)} 条 · 当前视图：{currentRoleLabel}
+              共 {cityTabCount(cityTab)} 条 · 当前视图：{currentRoleLabel}
             </span>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="h-7 text-xs" disabled>
