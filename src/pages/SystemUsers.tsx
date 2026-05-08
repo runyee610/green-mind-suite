@@ -518,7 +518,7 @@ export default function SystemUsers() {
         accountName={pwdTarget}
       />
       <CreateEnterpriseDialog open={createOpen} onOpenChange={setCreateOpen} />
-      <EnterpriseListDialog user={entListUser} onOpenChange={(o) => !o && setEntListUser(null)} />
+      <EnterpriseListDialog user={entListUser} editable={view === "city_admin"} onOpenChange={(o) => !o && setEntListUser(null)} />
     </AppLayout>
   );
 }
