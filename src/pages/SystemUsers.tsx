@@ -1284,6 +1284,8 @@ function DistrictTable({
                 r.areaName
               )}
             </TableCell>
+            <TableCell className="py-2 max-w-[180px]">{r.fullName}</TableCell>
+            <TableCell className="py-2 max-w-[200px] text-muted-foreground whitespace-pre-wrap break-all">{r.address}</TableCell>
             <TableCell className="py-2">{r.owner}</TableCell>
             <TableCell className="py-2 text-muted-foreground">{r.cityContact}</TableCell>
             <TableCell className="py-2 text-right font-mono">
