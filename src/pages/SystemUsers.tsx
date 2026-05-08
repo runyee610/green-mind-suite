@@ -1156,10 +1156,12 @@ function DistrictTable({
   rows,
   level,
   onChangePwd,
+  onDrill,
 }: {
   rows: DistrictUser[];
   level: "区" | "园区";
   onChangePwd: (acc: string) => void;
+  onDrill?: (r: DistrictUser) => void;
 }) {
   return (
     <Table>
@@ -1179,10 +1181,32 @@ function DistrictTable({
         {rows.map((r) => (
           <TableRow key={r.id} className="text-xs">
             <TableCell className="py-2 font-mono">{r.account}</TableCell>
-            <TableCell className="py-2 font-medium">{r.areaName}</TableCell>
+            <TableCell className="py-2 font-medium">
+              {onDrill ? (
+                <button
+                  onClick={() => onDrill(r)}
+                  className="text-primary hover:underline"
+                >
+                  {r.areaName}
+                </button>
+              ) : (
+                r.areaName
+              )}
+            </TableCell>
             <TableCell className="py-2">{r.owner}</TableCell>
             <TableCell className="py-2 text-muted-foreground">{r.cityContact}</TableCell>
-            <TableCell className="py-2 text-right font-mono">{r.enterpriseCount}</TableCell>
+            <TableCell className="py-2 text-right font-mono">
+              {onDrill ? (
+                <button
+                  onClick={() => onDrill(r)}
+                  className="text-primary hover:underline"
+                >
+                  {r.enterpriseCount}
+                </button>
+              ) : (
+                r.enterpriseCount
+              )}
+            </TableCell>
             <TableCell className="py-2 font-mono text-muted-foreground">{r.phone}</TableCell>
             <TableCell className="py-2">
               <StatusBadge status={r.status} />
