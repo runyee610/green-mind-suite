@@ -2131,37 +2131,78 @@ function CreateEnterpriseDialog({
 function EnterpriseListDialog({
   user,
   onOpenChange,
+  editable = false,
 }: {
   user: CityUser | null;
   onOpenChange: (open: boolean) => void;
+  editable?: boolean;
 }) {
   const open = !!user;
   const [kw, setKw] = useState("");
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 15;
+  const [list, setList] = useState<EnterpriseLite[]>([]);
+  const [addOpen, setAddOpen] = useState(false);
+  const [addForm, setAddForm] = useState({ name: "", creditCode: "", owner: "", phone: "" });
+  const [confirmDel, setConfirmDel] = useState<EnterpriseLite | null>(null);
 
-  // 重置搜索/页码
   const userId = user?.id ?? "";
   useMemo(() => {
     setKw("");
     setPage(1);
+    setList(user?.enterpriseList ?? []);
   }, [userId]);
 
-  const all = user?.enterpriseList ?? [];
   const filtered = useMemo(() => {
     const k = kw.trim().toLowerCase();
-    if (!k) return all;
-    return all.filter((e) => e.name.toLowerCase().includes(k));
-  }, [all, kw]);
+    if (!k) return list;
+    return list.filter((e) => e.name.toLowerCase().includes(k));
+  }, [list, kw]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const curPage = Math.min(page, totalPages);
   const pageRows = filtered.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
 
+  const toggleDisable = (e: EnterpriseLite) => {
+    setList((arr) =>
+      arr.map((x) =>
+        x.creditCode === e.creditCode ? { ...x, disabled: !x.disabled } : x,
+      ),
+    );
+    toast({
+      title: e.disabled ? "已启用对口企业" : "已禁用对口企业",
+      description: e.name,
+    });
+  };
+
+  const removeEnterprise = (e: EnterpriseLite) => {
+    setList((arr) => arr.filter((x) => x.creditCode !== e.creditCode));
+    toast({ title: "已删除对口企业", description: e.name });
+    setConfirmDel(null);
+  };
+
+  const submitAdd = () => {
+    if (!addForm.name.trim() || !addForm.creditCode.trim()) {
+      toast({ title: "请填写企业名称与统一社会信用代码", variant: "destructive" });
+      return;
+    }
+    if (list.some((x) => x.creditCode === addForm.creditCode)) {
+      toast({ title: "该企业已在对口列表中", variant: "destructive" });
+      return;
+    }
+    setList((arr) => [
+      { ...addForm, disabled: false },
+      ...arr,
+    ]);
+    toast({ title: "已新增对口企业", description: addForm.name });
+    setAddOpen(false);
+    setAddForm({ name: "", creditCode: "", owner: "", phone: "" });
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col">
+      <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col">
         <SheetHeader className="p-5 pb-3 border-b border-border">
-          <SheetTitle className="text-base">企业列表</SheetTitle>
+          <SheetTitle className="text-base">对口企业管理</SheetTitle>
           <SheetDescription className="text-xs">
             {user ? (
               <>
@@ -2193,10 +2234,16 @@ function EnterpriseListDialog({
             {kw && (
               <>
                 <span className="mx-1">/</span>
-                总 <span className="font-mono text-foreground">{all.length.toLocaleString()}</span>
+                总 <span className="font-mono text-foreground">{list.length.toLocaleString()}</span>
               </>
             )}
           </span>
+          {editable && (
+            <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setAddOpen(true)}>
+              <Plus className="h-3.5 w-3.5" />
+              新增对口企业
+            </Button>
+          )}
         </div>
 
         <ScrollArea className="flex-1">
@@ -2208,12 +2255,14 @@ function EnterpriseListDialog({
                 <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
                 <TableHead className="h-9 text-xs">企业负责人</TableHead>
                 <TableHead className="h-9 text-xs">联系电话</TableHead>
+                <TableHead className="h-9 text-xs">状态</TableHead>
+                {editable && <TableHead className="h-9 text-xs text-right">操作</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {pageRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">
+                  <TableCell colSpan={editable ? 7 : 6} className="text-center text-xs text-muted-foreground py-8">
                     暂无匹配的企业
                   </TableCell>
                 </TableRow>
@@ -2226,7 +2275,10 @@ function EnterpriseListDialog({
                     <TableCell className="py-2 text-foreground">
                       <Link
                         to={`/enterprise-detail/${encodeURIComponent(e.name)}`}
-                        className="text-primary hover:underline"
+                        className={cn(
+                          "hover:underline",
+                          e.disabled ? "text-muted-foreground line-through" : "text-primary",
+                        )}
                       >
                         {e.name}
                       </Link>
@@ -2238,6 +2290,42 @@ function EnterpriseListDialog({
                     <TableCell className="py-2 font-mono text-muted-foreground">
                       {e.phone}
                     </TableCell>
+                    <TableCell className="py-2">
+                      <StatusBadge status={e.disabled ? "停用" : "启用"} subtle />
+                    </TableCell>
+                    {editable && (
+                      <TableCell className="py-2 text-right">
+                        <div className="inline-flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs gap-1"
+                            onClick={() => toggleDisable(e)}
+                          >
+                            {e.disabled ? (
+                              <>
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                                启用
+                              </>
+                            ) : (
+                              <>
+                                <ShieldOff className="h-3.5 w-3.5" />
+                                禁用
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs gap-1 text-destructive hover:text-destructive"
+                            onClick={() => setConfirmDel(e)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            删除
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
               )}
@@ -2274,7 +2362,92 @@ function EnterpriseListDialog({
             </Button>
           </div>
         </div>
+
+        {/* 新增对口企业 */}
+        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base">新增对口企业</DialogTitle>
+              <DialogDescription className="text-xs">
+                为 <span className="text-foreground font-medium">{user?.name}</span> 关联一家对口企业
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-1">
+              <div className="space-y-1.5">
+                <Label className="text-xs">企业名称<span className="text-destructive ml-0.5">*</span></Label>
+                <Input
+                  value={addForm.name}
+                  onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="请输入企业全称"
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">统一社会信用代码<span className="text-destructive ml-0.5">*</span></Label>
+                <Input
+                  value={addForm.creditCode}
+                  onChange={(e) => setAddForm((f) => ({ ...f, creditCode: e.target.value.toUpperCase() }))}
+                  placeholder="18 位统一社会信用代码"
+                  maxLength={18}
+                  className="h-9 text-sm font-mono"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">企业负责人</Label>
+                  <Input
+                    value={addForm.owner}
+                    onChange={(e) => setAddForm((f) => ({ ...f, owner: e.target.value }))}
+                    className="h-9 text-sm"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">联系电话</Label>
+                  <Input
+                    value={addForm.phone}
+                    onChange={(e) => setAddForm((f) => ({ ...f, phone: e.target.value }))}
+                    className="h-9 text-sm font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setAddOpen(false)}>
+                取消
+              </Button>
+              <Button size="sm" onClick={submitAdd}>
+                确认新增
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* 删除确认 */}
+        <Dialog open={!!confirmDel} onOpenChange={(o) => !o && setConfirmDel(null)}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="text-base">删除对口企业</DialogTitle>
+              <DialogDescription className="text-xs">
+                确认从 <span className="text-foreground font-medium">{user?.name}</span> 的对口列表中移除
+                <span className="text-foreground font-medium"> {confirmDel?.name}</span>？此操作不可撤销。
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setConfirmDel(null)}>
+                取消
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => confirmDel && removeEnterprise(confirmDel)}
+              >
+                确认删除
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </SheetContent>
     </Sheet>
   );
 }
+
