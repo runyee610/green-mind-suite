@@ -1258,6 +1258,8 @@ function DistrictTable({
         <TableRow className="bg-muted/40">
           <TableHead className="h-9 text-xs">账号</TableHead>
           <TableHead className="h-9 text-xs">{level === "区" ? "区县名称" : "园区名称"}</TableHead>
+          <TableHead className="h-9 text-xs">单位全称</TableHead>
+          <TableHead className="h-9 text-xs">地址</TableHead>
           <TableHead className="h-9 text-xs">负责人</TableHead>
           <TableHead className="h-9 text-xs">中心对口人</TableHead>
           <TableHead className="h-9 text-xs text-right">辖区企业数</TableHead>
