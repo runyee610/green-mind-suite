@@ -633,6 +633,10 @@ export default function SystemUsers() {
                     e.creditCode.includes(keyword) ||
                     e.owner.includes(keyword),
                 )}
+                onChangePwd={(acc) => {
+                  setPwdTarget(acc);
+                  setPwdOpen(true);
+                }}
               />
             )}
           </div>
