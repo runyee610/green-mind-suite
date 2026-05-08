@@ -301,6 +301,11 @@ export default function SystemUsers() {
   const [createOpen, setCreateOpen] = useState(false);
   const [entListUser, setEntListUser] = useState<CityUser | null>(null);
 
+  // 市管理员子标签 & 下钻
+  const [cityTab, setCityTab] = useState<"users" | "district" | "park" | "group" | "enterprise">("users");
+  const [drillDistrict, setDrillDistrict] = useState<DistrictUser | null>(null);
+  const [drillGroup, setDrillGroup] = useState<GroupUser | null>(null);
+
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
 
