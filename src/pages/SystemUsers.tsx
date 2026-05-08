@@ -120,6 +120,8 @@ interface DistrictUser {
   account: string;
   areaName: string; // 区县/园区名称
   level: "区" | "园区";
+  fullName: string; // 单位全称
+  address: string; // 地址
   owner: string; // 负责人
   cityContact: string; // 中心对口人
   enterpriseCount: number;
@@ -132,6 +134,8 @@ interface GroupUser {
   account: string;
   groupName: string;
   owner: string;
+  address: string; // 地址
+  cityContact: string; // 中心对口人
   subsidiaries: string[]; // 下属企业
   phone: string;
   status: "启用" | "停用";
@@ -234,17 +238,17 @@ function genCityUsers(): CityUser[] {
 const cityUsers: CityUser[] = genCityUsers();
 
 const districtUsers: DistrictUser[] = [
-  { id: "D001", account: "huangpu_admin", areaName: "黄浦区", level: "区", owner: "周建国", cityContact: "王思源", enterpriseCount: 86, phone: "138****0011", status: "启用" },
-  { id: "D002", account: "pudong_admin", areaName: "浦东新区", level: "区", owner: "刘晓燕", cityContact: "王思源", enterpriseCount: 312, phone: "138****0022", status: "启用" },
-  { id: "D003", account: "minhang_admin", areaName: "闵行区", level: "区", owner: "赵宏伟", cityContact: "陈雨涵", enterpriseCount: 178, phone: "138****0033", status: "启用" },
-  { id: "D004", account: "zjpark_admin", areaName: "张江高科园区", level: "园区", owner: "孙云飞", cityContact: "陈雨涵", enterpriseCount: 94, phone: "138****0044", status: "启用" },
-  { id: "D005", account: "linkong_admin", areaName: "临港装备园区", level: "园区", owner: "吴丹丹", cityContact: "王思源", enterpriseCount: 47, phone: "138****0055", status: "停用" },
+  { id: "D001", account: "huangpu_admin", areaName: "黄浦区", level: "区", fullName: "黄浦区商务委员会", address: "广东路357号1号楼西908室品牌经济科", owner: "周建国", cityContact: "王思源", enterpriseCount: 86, phone: "138****0011", status: "启用" },
+  { id: "D002", account: "pudong_admin", areaName: "浦东新区", level: "区", fullName: "浦东新区经济和信息化委员会", address: "浦东新区世纪大道2001号5楼节能科", owner: "刘晓燕", cityContact: "王思源", enterpriseCount: 312, phone: "138****0022", status: "启用" },
+  { id: "D003", account: "minhang_admin", areaName: "闵行区", level: "区", fullName: "闵行区经济委员会", address: "闵行区沪闵路6258号3号楼406室", owner: "赵宏伟", cityContact: "陈雨涵", enterpriseCount: 178, phone: "138****0033", status: "启用" },
+  { id: "D004", account: "zjpark_admin", areaName: "张江高科园区", level: "园区", fullName: "上海张江高科技园区管理委员会", address: "浦东新区张江路665号科技广场B座12层", owner: "孙云飞", cityContact: "陈雨涵", enterpriseCount: 94, phone: "138****0044", status: "启用" },
+  { id: "D005", account: "linkong_admin", areaName: "临港装备园区", level: "园区", fullName: "上海临港装备产业园区管委会", address: "浦东新区南汇新城环湖西二路888号", owner: "吴丹丹", cityContact: "王思源", enterpriseCount: 47, phone: "138****0055", status: "停用" },
 ];
 
 const groupUsers: GroupUser[] = [
-  { id: "G001", account: "huayi_group", groupName: "华谊集团", owner: "黄志勇", subsidiaries: ["华谊化工有限公司", "华谊新材料股份", "华谊精细化学"], phone: "138****7001", status: "启用" },
-  { id: "G002", account: "baowu_group", groupName: "宝武钢铁集团", owner: "马晓东", subsidiaries: ["宝山钢铁", "宝武特钢", "宝武不锈钢", "宝武碳业"], phone: "138****7002", status: "启用" },
-  { id: "G003", account: "shdz_group", groupName: "上海电气集团", owner: "郑丽华", subsidiaries: ["电气重工", "电气风电", "电气输配电"], phone: "138****7003", status: "启用" },
+  { id: "G001", account: "huayi_group", groupName: "华谊集团", owner: "黄志勇", address: "静安区常德路809号华谊集团大厦", cityContact: "刘鑫", subsidiaries: ["华谊化工有限公司", "华谊新材料股份", "华谊精细化学"], phone: "138****7001", status: "启用" },
+  { id: "G002", account: "baowu_group", groupName: "宝武钢铁集团", owner: "马晓东", address: "宝山区富锦路885号宝武大厦A座18楼", cityContact: "陈玲凯", subsidiaries: ["宝山钢铁", "宝武特钢", "宝武不锈钢", "宝武碳业"], phone: "138****7002", status: "启用" },
+  { id: "G003", account: "shdz_group", groupName: "上海电气集团", owner: "郑丽华", address: "静安区南京西路211号上海电气大厦", cityContact: "蒋伊莹", subsidiaries: ["电气重工", "电气风电", "电气输配电"], phone: "138****7003", status: "启用" },
 ];
 
 export const enterpriseUsers: EnterpriseUser[] = [
@@ -376,8 +380,10 @@ export default function SystemUsers() {
           account: g.account,
           areaName: g.groupName,
           level: "区",
+          fullName: g.groupName,
+          address: g.address,
           owner: g.owner,
-          cityContact: "—",
+          cityContact: g.cityContact,
           enterpriseCount: enterpriseUsers.filter((e) => e.group === g.groupName).length,
           phone: g.phone,
           status: g.status,
@@ -437,8 +443,10 @@ export default function SystemUsers() {
           account: g.account,
           areaName: g.groupName,
           level: "区",
+          fullName: g.groupName,
+          address: g.address,
           owner: g.owner,
-          cityContact: "—",
+          cityContact: g.cityContact,
           enterpriseCount: enterpriseUsers.filter((e) => e.group === g.groupName).length,
           phone: g.phone,
           status: g.status,
@@ -1250,6 +1258,8 @@ function DistrictTable({
         <TableRow className="bg-muted/40">
           <TableHead className="h-9 text-xs">账号</TableHead>
           <TableHead className="h-9 text-xs">{level === "区" ? "区县名称" : "园区名称"}</TableHead>
+          <TableHead className="h-9 text-xs">单位全称</TableHead>
+          <TableHead className="h-9 text-xs">地址</TableHead>
           <TableHead className="h-9 text-xs">负责人</TableHead>
           <TableHead className="h-9 text-xs">中心对口人</TableHead>
           <TableHead className="h-9 text-xs text-right">辖区企业数</TableHead>
@@ -1274,6 +1284,8 @@ function DistrictTable({
                 r.areaName
               )}
             </TableCell>
+            <TableCell className="py-2 max-w-[180px]">{r.fullName}</TableCell>
+            <TableCell className="py-2 max-w-[200px] text-muted-foreground whitespace-pre-wrap break-all">{r.address}</TableCell>
             <TableCell className="py-2">{r.owner}</TableCell>
             <TableCell className="py-2 text-muted-foreground">{r.cityContact}</TableCell>
             <TableCell className="py-2 text-right font-mono">
@@ -1318,6 +1330,8 @@ function GroupTable({
           <TableHead className="h-9 text-xs">账号</TableHead>
           <TableHead className="h-9 text-xs">集团名称</TableHead>
           <TableHead className="h-9 text-xs">集团负责人</TableHead>
+          <TableHead className="h-9 text-xs">地址</TableHead>
+          <TableHead className="h-9 text-xs">中心对口人</TableHead>
           <TableHead className="h-9 text-xs">管辖下属企业</TableHead>
           <TableHead className="h-9 text-xs">手机号</TableHead>
           <TableHead className="h-9 text-xs">状态</TableHead>
@@ -1341,6 +1355,8 @@ function GroupTable({
               )}
             </TableCell>
             <TableCell className="py-2">{r.owner}</TableCell>
+            <TableCell className="py-2 max-w-[200px] text-muted-foreground whitespace-pre-wrap break-all">{r.address}</TableCell>
+            <TableCell className="py-2 text-muted-foreground">{r.cityContact}</TableCell>
             <TableCell className="py-2">
               {onDrill ? (
                 <button
