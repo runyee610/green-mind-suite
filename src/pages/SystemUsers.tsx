@@ -2255,7 +2255,6 @@ function EnterpriseListDialog({
                 <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
                 <TableHead className="h-9 text-xs">企业负责人</TableHead>
                 <TableHead className="h-9 text-xs">联系电话</TableHead>
-                <TableHead className="h-9 text-xs">状态</TableHead>
                 {editable && <TableHead className="h-9 text-xs text-right">操作</TableHead>}
               </TableRow>
             </TableHeader>
