@@ -1,50 +1,35 @@
 ## 目标
 
-在「市管理员」视角下，为「区/园区列表」和「集团列表」两个子 Tab 增加新的展示列，与现有截图保持一致。
+让所有列表的单元格内容默认不换行，仅对确实可能超长的列（如「地址」「下属企业」等）允许换行；表格横向超出时通过外层滚动条横向滚动。
 
 ## 改动范围
 
-仅修改 `src/pages/SystemUsers.tsx`：
-- `DistrictUser` 接口、`GroupUser` 接口（增加字段）
-- `districtUsers` 等 mock 数据（补充字段值）
-- `DistrictTable` 组件（新增 2 列）
-- `GroupTable` 组件（新增 2 列）
+### 1. 全局：`src/components/ui/table.tsx`
+- `TableCell` 默认加上 `whitespace-nowrap`，与表头保持一致行为。
+- `TableHead` 已是 `whitespace-nowrap`，无需改动。
+- `Table` 外层已有 `overflow-auto` 容器，天然支持横向滚动；不动。
 
-## 1. 区/园区列表 Tab — 新增列
+这样所有表格的所有单元格默认单行显示，超出列宽则被滚动条承载。
 
-参考图1，在「区县/园区名称」列后插入：
-- **单位全称**：如「黄浦区商务委员会」「青浦区经济委员会技术进步科」。文本左对齐，最多 2 行截断。
-- **地址**：如「广东路357号1号楼西908室品牌经济科」。`text-muted-foreground`，最大宽度限制，多行换行。
+### 2. 例外列：手动允许换行
 
-`DistrictUser` 接口新增：
-```ts
-fullName: string;   // 单位全称
-address: string;    // 地址
-```
+在 `src/pages/SystemUsers.tsx` 中给确实需要换行的列加 `whitespace-normal`（覆盖默认的 nowrap）：
 
-mock 数据补全相应字段（区与园区均补）。
+- `DistrictTable`：
+  - 「单位全称」列单元格：`whitespace-normal`，限制 `max-w-[180px]`
+  - 「地址」列单元格：`whitespace-normal break-all`，限制 `max-w-[200px]`
+- `GroupTable`：
+  - 「地址」列单元格：`whitespace-normal break-all`，`max-w-[200px]`
+  - 「管辖下属企业」非下钻分支的标签云容器保持 `flex-wrap`（已存在），单元格设 `whitespace-normal`
+- `EnterpriseTable`：
+  - 长字段（如「企业名称」「行业」）若过宽则给 `whitespace-normal` + `max-w-[xxx]`，其它字段（账号、信用代码、手机号、状态、操作）保持默认 nowrap。
 
-新列顺序：账号 → 区县/园区名称 → **单位全称** → **地址** → 负责人 → 中心对口人 → 辖区企业数 → 手机号 → 状态 → 操作。
+### 3. 视觉一致性
 
-## 2. 集团列表 Tab — 新增列
+- 不修改字号/行高/边距，只调整换行行为。
+- 行高随着多行单元格自适应，与现有截图一致。
+- 不引入水平滚动条样式定制，沿用浏览器默认。
 
-参考图2，在「集团负责人」列后插入：
-- **地址**：集团办公地址，多行换行，`text-muted-foreground`。
-- **中心对口人**：单字段文本（与区列表中心对口人样式一致）。
+## 不在范围内
 
-`GroupUser` 接口新增：
-```ts
-address: string;
-cityContact: string;
-```
-
-mock 数据补全相应字段。
-
-新列顺序：账号 → 集团名称 → 集团负责人 → **地址** → **中心对口人** → 管辖下属企业 → 手机号 → 状态 → 操作。
-
-## 交互一致性
-
-- 字段样式（字号 `text-xs`、表头 `h-9`、padding `py-2`）保持与现有列一致。
-- 地址列使用 `max-w-[200px] whitespace-pre-wrap break-all` 控制宽度，避免撑爆表格。
-- 中心对口人沿用 `text-muted-foreground` 灰色文字。
-- 不改动现有列、操作按钮、下钻逻辑。
+- 其它页面（报表、考核、能耗等）的表格也会一并受益于全局 `whitespace-nowrap` 默认值；如某些页面出现横向溢出，依靠外层 `overflow-auto` 的滚动条承载，符合用户的总体期望。如发现某个特定页面有需要换行的列再单独添加 `whitespace-normal`。
