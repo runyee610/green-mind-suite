@@ -100,6 +100,7 @@ interface EnterpriseLite {
   creditCode: string;
   owner: string;
   phone: string;
+  disabled?: boolean;
 }
 
 interface CityUser {
