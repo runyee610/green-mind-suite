@@ -682,7 +682,72 @@ function tableCount(v: ViewRole) {
   }
 }
 
-// ===== 表格组件 =====
+function cityTabCount(t: "users" | "district" | "park" | "group" | "enterprise") {
+  switch (t) {
+    case "users":
+      return cityUsers.length;
+    case "district":
+      return districtUsers.filter((r) => r.level === "区").length;
+    case "park":
+      return districtUsers.filter((r) => r.level === "园区").length;
+    case "group":
+      return groupUsers.length;
+    case "enterprise":
+      return enterpriseUsers.length;
+  }
+}
+
+function EnterpriseTable({ rows }: { rows: EnterpriseUser[] }) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-muted/40">
+          <TableHead className="h-9 text-xs w-[60px]">序号</TableHead>
+          <TableHead className="h-9 text-xs">企业名称</TableHead>
+          <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
+          <TableHead className="h-9 text-xs">行业分类</TableHead>
+          <TableHead className="h-9 text-xs">所属区</TableHead>
+          <TableHead className="h-9 text-xs">所属园区</TableHead>
+          <TableHead className="h-9 text-xs">所属集团</TableHead>
+          <TableHead className="h-9 text-xs">联系人</TableHead>
+          <TableHead className="h-9 text-xs">联系电话</TableHead>
+          <TableHead className="h-9 text-xs">状态</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={10} className="text-center text-xs text-muted-foreground py-8">
+              暂无企业数据
+            </TableCell>
+          </TableRow>
+        ) : (
+          rows.map((e, idx) => (
+            <TableRow key={e.id} className="text-xs">
+              <TableCell className="py-2 text-muted-foreground">{idx + 1}</TableCell>
+              <TableCell className="py-2 font-medium">
+                <Link
+                  to={`/enterprise-detail/${encodeURIComponent(e.enterpriseName)}`}
+                  className="text-primary hover:underline"
+                >
+                  {e.enterpriseName}
+                </Link>
+              </TableCell>
+              <TableCell className="py-2 font-mono text-muted-foreground">{e.creditCode}</TableCell>
+              <TableCell className="py-2">{e.industry}</TableCell>
+              <TableCell className="py-2">{e.district}</TableCell>
+              <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>
+              <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
+              <TableCell className="py-2">{e.owner}</TableCell>
+              <TableCell className="py-2 font-mono text-muted-foreground">{e.phone}</TableCell>
+              <TableCell className="py-2"><StatusBadge status={e.status} subtle /></TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </Table>
+  );
+}
 
 function StatusBadge({ status, subtle = false }: { status: "启用" | "停用"; subtle?: boolean }) {
   if (subtle) {
