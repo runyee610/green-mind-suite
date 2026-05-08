@@ -1224,9 +1224,11 @@ function DistrictTable({
 function GroupTable({
   rows,
   onChangePwd,
+  onDrill,
 }: {
   rows: GroupUser[];
   onChangePwd: (acc: string) => void;
+  onDrill?: (r: GroupUser) => void;
 }) {
   return (
     <Table>
