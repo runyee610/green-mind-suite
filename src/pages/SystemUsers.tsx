@@ -2274,10 +2274,7 @@ function EnterpriseListDialog({
                     <TableCell className="py-2 text-foreground">
                       <Link
                         to={`/enterprise-detail/${encodeURIComponent(e.name)}`}
-                        className={cn(
-                          "hover:underline",
-                          e.disabled ? "text-muted-foreground line-through" : "text-primary",
-                        )}
+                        className="text-primary hover:underline"
                       >
                         {e.name}
                       </Link>
@@ -2289,40 +2286,17 @@ function EnterpriseListDialog({
                     <TableCell className="py-2 font-mono text-muted-foreground">
                       {e.phone}
                     </TableCell>
-                    <TableCell className="py-2">
-                      <StatusBadge status={e.disabled ? "停用" : "启用"} subtle />
-                    </TableCell>
                     {editable && (
                       <TableCell className="py-2 text-right">
-                        <div className="inline-flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 px-2 text-xs gap-1"
-                            onClick={() => toggleDisable(e)}
-                          >
-                            {e.disabled ? (
-                              <>
-                                <ShieldCheck className="h-3.5 w-3.5" />
-                                启用
-                              </>
-                            ) : (
-                              <>
-                                <ShieldOff className="h-3.5 w-3.5" />
-                                禁用
-                              </>
-                            )}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 px-2 text-xs gap-1 text-destructive hover:text-destructive"
-                            onClick={() => setConfirmDel(e)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            删除
-                          </Button>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs gap-1 text-destructive hover:text-destructive"
+                          onClick={() => setConfirmDel(e)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          删除
+                        </Button>
                       </TableCell>
                     )}
                   </TableRow>
