@@ -2261,7 +2261,7 @@ function EnterpriseListDialog({
             <TableBody>
               {pageRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={editable ? 7 : 6} className="text-center text-xs text-muted-foreground py-8">
+                  <TableCell colSpan={editable ? 6 : 5} className="text-center text-xs text-muted-foreground py-8">
                     暂无匹配的企业
                   </TableCell>
                 </TableRow>
