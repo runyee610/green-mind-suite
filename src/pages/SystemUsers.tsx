@@ -1247,7 +1247,18 @@ function GroupTable({
         {rows.map((r) => (
           <TableRow key={r.id} className="text-xs">
             <TableCell className="py-2 font-mono">{r.account}</TableCell>
-            <TableCell className="py-2 font-medium">{r.groupName}</TableCell>
+            <TableCell className="py-2 font-medium">
+              {onDrill ? (
+                <button
+                  onClick={() => onDrill(r)}
+                  className="text-primary hover:underline"
+                >
+                  {r.groupName}
+                </button>
+              ) : (
+                r.groupName
+              )}
+            </TableCell>
             <TableCell className="py-2">{r.owner}</TableCell>
             <TableCell className="py-2">
               <div className="flex flex-wrap gap-1 max-w-md">
