@@ -120,6 +120,8 @@ interface DistrictUser {
   account: string;
   areaName: string; // 区县/园区名称
   level: "区" | "园区";
+  fullName: string; // 单位全称
+  address: string; // 地址
   owner: string; // 负责人
   cityContact: string; // 中心对口人
   enterpriseCount: number;
@@ -132,6 +134,8 @@ interface GroupUser {
   account: string;
   groupName: string;
   owner: string;
+  address: string; // 地址
+  cityContact: string; // 中心对口人
   subsidiaries: string[]; // 下属企业
   phone: string;
   status: "启用" | "停用";
