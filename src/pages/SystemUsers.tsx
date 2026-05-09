@@ -414,6 +414,60 @@ export default function SystemUsers() {
 
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
+  // 区/园区/集团 维护
+  const [districtList, setDistrictList] = useState<DistrictUser[]>(districtUsers);
+  const [groupList, setGroupList] = useState<GroupUser[]>(groupUsers);
+  const [districtEdit, setDistrictEdit] = useState<{ open: boolean; level: "区" | "园区"; row: DistrictUser | null }>({
+    open: false,
+    level: "区",
+    row: null,
+  });
+  const [groupEdit, setGroupEdit] = useState<{ open: boolean; row: GroupUser | null }>({
+    open: false,
+    row: null,
+  });
+  const [confirmDelDistrict, setConfirmDelDistrict] = useState<DistrictUser | null>(null);
+  const [confirmDelGroup, setConfirmDelGroup] = useState<GroupUser | null>(null);
+
+  const upsertDistrict = (val: DistrictUser, isCreate: boolean) => {
+    setDistrictList((arr) => {
+      if (isCreate) {
+        if (arr.some((d) => d.account === val.account)) {
+          toast({ title: "账号已存在", variant: "destructive" });
+          return arr;
+        }
+        toast({ title: `已新建${val.level}`, description: val.areaName });
+        return [val, ...arr];
+      }
+      toast({ title: `已更新${val.level}`, description: val.areaName });
+      return arr.map((d) => (d.id === val.id ? val : d));
+    });
+    return true;
+  };
+  const deleteDistrict = (row: DistrictUser) => {
+    setDistrictList((arr) => arr.filter((d) => d.id !== row.id));
+    toast({ title: `已删除${row.level}`, description: row.areaName });
+  };
+  const upsertGroup = (val: GroupUser, isCreate: boolean) => {
+    setGroupList((arr) => {
+      if (isCreate) {
+        if (arr.some((d) => d.account === val.account)) {
+          toast({ title: "账号已存在", variant: "destructive" });
+          return arr;
+        }
+        toast({ title: "已新建集团", description: val.groupName });
+        return [val, ...arr];
+      }
+      toast({ title: "已更新集团", description: val.groupName });
+      return arr.map((d) => (d.id === val.id ? val : d));
+    });
+    return true;
+  };
+  const deleteGroup = (row: GroupUser) => {
+    setGroupList((arr) => arr.filter((d) => d.id !== row.id));
+    toast({ title: "已删除集团", description: row.groupName });
+  };
+
 
   return (
     <AppLayout title="用户管理" subtitle="多级账户体系下的账号、角色与权限管理">
