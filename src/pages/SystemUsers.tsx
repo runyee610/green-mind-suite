@@ -781,7 +781,7 @@ export default function SystemUsers() {
             )}
             {(cityTab === "district" || cityTab === "park") && (
               <DistrictTable
-                rows={districtUsers.filter(
+                rows={districtList.filter(
                   (r) =>
                     r.level === (cityTab === "park" ? "园区" : "区") &&
                     (!keyword ||
@@ -795,11 +795,13 @@ export default function SystemUsers() {
                   setPwdOpen(true);
                 }}
                 onDrill={(r) => setDrillDistrict(r)}
+                onEdit={(r) => setDistrictEdit({ open: true, level: r.level, row: r })}
+                onDelete={(r) => setConfirmDelDistrict(r)}
               />
             )}
             {cityTab === "group" && (
               <GroupTable
-                rows={groupUsers.filter(
+                rows={groupList.filter(
                   (r) =>
                     !keyword ||
                     r.groupName.includes(keyword) ||
@@ -811,6 +813,8 @@ export default function SystemUsers() {
                   setPwdOpen(true);
                 }}
                 onDrill={(r) => setDrillGroup(r)}
+                onEdit={(r) => setGroupEdit({ open: true, row: r })}
+                onDelete={(r) => setConfirmDelGroup(r)}
               />
             )}
             {cityTab === "enterprise" && (
