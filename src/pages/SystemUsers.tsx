@@ -414,6 +414,60 @@ export default function SystemUsers() {
 
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
+  // 区/园区/集团 维护
+  const [districtList, setDistrictList] = useState<DistrictUser[]>(districtUsers);
+  const [groupList, setGroupList] = useState<GroupUser[]>(groupUsers);
+  const [districtEdit, setDistrictEdit] = useState<{ open: boolean; level: "区" | "园区"; row: DistrictUser | null }>({
+    open: false,
+    level: "区",
+    row: null,
+  });
+  const [groupEdit, setGroupEdit] = useState<{ open: boolean; row: GroupUser | null }>({
+    open: false,
+    row: null,
+  });
+  const [confirmDelDistrict, setConfirmDelDistrict] = useState<DistrictUser | null>(null);
+  const [confirmDelGroup, setConfirmDelGroup] = useState<GroupUser | null>(null);
+
+  const upsertDistrict = (val: DistrictUser, isCreate: boolean) => {
+    setDistrictList((arr) => {
+      if (isCreate) {
+        if (arr.some((d) => d.account === val.account)) {
+          toast({ title: "账号已存在", variant: "destructive" });
+          return arr;
+        }
+        toast({ title: `已新建${val.level}`, description: val.areaName });
+        return [val, ...arr];
+      }
+      toast({ title: `已更新${val.level}`, description: val.areaName });
+      return arr.map((d) => (d.id === val.id ? val : d));
+    });
+    return true;
+  };
+  const deleteDistrict = (row: DistrictUser) => {
+    setDistrictList((arr) => arr.filter((d) => d.id !== row.id));
+    toast({ title: `已删除${row.level}`, description: row.areaName });
+  };
+  const upsertGroup = (val: GroupUser, isCreate: boolean) => {
+    setGroupList((arr) => {
+      if (isCreate) {
+        if (arr.some((d) => d.account === val.account)) {
+          toast({ title: "账号已存在", variant: "destructive" });
+          return arr;
+        }
+        toast({ title: "已新建集团", description: val.groupName });
+        return [val, ...arr];
+      }
+      toast({ title: "已更新集团", description: val.groupName });
+      return arr.map((d) => (d.id === val.id ? val : d));
+    });
+    return true;
+  };
+  const deleteGroup = (row: GroupUser) => {
+    setGroupList((arr) => arr.filter((d) => d.id !== row.id));
+    toast({ title: "已删除集团", description: row.groupName });
+  };
+
 
   return (
     <AppLayout title="用户管理" subtitle="多级账户体系下的账号、角色与权限管理">
@@ -680,10 +734,26 @@ export default function SystemUsers() {
               <Button
                 size="sm"
                 className="h-8 text-xs gap-1"
-                onClick={() => setCreateOpen(true)}
+                onClick={() => {
+                  if (cityTab === "district") {
+                    setDistrictEdit({ open: true, level: "区", row: null });
+                  } else if (cityTab === "park") {
+                    setDistrictEdit({ open: true, level: "园区", row: null });
+                  } else if (cityTab === "group") {
+                    setGroupEdit({ open: true, row: null });
+                  } else {
+                    setCreateOpen(true);
+                  }
+                }}
               >
                 <Plus className="h-3.5 w-3.5" />
-                新建账号
+                {cityTab === "district"
+                  ? "新建区"
+                  : cityTab === "park"
+                  ? "新建园区"
+                  : cityTab === "group"
+                  ? "新建集团"
+                  : "新建账号"}
               </Button>
             </div>
           </div>
@@ -711,7 +781,7 @@ export default function SystemUsers() {
             )}
             {(cityTab === "district" || cityTab === "park") && (
               <DistrictTable
-                rows={districtUsers.filter(
+                rows={districtList.filter(
                   (r) =>
                     r.level === (cityTab === "park" ? "园区" : "区") &&
                     (!keyword ||
@@ -725,11 +795,13 @@ export default function SystemUsers() {
                   setPwdOpen(true);
                 }}
                 onDrill={(r) => setDrillDistrict(r)}
+                onEdit={(r) => setDistrictEdit({ open: true, level: r.level, row: r })}
+                onDelete={(r) => setConfirmDelDistrict(r)}
               />
             )}
             {cityTab === "group" && (
               <GroupTable
-                rows={groupUsers.filter(
+                rows={groupList.filter(
                   (r) =>
                     !keyword ||
                     r.groupName.includes(keyword) ||
@@ -741,6 +813,8 @@ export default function SystemUsers() {
                   setPwdOpen(true);
                 }}
                 onDrill={(r) => setDrillGroup(r)}
+                onEdit={(r) => setGroupEdit({ open: true, row: r })}
+                onDelete={(r) => setConfirmDelGroup(r)}
               />
             )}
             {cityTab === "enterprise" && (
@@ -794,6 +868,49 @@ export default function SystemUsers() {
         onAdd={handleAddDepartment}
         onRename={handleRenameDepartment}
         onDelete={handleDeleteDepartment}
+      />
+      <DistrictEditDialog
+        open={districtEdit.open}
+        level={districtEdit.level}
+        row={districtEdit.row}
+        existingAccounts={districtList.map((d) => d.account)}
+        onOpenChange={(o) => setDistrictEdit((s) => ({ ...s, open: o }))}
+        onSubmit={(val, isCreate) => upsertDistrict(val, isCreate)}
+      />
+      <GroupEditDialog
+        open={groupEdit.open}
+        row={groupEdit.row}
+        existingAccounts={groupList.map((d) => d.account)}
+        onOpenChange={(o) => setGroupEdit((s) => ({ ...s, open: o }))}
+        onSubmit={(val, isCreate) => upsertGroup(val, isCreate)}
+      />
+      <ConfirmDeleteDialog
+        open={!!confirmDelDistrict}
+        title={`删除${confirmDelDistrict?.level ?? "区"}`}
+        description={
+          confirmDelDistrict
+            ? `确认删除「${confirmDelDistrict.areaName}」？该${confirmDelDistrict.level}下若仍有企业关联，关联将失效。`
+            : ""
+        }
+        onOpenChange={(o) => !o && setConfirmDelDistrict(null)}
+        onConfirm={() => {
+          if (confirmDelDistrict) deleteDistrict(confirmDelDistrict);
+          setConfirmDelDistrict(null);
+        }}
+      />
+      <ConfirmDeleteDialog
+        open={!!confirmDelGroup}
+        title="删除集团"
+        description={
+          confirmDelGroup
+            ? `确认删除「${confirmDelGroup.groupName}」？该集团下若仍有下属企业，关联将失效。`
+            : ""
+        }
+        onOpenChange={(o) => !o && setConfirmDelGroup(null)}
+        onConfirm={() => {
+          if (confirmDelGroup) deleteGroup(confirmDelGroup);
+          setConfirmDelGroup(null);
+        }}
       />
     </AppLayout>
   );
@@ -936,12 +1053,16 @@ function ActionButtons({
   account,
   status,
   onChangePwd,
+  onEdit,
+  onDelete,
   disableLocked,
   disableLockedReason,
 }: {
   account: string;
   status: "启用" | "停用";
   onChangePwd: (acc: string) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   disableLocked?: boolean;
   disableLockedReason?: string;
 }) {
@@ -955,7 +1076,7 @@ function ActionButtons({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-36">
-          <DropdownMenuItem className="text-xs gap-2">
+          <DropdownMenuItem className="text-xs gap-2" onClick={onEdit} disabled={!onEdit}>
             <Pencil className="h-3.5 w-3.5" />
             编辑
           </DropdownMenuItem>
@@ -1005,7 +1126,11 @@ function ActionButtons({
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-xs gap-2 text-destructive focus:text-destructive">
+          <DropdownMenuItem
+            className="text-xs gap-2 text-destructive focus:text-destructive"
+            onClick={onDelete}
+            disabled={!onDelete}
+          >
             <Trash2 className="h-3.5 w-3.5" />
             删除
           </DropdownMenuItem>
@@ -1372,11 +1497,15 @@ function DistrictTable({
   level,
   onChangePwd,
   onDrill,
+  onEdit,
+  onDelete,
 }: {
   rows: DistrictUser[];
   level: "区" | "园区";
   onChangePwd: (acc: string) => void;
   onDrill?: (r: DistrictUser) => void;
+  onEdit?: (r: DistrictUser) => void;
+  onDelete?: (r: DistrictUser) => void;
 }) {
   return (
     <Table>
@@ -1431,7 +1560,13 @@ function DistrictTable({
               <StatusBadge status={r.status} />
             </TableCell>
             <TableCell className="py-2">
-              <ActionButtons account={r.account} status={r.status} onChangePwd={onChangePwd} />
+              <ActionButtons
+                account={r.account}
+                status={r.status}
+                onChangePwd={onChangePwd}
+                onEdit={onEdit ? () => onEdit(r) : undefined}
+                onDelete={onDelete ? () => onDelete(r) : undefined}
+              />
             </TableCell>
           </TableRow>
         ))}
@@ -1444,10 +1579,14 @@ function GroupTable({
   rows,
   onChangePwd,
   onDrill,
+  onEdit,
+  onDelete,
 }: {
   rows: GroupUser[];
   onChangePwd: (acc: string) => void;
   onDrill?: (r: GroupUser) => void;
+  onEdit?: (r: GroupUser) => void;
+  onDelete?: (r: GroupUser) => void;
 }) {
   return (
     <Table>
@@ -1519,7 +1658,13 @@ function GroupTable({
               <StatusBadge status={r.status} />
             </TableCell>
             <TableCell className="py-2">
-              <ActionButtons account={r.account} status={r.status} onChangePwd={onChangePwd} />
+              <ActionButtons
+                account={r.account}
+                status={r.status}
+                onChangePwd={onChangePwd}
+                onEdit={onEdit ? () => onEdit(r) : undefined}
+                onDelete={onDelete ? () => onDelete(r) : undefined}
+              />
             </TableCell>
           </TableRow>
         ))}
@@ -3084,5 +3229,415 @@ function OrganizationManageDialog({
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+// ===== 通用：删除确认弹窗 =====
+function ConfirmDeleteDialog({
+  open,
+  title,
+  description,
+  onOpenChange,
+  onConfirm,
+}: {
+  open: boolean;
+  title: string;
+  description: React.ReactNode;
+  onOpenChange: (o: boolean) => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="text-base">{title}</DialogTitle>
+          <DialogDescription className="text-xs">{description}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => onOpenChange(false)}>
+            取消
+          </Button>
+          <Button size="sm" variant="destructive" className="h-8 text-xs" onClick={onConfirm}>
+            确认删除
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ===== 区/园区 编辑弹窗 =====
+function DistrictEditDialog({
+  open,
+  level,
+  row,
+  existingAccounts,
+  onOpenChange,
+  onSubmit,
+}: {
+  open: boolean;
+  level: "区" | "园区";
+  row: DistrictUser | null;
+  existingAccounts: string[];
+  onOpenChange: (o: boolean) => void;
+  onSubmit: (val: DistrictUser, isCreate: boolean) => boolean;
+}) {
+  const isCreate = !row;
+  const empty: DistrictUser = useMemo(
+    () => ({
+      id: `D${Date.now().toString().slice(-6)}`,
+      account: "",
+      areaName: "",
+      level,
+      fullName: "",
+      address: "",
+      owner: "",
+      cityContact: "",
+      enterpriseCount: 0,
+      phone: "",
+      status: "启用",
+    }),
+    [level],
+  );
+  const [form, setForm] = useState<DistrictUser>(row ?? empty);
+
+  // 打开时重置表单
+  const reset = () => setForm(row ?? empty);
+  const handleOpenChange = (o: boolean) => {
+    if (o) reset();
+    onOpenChange(o);
+  };
+
+  const set = <K extends keyof DistrictUser>(k: K, v: DistrictUser[K]) =>
+    setForm((f) => ({ ...f, [k]: v }));
+
+  const submit = () => {
+    if (!form.account.trim()) return toast({ title: "账号必填", variant: "destructive" });
+    if (!/^[a-zA-Z][a-zA-Z0-9_]{5,19}$/.test(form.account))
+      return toast({ title: "账号需字母开头，6-20 位字母/数字/下划线", variant: "destructive" });
+    if (isCreate && existingAccounts.includes(form.account))
+      return toast({ title: "账号已存在", variant: "destructive" });
+    if (!form.areaName.trim()) return toast({ title: `${level}名称必填`, variant: "destructive" });
+    if (!form.fullName.trim()) return toast({ title: "单位全称必填", variant: "destructive" });
+    if (!form.owner.trim()) return toast({ title: "负责人必填", variant: "destructive" });
+    if (!/^1[3-9]\d{9}$/.test(form.phone))
+      return toast({ title: "请输入有效手机号", variant: "destructive" });
+    if (onSubmit({ ...form, level }, isCreate)) onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="text-base">
+            {isCreate ? `新建${level}` : `编辑${level}`}
+          </DialogTitle>
+          <DialogDescription className="text-xs">
+            维护该{level}的账号、负责人与中心对口人信息
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
+          <Field label="账号" required>
+            <Input
+              value={form.account}
+              disabled={!isCreate}
+              onChange={(e) => set("account", e.target.value)}
+              maxLength={20}
+              className="h-8 text-xs"
+              placeholder="字母开头 6-20 位"
+            />
+          </Field>
+          <Field label={`${level}名称`} required>
+            <Input
+              value={form.areaName}
+              onChange={(e) => set("areaName", e.target.value)}
+              maxLength={30}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="单位全称" required full>
+            <Input
+              value={form.fullName}
+              onChange={(e) => set("fullName", e.target.value)}
+              maxLength={60}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="地址" full>
+            <Input
+              value={form.address}
+              onChange={(e) => set("address", e.target.value)}
+              maxLength={120}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="负责人" required>
+            <Input
+              value={form.owner}
+              onChange={(e) => set("owner", e.target.value)}
+              maxLength={20}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="中心对口人">
+            <Input
+              value={form.cityContact}
+              onChange={(e) => set("cityContact", e.target.value)}
+              maxLength={20}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="手机号" required>
+            <Input
+              value={form.phone}
+              onChange={(e) => set("phone", e.target.value)}
+              maxLength={11}
+              className="h-8 text-xs font-mono"
+              placeholder="1xxxxxxxxxx"
+            />
+          </Field>
+          <Field label="状态">
+            <Select value={form.status} onValueChange={(v) => set("status", v as DistrictUser["status"])}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="启用">启用</SelectItem>
+                <SelectItem value="停用">停用</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => onOpenChange(false)}>
+            取消
+          </Button>
+          <Button size="sm" className="h-8 text-xs" onClick={submit}>
+            {isCreate ? "新建" : "保存"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ===== 集团 编辑弹窗 =====
+function GroupEditDialog({
+  open,
+  row,
+  existingAccounts,
+  onOpenChange,
+  onSubmit,
+}: {
+  open: boolean;
+  row: GroupUser | null;
+  existingAccounts: string[];
+  onOpenChange: (o: boolean) => void;
+  onSubmit: (val: GroupUser, isCreate: boolean) => boolean;
+}) {
+  const isCreate = !row;
+  const empty: GroupUser = useMemo(
+    () => ({
+      id: `G${Date.now().toString().slice(-6)}`,
+      account: "",
+      groupName: "",
+      owner: "",
+      address: "",
+      cityContact: "",
+      subsidiaries: [],
+      phone: "",
+      status: "启用",
+    }),
+    [],
+  );
+  const [form, setForm] = useState<GroupUser>(row ?? empty);
+  const [subInput, setSubInput] = useState("");
+  const handleOpenChange = (o: boolean) => {
+    if (o) {
+      setForm(row ?? empty);
+      setSubInput("");
+    }
+    onOpenChange(o);
+  };
+  const set = <K extends keyof GroupUser>(k: K, v: GroupUser[K]) =>
+    setForm((f) => ({ ...f, [k]: v }));
+
+  const addSub = () => {
+    const v = subInput.trim();
+    if (!v) return;
+    if (form.subsidiaries.includes(v)) {
+      toast({ title: "下属企业已存在", variant: "destructive" });
+      return;
+    }
+    set("subsidiaries", [...form.subsidiaries, v]);
+    setSubInput("");
+  };
+  const removeSub = (s: string) =>
+    set("subsidiaries", form.subsidiaries.filter((x) => x !== s));
+
+  const submit = () => {
+    if (!form.account.trim()) return toast({ title: "账号必填", variant: "destructive" });
+    if (!/^[a-zA-Z][a-zA-Z0-9_]{5,19}$/.test(form.account))
+      return toast({ title: "账号需字母开头，6-20 位字母/数字/下划线", variant: "destructive" });
+    if (isCreate && existingAccounts.includes(form.account))
+      return toast({ title: "账号已存在", variant: "destructive" });
+    if (!form.groupName.trim()) return toast({ title: "集团名称必填", variant: "destructive" });
+    if (!form.owner.trim()) return toast({ title: "负责人必填", variant: "destructive" });
+    if (!/^1[3-9]\d{9}$/.test(form.phone))
+      return toast({ title: "请输入有效手机号", variant: "destructive" });
+    if (onSubmit(form, isCreate)) onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="text-base">
+            {isCreate ? "新建集团" : "编辑集团"}
+          </DialogTitle>
+          <DialogDescription className="text-xs">
+            维护集团账号、负责人、中心对口人与下属企业
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
+          <Field label="账号" required>
+            <Input
+              value={form.account}
+              disabled={!isCreate}
+              onChange={(e) => set("account", e.target.value)}
+              maxLength={20}
+              className="h-8 text-xs"
+              placeholder="字母开头 6-20 位"
+            />
+          </Field>
+          <Field label="集团名称" required>
+            <Input
+              value={form.groupName}
+              onChange={(e) => set("groupName", e.target.value)}
+              maxLength={30}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="集团负责人" required>
+            <Input
+              value={form.owner}
+              onChange={(e) => set("owner", e.target.value)}
+              maxLength={20}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="中心对口人">
+            <Input
+              value={form.cityContact}
+              onChange={(e) => set("cityContact", e.target.value)}
+              maxLength={20}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="地址" full>
+            <Input
+              value={form.address}
+              onChange={(e) => set("address", e.target.value)}
+              maxLength={120}
+              className="h-8 text-xs"
+            />
+          </Field>
+          <Field label="手机号" required>
+            <Input
+              value={form.phone}
+              onChange={(e) => set("phone", e.target.value)}
+              maxLength={11}
+              className="h-8 text-xs font-mono"
+              placeholder="1xxxxxxxxxx"
+            />
+          </Field>
+          <Field label="状态">
+            <Select value={form.status} onValueChange={(v) => set("status", v as GroupUser["status"])}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="启用">启用</SelectItem>
+                <SelectItem value="停用">停用</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="下属企业" full>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {form.subsidiaries.length === 0 ? (
+                <span className="text-[11px] text-muted-foreground">暂未添加下属企业</span>
+              ) : (
+                form.subsidiaries.map((s) => (
+                  <Badge
+                    key={s}
+                    variant="outline"
+                    className="text-[11px] font-normal gap-1 pr-1"
+                  >
+                    {s}
+                    <button
+                      onClick={() => removeSub(s)}
+                      className="rounded-sm p-0.5 hover:bg-destructive/10 hover:text-destructive"
+                      aria-label="移除"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Input
+                value={subInput}
+                onChange={(e) => setSubInput(e.target.value)}
+                placeholder="输入下属企业名称后回车或点击添加"
+                maxLength={60}
+                className="h-8 text-xs flex-1"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addSub();
+                  }
+                }}
+              />
+              <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={addSub}>
+                <Plus className="h-3.5 w-3.5" />
+                添加
+              </Button>
+            </div>
+          </Field>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => onOpenChange(false)}>
+            取消
+          </Button>
+          <Button size="sm" className="h-8 text-xs" onClick={submit}>
+            {isCreate ? "新建" : "保存"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// 表单字段容器
+function Field({
+  label,
+  required,
+  full,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  full?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={cn("flex flex-col gap-1.5", full && "col-span-2")}>
+      <Label className="text-[11px] text-muted-foreground">
+        {label}
+        {required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
+      {children}
+    </div>
   );
 }
