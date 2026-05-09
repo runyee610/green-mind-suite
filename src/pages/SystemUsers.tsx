@@ -789,6 +789,8 @@ function EnterpriseTable({
               </TableCell>
               <TableCell className="py-2 font-mono text-muted-foreground">{e.creditCode}</TableCell>
               <TableCell className="py-2">{e.industry}</TableCell>
+              <TableCell className="py-2"><EnterpriseTagBadge tag={getEnterpriseTag(e)} /></TableCell>
+              <TableCell className="py-2">{getEffectiveContact(e)}</TableCell>
               <TableCell className="py-2">{e.district}</TableCell>
               <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>
               <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
