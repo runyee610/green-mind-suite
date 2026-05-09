@@ -3301,9 +3301,7 @@ function DistrictEditDialog({
   );
   const [form, setForm] = useState<DistrictUser>(row ?? empty);
 
-  // 同步表单
-  useState(() => undefined);
-  // 重置：open 变化时
+  // 打开时重置表单
   const reset = () => setForm(row ?? empty);
   const handleOpenChange = (o: boolean) => {
     if (o) reset();
