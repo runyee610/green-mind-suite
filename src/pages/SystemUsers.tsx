@@ -2542,6 +2542,14 @@ function EnterpriseListDialog({
               </>
             ) : null}
           </SheetDescription>
+          <div className="flex items-center gap-1.5 pt-1">
+            <Tag className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-[11px] text-muted-foreground">对接范围</span>
+            <EnterpriseTagBadge tag={"\"百千家\"、通信业"} />
+            <span className="text-[11px] text-muted-foreground">
+              · 区下属企业不在中心对口人对接范围
+            </span>
+          </div>
         </SheetHeader>
 
         <div className="px-5 py-3 border-b border-border flex items-center gap-3">
