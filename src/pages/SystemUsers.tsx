@@ -1009,7 +1009,11 @@ function ActionButtons({
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-xs gap-2 text-destructive focus:text-destructive">
+          <DropdownMenuItem
+            className="text-xs gap-2 text-destructive focus:text-destructive"
+            onClick={onDelete}
+            disabled={!onDelete}
+          >
             <Trash2 className="h-3.5 w-3.5" />
             删除
           </DropdownMenuItem>
