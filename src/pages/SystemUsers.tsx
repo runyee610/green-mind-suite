@@ -759,6 +759,8 @@ function EnterpriseTable({
           <TableHead className="h-9 text-xs">企业名称</TableHead>
           <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
           <TableHead className="h-9 text-xs">行业分类</TableHead>
+          <TableHead className="h-9 text-xs">标签</TableHead>
+          <TableHead className="h-9 text-xs">对口人</TableHead>
           <TableHead className="h-9 text-xs">所属区</TableHead>
           <TableHead className="h-9 text-xs">所属园区</TableHead>
           <TableHead className="h-9 text-xs">所属集团</TableHead>
@@ -771,7 +773,7 @@ function EnterpriseTable({
       <TableBody>
         {rows.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={onChangePwd ? 11 : 10} className="text-center text-xs text-muted-foreground py-8">
+            <TableCell colSpan={onChangePwd ? 13 : 12} className="text-center text-xs text-muted-foreground py-8">
               暂无企业数据
             </TableCell>
           </TableRow>
