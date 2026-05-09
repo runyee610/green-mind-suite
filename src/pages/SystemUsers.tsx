@@ -345,6 +345,73 @@ export default function SystemUsers() {
   const [drillDistrict, setDrillDistrict] = useState<DistrictUser | null>(null);
   const [drillGroup, setDrillGroup] = useState<GroupUser | null>(null);
 
+  // 组织（市管账号-用户账号-组织）维护
+  const [departments, setDepartments] = useState<string[]>(CITY_DEPARTMENTS);
+  const [users, setUsers] = useState<CityUser[]>(cityUsers);
+  const [orgManageOpen, setOrgManageOpen] = useState(false);
+  const userCountByDept = useMemo(() => {
+    const m: Record<string, number> = {};
+    users.forEach((u) => {
+      m[u.department] = (m[u.department] ?? 0) + 1;
+    });
+    return m;
+  }, [users]);
+  const handleAddDepartment = (name: string) => {
+    const v = name.trim();
+    if (!v) {
+      toast({ title: "组织名称不能为空", variant: "destructive" });
+      return false;
+    }
+    if (v.length > 30) {
+      toast({ title: "组织名称不超过 30 个字符", variant: "destructive" });
+      return false;
+    }
+    if (departments.includes(v)) {
+      toast({ title: "组织名称已存在", variant: "destructive" });
+      return false;
+    }
+    setDepartments((arr) => [...arr, v]);
+    toast({ title: "已新增组织", description: v });
+    return true;
+  };
+  const handleRenameDepartment = (oldName: string, newName: string) => {
+    const v = newName.trim();
+    if (!v) {
+      toast({ title: "组织名称不能为空", variant: "destructive" });
+      return false;
+    }
+    if (v === oldName) return true;
+    if (v.length > 30) {
+      toast({ title: "组织名称不超过 30 个字符", variant: "destructive" });
+      return false;
+    }
+    if (departments.includes(v)) {
+      toast({ title: "组织名称已存在", variant: "destructive" });
+      return false;
+    }
+    setDepartments((arr) => arr.map((d) => (d === oldName ? v : d)));
+    setUsers((arr) =>
+      arr.map((u) => (u.department === oldName ? { ...u, department: v } : u)),
+    );
+    if (deptFilter === oldName) setDeptFilter(v);
+    toast({ title: "已重命名组织", description: `${oldName} → ${v}` });
+    return true;
+  };
+  const handleDeleteDepartment = (name: string) => {
+    if ((userCountByDept[name] ?? 0) > 0) {
+      toast({
+        title: "无法删除",
+        description: `「${name}」下仍有 ${userCountByDept[name]} 个账号，请先迁移或删除`,
+        variant: "destructive",
+      });
+      return false;
+    }
+    setDepartments((arr) => arr.filter((d) => d !== name));
+    if (deptFilter === name) setDeptFilter("all");
+    toast({ title: "已删除组织", description: name });
+    return true;
+  };
+
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
 
@@ -575,7 +642,7 @@ export default function SystemUsers() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">全部组织</SelectItem>
-                    {CITY_DEPARTMENTS.map((d) => (
+                    {departments.map((d) => (
                       <SelectItem key={d} value={d}>
                         {d}
                       </SelectItem>
@@ -594,6 +661,15 @@ export default function SystemUsers() {
                   <Filter className="h-3.5 w-3.5" />
                   按组织分组
                 </button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs gap-1"
+                  onClick={() => setOrgManageOpen(true)}
+                >
+                  <Briefcase className="h-3.5 w-3.5" />
+                  管理组织
+                </Button>
               </>
             )}
             <div className="ml-auto flex items-center gap-2">
@@ -616,7 +692,7 @@ export default function SystemUsers() {
           <div className="overflow-x-auto">
             {cityTab === "users" && (
               <CityTable
-                rows={cityUsers.filter(
+                rows={users.filter(
                   (r) =>
                     (statusFilter === "all" || r.status === statusFilter) &&
                     (deptFilter === "all" || r.department === deptFilter) &&
@@ -710,6 +786,15 @@ export default function SystemUsers() {
       />
       <CreateEnterpriseDialog open={createOpen} onOpenChange={setCreateOpen} />
       <EnterpriseListDialog user={entListUser} editable={view === "city_admin"} onOpenChange={(o) => !o && setEntListUser(null)} />
+      <OrganizationManageDialog
+        open={orgManageOpen}
+        onOpenChange={setOrgManageOpen}
+        departments={departments}
+        userCountByDept={userCountByDept}
+        onAdd={handleAddDepartment}
+        onRename={handleRenameDepartment}
+        onDelete={handleDeleteDepartment}
+      />
     </AppLayout>
   );
 }
@@ -2760,3 +2845,244 @@ function EnterpriseListDialog({
   );
 }
 
+
+// ===== 组织维护弹窗（市管账号专用） =====
+function OrganizationManageDialog({
+  open,
+  onOpenChange,
+  departments,
+  userCountByDept,
+  onAdd,
+  onRename,
+  onDelete,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  departments: string[];
+  userCountByDept: Record<string, number>;
+  onAdd: (name: string) => boolean;
+  onRename: (oldName: string, newName: string) => boolean;
+  onDelete: (name: string) => boolean;
+}) {
+  const [newName, setNewName] = useState("");
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [draftName, setDraftName] = useState("");
+  const [confirmDel, setConfirmDel] = useState<string | null>(null);
+
+  // 关闭时重置
+  const handleOpenChange = (o: boolean) => {
+    if (!o) {
+      setNewName("");
+      setEditingName(null);
+      setDraftName("");
+      setConfirmDel(null);
+    }
+    onOpenChange(o);
+  };
+
+  const startEdit = (name: string) => {
+    setEditingName(name);
+    setDraftName(name);
+  };
+  const submitEdit = (oldName: string) => {
+    if (onRename(oldName, draftName)) {
+      setEditingName(null);
+      setDraftName("");
+    }
+  };
+
+  const submitAdd = () => {
+    if (onAdd(newName)) {
+      setNewName("");
+    }
+  };
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base">管理组织</DialogTitle>
+            <DialogDescription className="text-xs">
+              市管账号下「用户账号-组织」的新增、重命名、删除。删除前需确保该组织下无账号。
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* 新增 */}
+          <div className="flex items-center gap-2 rounded-md border border-border bg-muted/20 px-3 py-2">
+            <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="新增组织名称（如：节能处-政策法规科）"
+              maxLength={30}
+              className="h-8 text-xs flex-1"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  submitAdd();
+                }
+              }}
+            />
+            <Button size="sm" className="h-8 text-xs gap-1" onClick={submitAdd}>
+              <Plus className="h-3.5 w-3.5" />
+              新增
+            </Button>
+          </div>
+
+          {/* 列表 */}
+          <ScrollArea className="max-h-[420px] -mx-1 px-1">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
+                  <TableHead className="h-9 text-xs w-12">#</TableHead>
+                  <TableHead className="h-9 text-xs">组织名称</TableHead>
+                  <TableHead className="h-9 text-xs w-24">账号数</TableHead>
+                  <TableHead className="h-9 text-xs text-right w-44">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {departments.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-8">
+                      暂无组织
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  departments.map((d, i) => {
+                    const count = userCountByDept[d] ?? 0;
+                    const isEditing = editingName === d;
+                    return (
+                      <TableRow key={d} className="text-xs">
+                        <TableCell className="py-2 font-mono text-muted-foreground">
+                          {i + 1}
+                        </TableCell>
+                        <TableCell className="py-2">
+                          {isEditing ? (
+                            <Input
+                              autoFocus
+                              value={draftName}
+                              onChange={(e) => setDraftName(e.target.value)}
+                              maxLength={30}
+                              className="h-7 text-xs"
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  submitEdit(d);
+                                } else if (e.key === "Escape") {
+                                  setEditingName(null);
+                                }
+                              }}
+                            />
+                          ) : (
+                            <span className="text-foreground">{d}</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="py-2 font-mono text-muted-foreground tabular-nums">
+                          {count}
+                        </TableCell>
+                        <TableCell className="py-2 text-right">
+                          {isEditing ? (
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => setEditingName(null)}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                                取消
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => submitEdit(d)}
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                                保存
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => startEdit(d)}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                                重命名
+                              </Button>
+                              <TooltipProvider delayDuration={150}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        disabled={count > 0}
+                                        className="h-7 px-2 text-xs gap-1 text-destructive hover:text-destructive"
+                                        onClick={() => setConfirmDel(d)}
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        删除
+                                      </Button>
+                                    </span>
+                                  </TooltipTrigger>
+                                  {count > 0 && (
+                                    <TooltipContent side="left" className="text-xs max-w-xs">
+                                      该组织下仍有 {count} 个账号，请先迁移或删除
+                                    </TooltipContent>
+                                  )}
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => handleOpenChange(false)}>
+              关闭
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 删除确认 */}
+      <Dialog open={!!confirmDel} onOpenChange={(o) => !o && setConfirmDel(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-base">删除组织</DialogTitle>
+            <DialogDescription className="text-xs">
+              确认删除组织「<span className="text-foreground font-medium">{confirmDel}</span>」？此操作不可撤销。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setConfirmDel(null)}>
+              取消
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-8 text-xs"
+              onClick={() => {
+                if (confirmDel && onDelete(confirmDel)) {
+                  setConfirmDel(null);
+                }
+              }}
+            >
+              确认删除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
