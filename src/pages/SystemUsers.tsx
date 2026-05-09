@@ -237,7 +237,7 @@ function genCityUsers(): CityUser[] {
 
 const cityUsers: CityUser[] = genCityUsers();
 
-const districtUsers: DistrictUser[] = [
+const INITIAL_DISTRICT_USERS: DistrictUser[] = [
   { id: "D001", account: "huangpu_admin", areaName: "黄浦区", level: "区", fullName: "黄浦区商务委员会", address: "广东路357号1号楼西908室品牌经济科", owner: "周建国", cityContact: "王思源", enterpriseCount: 86, phone: "138****0011", status: "启用" },
   { id: "D002", account: "pudong_admin", areaName: "浦东新区", level: "区", fullName: "浦东新区经济和信息化委员会", address: "浦东新区世纪大道2001号5楼节能科", owner: "刘晓燕", cityContact: "王思源", enterpriseCount: 312, phone: "138****0022", status: "启用" },
   { id: "D003", account: "minhang_admin", areaName: "闵行区", level: "区", fullName: "闵行区经济委员会", address: "闵行区沪闵路6258号3号楼406室", owner: "赵宏伟", cityContact: "陈雨涵", enterpriseCount: 178, phone: "138****0033", status: "启用" },
@@ -245,7 +245,7 @@ const districtUsers: DistrictUser[] = [
   { id: "D005", account: "linkong_admin", areaName: "临港装备园区", level: "园区", fullName: "上海临港装备产业园区管委会", address: "浦东新区南汇新城环湖西二路888号", owner: "吴丹丹", cityContact: "王思源", enterpriseCount: 47, phone: "138****0055", status: "停用" },
 ];
 
-const groupUsers: GroupUser[] = [
+const INITIAL_GROUP_USERS: GroupUser[] = [
   { id: "G001", account: "huayi_group", groupName: "华谊集团", owner: "黄志勇", address: "静安区常德路809号华谊集团大厦", cityContact: "刘鑫", subsidiaries: ["华谊化工有限公司", "华谊新材料股份", "华谊精细化学"], phone: "138****7001", status: "启用" },
   { id: "G002", account: "baowu_group", groupName: "宝武钢铁集团", owner: "马晓东", address: "宝山区富锦路885号宝武大厦A座18楼", cityContact: "陈玲凯", subsidiaries: ["宝山钢铁", "宝武特钢", "宝武不锈钢", "宝武碳业"], phone: "138****7002", status: "启用" },
   { id: "G003", account: "shdz_group", groupName: "上海电气集团", owner: "郑丽华", address: "静安区南京西路211号上海电气大厦", cityContact: "蒋伊莹", subsidiaries: ["电气重工", "电气风电", "电气输配电"], phone: "138****7003", status: "启用" },
@@ -2245,9 +2245,9 @@ const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
 // 各账号类型对应的"组织"候选（来源：现有系统数据）
 const ORG_OPTIONS_BY_TYPE: Record<AccountType, string[]> = {
   city: CITY_DEPARTMENTS,
-  district: districtUsers.filter((d) => d.level === "区").map((d) => d.areaName),
-  park: districtUsers.filter((d) => d.level === "园区").map((d) => d.areaName),
-  group: groupUsers.map((g) => g.groupName),
+  district: INITIAL_DISTRICT_USERS.filter((d) => d.level === "区").map((d) => d.areaName),
+  park: INITIAL_DISTRICT_USERS.filter((d) => d.level === "园区").map((d) => d.areaName),
+  group: INITIAL_GROUP_USERS.map((g) => g.groupName),
   enterprise: enterpriseUsers.map((e) => e.enterpriseName),
 };
 
@@ -2275,8 +2275,8 @@ function CreateEnterpriseDialog({
     () =>
       new Set<string>([
         ...cityUsers.map((u) => u.account.toLowerCase()),
-        ...districtUsers.map((u) => u.account.toLowerCase()),
-        ...groupUsers.map((u) => u.account.toLowerCase()),
+        ...INITIAL_DISTRICT_USERS.map((u) => u.account.toLowerCase()),
+        ...INITIAL_GROUP_USERS.map((u) => u.account.toLowerCase()),
         ...enterpriseUsers.map((u) => u.account.toLowerCase()),
       ]),
     [],
