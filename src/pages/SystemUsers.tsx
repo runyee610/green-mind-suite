@@ -959,7 +959,7 @@ function ActionButtons({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-36">
-          <DropdownMenuItem className="text-xs gap-2">
+          <DropdownMenuItem className="text-xs gap-2" onClick={onEdit} disabled={!onEdit}>
             <Pencil className="h-3.5 w-3.5" />
             编辑
           </DropdownMenuItem>
