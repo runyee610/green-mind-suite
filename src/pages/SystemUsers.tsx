@@ -692,7 +692,7 @@ export default function SystemUsers() {
           <div className="overflow-x-auto">
             {cityTab === "users" && (
               <CityTable
-                rows={cityUsers.filter(
+                rows={users.filter(
                   (r) =>
                     (statusFilter === "all" || r.status === statusFilter) &&
                     (deptFilter === "all" || r.department === deptFilter) &&
