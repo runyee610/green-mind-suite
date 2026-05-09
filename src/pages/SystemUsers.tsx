@@ -345,6 +345,73 @@ export default function SystemUsers() {
   const [drillDistrict, setDrillDistrict] = useState<DistrictUser | null>(null);
   const [drillGroup, setDrillGroup] = useState<GroupUser | null>(null);
 
+  // 组织（市管账号-用户账号-组织）维护
+  const [departments, setDepartments] = useState<string[]>(CITY_DEPARTMENTS);
+  const [users, setUsers] = useState<CityUser[]>(cityUsers);
+  const [orgManageOpen, setOrgManageOpen] = useState(false);
+  const userCountByDept = useMemo(() => {
+    const m: Record<string, number> = {};
+    users.forEach((u) => {
+      m[u.department] = (m[u.department] ?? 0) + 1;
+    });
+    return m;
+  }, [users]);
+  const handleAddDepartment = (name: string) => {
+    const v = name.trim();
+    if (!v) {
+      toast({ title: "组织名称不能为空", variant: "destructive" });
+      return false;
+    }
+    if (v.length > 30) {
+      toast({ title: "组织名称不超过 30 个字符", variant: "destructive" });
+      return false;
+    }
+    if (departments.includes(v)) {
+      toast({ title: "组织名称已存在", variant: "destructive" });
+      return false;
+    }
+    setDepartments((arr) => [...arr, v]);
+    toast({ title: "已新增组织", description: v });
+    return true;
+  };
+  const handleRenameDepartment = (oldName: string, newName: string) => {
+    const v = newName.trim();
+    if (!v) {
+      toast({ title: "组织名称不能为空", variant: "destructive" });
+      return false;
+    }
+    if (v === oldName) return true;
+    if (v.length > 30) {
+      toast({ title: "组织名称不超过 30 个字符", variant: "destructive" });
+      return false;
+    }
+    if (departments.includes(v)) {
+      toast({ title: "组织名称已存在", variant: "destructive" });
+      return false;
+    }
+    setDepartments((arr) => arr.map((d) => (d === oldName ? v : d)));
+    setUsers((arr) =>
+      arr.map((u) => (u.department === oldName ? { ...u, department: v } : u)),
+    );
+    if (deptFilter === oldName) setDeptFilter(v);
+    toast({ title: "已重命名组织", description: `${oldName} → ${v}` });
+    return true;
+  };
+  const handleDeleteDepartment = (name: string) => {
+    if ((userCountByDept[name] ?? 0) > 0) {
+      toast({
+        title: "无法删除",
+        description: `「${name}」下仍有 ${userCountByDept[name]} 个账号，请先迁移或删除`,
+        variant: "destructive",
+      });
+      return false;
+    }
+    setDepartments((arr) => arr.filter((d) => d !== name));
+    if (deptFilter === name) setDeptFilter("all");
+    toast({ title: "已删除组织", description: name });
+    return true;
+  };
+
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
 
