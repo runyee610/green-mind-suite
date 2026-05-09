@@ -278,6 +278,41 @@ export const enterpriseUsers: EnterpriseUser[] = [
 const PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,20}$/;
 const CREDIT_CODE_RE = /^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$/;
 
+// ===== 企业标签规则 =====
+// 1. 区下属：由所属区/园区/集团管理，无市级中心对口人
+// 2. "百千家"、通信业：市级重点对接的大型用能企业，由中心对口人对接
+export type EnterpriseTag = "区下属" | "\"百千家\"、通信业";
+
+export function getEnterpriseTag(e: Pick<EnterpriseUser, "energyLevel" | "industry">): EnterpriseTag {
+  const isKey =
+    e.energyLevel === "2000吨标煤及以上" ||
+    e.industry.includes("通信") ||
+    e.industry.includes("电子");
+  return isKey ? "\"百千家\"、通信业" : "区下属";
+}
+
+/** 业务规则：仅"百千家"、通信业的企业由中心对口人对接；区下属企业无市级对口人 */
+export function getEffectiveContact(e: EnterpriseUser): string {
+  return getEnterpriseTag(e) === "区下属" ? "—" : e.cityContact ?? "—";
+}
+
+export function EnterpriseTagBadge({ tag }: { tag: EnterpriseTag }) {
+  const isKey = tag !== "区下属";
+  return (
+    <Badge
+      variant="outline"
+      className={cn(
+        "text-[11px] font-normal whitespace-nowrap",
+        isKey
+          ? "border-primary/40 text-primary bg-primary/5"
+          : "border-muted-foreground/30 text-muted-foreground bg-muted/30",
+      )}
+    >
+      {tag}
+    </Badge>
+  );
+}
+
 function genRandomPassword(): string {
   const lowers = "abcdefghijkmnopqrstuvwxyz";
   const uppers = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -724,6 +759,8 @@ function EnterpriseTable({
           <TableHead className="h-9 text-xs">企业名称</TableHead>
           <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
           <TableHead className="h-9 text-xs">行业分类</TableHead>
+          <TableHead className="h-9 text-xs">标签</TableHead>
+          <TableHead className="h-9 text-xs">对口人</TableHead>
           <TableHead className="h-9 text-xs">所属区</TableHead>
           <TableHead className="h-9 text-xs">所属园区</TableHead>
           <TableHead className="h-9 text-xs">所属集团</TableHead>
@@ -736,7 +773,7 @@ function EnterpriseTable({
       <TableBody>
         {rows.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={onChangePwd ? 11 : 10} className="text-center text-xs text-muted-foreground py-8">
+            <TableCell colSpan={onChangePwd ? 13 : 12} className="text-center text-xs text-muted-foreground py-8">
               暂无企业数据
             </TableCell>
           </TableRow>
@@ -754,6 +791,8 @@ function EnterpriseTable({
               </TableCell>
               <TableCell className="py-2 font-mono text-muted-foreground">{e.creditCode}</TableCell>
               <TableCell className="py-2">{e.industry}</TableCell>
+              <TableCell className="py-2"><EnterpriseTagBadge tag={getEnterpriseTag(e)} /></TableCell>
+              <TableCell className="py-2">{getEffectiveContact(e)}</TableCell>
               <TableCell className="py-2">{e.district}</TableCell>
               <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>
               <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>
@@ -1158,6 +1197,7 @@ function DistrictSelfView({
                   <TableHead className="h-9 text-xs">企业名称</TableHead>
                   <TableHead className="h-9 text-xs">统一社会信用代码</TableHead>
                   <TableHead className="h-9 text-xs">行业分类</TableHead>
+                  <TableHead className="h-9 text-xs">标签</TableHead>
                   <TableHead className="h-9 text-xs">联系人</TableHead>
                   <TableHead className="h-9 text-xs">联系电话</TableHead>
                   <TableHead className="h-9 text-xs">中心对口人</TableHead>
@@ -1168,7 +1208,7 @@ function DistrictSelfView({
               <TableBody>
                 {pageRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9 - (isPark ? 1 : 0) - (isGroup ? 1 : 0)} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={10 - (isPark ? 1 : 0) - (isGroup ? 1 : 0)} className="text-center text-xs text-muted-foreground py-8">
                       暂无企业数据
                     </TableCell>
                   </TableRow>
@@ -1190,9 +1230,10 @@ function DistrictSelfView({
                         {e.creditCode}
                       </TableCell>
                       <TableCell className="py-2">{e.industry}</TableCell>
+                      <TableCell className="py-2"><EnterpriseTagBadge tag={getEnterpriseTag(e)} /></TableCell>
                       <TableCell className="py-2">{e.owner}</TableCell>
                       <TableCell className="py-2 font-mono">{e.phone.replace(/\*+/, (m) => "8".repeat(m.length))}</TableCell>
-                      <TableCell className="py-2">{e.cityContact ?? "—"}</TableCell>
+                      <TableCell className="py-2">{getEffectiveContact(e)}</TableCell>
                       {!isPark && <TableCell className="py-2 text-muted-foreground">{e.park ?? "—"}</TableCell>}
                       {!isGroup && <TableCell className="py-2 text-muted-foreground">{e.group ?? "—"}</TableCell>}
                     </TableRow>
@@ -2501,6 +2542,14 @@ function EnterpriseListDialog({
               </>
             ) : null}
           </SheetDescription>
+          <div className="flex items-center gap-1.5 pt-1">
+            <Tag className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-[11px] text-muted-foreground">对接范围</span>
+            <EnterpriseTagBadge tag={"\"百千家\"、通信业"} />
+            <span className="text-[11px] text-muted-foreground">
+              · 区下属企业不在中心对口人对接范围
+            </span>
+          </div>
         </SheetHeader>
 
         <div className="px-5 py-3 border-b border-border flex items-center gap-3">
