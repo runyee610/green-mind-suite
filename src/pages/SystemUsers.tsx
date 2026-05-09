@@ -888,6 +888,16 @@ export default function SystemUsers() {
         onRename={handleRenameDepartment}
         onDelete={handleDeleteDepartment}
       />
+      <EntityManageDialog
+        kind={entityManageOpen}
+        items={entityList}
+        usageCount={entityUsageCount}
+        usageNoun="家企业"
+        onOpenChange={(o) => !o && setEntityManageOpen(null)}
+        onAdd={handleAddEntity}
+        onRename={handleRenameEntity}
+        onDelete={handleDeleteEntity}
+      />
     </AppLayout>
   );
 }
