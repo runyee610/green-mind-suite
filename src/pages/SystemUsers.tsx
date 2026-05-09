@@ -348,6 +348,9 @@ export default function SystemUsers() {
   // 组织（市管账号-用户账号-组织）维护
   const [departments, setDepartments] = useState<string[]>(CITY_DEPARTMENTS);
   const [users, setUsers] = useState<CityUser[]>(cityUsers);
+  const [districtUsers, setDistrictUsers] = useState<DistrictUser[]>(INITIAL_DISTRICT_USERS);
+  const [groupUsers, setGroupUsers] = useState<GroupUser[]>(INITIAL_GROUP_USERS);
+  const [entityManageOpen, setEntityManageOpen] = useState<null | "区" | "园区" | "集团">(null);
   const [orgManageOpen, setOrgManageOpen] = useState(false);
   const userCountByDept = useMemo(() => {
     const m: Record<string, number> = {};
