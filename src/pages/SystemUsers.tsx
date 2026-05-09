@@ -734,10 +734,26 @@ export default function SystemUsers() {
               <Button
                 size="sm"
                 className="h-8 text-xs gap-1"
-                onClick={() => setCreateOpen(true)}
+                onClick={() => {
+                  if (cityTab === "district") {
+                    setDistrictEdit({ open: true, level: "区", row: null });
+                  } else if (cityTab === "park") {
+                    setDistrictEdit({ open: true, level: "园区", row: null });
+                  } else if (cityTab === "group") {
+                    setGroupEdit({ open: true, row: null });
+                  } else {
+                    setCreateOpen(true);
+                  }
+                }}
               >
                 <Plus className="h-3.5 w-3.5" />
-                新建账号
+                {cityTab === "district"
+                  ? "新建区"
+                  : cityTab === "park"
+                  ? "新建园区"
+                  : cityTab === "group"
+                  ? "新建集团"
+                  : "新建账号"}
               </Button>
             </div>
           </div>
