@@ -278,6 +278,41 @@ export const enterpriseUsers: EnterpriseUser[] = [
 const PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,20}$/;
 const CREDIT_CODE_RE = /^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$/;
 
+// ===== 企业标签规则 =====
+// 1. 区下属：由所属区/园区/集团管理，无市级中心对口人
+// 2. "百千家"、通信业：市级重点对接的大型用能企业，由中心对口人对接
+export type EnterpriseTag = "区下属" | "\"百千家\"、通信业";
+
+export function getEnterpriseTag(e: Pick<EnterpriseUser, "energyLevel" | "industry">): EnterpriseTag {
+  const isKey =
+    e.energyLevel === "2000吨标煤及以上" ||
+    e.industry.includes("通信") ||
+    e.industry.includes("电子");
+  return isKey ? "\"百千家\"、通信业" : "区下属";
+}
+
+/** 业务规则：仅"百千家"、通信业的企业由中心对口人对接；区下属企业无市级对口人 */
+export function getEffectiveContact(e: EnterpriseUser): string {
+  return getEnterpriseTag(e) === "区下属" ? "—" : e.cityContact ?? "—";
+}
+
+export function EnterpriseTagBadge({ tag }: { tag: EnterpriseTag }) {
+  const isKey = tag !== "区下属";
+  return (
+    <Badge
+      variant="outline"
+      className={cn(
+        "text-[11px] font-normal whitespace-nowrap",
+        isKey
+          ? "border-primary/40 text-primary bg-primary/5"
+          : "border-muted-foreground/30 text-muted-foreground bg-muted/30",
+      )}
+    >
+      {tag}
+    </Badge>
+  );
+}
+
 function genRandomPassword(): string {
   const lowers = "abcdefghijkmnopqrstuvwxyz";
   const uppers = "ABCDEFGHJKLMNPQRSTUVWXYZ";
