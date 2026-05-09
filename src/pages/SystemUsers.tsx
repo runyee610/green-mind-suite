@@ -786,6 +786,15 @@ export default function SystemUsers() {
       />
       <CreateEnterpriseDialog open={createOpen} onOpenChange={setCreateOpen} />
       <EnterpriseListDialog user={entListUser} editable={view === "city_admin"} onOpenChange={(o) => !o && setEntListUser(null)} />
+      <OrganizationManageDialog
+        open={orgManageOpen}
+        onOpenChange={setOrgManageOpen}
+        departments={departments}
+        userCountByDept={userCountByDept}
+        onAdd={handleAddDepartment}
+        onRename={handleRenameDepartment}
+        onDelete={handleDeleteDepartment}
+      />
     </AppLayout>
   );
 }
