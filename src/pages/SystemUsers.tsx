@@ -804,27 +804,12 @@ function tableCount(v: ViewRole) {
     case "city_admin":
       return cityUsers.length;
     case "district_admin":
-      return districtUsers.filter((r) => r.level === "区").length;
+      return INITIAL_DISTRICT_USERS.filter((r) => r.level === "区").length;
     case "park_admin":
-      return districtUsers.filter((r) => r.level === "园区").length;
+      return INITIAL_DISTRICT_USERS.filter((r) => r.level === "园区").length;
     case "group_admin":
-      return groupUsers.length;
+      return INITIAL_GROUP_USERS.length;
     case "enterprise_admin":
-      return enterpriseUsers.length;
-  }
-}
-
-function cityTabCount(t: "users" | "district" | "park" | "group" | "enterprise") {
-  switch (t) {
-    case "users":
-      return cityUsers.length;
-    case "district":
-      return districtUsers.filter((r) => r.level === "区").length;
-    case "park":
-      return districtUsers.filter((r) => r.level === "园区").length;
-    case "group":
-      return groupUsers.length;
-    case "enterprise":
       return enterpriseUsers.length;
   }
 }
