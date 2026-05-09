@@ -237,7 +237,7 @@ function genCityUsers(): CityUser[] {
 
 const cityUsers: CityUser[] = genCityUsers();
 
-const districtUsers: DistrictUser[] = [
+const INITIAL_DISTRICT_USERS: DistrictUser[] = [
   { id: "D001", account: "huangpu_admin", areaName: "黄浦区", level: "区", fullName: "黄浦区商务委员会", address: "广东路357号1号楼西908室品牌经济科", owner: "周建国", cityContact: "王思源", enterpriseCount: 86, phone: "138****0011", status: "启用" },
   { id: "D002", account: "pudong_admin", areaName: "浦东新区", level: "区", fullName: "浦东新区经济和信息化委员会", address: "浦东新区世纪大道2001号5楼节能科", owner: "刘晓燕", cityContact: "王思源", enterpriseCount: 312, phone: "138****0022", status: "启用" },
   { id: "D003", account: "minhang_admin", areaName: "闵行区", level: "区", fullName: "闵行区经济委员会", address: "闵行区沪闵路6258号3号楼406室", owner: "赵宏伟", cityContact: "陈雨涵", enterpriseCount: 178, phone: "138****0033", status: "启用" },
@@ -245,7 +245,7 @@ const districtUsers: DistrictUser[] = [
   { id: "D005", account: "linkong_admin", areaName: "临港装备园区", level: "园区", fullName: "上海临港装备产业园区管委会", address: "浦东新区南汇新城环湖西二路888号", owner: "吴丹丹", cityContact: "王思源", enterpriseCount: 47, phone: "138****0055", status: "停用" },
 ];
 
-const groupUsers: GroupUser[] = [
+const INITIAL_GROUP_USERS: GroupUser[] = [
   { id: "G001", account: "huayi_group", groupName: "华谊集团", owner: "黄志勇", address: "静安区常德路809号华谊集团大厦", cityContact: "刘鑫", subsidiaries: ["华谊化工有限公司", "华谊新材料股份", "华谊精细化学"], phone: "138****7001", status: "启用" },
   { id: "G002", account: "baowu_group", groupName: "宝武钢铁集团", owner: "马晓东", address: "宝山区富锦路885号宝武大厦A座18楼", cityContact: "陈玲凯", subsidiaries: ["宝山钢铁", "宝武特钢", "宝武不锈钢", "宝武碳业"], phone: "138****7002", status: "启用" },
   { id: "G003", account: "shdz_group", groupName: "上海电气集团", owner: "郑丽华", address: "静安区南京西路211号上海电气大厦", cityContact: "蒋伊莹", subsidiaries: ["电气重工", "电气风电", "电气输配电"], phone: "138****7003", status: "启用" },
@@ -348,6 +348,9 @@ export default function SystemUsers() {
   // 组织（市管账号-用户账号-组织）维护
   const [departments, setDepartments] = useState<string[]>(CITY_DEPARTMENTS);
   const [users, setUsers] = useState<CityUser[]>(cityUsers);
+  const [districtUsers, setDistrictUsers] = useState<DistrictUser[]>(INITIAL_DISTRICT_USERS);
+  const [groupUsers, setGroupUsers] = useState<GroupUser[]>(INITIAL_GROUP_USERS);
+  const [entityManageOpen, setEntityManageOpen] = useState<null | "区" | "园区" | "集团">(null);
   const [orgManageOpen, setOrgManageOpen] = useState(false);
   const userCountByDept = useMemo(() => {
     const m: Record<string, number> = {};
@@ -409,6 +412,75 @@ export default function SystemUsers() {
     setDepartments((arr) => arr.filter((d) => d !== name));
     if (deptFilter === name) setDeptFilter("all");
     toast({ title: "已删除组织", description: name });
+    return true;
+  };
+
+  // 区/园区/集团 增删改（市管账号）
+  const entityList = useMemo<string[]>(() => {
+    if (entityManageOpen === "区") return districtUsers.filter((d) => d.level === "区").map((d) => d.areaName);
+    if (entityManageOpen === "园区") return districtUsers.filter((d) => d.level === "园区").map((d) => d.areaName);
+    if (entityManageOpen === "集团") return groupUsers.map((g) => g.groupName);
+    return [];
+  }, [entityManageOpen, districtUsers, groupUsers]);
+  const entityUsageCount = useMemo<Record<string, number>>(() => {
+    const m: Record<string, number> = {};
+    if (entityManageOpen === "区") {
+      enterpriseUsers.forEach((e) => { m[e.district] = (m[e.district] ?? 0) + 1; });
+    } else if (entityManageOpen === "园区") {
+      enterpriseUsers.forEach((e) => { if (e.park) m[e.park] = (m[e.park] ?? 0) + 1; });
+    } else if (entityManageOpen === "集团") {
+      enterpriseUsers.forEach((e) => { if (e.group) m[e.group] = (m[e.group] ?? 0) + 1; });
+    }
+    return m;
+  }, [entityManageOpen]);
+  const handleAddEntity = (name: string): boolean => {
+    const v = name.trim();
+    if (!v) { toast({ title: "名称不能为空", variant: "destructive" }); return false; }
+    if (v.length > 30) { toast({ title: "名称不超过 30 个字符", variant: "destructive" }); return false; }
+    if (entityList.includes(v)) { toast({ title: "名称已存在", variant: "destructive" }); return false; }
+    if (entityManageOpen === "集团") {
+      const id = `G${String(groupUsers.length + 1).padStart(3, "0")}`;
+      setGroupUsers((arr) => [
+        ...arr,
+        { id, account: `group_${id.toLowerCase()}`, groupName: v, owner: "—", address: "—", cityContact: "—", subsidiaries: [], phone: "—", status: "启用" },
+      ]);
+    } else if (entityManageOpen === "区" || entityManageOpen === "园区") {
+      const id = `D${String(districtUsers.length + 1).padStart(3, "0")}`;
+      const lvl = entityManageOpen;
+      setDistrictUsers((arr) => [
+        ...arr,
+        { id, account: `area_${id.toLowerCase()}`, areaName: v, level: lvl, fullName: v, address: "—", owner: "—", cityContact: "—", enterpriseCount: 0, phone: "—", status: "启用" },
+      ]);
+    }
+    toast({ title: `已新增${entityManageOpen}`, description: v });
+    return true;
+  };
+  const handleRenameEntity = (oldName: string, newName: string): boolean => {
+    const v = newName.trim();
+    if (!v) { toast({ title: "名称不能为空", variant: "destructive" }); return false; }
+    if (v === oldName) return true;
+    if (v.length > 30) { toast({ title: "名称不超过 30 个字符", variant: "destructive" }); return false; }
+    if (entityList.includes(v)) { toast({ title: "名称已存在", variant: "destructive" }); return false; }
+    if (entityManageOpen === "集团") {
+      setGroupUsers((arr) => arr.map((g) => (g.groupName === oldName ? { ...g, groupName: v } : g)));
+    } else if (entityManageOpen === "区" || entityManageOpen === "园区") {
+      setDistrictUsers((arr) => arr.map((d) => (d.areaName === oldName ? { ...d, areaName: v, fullName: d.fullName === oldName ? v : d.fullName } : d)));
+    }
+    toast({ title: `已重命名${entityManageOpen}`, description: `${oldName} → ${v}` });
+    return true;
+  };
+  const handleDeleteEntity = (name: string): boolean => {
+    const used = entityUsageCount[name] ?? 0;
+    if (used > 0) {
+      toast({ title: "无法删除", description: `「${name}」下仍有 ${used} 家企业，请先迁移`, variant: "destructive" });
+      return false;
+    }
+    if (entityManageOpen === "集团") {
+      setGroupUsers((arr) => arr.filter((g) => g.groupName !== name));
+    } else if (entityManageOpen === "区" || entityManageOpen === "园区") {
+      setDistrictUsers((arr) => arr.filter((d) => d.areaName !== name));
+    }
+    toast({ title: `已删除${entityManageOpen}`, description: name });
     return true;
   };
 
@@ -672,6 +744,21 @@ export default function SystemUsers() {
                 </Button>
               </>
             )}
+            {(cityTab === "district" || cityTab === "park" || cityTab === "group") && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs gap-1"
+                onClick={() =>
+                  setEntityManageOpen(
+                    cityTab === "district" ? "区" : cityTab === "park" ? "园区" : "集团",
+                  )
+                }
+              >
+                <Briefcase className="h-3.5 w-3.5" />
+                管理{cityTab === "district" ? "区" : cityTab === "park" ? "园区" : "集团"}
+              </Button>
+            )}
             <div className="ml-auto flex items-center gap-2">
               <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
                 <Download className="h-3.5 w-3.5" />
@@ -763,7 +850,13 @@ export default function SystemUsers() {
           {/* 分页脚 */}
           <div className="flex items-center justify-between px-4 py-2 border-t border-border text-xs text-muted-foreground">
             <span>
-              共 {cityTabCount(cityTab)} 条 · 当前视图：{currentRoleLabel}
+              共 {
+                cityTab === "users" ? users.length :
+                cityTab === "district" ? districtUsers.filter((r) => r.level === "区").length :
+                cityTab === "park" ? districtUsers.filter((r) => r.level === "园区").length :
+                cityTab === "group" ? groupUsers.length :
+                enterpriseUsers.length
+              } 条 · 当前视图：{currentRoleLabel}
             </span>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="h-7 text-xs" disabled>
@@ -795,6 +888,16 @@ export default function SystemUsers() {
         onRename={handleRenameDepartment}
         onDelete={handleDeleteDepartment}
       />
+      <EntityManageDialog
+        kind={entityManageOpen}
+        items={entityList}
+        usageCount={entityUsageCount}
+        usageNoun="家企业"
+        onOpenChange={(o) => !o && setEntityManageOpen(null)}
+        onAdd={handleAddEntity}
+        onRename={handleRenameEntity}
+        onDelete={handleDeleteEntity}
+      />
     </AppLayout>
   );
 }
@@ -804,27 +907,12 @@ function tableCount(v: ViewRole) {
     case "city_admin":
       return cityUsers.length;
     case "district_admin":
-      return districtUsers.filter((r) => r.level === "区").length;
+      return INITIAL_DISTRICT_USERS.filter((r) => r.level === "区").length;
     case "park_admin":
-      return districtUsers.filter((r) => r.level === "园区").length;
+      return INITIAL_DISTRICT_USERS.filter((r) => r.level === "园区").length;
     case "group_admin":
-      return groupUsers.length;
+      return INITIAL_GROUP_USERS.length;
     case "enterprise_admin":
-      return enterpriseUsers.length;
-  }
-}
-
-function cityTabCount(t: "users" | "district" | "park" | "group" | "enterprise") {
-  switch (t) {
-    case "users":
-      return cityUsers.length;
-    case "district":
-      return districtUsers.filter((r) => r.level === "区").length;
-    case "park":
-      return districtUsers.filter((r) => r.level === "园区").length;
-    case "group":
-      return groupUsers.length;
-    case "enterprise":
       return enterpriseUsers.length;
   }
 }
@@ -2245,9 +2333,9 @@ const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
 // 各账号类型对应的"组织"候选（来源：现有系统数据）
 const ORG_OPTIONS_BY_TYPE: Record<AccountType, string[]> = {
   city: CITY_DEPARTMENTS,
-  district: districtUsers.filter((d) => d.level === "区").map((d) => d.areaName),
-  park: districtUsers.filter((d) => d.level === "园区").map((d) => d.areaName),
-  group: groupUsers.map((g) => g.groupName),
+  district: INITIAL_DISTRICT_USERS.filter((d) => d.level === "区").map((d) => d.areaName),
+  park: INITIAL_DISTRICT_USERS.filter((d) => d.level === "园区").map((d) => d.areaName),
+  group: INITIAL_GROUP_USERS.map((g) => g.groupName),
   enterprise: enterpriseUsers.map((e) => e.enterpriseName),
 };
 
@@ -2275,8 +2363,8 @@ function CreateEnterpriseDialog({
     () =>
       new Set<string>([
         ...cityUsers.map((u) => u.account.toLowerCase()),
-        ...districtUsers.map((u) => u.account.toLowerCase()),
-        ...groupUsers.map((u) => u.account.toLowerCase()),
+        ...INITIAL_DISTRICT_USERS.map((u) => u.account.toLowerCase()),
+        ...INITIAL_GROUP_USERS.map((u) => u.account.toLowerCase()),
         ...enterpriseUsers.map((u) => u.account.toLowerCase()),
       ]),
     [],
@@ -3076,6 +3164,242 @@ function OrganizationManageDialog({
                 if (confirmDel && onDelete(confirmDel)) {
                   setConfirmDel(null);
                 }
+              }}
+            >
+              确认删除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function EntityManageDialog({
+  kind,
+  items,
+  usageCount,
+  usageNoun,
+  onOpenChange,
+  onAdd,
+  onRename,
+  onDelete,
+}: {
+  kind: null | "区" | "园区" | "集团";
+  items: string[];
+  usageCount: Record<string, number>;
+  usageNoun: string;
+  onOpenChange: (o: boolean) => void;
+  onAdd: (name: string) => boolean;
+  onRename: (oldName: string, newName: string) => boolean;
+  onDelete: (name: string) => boolean;
+}) {
+  const open = !!kind;
+  const [newName, setNewName] = useState("");
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [draftName, setDraftName] = useState("");
+  const [confirmDel, setConfirmDel] = useState<string | null>(null);
+
+  const handleOpenChange = (o: boolean) => {
+    if (!o) {
+      setNewName("");
+      setEditingName(null);
+      setDraftName("");
+      setConfirmDel(null);
+    }
+    onOpenChange(o);
+  };
+
+  const submitAdd = () => {
+    if (onAdd(newName)) setNewName("");
+  };
+  const submitEdit = (oldName: string) => {
+    if (onRename(oldName, draftName)) {
+      setEditingName(null);
+      setDraftName("");
+    }
+  };
+
+  const placeholder =
+    kind === "区"
+      ? "新增区名称（如：徐汇区）"
+      : kind === "园区"
+      ? "新增园区名称（如：金桥经开区）"
+      : "新增集团名称（如：光明集团）";
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base">管理{kind}</DialogTitle>
+            <DialogDescription className="text-xs">
+              市管账号下「{kind}」的新增、重命名、删除。删除前需确保该{kind}下无关联企业。
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex items-center gap-2 rounded-md border border-border bg-muted/20 px-3 py-2">
+            <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder={placeholder}
+              maxLength={30}
+              className="h-8 text-xs flex-1"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  submitAdd();
+                }
+              }}
+            />
+            <Button size="sm" className="h-8 text-xs gap-1" onClick={submitAdd}>
+              <Plus className="h-3.5 w-3.5" />
+              新增
+            </Button>
+          </div>
+
+          <ScrollArea className="max-h-[420px] -mx-1 px-1">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
+                  <TableHead className="h-9 text-xs w-12">#</TableHead>
+                  <TableHead className="h-9 text-xs">名称</TableHead>
+                  <TableHead className="h-9 text-xs w-28">关联{usageNoun}</TableHead>
+                  <TableHead className="h-9 text-xs text-right w-44">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {items.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-8">
+                      暂无{kind}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  items.map((name, i) => {
+                    const count = usageCount[name] ?? 0;
+                    const isEditing = editingName === name;
+                    return (
+                      <TableRow key={name} className="text-xs">
+                        <TableCell className="py-2 font-mono text-muted-foreground">{i + 1}</TableCell>
+                        <TableCell className="py-2">
+                          {isEditing ? (
+                            <Input
+                              autoFocus
+                              value={draftName}
+                              onChange={(e) => setDraftName(e.target.value)}
+                              maxLength={30}
+                              className="h-7 text-xs"
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  submitEdit(name);
+                                } else if (e.key === "Escape") {
+                                  setEditingName(null);
+                                }
+                              }}
+                            />
+                          ) : (
+                            <span className="text-foreground">{name}</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="py-2 font-mono text-muted-foreground tabular-nums">{count}</TableCell>
+                        <TableCell className="py-2 text-right">
+                          {isEditing ? (
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => setEditingName(null)}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                                取消
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => submitEdit(name)}
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                                保存
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => {
+                                  setEditingName(name);
+                                  setDraftName(name);
+                                }}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                                重命名
+                              </Button>
+                              <TooltipProvider delayDuration={150}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        disabled={count > 0}
+                                        className="h-7 px-2 text-xs gap-1 text-destructive hover:text-destructive"
+                                        onClick={() => setConfirmDel(name)}
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        删除
+                                      </Button>
+                                    </span>
+                                  </TooltipTrigger>
+                                  {count > 0 && (
+                                    <TooltipContent side="left" className="text-xs max-w-xs">
+                                      该{kind}下仍有 {count} {usageNoun}，请先迁移
+                                    </TooltipContent>
+                                  )}
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => handleOpenChange(false)}>
+              关闭
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!confirmDel} onOpenChange={(o) => !o && setConfirmDel(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-base">删除{kind}</DialogTitle>
+            <DialogDescription className="text-xs">
+              确认删除{kind}「<span className="text-foreground font-medium">{confirmDel}</span>」？此操作不可撤销。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setConfirmDel(null)}>
+              取消
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-8 text-xs"
+              onClick={() => {
+                if (confirmDel && onDelete(confirmDel)) setConfirmDel(null);
               }}
             >
               确认删除
