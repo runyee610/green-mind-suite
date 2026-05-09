@@ -1380,11 +1380,15 @@ function DistrictTable({
   level,
   onChangePwd,
   onDrill,
+  onEdit,
+  onDelete,
 }: {
   rows: DistrictUser[];
   level: "区" | "园区";
   onChangePwd: (acc: string) => void;
   onDrill?: (r: DistrictUser) => void;
+  onEdit?: (r: DistrictUser) => void;
+  onDelete?: (r: DistrictUser) => void;
 }) {
   return (
     <Table>
