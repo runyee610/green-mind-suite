@@ -642,7 +642,7 @@ export default function SystemUsers() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">全部组织</SelectItem>
-                    {CITY_DEPARTMENTS.map((d) => (
+                    {departments.map((d) => (
                       <SelectItem key={d} value={d}>
                         {d}
                       </SelectItem>
@@ -661,6 +661,15 @@ export default function SystemUsers() {
                   <Filter className="h-3.5 w-3.5" />
                   按组织分组
                 </button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs gap-1"
+                  onClick={() => setOrgManageOpen(true)}
+                >
+                  <Briefcase className="h-3.5 w-3.5" />
+                  管理组织
+                </Button>
               </>
             )}
             <div className="ml-auto flex items-center gap-2">
