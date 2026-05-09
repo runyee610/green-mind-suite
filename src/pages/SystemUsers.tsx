@@ -1541,7 +1541,13 @@ function GroupTable({
               <StatusBadge status={r.status} />
             </TableCell>
             <TableCell className="py-2">
-              <ActionButtons account={r.account} status={r.status} onChangePwd={onChangePwd} />
+              <ActionButtons
+                account={r.account}
+                status={r.status}
+                onChangePwd={onChangePwd}
+                onEdit={onEdit ? () => onEdit(r) : undefined}
+                onDelete={onDelete ? () => onDelete(r) : undefined}
+              />
             </TableCell>
           </TableRow>
         ))}
