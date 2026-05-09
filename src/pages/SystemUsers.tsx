@@ -936,12 +936,16 @@ function ActionButtons({
   account,
   status,
   onChangePwd,
+  onEdit,
+  onDelete,
   disableLocked,
   disableLockedReason,
 }: {
   account: string;
   status: "启用" | "停用";
   onChangePwd: (acc: string) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   disableLocked?: boolean;
   disableLockedReason?: string;
 }) {
