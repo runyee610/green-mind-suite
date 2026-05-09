@@ -415,6 +415,75 @@ export default function SystemUsers() {
     return true;
   };
 
+  // 区/园区/集团 增删改（市管账号）
+  const entityList = useMemo<string[]>(() => {
+    if (entityManageOpen === "区") return districtUsers.filter((d) => d.level === "区").map((d) => d.areaName);
+    if (entityManageOpen === "园区") return districtUsers.filter((d) => d.level === "园区").map((d) => d.areaName);
+    if (entityManageOpen === "集团") return groupUsers.map((g) => g.groupName);
+    return [];
+  }, [entityManageOpen, districtUsers, groupUsers]);
+  const entityUsageCount = useMemo<Record<string, number>>(() => {
+    const m: Record<string, number> = {};
+    if (entityManageOpen === "区") {
+      enterpriseUsers.forEach((e) => { m[e.district] = (m[e.district] ?? 0) + 1; });
+    } else if (entityManageOpen === "园区") {
+      enterpriseUsers.forEach((e) => { if (e.park) m[e.park] = (m[e.park] ?? 0) + 1; });
+    } else if (entityManageOpen === "集团") {
+      enterpriseUsers.forEach((e) => { if (e.group) m[e.group] = (m[e.group] ?? 0) + 1; });
+    }
+    return m;
+  }, [entityManageOpen]);
+  const handleAddEntity = (name: string): boolean => {
+    const v = name.trim();
+    if (!v) { toast({ title: "名称不能为空", variant: "destructive" }); return false; }
+    if (v.length > 30) { toast({ title: "名称不超过 30 个字符", variant: "destructive" }); return false; }
+    if (entityList.includes(v)) { toast({ title: "名称已存在", variant: "destructive" }); return false; }
+    if (entityManageOpen === "集团") {
+      const id = `G${String(groupUsers.length + 1).padStart(3, "0")}`;
+      setGroupUsers((arr) => [
+        ...arr,
+        { id, account: `group_${id.toLowerCase()}`, groupName: v, owner: "—", address: "—", cityContact: "—", subsidiaries: [], phone: "—", status: "启用" },
+      ]);
+    } else if (entityManageOpen === "区" || entityManageOpen === "园区") {
+      const id = `D${String(districtUsers.length + 1).padStart(3, "0")}`;
+      const lvl = entityManageOpen;
+      setDistrictUsers((arr) => [
+        ...arr,
+        { id, account: `area_${id.toLowerCase()}`, areaName: v, level: lvl, fullName: v, address: "—", owner: "—", cityContact: "—", enterpriseCount: 0, phone: "—", status: "启用" },
+      ]);
+    }
+    toast({ title: `已新增${entityManageOpen}`, description: v });
+    return true;
+  };
+  const handleRenameEntity = (oldName: string, newName: string): boolean => {
+    const v = newName.trim();
+    if (!v) { toast({ title: "名称不能为空", variant: "destructive" }); return false; }
+    if (v === oldName) return true;
+    if (v.length > 30) { toast({ title: "名称不超过 30 个字符", variant: "destructive" }); return false; }
+    if (entityList.includes(v)) { toast({ title: "名称已存在", variant: "destructive" }); return false; }
+    if (entityManageOpen === "集团") {
+      setGroupUsers((arr) => arr.map((g) => (g.groupName === oldName ? { ...g, groupName: v } : g)));
+    } else if (entityManageOpen === "区" || entityManageOpen === "园区") {
+      setDistrictUsers((arr) => arr.map((d) => (d.areaName === oldName ? { ...d, areaName: v, fullName: d.fullName === oldName ? v : d.fullName } : d)));
+    }
+    toast({ title: `已重命名${entityManageOpen}`, description: `${oldName} → ${v}` });
+    return true;
+  };
+  const handleDeleteEntity = (name: string): boolean => {
+    const used = entityUsageCount[name] ?? 0;
+    if (used > 0) {
+      toast({ title: "无法删除", description: `「${name}」下仍有 ${used} 家企业，请先迁移`, variant: "destructive" });
+      return false;
+    }
+    if (entityManageOpen === "集团") {
+      setGroupUsers((arr) => arr.filter((g) => g.groupName !== name));
+    } else if (entityManageOpen === "区" || entityManageOpen === "园区") {
+      setDistrictUsers((arr) => arr.filter((d) => d.areaName !== name));
+    }
+    toast({ title: `已删除${entityManageOpen}`, description: name });
+    return true;
+  };
+
   const currentRoleLabel = ROLE_OPTIONS.find((r) => r.value === view)?.label ?? "";
 
 
