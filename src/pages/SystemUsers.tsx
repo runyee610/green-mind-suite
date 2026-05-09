@@ -766,7 +766,13 @@ export default function SystemUsers() {
           {/* 分页脚 */}
           <div className="flex items-center justify-between px-4 py-2 border-t border-border text-xs text-muted-foreground">
             <span>
-              共 {cityTabCount(cityTab)} 条 · 当前视图：{currentRoleLabel}
+              共 {
+                cityTab === "users" ? users.length :
+                cityTab === "district" ? districtUsers.filter((r) => r.level === "区").length :
+                cityTab === "park" ? districtUsers.filter((r) => r.level === "园区").length :
+                cityTab === "group" ? groupUsers.length :
+                enterpriseUsers.length
+              } 条 · 当前视图：{currentRoleLabel}
             </span>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="h-7 text-xs" disabled>
