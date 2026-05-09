@@ -869,6 +869,49 @@ export default function SystemUsers() {
         onRename={handleRenameDepartment}
         onDelete={handleDeleteDepartment}
       />
+      <DistrictEditDialog
+        open={districtEdit.open}
+        level={districtEdit.level}
+        row={districtEdit.row}
+        existingAccounts={districtList.map((d) => d.account)}
+        onOpenChange={(o) => setDistrictEdit((s) => ({ ...s, open: o }))}
+        onSubmit={(val, isCreate) => upsertDistrict(val, isCreate)}
+      />
+      <GroupEditDialog
+        open={groupEdit.open}
+        row={groupEdit.row}
+        existingAccounts={groupList.map((d) => d.account)}
+        onOpenChange={(o) => setGroupEdit((s) => ({ ...s, open: o }))}
+        onSubmit={(val, isCreate) => upsertGroup(val, isCreate)}
+      />
+      <ConfirmDeleteDialog
+        open={!!confirmDelDistrict}
+        title={`删除${confirmDelDistrict?.level ?? "区"}`}
+        description={
+          confirmDelDistrict
+            ? `确认删除「${confirmDelDistrict.areaName}」？该${confirmDelDistrict.level}下若仍有企业关联，关联将失效。`
+            : ""
+        }
+        onOpenChange={(o) => !o && setConfirmDelDistrict(null)}
+        onConfirm={() => {
+          if (confirmDelDistrict) deleteDistrict(confirmDelDistrict);
+          setConfirmDelDistrict(null);
+        }}
+      />
+      <ConfirmDeleteDialog
+        open={!!confirmDelGroup}
+        title="删除集团"
+        description={
+          confirmDelGroup
+            ? `确认删除「${confirmDelGroup.groupName}」？该集团下若仍有下属企业，关联将失效。`
+            : ""
+        }
+        onOpenChange={(o) => !o && setConfirmDelGroup(null)}
+        onConfirm={() => {
+          if (confirmDelGroup) deleteGroup(confirmDelGroup);
+          setConfirmDelGroup(null);
+        }}
+      />
     </AppLayout>
   );
 }
