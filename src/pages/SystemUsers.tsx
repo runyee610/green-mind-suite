@@ -744,6 +744,21 @@ export default function SystemUsers() {
                 </Button>
               </>
             )}
+            {(cityTab === "district" || cityTab === "park" || cityTab === "group") && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs gap-1"
+                onClick={() =>
+                  setEntityManageOpen(
+                    cityTab === "district" ? "区" : cityTab === "park" ? "园区" : "集团",
+                  )
+                }
+              >
+                <Briefcase className="h-3.5 w-3.5" />
+                管理{cityTab === "district" ? "区" : cityTab === "park" ? "园区" : "集团"}
+              </Button>
+            )}
             <div className="ml-auto flex items-center gap-2">
               <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
                 <Download className="h-3.5 w-3.5" />
