@@ -1462,10 +1462,14 @@ function GroupTable({
   rows,
   onChangePwd,
   onDrill,
+  onEdit,
+  onDelete,
 }: {
   rows: GroupUser[];
   onChangePwd: (acc: string) => void;
   onDrill?: (r: GroupUser) => void;
+  onEdit?: (r: GroupUser) => void;
+  onDelete?: (r: GroupUser) => void;
 }) {
   return (
     <Table>
