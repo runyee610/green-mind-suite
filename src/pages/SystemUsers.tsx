@@ -3174,3 +3174,239 @@ function OrganizationManageDialog({
     </>
   );
 }
+
+function EntityManageDialog({
+  kind,
+  items,
+  usageCount,
+  usageNoun,
+  onOpenChange,
+  onAdd,
+  onRename,
+  onDelete,
+}: {
+  kind: null | "区" | "园区" | "集团";
+  items: string[];
+  usageCount: Record<string, number>;
+  usageNoun: string;
+  onOpenChange: (o: boolean) => void;
+  onAdd: (name: string) => boolean;
+  onRename: (oldName: string, newName: string) => boolean;
+  onDelete: (name: string) => boolean;
+}) {
+  const open = !!kind;
+  const [newName, setNewName] = useState("");
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [draftName, setDraftName] = useState("");
+  const [confirmDel, setConfirmDel] = useState<string | null>(null);
+
+  const handleOpenChange = (o: boolean) => {
+    if (!o) {
+      setNewName("");
+      setEditingName(null);
+      setDraftName("");
+      setConfirmDel(null);
+    }
+    onOpenChange(o);
+  };
+
+  const submitAdd = () => {
+    if (onAdd(newName)) setNewName("");
+  };
+  const submitEdit = (oldName: string) => {
+    if (onRename(oldName, draftName)) {
+      setEditingName(null);
+      setDraftName("");
+    }
+  };
+
+  const placeholder =
+    kind === "区"
+      ? "新增区名称（如：徐汇区）"
+      : kind === "园区"
+      ? "新增园区名称（如：金桥经开区）"
+      : "新增集团名称（如：光明集团）";
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base">管理{kind}</DialogTitle>
+            <DialogDescription className="text-xs">
+              市管账号下「{kind}」的新增、重命名、删除。删除前需确保该{kind}下无关联企业。
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex items-center gap-2 rounded-md border border-border bg-muted/20 px-3 py-2">
+            <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder={placeholder}
+              maxLength={30}
+              className="h-8 text-xs flex-1"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  submitAdd();
+                }
+              }}
+            />
+            <Button size="sm" className="h-8 text-xs gap-1" onClick={submitAdd}>
+              <Plus className="h-3.5 w-3.5" />
+              新增
+            </Button>
+          </div>
+
+          <ScrollArea className="max-h-[420px] -mx-1 px-1">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
+                  <TableHead className="h-9 text-xs w-12">#</TableHead>
+                  <TableHead className="h-9 text-xs">名称</TableHead>
+                  <TableHead className="h-9 text-xs w-28">关联{usageNoun}</TableHead>
+                  <TableHead className="h-9 text-xs text-right w-44">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {items.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-8">
+                      暂无{kind}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  items.map((name, i) => {
+                    const count = usageCount[name] ?? 0;
+                    const isEditing = editingName === name;
+                    return (
+                      <TableRow key={name} className="text-xs">
+                        <TableCell className="py-2 font-mono text-muted-foreground">{i + 1}</TableCell>
+                        <TableCell className="py-2">
+                          {isEditing ? (
+                            <Input
+                              autoFocus
+                              value={draftName}
+                              onChange={(e) => setDraftName(e.target.value)}
+                              maxLength={30}
+                              className="h-7 text-xs"
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  submitEdit(name);
+                                } else if (e.key === "Escape") {
+                                  setEditingName(null);
+                                }
+                              }}
+                            />
+                          ) : (
+                            <span className="text-foreground">{name}</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="py-2 font-mono text-muted-foreground tabular-nums">{count}</TableCell>
+                        <TableCell className="py-2 text-right">
+                          {isEditing ? (
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => setEditingName(null)}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                                取消
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => submitEdit(name)}
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                                保存
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => {
+                                  setEditingName(name);
+                                  setDraftName(name);
+                                }}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                                重命名
+                              </Button>
+                              <TooltipProvider delayDuration={150}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        disabled={count > 0}
+                                        className="h-7 px-2 text-xs gap-1 text-destructive hover:text-destructive"
+                                        onClick={() => setConfirmDel(name)}
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        删除
+                                      </Button>
+                                    </span>
+                                  </TooltipTrigger>
+                                  {count > 0 && (
+                                    <TooltipContent side="left" className="text-xs max-w-xs">
+                                      该{kind}下仍有 {count} {usageNoun}，请先迁移
+                                    </TooltipContent>
+                                  )}
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => handleOpenChange(false)}>
+              关闭
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!confirmDel} onOpenChange={(o) => !o && setConfirmDel(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-base">删除{kind}</DialogTitle>
+            <DialogDescription className="text-xs">
+              确认删除{kind}「<span className="text-foreground font-medium">{confirmDel}</span>」？此操作不可撤销。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setConfirmDel(null)}>
+              取消
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-8 text-xs"
+              onClick={() => {
+                if (confirmDel && onDelete(confirmDel)) setConfirmDel(null);
+              }}
+            >
+              确认删除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
