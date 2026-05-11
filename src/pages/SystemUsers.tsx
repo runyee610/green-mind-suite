@@ -2339,6 +2339,31 @@ const ORG_OPTIONS_BY_TYPE: Record<AccountType, string[]> = {
   enterprise: enterpriseUsers.map((e) => e.enterpriseName),
 };
 
+const INDUSTRY_OPTIONS = [
+  "化学原料和化学制品制造业",
+  "黑色金属冶炼和压延加工业",
+  "计算机、通信和其他电子设备制造业",
+  "造纸和纸制品业",
+  "纺织业",
+  "食品制造业",
+  "电力、热力生产和供应业",
+  "通用设备制造业",
+  "汽车制造业",
+  "医药制造业",
+];
+
+const ENERGY_LEVEL_OPTIONS = [
+  "2000吨标煤及以上",
+  "1000-2000吨标煤",
+  "1000吨标煤以下",
+];
+
+const ENTERPRISE_TAG_OPTIONS = ["区下属", "「百千家」、通信业"];
+
+const CITY_CONTACT_OPTIONS = Array.from(
+  new Set(cityUsers.filter((u) => u.role === "对口人").map((u) => u.name)),
+).slice(0, 30);
+
 function CreateEnterpriseDialog({
   open,
   onOpenChange,
@@ -2354,8 +2379,30 @@ function CreateEnterpriseDialog({
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState(genRandomPassword());
 
+  // 各列表特有字段
+  const [personName, setPersonName] = useState(""); // 用户账号-姓名
+  const [phone, setPhone] = useState(""); // 通用-手机号
+  const [unitFullName, setUnitFullName] = useState(""); // 区/园区-单位全称
+  const [address, setAddress] = useState(""); // 区/园区/集团-地址
+  const [owner, setOwner] = useState(""); // 区/园区/集团/企业-负责人
+  const [cityContact, setCityContact] = useState(""); // 区/园区/集团-中心对口人
+  const [subsidiaries, setSubsidiaries] = useState(""); // 集团-下属企业（逗号分隔）
+  const [industry, setIndustry] = useState("");
+  const [energyLevel, setEnergyLevel] = useState("");
+  const [entDistrict, setEntDistrict] = useState("");
+  const [entPark, setEntPark] = useState("");
+  const [entGroup, setEntGroup] = useState("");
+  const [entTag, setEntTag] = useState<string>("");
+
   const isEnterprise = accountType === "enterprise";
   const isCity = accountType === "city";
+  const isDistrict = accountType === "district";
+  const isPark = accountType === "park";
+  const isGroup = accountType === "group";
+
+  const phoneValid = phone.length === 0 || /^1[3-9]\d{9}$/.test(phone);
+  const enterpriseCityContact =
+    entTag === "区下属" ? "—" : entTag ? cityContact || "（请选择中心对口人）" : "";
 
   const codeValid = CREDIT_CODE_RE.test(creditCode);
   const accountFormatValid = /^(?=.*[A-Za-z])[A-Za-z0-9]{6,20}$/.test(account);
