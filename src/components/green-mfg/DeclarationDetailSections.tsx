@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, ClipboardCheck, FileSignature, ListChecks } from "lucide-react";
+import { Building2, ClipboardCheck, FileSignature, FileText, ListChecks, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface EnterpriseBasicInfo {
@@ -175,7 +175,108 @@ function Row({
   );
 }
 
-export function BasicRequirementsCard() {
+export interface BasicRequirementItem {
+  no: number;
+  requirement: React.ReactNode;
+  conform: "是" | "否" | null;
+  proofs: string[]; // PDF 文件名列表
+  proofRequirement: React.ReactNode;
+}
+
+export const MOCK_BASIC_REQUIREMENTS: BasicRequirementItem[] = [
+  {
+    no: 1,
+    requirement: (
+      <div className="space-y-1.5 text-sm leading-relaxed">
+        <p>工厂应依法设立，近三年无下列情况：</p>
+        <ul className="ml-4 list-disc space-y-1 text-xs text-muted-foreground">
+          <li>未正常经营生产（工商注销、连续停产 12 个月以上、被市场监督管理部门列入经营异常名单且未被移出等）；</li>
+          <li>发生安全（含网络安全、数据安全）、质量、环境污染等事故以及偷漏税等违法违规行为；</li>
+          <li>被动态调整出绿色制造名单；</li>
+          <li>在国务院及有关部委相关督查工作中被发现存在严重问题；</li>
+          <li>被列入工业节能监察整改名单且未按要求完成整改；</li>
+          <li>企业被列为失信被执行人。</li>
+        </ul>
+      </div>
+    ),
+    conform: "是",
+    proofs: ["中国执行信息网截图.pdf", "信用中国_上海华普电缆有限公司.pdf", "2021营业执照正本.pdf"],
+    proofRequirement: (
+      <div className="space-y-1 text-xs leading-relaxed">
+        <p>包括但不限于：</p>
+        <p>1. 企业营业执照；</p>
+        <p>2. 信用中国、国家企业信用信息公示系统无违法违规相关页面截图；</p>
+        <p>
+          3. 中国执行信息公开网（
+          <a
+            href="https://zxgk.court.gov.cn"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary underline"
+          >
+            https://zxgk.court.gov.cn
+          </a>
+          ）被执行人信息查询页面截图。
+        </p>
+      </div>
+    ),
+  },
+  {
+    no: 2,
+    requirement: (
+      <p className="text-sm leading-relaxed">
+        工厂应明确绿色制造相关管理层职责，制定绿色低碳发展中长期规划及年度量化目标。
+      </p>
+    ),
+    conform: "是",
+    proofs: [
+      "绿色采购管理准则.pdf",
+      "组织结构图.png",
+      "绿色绩效考核方案.pdf",
+      "【盖章版】上海华普电缆有限公司绿色发展规划（2025-2027年）-251027.pdf",
+    ],
+    proofRequirement: (
+      <div className="space-y-1 text-xs leading-relaxed">
+        <p>包括但不限于：</p>
+        <p>1. 绿色工厂管理组织架构及职责分配相关制度文件；</p>
+        <p>2. 经批准的工厂绿色低碳发展中长期规划；</p>
+        <p>3. 规划中有关评价年的年度目标，评价年的年度目标、指标和实施方案及其达成统计。</p>
+      </div>
+    ),
+  },
+  {
+    no: 3,
+    requirement: (
+      <p className="text-sm leading-relaxed">
+        工厂按照 GB/T 19001、GB/T 23331、GB/T 24001、GB/T 45001 或相关行业适用的其他标准建立、实施、保持并持续改进质量、环境、能源和职业健康安全管理体系。
+      </p>
+    ),
+    conform: "是",
+    proofs: [
+      "四体系管理评审资料.pdf",
+      "现行体系文件总目录.pdf",
+      "QM-01质量管理手册20251110_扫描版.pdf",
+      "ESM-01环境和职业健康安全管理手册20250904.pdf",
+      "EnMS-01能源管理手册20251016确认.pdf",
+    ],
+    proofRequirement: (
+      <div className="space-y-1 text-xs leading-relaxed">
+        <p>包括但不限于：</p>
+        <p>1. 管理体系手册；</p>
+        <p>2. 体系文件清单；</p>
+        <p>3. 评价年体系内审及管理评审报告。</p>
+      </div>
+    ),
+  },
+];
+
+export function BasicRequirementsCard({
+  data = MOCK_BASIC_REQUIREMENTS,
+  editable = false,
+}: {
+  data?: BasicRequirementItem[];
+  editable?: boolean;
+}) {
   return (
     <Card id="basic-requirements" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
@@ -184,7 +285,94 @@ export function BasicRequirementsCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <PlaceholderBlock text="基本要求内容（合规性声明、否决项清单等）将在此呈现，待细化字段后补齐。" />
+        <div className="overflow-hidden rounded-md border border-border/60">
+          <div className="grid grid-cols-[48px_1fr_120px_1.1fr_1.1fr] bg-muted/40 text-xs font-medium text-muted-foreground">
+            <div className="border-r border-border/60 px-3 py-2 text-center">序号</div>
+            <div className="border-r border-border/60 px-3 py-2">基本要求</div>
+            <div className="border-r border-border/60 px-3 py-2 text-center">是否符合要求</div>
+            <div className="border-r border-border/60 px-3 py-2">证明材料（限 PDF 格式）</div>
+            <div className="px-3 py-2">证明材料要求</div>
+          </div>
+          {data.map((item, idx) => (
+            <div
+              key={item.no}
+              className={cn(
+                "grid grid-cols-[48px_1fr_120px_1.1fr_1.1fr]",
+                idx !== data.length - 1 && "border-b border-border/60",
+              )}
+            >
+              <div className="border-r border-border/60 px-3 py-3 text-center text-sm font-medium">
+                {item.no}
+              </div>
+              <div className="border-r border-border/60 px-3 py-3">{item.requirement}</div>
+              <div className="border-r border-border/60 px-3 py-3">
+                <div className="flex items-center justify-center gap-3 text-xs">
+                  {(["是", "否"] as const).map((opt) => {
+                    const checked = item.conform === opt;
+                    return (
+                      <span
+                        key={opt}
+                        className={cn(
+                          "inline-flex items-center gap-1.5",
+                          checked ? "text-foreground" : "text-muted-foreground",
+                          editable && "cursor-pointer",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border",
+                            checked
+                              ? opt === "是"
+                                ? "border-success"
+                                : "border-destructive"
+                              : "border-muted-foreground/40",
+                          )}
+                        >
+                          {checked && (
+                            <span
+                              className={cn(
+                                "h-1.5 w-1.5 rounded-full",
+                                opt === "是" ? "bg-success" : "bg-destructive",
+                              )}
+                            />
+                          )}
+                        </span>
+                        {opt}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="border-r border-border/60 px-3 py-3">
+                <ul className="space-y-1.5 text-xs">
+                  {item.proofs.map((f) => (
+                    <li key={f} className="flex items-start gap-1.5">
+                      <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      <a
+                        href="#"
+                        className="break-all text-primary underline-offset-2 hover:underline"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        {f}
+                      </a>
+                    </li>
+                  ))}
+                  {editable && (
+                    <li className="pt-1">
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40"
+                      >
+                        <Paperclip className="h-3 w-3" />上传 PDF
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </div>
+              <div className="px-3 py-3">{item.proofRequirement}</div>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
