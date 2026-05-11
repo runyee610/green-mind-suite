@@ -2995,9 +2995,16 @@ function CreateEnterpriseDialog({
             disabled={!canSubmit}
             onClick={() => {
               const typeLabel = ACCOUNT_TYPE_OPTIONS.find((o) => o.value === accountType)?.label;
+              const subject = isEnterprise
+                ? enterpriseName
+                : isCity
+                  ? personName
+                  : isGroup
+                    ? owner
+                    : owner || unitFullName;
               toast({
                 title: "账号创建成功",
-                description: `${typeLabel}${organization ? ` · ${organization}` : ""} · ${isCity ? roleType : "管理员"} · ${account}`,
+                description: `${typeLabel}${organization ? ` · ${organization}` : ""}${subject ? ` · ${subject}` : ""} · ${account}`,
               });
               onOpenChange(false);
             }}
