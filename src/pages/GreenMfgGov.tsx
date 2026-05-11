@@ -163,7 +163,7 @@ export default function GreenMfgGov() {
                     </TableRow>
                   ))}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
