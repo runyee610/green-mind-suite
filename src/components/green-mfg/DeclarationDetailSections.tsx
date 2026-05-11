@@ -51,7 +51,7 @@ export function EnterpriseBasicInfoCard({
   data?: EnterpriseBasicInfo;
 }) {
   return (
-    <Card className="panel">
+    <Card id="basic-info" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
           <Building2 className="mr-1 inline h-4 w-4" />一、企业基本信息表
@@ -177,7 +177,7 @@ function Row({
 
 export function BasicRequirementsCard() {
   return (
-    <Card className="panel">
+    <Card id="basic-requirements" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
           <ClipboardCheck className="mr-1 inline h-4 w-4" />二、基本要求
@@ -192,7 +192,7 @@ export function BasicRequirementsCard() {
 
 export function EvaluationIndicatorCard() {
   return (
-    <Card className="panel">
+    <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
           <ListChecks className="mr-1 inline h-4 w-4" />三、评价指标表（通则）
@@ -207,7 +207,7 @@ export function EvaluationIndicatorCard() {
 
 export function AuthenticityCommitmentCard() {
   return (
-    <Card className="panel">
+    <Card id="authenticity-commitment" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
           <FileSignature className="mr-1 inline h-4 w-4" />四、真实性承诺

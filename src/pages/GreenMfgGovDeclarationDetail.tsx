@@ -28,21 +28,14 @@ export default function GreenMfgGovDeclarationDetail() {
   );
 
   const [approveOpen, setApproveOpen] = useState(false);
-  const [rejectOpen, setRejectOpen] = useState(false);
   const [cultivateOpen, setCultivateOpen] = useState(false);
   const [comment, setComment] = useState("");
 
   const totalScore = SCORE_DIMENSIONS.reduce((s, d) => s + d.score, 0);
 
   const handleApprove = () => {
-    toast.success(detail.stage === "区审批" ? "已通过区审批，已上报市级" : "已通过市审批，颁发市级绿色工厂");
+    toast.success(detail.stage === "区审批" ? "已上报市级审批" : "已上报，颁发市级绿色工厂");
     setApproveOpen(false);
-    setComment("");
-  };
-  const handleReject = () => {
-    if (!comment.trim()) { toast.error("驳回必须填写意见"); return; }
-    toast.success("已驳回，意见已发送至企业");
-    setRejectOpen(false);
     setComment("");
   };
   const handleCultivate = () => {
@@ -75,23 +68,40 @@ export default function GreenMfgGovDeclarationDetail() {
           <Button variant="outline" size="sm" onClick={() => setCultivateOpen(true)}>
             <Clock className="mr-1 h-4 w-4" />进入培育
           </Button>
-          <Button variant="destructive" size="sm" onClick={() => setRejectOpen(true)}>
-            <ShieldX className="mr-1 h-4 w-4" />驳回
-          </Button>
           <Button size="sm" className="bg-success text-success-foreground hover:bg-success/90" onClick={() => setApproveOpen(true)}>
-            <ShieldCheck className="mr-1 h-4 w-4" />通过{detail.stage === "区审批" ? "（上报市级）" : ""}
+            <ShieldCheck className="mr-1 h-4 w-4" />上报
           </Button>
         </div>
       </div>
 
+      {/* 锚点导航 */}
+      <div className="sticky top-0 z-10 -mx-1 mb-4 flex flex-wrap items-center gap-1 rounded-md border border-border/60 bg-background/80 px-2 py-1.5 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <span className="px-2 text-[11px] text-muted-foreground">快速跳转：</span>
+        {[
+          { href: "audit-record", label: "审批记录" },
+          { href: "smart-score", label: "智能打分" },
+          { href: "basic-info", label: "企业基本信息表" },
+          { href: "basic-requirements", label: "基本要求" },
+          { href: "evaluation-indicator", label: "评价指标表（通则）" },
+          { href: "authenticity-commitment", label: "真实性承诺" },
+        ].map((a) => (
+          <a
+            key={a.href}
+            href={`#${a.href}`}
+            className="rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            {a.label}
+          </a>
+        ))}
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-5">
-        {/* 审批流转 */}
-        <Card className="panel lg:col-span-3">
+        {/* 审批记录 */}
+        <Card id="audit-record" className="panel scroll-mt-24 lg:col-span-3">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <ChevronRight className="h-4 w-4 text-primary" />
-              审批流转
-              <span className="text-xs font-normal text-muted-foreground">企业提交 → 区审批 → 市审批</span>
+              审批记录
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -123,8 +133,8 @@ export default function GreenMfgGovDeclarationDetail() {
           </CardContent>
         </Card>
 
-        {/* 系统智能打分 */}
-        <Card className="panel lg:col-span-2">
+        {/* 智能打分 */}
+        <Card id="smart-score" className="panel scroll-mt-24 lg:col-span-2">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <Sparkles className="h-4 w-4 text-secondary" />
@@ -168,28 +178,15 @@ export default function GreenMfgGovDeclarationDetail() {
       {/* 申报书四部分 */}
       <DeclarationDetailSections />
 
-      {/* 通过 */}
+      {/* 上报 */}
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认通过</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">{detail.stage === "区审批" ? "通过后将自动上报市级审批。" : "通过后将颁发市级绿色工厂证书并锁定本次申报。"}</p>
+          <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认上报</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">{detail.stage === "区审批" ? "上报后将自动进入市级审批。" : "上报后将颁发市级绿色工厂证书并锁定本次申报。"}</p>
           <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="审批意见（选填）" rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setApproveOpen(false)}>取消</Button>
-            <Button onClick={handleApprove} className="bg-success text-success-foreground hover:bg-success/90">确认通过</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* 驳回 */}
-      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle className="text-destructive"><ShieldX className="mr-2 inline h-5 w-5" />驳回申报</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">驳回意见为必填，将发送至企业填报人。</p>
-          <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="请说明驳回原因..." rows={5} />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectOpen(false)}>取消</Button>
-            <Button variant="destructive" onClick={handleReject}>确认驳回</Button>
+            <Button onClick={handleApprove} className="bg-success text-success-foreground hover:bg-success/90">确认上报</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
