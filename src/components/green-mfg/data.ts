@@ -11,6 +11,7 @@ export interface DeclarationRecord {
   industry: string;
   industryType: "重点行业" | "非重点行业/通则";
   outputValue: number; // 产值（万元）
+  batch: string; // 申报批次
   submitDate: string;
   stage: DeclarationStage;
   score: number; // 系统智能打分 0-100
@@ -19,6 +20,22 @@ export interface DeclarationRecord {
   reviewer?: string;
   comment?: string;
 }
+
+// 53 个重点行业（节选示例，实际可补齐）
+export const KEY_INDUSTRIES = [
+  "黑色金属冶炼", "有色金属冶炼", "化学原料", "化学纤维", "石油加工",
+  "煤炭加工", "建材水泥", "造纸", "纺织印染", "汽车零部件",
+  "电气机械", "电子专用设备", "医药制造", "食品加工", "橡胶塑料",
+];
+
+export const ALL_INDUSTRIES = [...KEY_INDUSTRIES, "其他（非重点/通则）"];
+
+export const DECLARATION_BATCHES = [
+  "2025年第二批",
+  "2025年第一批",
+  "2024年第二批",
+  "2024年第一批",
+];
 
 export interface DynamicRecord {
   id: string;
@@ -55,6 +72,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     industry: "黑色金属冶炼",
     industryType: "重点行业",
     outputValue: 128500,
+    batch: "2025年第二批",
     submitDate: "2025-09-12",
     stage: "市审批",
     score: 86,
@@ -70,6 +88,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     industry: "汽车零部件",
     industryType: "重点行业",
     outputValue: 45600,
+    batch: "2025年第二批",
     submitDate: "2025-09-08",
     stage: "区审批",
     score: 79,
@@ -83,6 +102,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     industry: "电气机械",
     industryType: "非重点行业/通则",
     outputValue: 32000,
+    batch: "2025年第一批",
     submitDate: "2025-08-21",
     stage: "已通过",
     score: 92,
@@ -99,6 +119,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     industry: "化学原料",
     industryType: "重点行业",
     outputValue: 89500,
+    batch: "2025年第一批",
     submitDate: "2025-08-15",
     stage: "培育中",
     score: 64,
@@ -115,6 +136,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     industry: "电子专用设备",
     industryType: "非重点行业/通则",
     outputValue: 67000,
+    batch: "2025年第二批",
     submitDate: "2025-09-20",
     stage: "已驳回",
     score: 58,

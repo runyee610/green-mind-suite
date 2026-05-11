@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
+  ALL_INDUSTRIES,
+  DECLARATION_BATCHES,
   MOCK_DECLARATIONS,
   MOCK_DYNAMIC,
   dynamicStatusClass,
@@ -21,11 +23,15 @@ export default function GreenMfgGov() {
   const [tab, setTab] = useState("declaration");
   const [keyword, setKeyword] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("all");
+  const [industryFilter, setIndustryFilter] = useState<string>("all");
+  const [batchFilter, setBatchFilter] = useState<string>("all");
 
   const declarations = MOCK_DECLARATIONS.filter((r) => {
     const k = keyword.trim();
     if (k && !r.enterpriseName.includes(k) && !r.creditCode.includes(k)) return false;
     if (stageFilter !== "all" && r.stage !== stageFilter) return false;
+    if (industryFilter !== "all" && r.industry !== industryFilter) return false;
+    if (batchFilter !== "all" && r.batch !== batchFilter) return false;
     return true;
   });
 
@@ -70,6 +76,30 @@ export default function GreenMfgGov() {
                       className="h-8 w-64 pl-8 text-xs"
                     />
                   </div>
+                  <Select value={industryFilter} onValueChange={setIndustryFilter}>
+                    <SelectTrigger className="h-8 w-40 text-xs">
+                      <Filter className="mr-1 h-3 w-3" />
+                      <SelectValue placeholder="行业" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      <SelectItem value="all">全部行业</SelectItem>
+                      {ALL_INDUSTRIES.map((i) => (
+                        <SelectItem key={i} value={i}>{i}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={batchFilter} onValueChange={setBatchFilter}>
+                    <SelectTrigger className="h-8 w-36 text-xs">
+                      <Filter className="mr-1 h-3 w-3" />
+                      <SelectValue placeholder="批次" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">全部批次</SelectItem>
+                      {DECLARATION_BATCHES.map((b) => (
+                        <SelectItem key={b} value={b}>{b}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Select value={stageFilter} onValueChange={setStageFilter}>
                     <SelectTrigger className="h-8 w-32 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
@@ -94,6 +124,7 @@ export default function GreenMfgGov() {
                     <TableHead>企业名称 / 统一社会信用代码</TableHead>
                     <TableHead>所属区</TableHead>
                     <TableHead>行业</TableHead>
+                    <TableHead>申报批次</TableHead>
                     <TableHead className="text-right">系统打分 / 人工打分</TableHead>
                     <TableHead className="text-right">产值（万元）</TableHead>
                     <TableHead className="text-center">流转状态</TableHead>
@@ -115,6 +146,7 @@ export default function GreenMfgGov() {
                           {r.industryType}
                         </Badge>
                       </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{r.batch}</TableCell>
                       <TableCell className="text-right">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
@@ -131,7 +163,7 @@ export default function GreenMfgGov() {
                     </TableRow>
                   ))}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
