@@ -176,7 +176,7 @@ export default function GreenMfgGovDeclarationDetail() {
       </div>
 
       {/* 申报书四部分 */}
-      <DeclarationDetailSections />
+      <DeclarationDetailSections mode="gov" />
 
       {/* 上报 */}
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>

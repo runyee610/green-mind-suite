@@ -242,7 +242,7 @@ export default function GreenMfgEntDeclarationDetail() {
       </div>
 
       {/* 申报书四部分 */}
-      <DeclarationDetailSections />
+      <DeclarationDetailSections mode="ent" />
     </AppLayout>
   );
 }
