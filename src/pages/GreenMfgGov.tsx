@@ -76,6 +76,30 @@ export default function GreenMfgGov() {
                       className="h-8 w-64 pl-8 text-xs"
                     />
                   </div>
+                  <Select value={industryFilter} onValueChange={setIndustryFilter}>
+                    <SelectTrigger className="h-8 w-40 text-xs">
+                      <Filter className="mr-1 h-3 w-3" />
+                      <SelectValue placeholder="行业" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      <SelectItem value="all">全部行业</SelectItem>
+                      {ALL_INDUSTRIES.map((i) => (
+                        <SelectItem key={i} value={i}>{i}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={batchFilter} onValueChange={setBatchFilter}>
+                    <SelectTrigger className="h-8 w-36 text-xs">
+                      <Filter className="mr-1 h-3 w-3" />
+                      <SelectValue placeholder="批次" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">全部批次</SelectItem>
+                      {DECLARATION_BATCHES.map((b) => (
+                        <SelectItem key={b} value={b}>{b}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Select value={stageFilter} onValueChange={setStageFilter}>
                     <SelectTrigger className="h-8 w-32 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
