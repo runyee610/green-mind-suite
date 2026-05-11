@@ -2339,6 +2339,31 @@ const ORG_OPTIONS_BY_TYPE: Record<AccountType, string[]> = {
   enterprise: enterpriseUsers.map((e) => e.enterpriseName),
 };
 
+const INDUSTRY_OPTIONS = [
+  "化学原料和化学制品制造业",
+  "黑色金属冶炼和压延加工业",
+  "计算机、通信和其他电子设备制造业",
+  "造纸和纸制品业",
+  "纺织业",
+  "食品制造业",
+  "电力、热力生产和供应业",
+  "通用设备制造业",
+  "汽车制造业",
+  "医药制造业",
+];
+
+const ENERGY_LEVEL_OPTIONS = [
+  "2000吨标煤及以上",
+  "1000-2000吨标煤",
+  "1000吨标煤以下",
+];
+
+const ENTERPRISE_TAG_OPTIONS = ["区下属", "「百千家」、通信业"];
+
+const CITY_CONTACT_OPTIONS = Array.from(
+  new Set(cityUsers.filter((u) => u.role === "对口人").map((u) => u.name)),
+).slice(0, 30);
+
 function CreateEnterpriseDialog({
   open,
   onOpenChange,
@@ -2354,8 +2379,30 @@ function CreateEnterpriseDialog({
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState(genRandomPassword());
 
+  // 各列表特有字段
+  const [personName, setPersonName] = useState(""); // 用户账号-姓名
+  const [phone, setPhone] = useState(""); // 通用-手机号
+  const [unitFullName, setUnitFullName] = useState(""); // 区/园区-单位全称
+  const [address, setAddress] = useState(""); // 区/园区/集团-地址
+  const [owner, setOwner] = useState(""); // 区/园区/集团/企业-负责人
+  const [cityContact, setCityContact] = useState(""); // 区/园区/集团-中心对口人
+  const [subsidiaries, setSubsidiaries] = useState(""); // 集团-下属企业（逗号分隔）
+  const [industry, setIndustry] = useState("");
+  const [energyLevel, setEnergyLevel] = useState("");
+  const [entDistrict, setEntDistrict] = useState("");
+  const [entPark, setEntPark] = useState("");
+  const [entGroup, setEntGroup] = useState("");
+  const [entTag, setEntTag] = useState<string>("");
+
   const isEnterprise = accountType === "enterprise";
   const isCity = accountType === "city";
+  const isDistrict = accountType === "district";
+  const isPark = accountType === "park";
+  const isGroup = accountType === "group";
+
+  const phoneValid = phone.length === 0 || /^1[3-9]\d{9}$/.test(phone);
+  const enterpriseCityContact =
+    entTag === "区下属" ? "—" : entTag ? cityContact || "（请选择中心对口人）" : "";
 
   const codeValid = CREDIT_CODE_RE.test(creditCode);
   const accountFormatValid = /^(?=.*[A-Za-z])[A-Za-z0-9]{6,20}$/.test(account);
@@ -2380,6 +2427,19 @@ function CreateEnterpriseDialog({
     setEnterpriseName("");
     setAccount("");
     setPassword(genRandomPassword());
+    setPersonName("");
+    setPhone("");
+    setUnitFullName("");
+    setAddress("");
+    setOwner("");
+    setCityContact("");
+    setSubsidiaries("");
+    setIndustry("");
+    setEnergyLevel("");
+    setEntDistrict("");
+    setEntPark("");
+    setEntGroup("");
+    setEntTag("");
   };
 
   const orgOptions = accountType ? ORG_OPTIONS_BY_TYPE[accountType] : [];
@@ -2393,11 +2453,28 @@ function CreateEnterpriseDialog({
   };
   const orgLabel = accountType ? ORG_LABEL_BY_TYPE[accountType] : "组织";
 
+  const districtOptions = INITIAL_DISTRICT_USERS.filter((d) => d.level === "区").map((d) => d.areaName);
+  const parkOptions = INITIAL_DISTRICT_USERS.filter((d) => d.level === "园区").map((d) => d.areaName);
+  const groupOptions = INITIAL_GROUP_USERS.map((g) => g.groupName);
+
   const canSubmit =
     !!accountType &&
     (isEnterprise || !!organization) &&
     accountValid &&
-    (!isEnterprise || (codeValid && enterpriseName.trim().length > 0));
+    phoneValid &&
+    (isCity ? personName.trim().length > 0 : true) &&
+    (isDistrict || isPark
+      ? unitFullName.trim().length > 0 && owner.trim().length > 0
+      : true) &&
+    (isGroup ? owner.trim().length > 0 : true) &&
+    (!isEnterprise ||
+      (codeValid &&
+        enterpriseName.trim().length > 0 &&
+        !!industry &&
+        !!energyLevel &&
+        !!entDistrict &&
+        !!entTag &&
+        (entTag === "区下属" || !!cityContact)));
 
   return (
     <Dialog
@@ -2407,7 +2484,7 @@ function CreateEnterpriseDialog({
         if (!v) reset();
       }}
     >
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base">
             <Plus className="h-4 w-4 text-primary" />
@@ -2501,7 +2578,159 @@ function CreateEnterpriseDialog({
             </div>
           )}
 
-          {/* 企业专属字段：统一社会信用代码 + 企业名称 */}
+          {/* 用户账号(市)：姓名 + 手机号 */}
+          {isCity && (
+            <>
+              <div className="space-y-1.5">
+                <Label className="text-xs">
+                  姓名 <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  value={personName}
+                  onChange={(e) => setPersonName(e.target.value)}
+                  placeholder="请输入真实姓名"
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">手机号</Label>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="11 位手机号，用于接收通知"
+                  maxLength={11}
+                  className="h-9 font-mono text-sm"
+                />
+                {!phoneValid && (
+                  <p className="text-[11px] text-destructive">✗ 手机号格式不正确</p>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* 区 / 园区：单位全称 + 地址 + 负责人 + 手机号 + 中心对口人 */}
+          {(isDistrict || isPark) && (
+            <>
+              <div className="space-y-1.5">
+                <Label className="text-xs">
+                  单位全称 <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  value={unitFullName}
+                  onChange={(e) => setUnitFullName(e.target.value)}
+                  placeholder={isPark ? "如：上海张江高科技园区管理委员会" : "如：浦东新区经济和信息化委员会"}
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">
+                    负责人 <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    value={owner}
+                    onChange={(e) => setOwner(e.target.value)}
+                    placeholder="请输入"
+                    className="h-9 text-sm"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">手机号</Label>
+                  <Input
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="11 位手机号"
+                    maxLength={11}
+                    className="h-9 font-mono text-sm"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">地址</Label>
+                <Input
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="详细办公地址"
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">中心对口人</Label>
+                <Select value={cityContact} onValueChange={setCityContact}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="请选择市级中心对口人" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-72">
+                    {CITY_CONTACT_OPTIONS.map((c) => (
+                      <SelectItem key={c} value={c} className="text-sm">{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
+
+          {/* 集团：负责人 + 手机号 + 地址 + 中心对口人 + 下属企业 */}
+          {isGroup && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">
+                    负责人 <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    value={owner}
+                    onChange={(e) => setOwner(e.target.value)}
+                    placeholder="请输入"
+                    className="h-9 text-sm"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">手机号</Label>
+                  <Input
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="11 位手机号"
+                    maxLength={11}
+                    className="h-9 font-mono text-sm"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">地址</Label>
+                <Input
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="集团总部地址"
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">中心对口人</Label>
+                <Select value={cityContact} onValueChange={setCityContact}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="请选择市级中心对口人" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-72">
+                    {CITY_CONTACT_OPTIONS.map((c) => (
+                      <SelectItem key={c} value={c} className="text-sm">{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">下属企业</Label>
+                <Input
+                  value={subsidiaries}
+                  onChange={(e) => setSubsidiaries(e.target.value)}
+                  placeholder="多个企业以逗号分隔，可稍后维护"
+                  className="h-9 text-sm"
+                />
+              </div>
+            </>
+          )}
+
+          {/* 企业专属字段 */}
           {isEnterprise && (
             <>
               <div className="space-y-1.5">
@@ -2543,6 +2772,158 @@ function CreateEnterpriseDialog({
                   placeholder="请输入工商注册全称"
                   className="h-9 text-sm"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">
+                    行业分类 <span className="text-destructive">*</span>
+                  </Label>
+                  <Select value={industry} onValueChange={setIndustry}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="请选择" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {INDUSTRY_OPTIONS.map((i) => (
+                        <SelectItem key={i} value={i} className="text-sm">{i}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">
+                    能耗等级 <span className="text-destructive">*</span>
+                  </Label>
+                  <Select value={energyLevel} onValueChange={setEnergyLevel}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="请选择" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ENERGY_LEVEL_OPTIONS.map((e) => (
+                        <SelectItem key={e} value={e} className="text-sm">{e}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">
+                    所属区 <span className="text-destructive">*</span>
+                  </Label>
+                  <Select value={entDistrict} onValueChange={setEntDistrict}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="请选择" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {districtOptions.map((d) => (
+                        <SelectItem key={d} value={d} className="text-sm">{d}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">所属园区</Label>
+                  <Select value={entPark} onValueChange={setEntPark}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="可选" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {parkOptions.map((p) => (
+                        <SelectItem key={p} value={p} className="text-sm">{p}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">所属集团</Label>
+                  <Select value={entGroup} onValueChange={setEntGroup}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="可选" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {groupOptions.map((g) => (
+                        <SelectItem key={g} value={g} className="text-sm">{g}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">企业负责人</Label>
+                  <Input
+                    value={owner}
+                    onChange={(e) => setOwner(e.target.value)}
+                    placeholder="如：顾建华"
+                    className="h-9 text-sm"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">联系电话</Label>
+                  <Input
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="11 位手机号"
+                    maxLength={11}
+                    className="h-9 font-mono text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* 标签 + 对口人（联动） */}
+              <div className="space-y-1.5">
+                <Label className="text-xs">
+                  标签 <span className="text-destructive">*</span>
+                </Label>
+                <div className="flex flex-wrap gap-1.5">
+                  {ENTERPRISE_TAG_OPTIONS.map((t) => {
+                    const active = entTag === t;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => {
+                          setEntTag(t);
+                          if (t === "区下属") setCityContact("");
+                        }}
+                        className={cn(
+                          "h-8 px-3 rounded-md border text-xs transition-colors",
+                          active
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-background text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs">
+                  对口人{entTag !== "区下属" && entTag && <span className="text-destructive"> *</span>}
+                </Label>
+                {entTag === "区下属" ? (
+                  <Input value="—" readOnly className="h-9 text-sm bg-muted/40" />
+                ) : (
+                  <Select value={cityContact} onValueChange={setCityContact} disabled={!entTag}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder={entTag ? "请选择中心对口人" : "请先选择标签"} />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {CITY_CONTACT_OPTIONS.map((c) => (
+                        <SelectItem key={c} value={c} className="text-sm">{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <p className="text-[11px] text-muted-foreground">
+                  「区下属」企业无对口人；「百千家」、通信业企业由所选中心对口人对接
+                </p>
               </div>
             </>
           )}
@@ -2614,9 +2995,16 @@ function CreateEnterpriseDialog({
             disabled={!canSubmit}
             onClick={() => {
               const typeLabel = ACCOUNT_TYPE_OPTIONS.find((o) => o.value === accountType)?.label;
+              const subject = isEnterprise
+                ? enterpriseName
+                : isCity
+                  ? personName
+                  : isGroup
+                    ? owner
+                    : owner || unitFullName;
               toast({
                 title: "账号创建成功",
-                description: `${typeLabel}${organization ? ` · ${organization}` : ""} · ${isCity ? roleType : "管理员"} · ${account}`,
+                description: `${typeLabel}${organization ? ` · ${organization}` : ""}${subject ? ` · ${subject}` : ""} · ${account}`,
               });
               onOpenChange(false);
             }}
