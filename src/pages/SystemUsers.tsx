@@ -2825,12 +2825,12 @@ function CreateEnterpriseDialog({
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">所属园区</Label>
-                  <Select value={entPark} onValueChange={setEntPark}>
+                  <Select value={entPark} onValueChange={(v) => setEntPark(v === "__clear__" ? "" : v)}>
                     <SelectTrigger className="h-9 text-sm">
                       <SelectValue placeholder="可选" />
                     </SelectTrigger>
                     <SelectContent className="max-h-72">
-                      <SelectItem value="" className="text-sm text-muted-foreground">— 清空 —</SelectItem>
+                      <SelectItem value="__clear__" className="text-sm text-muted-foreground">— 清空 —</SelectItem>
                       {parkOptions.map((p) => (
                         <SelectItem key={p} value={p} className="text-sm">{p}</SelectItem>
                       ))}
