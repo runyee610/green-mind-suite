@@ -9,6 +9,8 @@ export interface DeclarationRecord {
   creditCode: string;
   district: string;
   industry: string;
+  industryType: "重点行业" | "非重点行业/通则";
+  outputValue: number; // 产值（万元）
   submitDate: string;
   stage: DeclarationStage;
   score: number; // 系统智能打分 0-100
