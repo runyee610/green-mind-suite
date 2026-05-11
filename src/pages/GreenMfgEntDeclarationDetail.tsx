@@ -208,6 +208,16 @@ export default function GreenMfgEntDeclarationDetail() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* 总分 */}
+            <div className="mb-4 flex items-center justify-between rounded-md border border-border/60 bg-muted/30 p-3">
+              <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-semibold text-primary">{detail.score}</span>
+                <span className="text-xs text-muted-foreground">/ 100</span>
+              </div>
+              <Badge variant="outline" className={scoreTone(detail.score)}>
+                {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议复核" : "不达标"}
+              </Badge>
+            </div>
             <div className="space-y-2.5">
               {SCORE_DIMENSIONS.map((d) => (
                 <div key={d.name}>
