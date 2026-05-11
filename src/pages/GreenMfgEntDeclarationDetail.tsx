@@ -13,6 +13,7 @@ import {
   SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
+import { DeclarationDetailSections } from "@/components/green-mfg/DeclarationDetailSections";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
