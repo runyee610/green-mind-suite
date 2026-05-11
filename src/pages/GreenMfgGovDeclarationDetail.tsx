@@ -75,23 +75,40 @@ export default function GreenMfgGovDeclarationDetail() {
           <Button variant="outline" size="sm" onClick={() => setCultivateOpen(true)}>
             <Clock className="mr-1 h-4 w-4" />进入培育
           </Button>
-          <Button variant="destructive" size="sm" onClick={() => setRejectOpen(true)}>
-            <ShieldX className="mr-1 h-4 w-4" />驳回
-          </Button>
           <Button size="sm" className="bg-success text-success-foreground hover:bg-success/90" onClick={() => setApproveOpen(true)}>
-            <ShieldCheck className="mr-1 h-4 w-4" />通过{detail.stage === "区审批" ? "（上报市级）" : ""}
+            <ShieldCheck className="mr-1 h-4 w-4" />上报
           </Button>
         </div>
       </div>
 
+      {/* 锚点导航 */}
+      <div className="sticky top-0 z-10 -mx-1 mb-4 flex flex-wrap items-center gap-1 rounded-md border border-border/60 bg-background/80 px-2 py-1.5 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <span className="px-2 text-[11px] text-muted-foreground">快速跳转：</span>
+        {[
+          { href: "audit-record", label: "审批记录" },
+          { href: "smart-score", label: "智能打分" },
+          { href: "basic-info", label: "企业基本信息表" },
+          { href: "basic-requirements", label: "基本要求" },
+          { href: "evaluation-indicator", label: "评价指标表（通则）" },
+          { href: "authenticity-commitment", label: "真实性承诺" },
+        ].map((a) => (
+          <a
+            key={a.href}
+            href={`#${a.href}`}
+            className="rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            {a.label}
+          </a>
+        ))}
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-5">
-        {/* 审批流转 */}
-        <Card className="panel lg:col-span-3">
+        {/* 审批记录 */}
+        <Card id="audit-record" className="panel scroll-mt-24 lg:col-span-3">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <ChevronRight className="h-4 w-4 text-primary" />
-              审批流转
-              <span className="text-xs font-normal text-muted-foreground">企业提交 → 区审批 → 市审批</span>
+              审批记录
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -123,8 +140,8 @@ export default function GreenMfgGovDeclarationDetail() {
           </CardContent>
         </Card>
 
-        {/* 系统智能打分 */}
-        <Card className="panel lg:col-span-2">
+        {/* 智能打分 */}
+        <Card id="smart-score" className="panel scroll-mt-24 lg:col-span-2">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <Sparkles className="h-4 w-4 text-secondary" />
