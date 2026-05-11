@@ -1,7 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, ClipboardCheck, FileSignature, FileText, ListChecks, Paperclip } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Paperclip, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
+
+export type DetailMode = "ent" | "gov" | "view";
 
 export interface EnterpriseBasicInfo {
   factoryName: string;
@@ -378,16 +382,192 @@ export function BasicRequirementsCard({
   );
 }
 
-export function EvaluationIndicatorCard() {
+function isImage(name: string) {
+  return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(name);
+}
+
+function ProofList({
+  proofs,
+  editable,
+  emptyText = "—",
+}: {
+  proofs: string[];
+  editable?: boolean;
+  emptyText?: string;
+}) {
+  return (
+    <ul className="space-y-1 text-xs">
+      {proofs.length === 0 && !editable && (
+        <li className="text-muted-foreground">{emptyText}</li>
+      )}
+      {proofs.map((f) => (
+        <li key={f} className="flex items-start gap-1.5">
+          {isImage(f) ? (
+            <ImageIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
+          ) : (
+            <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+          )}
+          <a
+            href="#"
+            className="break-all text-primary underline-offset-2 hover:underline"
+            onClick={(e) => e.preventDefault()}
+          >
+            {f}
+          </a>
+        </li>
+      ))}
+      {editable && (
+        <li className="pt-1">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40"
+          >
+            <Upload className="h-3 w-3" />上传（PDF / 图片）
+          </button>
+        </li>
+      )}
+    </ul>
+  );
+}
+
+const TYPE_TONE: Record<IndicatorRow["type"], string> = {
+  正向定量: "border-primary/40 bg-primary/10 text-primary",
+  逆向定量: "border-warning/40 bg-warning/10 text-warning",
+  正向定性: "border-secondary/40 bg-secondary/10 text-secondary",
+};
+
+export function EvaluationIndicatorCard({
+  data = EVALUATION_INDICATORS,
+  totalScore = EVALUATION_TOTAL_SCORE,
+  mode = "view",
+}: {
+  data?: IndicatorRow[];
+  totalScore?: number;
+  mode?: DetailMode;
+} = {}) {
+  const entEditable = mode === "ent";
+  const govEditable = mode === "gov";
+
   return (
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">
-          <ListChecks className="mr-1 inline h-4 w-4" />三、评价指标表（通则）
+        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
+          <span>
+            <ListChecks className="mr-1 inline h-4 w-4" />三、评价指标表（通则）
+          </span>
+          <div className="flex items-center gap-2 text-xs font-normal">
+            <span className="text-muted-foreground">
+              得分计算：未达基准值 0 分，达到/优于引领值满分，介于二者之间按线性比例
+            </span>
+            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
+              得分 {totalScore.toFixed(2)}
+            </Badge>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <PlaceholderBlock text="评价指标（基础设施、管理体系、能源资源投入、产品、环境排放、绩效等维度）将在此呈现，待细化字段后补齐。" />
+        <div className="overflow-auto rounded-md border border-border/60">
+          <table className="w-full min-w-[1400px] border-collapse text-xs">
+            <thead className="bg-muted/40 text-[11px] text-muted-foreground">
+              <tr className="[&>th]:border-r [&>th]:border-border/60 [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium">
+                <th className="w-[80px]">一级指标</th>
+                <th className="w-[44px] text-center">序号</th>
+                <th className="w-[120px]">二级指标</th>
+                <th className="min-w-[260px]">三级指标</th>
+                <th className="w-[72px] text-center">指标类型</th>
+                <th className="w-[90px] text-center">单位</th>
+                <th className="w-[72px] text-center">引领值</th>
+                <th className="w-[72px] text-center">基准值</th>
+                <th className="w-[80px] text-center">加权参数</th>
+                <th className="w-[160px]">本年度指标值</th>
+                <th className="w-[160px]">证明材料（PDF/图片）</th>
+                <th className="w-[180px]">审核备注（选填）</th>
+                <th className="min-w-[220px]">证明材料要求</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row, idx) => {
+                const last = idx === data.length - 1;
+                return (
+                  <tr
+                    key={row.no}
+                    className={cn(
+                      "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
+                      !last && "border-b border-border/60",
+                    )}
+                  >
+                    {row.showL1 && (
+                      <td
+                        rowSpan={row.l1RowSpan ?? 1}
+                        className="bg-muted/20 text-center font-medium"
+                      >
+                        {row.l1}
+                      </td>
+                    )}
+                    <td className="text-center font-mono">{row.no}</td>
+                    {row.showL2 && (
+                      <td rowSpan={row.l2RowSpan ?? 1} className="bg-muted/10">
+                        {row.l2}
+                      </td>
+                    )}
+                    <td className="leading-relaxed">{row.l3}</td>
+                    <td className="text-center">
+                      <Badge variant="outline" className={cn("h-5 text-[10px]", TYPE_TONE[row.type])}>
+                        {row.type}
+                      </Badge>
+                    </td>
+                    <td className="text-center">{row.unit}</td>
+                    <td className="text-center font-mono">{row.leadValue ?? "/"}</td>
+                    <td className="text-center font-mono">{row.baseValue ?? "/"}</td>
+                    <td className="text-center font-mono">{row.weight ?? "/"}</td>
+                    <td>
+                      {entEditable ? (
+                        <Textarea
+                          defaultValue={row.reportValue}
+                          rows={2}
+                          className="min-h-[44px] resize-none text-xs"
+                          placeholder="请填写"
+                        />
+                      ) : (
+                        <span className="font-mono text-[12px] leading-relaxed">
+                          {row.reportValue || <span className="text-muted-foreground">—</span>}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <ProofList proofs={row.proofs} editable={entEditable} />
+                    </td>
+                    <td>
+                      {govEditable ? (
+                        <Textarea
+                          defaultValue={row.govRemark}
+                          rows={2}
+                          className="min-h-[44px] resize-none text-xs"
+                          placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
+                        />
+                      ) : row.govRemark ? (
+                        <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground">
+                          如指标值有修订，请填写修订备注
+                        </span>
+                      )}
+                    </td>
+                    <td className="leading-relaxed text-muted-foreground">
+                      {row.proofRequirement}
+                    </td>
+                  </tr>
+                );
+              })}
+              <tr className="border-t-2 border-border bg-muted/30 font-medium">
+                <td colSpan={12} className="px-3 py-2 text-right">
+                  得分
+                </td>
+                <td className="px-3 py-2 font-mono text-primary">{totalScore.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </CardContent>
     </Card>
   );
@@ -419,12 +599,12 @@ function PlaceholderBlock({ text }: { text: string }) {
   );
 }
 
-export function DeclarationDetailSections() {
+export function DeclarationDetailSections({ mode = "view" }: { mode?: DetailMode } = {}) {
   return (
     <div className="mt-4 space-y-4">
       <EnterpriseBasicInfoCard />
-      <BasicRequirementsCard />
-      <EvaluationIndicatorCard />
+      <BasicRequirementsCard editable={mode === "ent"} />
+      <EvaluationIndicatorCard mode={mode} />
       <AuthenticityCommitmentCard />
     </div>
   );
