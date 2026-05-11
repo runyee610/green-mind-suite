@@ -1,0 +1,235 @@
+import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, CheckCircle2, ChevronRight, Clock, FileText, ShieldCheck, ShieldX, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { AppLayout } from "@/components/AppLayout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  MOCK_AUDIT_FLOW,
+  MOCK_DECLARATIONS,
+  SCORE_DIMENSIONS,
+  stageBadgeClass,
+} from "@/components/green-mfg/data";
+import { cn } from "@/lib/utils";
+
+export default function GreenMfgGovDeclarationDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const detail = useMemo(
+    () => MOCK_DECLARATIONS.find((d) => d.id === id) ?? MOCK_DECLARATIONS[0],
+    [id],
+  );
+
+  const [approveOpen, setApproveOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [cultivateOpen, setCultivateOpen] = useState(false);
+  const [comment, setComment] = useState("");
+
+  const totalScore = SCORE_DIMENSIONS.reduce((s, d) => s + d.score, 0);
+
+  const handleApprove = () => {
+    toast.success(detail.stage === "区审批" ? "已通过区审批，已上报市级" : "已通过市审批，颁发市级绿色工厂");
+    setApproveOpen(false);
+    setComment("");
+  };
+  const handleReject = () => {
+    if (!comment.trim()) { toast.error("驳回必须填写意见"); return; }
+    toast.success("已驳回，意见已发送至企业");
+    setRejectOpen(false);
+    setComment("");
+  };
+  const handleCultivate = () => {
+    toast.success("已转入培育阶段，企业等级标记为「区级培育」");
+    setCultivateOpen(false);
+    setComment("");
+  };
+
+  return (
+    <AppLayout title="绿色工厂申报详情" subtitle={`${detail.id} · ${detail.enterpriseName}`}>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/gov")}>
+          <ArrowLeft className="mr-1 h-4 w-4" />返回列表
+        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline" className={stageBadgeClass(detail.stage)}>{detail.stage}</Badge>
+          <Button variant="outline" size="sm" onClick={() => setCultivateOpen(true)}>
+            <Clock className="mr-1 h-4 w-4" />进入培育
+          </Button>
+          <Button variant="destructive" size="sm" onClick={() => setRejectOpen(true)}>
+            <ShieldX className="mr-1 h-4 w-4" />驳回
+          </Button>
+          <Button size="sm" className="bg-success text-success-foreground hover:bg-success/90" onClick={() => setApproveOpen(true)}>
+            <ShieldCheck className="mr-1 h-4 w-4" />通过{detail.stage === "区审批" ? "（上报市级）" : ""}
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* 基础信息 */}
+        <Card className="panel lg:col-span-2">
+          <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">企业基础信息</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-2 gap-4 text-sm">
+            <Field label="企业名称" value={detail.enterpriseName} />
+            <Field label="统一社会信用代码" value={detail.creditCode} mono />
+            <Field label="所属区" value={detail.district} />
+            <Field label="行业" value={detail.industry} />
+            <Field label="申报编号" value={detail.id} mono />
+            <Field label="提交日期" value={detail.submitDate} mono />
+          </CardContent>
+        </Card>
+
+        {/* 系统智能打分 */}
+        <Card className="panel">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-muted-foreground"><Sparkles className="mr-1 inline h-3.5 w-3.5 text-secondary" />系统智能打分</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-3 flex items-baseline gap-2">
+              <span className="text-3xl font-semibold text-primary">{detail.score}</span>
+              <span className="text-xs text-muted-foreground">/ 100</span>
+              <Badge variant="outline" className={cn("ml-auto", detail.score >= 80 ? "border-success/40 bg-success/10 text-success" : detail.score >= 60 ? "border-warning/40 bg-warning/10 text-warning" : "border-destructive/40 bg-destructive/10 text-destructive")}>
+                {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议人工复核" : "不达标"}
+              </Badge>
+            </div>
+            <div className="space-y-2">
+              {SCORE_DIMENSIONS.map((d) => (
+                <div key={d.name}>
+                  <div className="flex justify-between text-xs">
+                    <span>{d.name} <span className="text-muted-foreground">（权重 {d.weight}）</span></span>
+                    <span className="font-mono">{d.score}/{d.weight}</span>
+                  </div>
+                  <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
+                </div>
+              ))}
+              <div className="mt-3 rounded bg-muted/40 p-2 text-[11px] text-muted-foreground">
+                合计 {totalScore} 分；模型基于近三年能源、碳排、固废等口径数据综合计算。
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 审批流转 */}
+      <Card className="panel mt-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base"><ChevronRight className="mr-1 inline h-4 w-4" />审批流转 · 企业提交 → 区审批 → 市审批</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ol className="relative space-y-4 border-l border-border/60 pl-5">
+            {MOCK_AUDIT_FLOW.map((n, i) => (
+              <li key={i} className="relative">
+                <span className={cn("absolute -left-[26px] top-1 h-3 w-3 rounded-full border-2 border-background",
+                  n.result === "通过" ? "bg-success" :
+                  n.result === "驳回" ? "bg-destructive" :
+                  n.result === "进入培育" ? "bg-warning" :
+                  n.result === "提交" ? "bg-primary" : "bg-muted-foreground/40")} />
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium">{n.stage}</span>
+                  <Badge variant="outline" className={cn("h-5 text-[10px]",
+                    n.result === "通过" ? "border-success/40 bg-success/10 text-success" :
+                    n.result === "驳回" ? "border-destructive/40 bg-destructive/10 text-destructive" :
+                    n.result === "进入培育" ? "border-warning/40 bg-warning/10 text-warning" :
+                    n.result === "提交" ? "border-primary/40 bg-primary/10 text-primary" :
+                    "border-border")}>{n.result}</Badge>
+                </div>
+                <p className="mt-0.5 text-xs text-muted-foreground"><span className="font-mono">{n.time}</span> · {n.operator}</p>
+                {n.comment && <p className="mt-1 rounded bg-muted/40 p-2 text-xs">{n.comment}</p>}
+              </li>
+            ))}
+          </ol>
+        </CardContent>
+      </Card>
+
+      {/* 申报材料 */}
+      <Card className="panel mt-4">
+        <CardHeader className="pb-3"><CardTitle className="text-base"><FileText className="mr-1 inline h-4 w-4" />申报材料</CardTitle></CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border/60 hover:bg-transparent">
+                <TableHead className="w-12">#</TableHead>
+                <TableHead>材料名称</TableHead>
+                <TableHead>类型</TableHead>
+                <TableHead className="text-right">大小</TableHead>
+                <TableHead className="text-center">状态</TableHead>
+                <TableHead className="text-right">操作</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[
+                { name: "绿色工厂申报书.pdf", type: "PDF", size: "2.4 MB" },
+                { name: "近三年能源审计报告.xlsx", type: "Excel", size: "1.1 MB" },
+                { name: "环境管理体系证书.pdf", type: "PDF", size: "0.8 MB" },
+                { name: "能源管理体系认证.pdf", type: "PDF", size: "0.6 MB" },
+                { name: "工厂全景照片.zip", type: "ZIP", size: "8.2 MB" },
+              ].map((m, i) => (
+                <TableRow key={i} className="h-11 border-border/40">
+                  <TableCell className="font-mono text-xs">{i + 1}</TableCell>
+                  <TableCell className="text-sm">{m.name}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{m.type}</TableCell>
+                  <TableCell className="text-right font-mono text-xs">{m.size}</TableCell>
+                  <TableCell className="text-center"><Badge variant="outline" className="border-success/40 bg-success/10 text-success"><CheckCircle2 className="mr-1 h-3 w-3" />已上传</Badge></TableCell>
+                  <TableCell className="text-right"><Button size="sm" variant="ghost" className="h-7" onClick={() => toast.info(`预览 ${m.name}`)}>预览</Button></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* 通过 */}
+      <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认通过</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">{detail.stage === "区审批" ? "通过后将自动上报市级审批。" : "通过后将颁发市级绿色工厂证书并锁定本次申报。"}</p>
+          <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="审批意见（选填）" rows={4} />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApproveOpen(false)}>取消</Button>
+            <Button onClick={handleApprove} className="bg-success text-success-foreground hover:bg-success/90">确认通过</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 驳回 */}
+      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle className="text-destructive"><ShieldX className="mr-2 inline h-5 w-5" />驳回申报</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">驳回意见为必填，将发送至企业填报人。</p>
+          <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="请说明驳回原因..." rows={5} />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectOpen(false)}>取消</Button>
+            <Button variant="destructive" onClick={handleReject}>确认驳回</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 培育 */}
+      <Dialog open={cultivateOpen} onOpenChange={setCultivateOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle className="text-warning"><Clock className="mr-2 inline h-5 w-5" />转入培育阶段</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">企业未达本次评定要求，转入区级培育，可在下一周期重新申报。</p>
+          <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="培育阶段说明 / 整改方向（选填）" rows={4} />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCultivateOpen(false)}>取消</Button>
+            <Button onClick={handleCultivate} className="bg-warning text-warning-foreground hover:bg-warning/90">确认转入培育</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </AppLayout>
+  );
+}
+
+function Field({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className={cn("mt-1 text-sm", mono && "font-mono text-xs")}>{value}</p>
+    </div>
+  );
+}
