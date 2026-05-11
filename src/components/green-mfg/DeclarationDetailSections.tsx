@@ -294,7 +294,7 @@ export function BasicRequirementsCard({
             <div className="border-r border-border/60 px-3 py-2 text-center">序号</div>
             <div className="border-r border-border/60 px-3 py-2">基本要求</div>
             <div className="border-r border-border/60 px-3 py-2 text-center">是否符合要求</div>
-            <div className="border-r border-border/60 px-3 py-2">证明材料（限 PDF 格式）</div>
+            <div className="border-r border-border/60 px-3 py-2">证明材料（PDF / 图片）</div>
             <div className="px-3 py-2">证明材料要求</div>
           </div>
           {data.map((item, idx) => (
