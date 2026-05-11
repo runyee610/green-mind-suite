@@ -28,21 +28,14 @@ export default function GreenMfgGovDeclarationDetail() {
   );
 
   const [approveOpen, setApproveOpen] = useState(false);
-  const [rejectOpen, setRejectOpen] = useState(false);
   const [cultivateOpen, setCultivateOpen] = useState(false);
   const [comment, setComment] = useState("");
 
   const totalScore = SCORE_DIMENSIONS.reduce((s, d) => s + d.score, 0);
 
   const handleApprove = () => {
-    toast.success(detail.stage === "区审批" ? "已通过区审批，已上报市级" : "已通过市审批，颁发市级绿色工厂");
+    toast.success(detail.stage === "区审批" ? "已上报市级审批" : "已上报，颁发市级绿色工厂");
     setApproveOpen(false);
-    setComment("");
-  };
-  const handleReject = () => {
-    if (!comment.trim()) { toast.error("驳回必须填写意见"); return; }
-    toast.success("已驳回，意见已发送至企业");
-    setRejectOpen(false);
     setComment("");
   };
   const handleCultivate = () => {
