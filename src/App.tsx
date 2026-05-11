@@ -13,6 +13,12 @@ import Archives from "./pages/Archives.tsx";
 import DualControl from "./pages/DualControl.tsx";
 import Assets from "./pages/Assets.tsx";
 import GreenMfg from "./pages/GreenMfg.tsx";
+import GreenMfgGov from "./pages/GreenMfgGov.tsx";
+import GreenMfgGovDeclarationDetail from "./pages/GreenMfgGovDeclarationDetail.tsx";
+import GreenMfgGovDynamicEdit from "./pages/GreenMfgGovDynamicEdit.tsx";
+import GreenMfgEnt from "./pages/GreenMfgEnt.tsx";
+import GreenMfgEntDeclarationDetail from "./pages/GreenMfgEntDeclarationDetail.tsx";
+import GreenMfgEntDynamicEdit from "./pages/GreenMfgEntDynamicEdit.tsx";
 import Benchmark from "./pages/Benchmark.tsx";
 import Enterprise from "./pages/Enterprise.tsx";
 import EnterpriseDetail from "./pages/EnterpriseDetail.tsx";
@@ -40,6 +46,12 @@ const App = () => (
           <Route path="/dual-control" element={<DualControl />} />
           <Route path="/assets" element={<Assets />} />
           <Route path="/green-mfg" element={<GreenMfg />} />
+          <Route path="/green-mfg/gov" element={<GreenMfgGov />} />
+          <Route path="/green-mfg/gov/declaration/:id" element={<GreenMfgGovDeclarationDetail />} />
+          <Route path="/green-mfg/gov/dynamic/:id" element={<GreenMfgGovDynamicEdit />} />
+          <Route path="/green-mfg/ent" element={<GreenMfgEnt />} />
+          <Route path="/green-mfg/ent/declaration/:id" element={<GreenMfgEntDeclarationDetail />} />
+          <Route path="/green-mfg/ent/dynamic/:id" element={<GreenMfgEntDynamicEdit />} />
           <Route path="/benchmark" element={<Benchmark />} />
           <Route path="/enterprise" element={<Enterprise />} />
           <Route path="/enterprise-detail/:key" element={<EnterpriseDetail />} />
