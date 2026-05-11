@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ClipboardList, Eye, FileBarChart, Filter, Search } from "lucide-react";
+import { CheckCircle2, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import {
   ALL_INDUSTRIES,
   DECLARATION_BATCHES,
@@ -25,6 +27,8 @@ export default function GreenMfgGov() {
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
   const [batchFilter, setBatchFilter] = useState<string>("all");
+  const [batches, setBatches] = useState<string[]>([...DECLARATION_BATCHES]);
+  const [batchDialogOpen, setBatchDialogOpen] = useState(false);
 
   const declarations = MOCK_DECLARATIONS.filter((r) => {
     const k = keyword.trim();
@@ -41,6 +45,30 @@ export default function GreenMfgGov() {
     return true;
   });
 
+  const batchInUse = (b: string) => MOCK_DECLARATIONS.some((r) => r.batch === b);
+
+  const handleAddBatch = (name: string) => {
+    const v = name.trim();
+    if (!v) return toast.error("批次名称不能为空");
+    if (batches.includes(v)) return toast.error("该批次已存在");
+    setBatches([v, ...batches]);
+    toast.success(`已新增批次「${v}」`);
+  };
+  const handleEditBatch = (oldName: string, newName: string) => {
+    const v = newName.trim();
+    if (!v) return toast.error("批次名称不能为空");
+    if (v === oldName) return;
+    if (batches.includes(v)) return toast.error("该批次已存在");
+    setBatches(batches.map((b) => (b === oldName ? v : b)));
+    if (batchFilter === oldName) setBatchFilter(v);
+    toast.success(`已更新为「${v}」`);
+  };
+  const handleDeleteBatch = (b: string) => {
+    if (batchInUse(b)) return toast.error("该批次下存在申报记录，无法删除");
+    setBatches(batches.filter((x) => x !== b));
+    if (batchFilter === b) setBatchFilter("all");
+    toast.success(`已删除批次「${b}」`);
+  };
   return (
     <AppLayout
       title="绿色工厂（梯度培育）· 政府侧"
