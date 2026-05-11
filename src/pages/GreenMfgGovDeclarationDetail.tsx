@@ -185,28 +185,15 @@ export default function GreenMfgGovDeclarationDetail() {
       {/* 申报书四部分 */}
       <DeclarationDetailSections />
 
-      {/* 通过 */}
+      {/* 上报 */}
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认通过</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">{detail.stage === "区审批" ? "通过后将自动上报市级审批。" : "通过后将颁发市级绿色工厂证书并锁定本次申报。"}</p>
+          <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认上报</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">{detail.stage === "区审批" ? "上报后将自动进入市级审批。" : "上报后将颁发市级绿色工厂证书并锁定本次申报。"}</p>
           <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="审批意见（选填）" rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setApproveOpen(false)}>取消</Button>
-            <Button onClick={handleApprove} className="bg-success text-success-foreground hover:bg-success/90">确认通过</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* 驳回 */}
-      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle className="text-destructive"><ShieldX className="mr-2 inline h-5 w-5" />驳回申报</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">驳回意见为必填，将发送至企业填报人。</p>
-          <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="请说明驳回原因..." rows={5} />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectOpen(false)}>取消</Button>
-            <Button variant="destructive" onClick={handleReject}>确认驳回</Button>
+            <Button onClick={handleApprove} className="bg-success text-success-foreground hover:bg-success/90">确认上报</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
