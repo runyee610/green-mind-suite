@@ -2844,6 +2844,7 @@ function CreateEnterpriseDialog({
                       <SelectValue placeholder="可选" />
                     </SelectTrigger>
                     <SelectContent className="max-h-72">
+                      <SelectItem value="" className="text-sm text-muted-foreground">— 清空 —</SelectItem>
                       {groupOptions.map((g) => (
                         <SelectItem key={g} value={g} className="text-sm">{g}</SelectItem>
                       ))}
