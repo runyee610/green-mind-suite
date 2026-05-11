@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
+  ALL_INDUSTRIES,
+  DECLARATION_BATCHES,
   MOCK_DECLARATIONS,
   MOCK_DYNAMIC,
   dynamicStatusClass,
@@ -21,11 +23,15 @@ export default function GreenMfgGov() {
   const [tab, setTab] = useState("declaration");
   const [keyword, setKeyword] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("all");
+  const [industryFilter, setIndustryFilter] = useState<string>("all");
+  const [batchFilter, setBatchFilter] = useState<string>("all");
 
   const declarations = MOCK_DECLARATIONS.filter((r) => {
     const k = keyword.trim();
     if (k && !r.enterpriseName.includes(k) && !r.creditCode.includes(k)) return false;
     if (stageFilter !== "all" && r.stage !== stageFilter) return false;
+    if (industryFilter !== "all" && r.industry !== industryFilter) return false;
+    if (batchFilter !== "all" && r.batch !== batchFilter) return false;
     return true;
   });
 
