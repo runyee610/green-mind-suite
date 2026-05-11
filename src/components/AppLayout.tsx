@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface AppLayoutProps {
   title?: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
   hideHeader?: boolean;
   children: React.ReactNode;
 }
