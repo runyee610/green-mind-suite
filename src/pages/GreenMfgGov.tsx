@@ -258,6 +258,15 @@ export default function GreenMfgGov() {
           </Card>
         </TabsContent>
       </Tabs>
+      <BatchManageDialog
+        open={batchDialogOpen}
+        onOpenChange={setBatchDialogOpen}
+        batches={batches}
+        inUse={batchInUse}
+        onAdd={handleAddBatch}
+        onEdit={handleEditBatch}
+        onDelete={handleDeleteBatch}
+      />
     </AppLayout>
   );
 }
