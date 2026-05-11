@@ -351,7 +351,11 @@ export function BasicRequirementsCard({
                 <ul className="space-y-1.5 text-xs">
                   {item.proofs.map((f) => (
                     <li key={f} className="flex items-start gap-1.5">
-                      <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      {/\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(f) ? (
+                        <ImageIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
+                      ) : (
+                        <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      )}
                       <a
                         href="#"
                         className="break-all text-primary underline-offset-2 hover:underline"
@@ -367,7 +371,7 @@ export function BasicRequirementsCard({
                         type="button"
                         className="inline-flex items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40"
                       >
-                        <Paperclip className="h-3 w-3" />上传 PDF
+                        <Upload className="h-3 w-3" />上传（PDF / 图片）
                       </button>
                     </li>
                   )}
