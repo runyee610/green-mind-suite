@@ -287,3 +287,104 @@ function KpiTile({ icon: Icon, label, value, accent }: { icon: any; label: strin
     </Card>
   );
 }
+
+function BatchManageDialog({
+  open, onOpenChange, batches, inUse, onAdd, onEdit, onDelete,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  batches: string[];
+  inUse: (b: string) => boolean;
+  onAdd: (name: string) => void;
+  onEdit: (oldName: string, newName: string) => void;
+  onDelete: (b: string) => void;
+}) {
+  const [newName, setNewName] = useState("");
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [editingVal, setEditingVal] = useState("");
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) { setEditingKey(null); setNewName(""); } }}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-base">申报批次管理</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex items-center gap-2">
+          <Input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="新批次名称，如 2026年第一批"
+            className="h-8 text-xs"
+          />
+          <Button
+            size="sm"
+            className="h-8"
+            onClick={() => { onAdd(newName); setNewName(""); }}
+          >
+            <Plus className="mr-1 h-3 w-3" />新增
+          </Button>
+        </div>
+
+        <div className="mt-2 max-h-72 overflow-auto rounded-md border border-border/60">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="h-9 text-xs">批次名称</TableHead>
+                <TableHead className="h-9 text-right text-xs">操作</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {batches.map((b) => (
+                <TableRow key={b} className="h-10">
+                  <TableCell className="text-sm">
+                    {editingKey === b ? (
+                      <Input
+                        autoFocus
+                        value={editingVal}
+                        onChange={(e) => setEditingVal(e.target.value)}
+                        className="h-7 text-xs"
+                      />
+                    ) : (
+                      <span>{b}{inUse(b) && <span className="ml-2 text-[10px] text-muted-foreground">使用中</span>}</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {editingKey === b ? (
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="outline" className="h-7" onClick={() => { onEdit(b, editingVal); setEditingKey(null); }}>保存</Button>
+                        <Button size="sm" variant="ghost" className="h-7" onClick={() => setEditingKey(null)}>取消</Button>
+                      </div>
+                    ) : (
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => { setEditingKey(b); setEditingVal(b); }}>
+                          <Pencil className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 px-2 text-destructive hover:text-destructive"
+                          disabled={inUse(b)}
+                          onClick={() => onDelete(b)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {batches.length === 0 && (
+                <TableRow><TableCell colSpan={2} className="h-16 text-center text-xs text-muted-foreground">暂无批次</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>关闭</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
