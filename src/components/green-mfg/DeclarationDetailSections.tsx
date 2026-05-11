@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, ClipboardCheck, FileSignature, ListChecks } from "lucide-react";
+import { Building2, ClipboardCheck, FileSignature, FileText, ListChecks, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface EnterpriseBasicInfo {
