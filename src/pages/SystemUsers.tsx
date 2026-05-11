@@ -2427,6 +2427,19 @@ function CreateEnterpriseDialog({
     setEnterpriseName("");
     setAccount("");
     setPassword(genRandomPassword());
+    setPersonName("");
+    setPhone("");
+    setUnitFullName("");
+    setAddress("");
+    setOwner("");
+    setCityContact("");
+    setSubsidiaries("");
+    setIndustry("");
+    setEnergyLevel("");
+    setEntDistrict("");
+    setEntPark("");
+    setEntGroup("");
+    setEntTag("");
   };
 
   const orgOptions = accountType ? ORG_OPTIONS_BY_TYPE[accountType] : [];
@@ -2440,11 +2453,28 @@ function CreateEnterpriseDialog({
   };
   const orgLabel = accountType ? ORG_LABEL_BY_TYPE[accountType] : "组织";
 
+  const districtOptions = INITIAL_DISTRICT_USERS.filter((d) => d.level === "区").map((d) => d.areaName);
+  const parkOptions = INITIAL_DISTRICT_USERS.filter((d) => d.level === "园区").map((d) => d.areaName);
+  const groupOptions = INITIAL_GROUP_USERS.map((g) => g.groupName);
+
   const canSubmit =
     !!accountType &&
     (isEnterprise || !!organization) &&
     accountValid &&
-    (!isEnterprise || (codeValid && enterpriseName.trim().length > 0));
+    phoneValid &&
+    (isCity ? personName.trim().length > 0 : true) &&
+    (isDistrict || isPark
+      ? unitFullName.trim().length > 0 && owner.trim().length > 0
+      : true) &&
+    (isGroup ? owner.trim().length > 0 : true) &&
+    (!isEnterprise ||
+      (codeValid &&
+        enterpriseName.trim().length > 0 &&
+        !!industry &&
+        !!energyLevel &&
+        !!entDistrict &&
+        !!entTag &&
+        (entTag === "区下属" || !!cityContact)));
 
   return (
     <Dialog
