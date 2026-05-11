@@ -2839,12 +2839,12 @@ function CreateEnterpriseDialog({
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">所属集团</Label>
-                  <Select value={entGroup} onValueChange={setEntGroup}>
+                  <Select value={entGroup} onValueChange={(v) => setEntGroup(v === "__clear__" ? "" : v)}>
                     <SelectTrigger className="h-9 text-sm">
                       <SelectValue placeholder="可选" />
                     </SelectTrigger>
                     <SelectContent className="max-h-72">
-                      <SelectItem value="" className="text-sm text-muted-foreground">— 清空 —</SelectItem>
+                      <SelectItem value="__clear__" className="text-sm text-muted-foreground">— 清空 —</SelectItem>
                       {groupOptions.map((g) => (
                         <SelectItem key={g} value={g} className="text-sm">{g}</SelectItem>
                       ))}
