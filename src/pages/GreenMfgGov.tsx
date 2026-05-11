@@ -156,7 +156,7 @@ export default function GreenMfgGov() {
                     <TableHead>所属区</TableHead>
                     <TableHead>行业</TableHead>
                     <TableHead>申报批次</TableHead>
-                    <TableHead className="text-right">系统打分 / 人工打分</TableHead>
+                    <TableHead className="text-right">智能打分 / 人工打分</TableHead>
                     <TableHead className="text-right">产值（万元）</TableHead>
                     <TableHead className="text-center">流转状态</TableHead>
                     <TableHead>提交时间</TableHead>
