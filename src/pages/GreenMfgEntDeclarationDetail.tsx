@@ -96,37 +96,8 @@ export default function GreenMfgEntDeclarationDetail() {
         </CardContent>
       </Card>
 
-      <Card className="panel mt-4">
-        <CardHeader className="pb-3"><CardTitle className="text-base"><FileText className="mr-1 inline h-4 w-4" />申报材料</CardTitle></CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border/60 hover:bg-transparent">
-                <TableHead className="w-12">#</TableHead>
-                <TableHead>材料名称</TableHead>
-                <TableHead>类型</TableHead>
-                <TableHead className="text-right">大小</TableHead>
-                <TableHead className="text-right">操作</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[
-                { name: "绿色工厂申报书.pdf", type: "PDF", size: "2.4 MB" },
-                { name: "近三年能源审计报告.xlsx", type: "Excel", size: "1.1 MB" },
-                { name: "环境管理体系证书.pdf", type: "PDF", size: "0.8 MB" },
-              ].map((m, i) => (
-                <TableRow key={i} className="h-11 border-border/40">
-                  <TableCell className="font-mono text-xs">{i + 1}</TableCell>
-                  <TableCell className="text-sm">{m.name}</TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{m.type}</TableCell>
-                  <TableCell className="text-right font-mono text-xs">{m.size}</TableCell>
-                  <TableCell className="text-right"><Button size="sm" variant="ghost" className="h-7" onClick={() => toast.info(`下载 ${m.name}`)}>下载</Button></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* 申报书四部分 */}
+      <DeclarationDetailSections />
     </AppLayout>
   );
 }
