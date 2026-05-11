@@ -51,6 +51,7 @@ const App = () => (
           <Route path="/green-mfg/gov/declaration/:id" element={<GreenMfgGovDeclarationDetail />} />
           <Route path="/green-mfg/gov/dynamic/:id" element={<GreenMfgGovDynamicEdit />} />
           <Route path="/green-mfg/ent" element={<GreenMfgEnt />} />
+          <Route path="/green-mfg/ent/declaration/new" element={<GreenMfgEntDeclarationNew />} />
           <Route path="/green-mfg/ent/declaration/:id" element={<GreenMfgEntDeclarationDetail />} />
           <Route path="/green-mfg/ent/dynamic/:id" element={<GreenMfgEntDynamicEdit />} />
           <Route path="/benchmark" element={<Benchmark />} />
