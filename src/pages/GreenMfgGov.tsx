@@ -124,6 +124,7 @@ export default function GreenMfgGov() {
                     <TableHead>企业名称 / 统一社会信用代码</TableHead>
                     <TableHead>所属区</TableHead>
                     <TableHead>行业</TableHead>
+                    <TableHead>申报批次</TableHead>
                     <TableHead className="text-right">系统打分 / 人工打分</TableHead>
                     <TableHead className="text-right">产值（万元）</TableHead>
                     <TableHead className="text-center">流转状态</TableHead>
@@ -145,6 +146,7 @@ export default function GreenMfgGov() {
                           {r.industryType}
                         </Badge>
                       </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{r.batch}</TableCell>
                       <TableCell className="text-right">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
