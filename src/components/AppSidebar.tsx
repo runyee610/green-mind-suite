@@ -71,7 +71,15 @@ export const navItems: NavItem[] = [
   { title: "节能管理档案", url: "/archives", icon: FolderArchive },
   { title: "双控考核管理", url: "/dual-control", icon: ClipboardCheck },
   { title: "固定资产管理", url: "/assets", icon: Boxes },
-  { title: "绿色制造管理", url: "/green-mfg", icon: Leaf },
+  {
+    title: "绿色制造管理",
+    url: "/green-mfg",
+    icon: Leaf,
+    children: [
+      { title: "绿色工厂 · 政府侧", url: "/green-mfg/gov", icon: ShieldCheck },
+      { title: "绿色工厂 · 企业侧", url: "/green-mfg/ent", icon: ClipboardList },
+    ],
+  },
   { title: "设备对标管理", url: "/benchmark", icon: Crosshair },
   { title: "企业管理", url: "/enterprise", icon: Building2 },
   {
