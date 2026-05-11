@@ -192,7 +192,7 @@ export function BasicRequirementsCard() {
 
 export function EvaluationIndicatorCard() {
   return (
-    <Card className="panel">
+    <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
           <ListChecks className="mr-1 inline h-4 w-4" />三、评价指标表（通则）
