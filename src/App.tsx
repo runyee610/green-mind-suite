@@ -18,6 +18,7 @@ import GreenMfgGovDeclarationDetail from "./pages/GreenMfgGovDeclarationDetail.t
 import GreenMfgGovDynamicEdit from "./pages/GreenMfgGovDynamicEdit.tsx";
 import GreenMfgEnt from "./pages/GreenMfgEnt.tsx";
 import GreenMfgEntDeclarationDetail from "./pages/GreenMfgEntDeclarationDetail.tsx";
+import GreenMfgEntDeclarationNew from "./pages/GreenMfgEntDeclarationNew.tsx";
 import GreenMfgEntDynamicEdit from "./pages/GreenMfgEntDynamicEdit.tsx";
 import Benchmark from "./pages/Benchmark.tsx";
 import Enterprise from "./pages/Enterprise.tsx";
