@@ -91,26 +91,34 @@ export default function GreenMfgGov() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>申报编号</TableHead>
-                    <TableHead>企业名称</TableHead>
+                    <TableHead>企业名称 / 统一社会信用代码</TableHead>
                     <TableHead>所属区</TableHead>
                     <TableHead>行业</TableHead>
-                    <TableHead className="text-right">智能打分</TableHead>
-                    <TableHead className="text-right">人工得分</TableHead>
+                    <TableHead className="text-right">系统打分 / 人工打分</TableHead>
+                    <TableHead className="text-right">产值（万元）</TableHead>
                     <TableHead className="text-center">流转状态</TableHead>
-                    <TableHead>提交日期</TableHead>
+                    <TableHead>提交时间</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {declarations.map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell className="font-mono text-xs">{r.id}</TableCell>
-                      <TableCell className="text-sm">{r.enterpriseName}</TableCell>
+                      <TableCell>
+                        <div className="text-sm">{r.enterpriseName}</div>
+                        <div className="text-[11px] text-muted-foreground font-mono">{r.creditCode}</div>
+                      </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{r.industry}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.score}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.manualScore ?? "—"}</TableCell>
+                      <TableCell>
+                        <div className="text-xs text-muted-foreground">{r.industry}</div>
+                        <Badge variant="outline" className={r.industryType === "重点行业" ? "border-warning/40 bg-warning/10 text-warning mt-0.5" : "border-primary/40 bg-primary/10 text-primary mt-0.5"}>
+                          {r.industryType}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-xs">{r.outputValue.toLocaleString()}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
                       </TableCell>
@@ -123,7 +131,7 @@ export default function GreenMfgGov() {
                     </TableRow>
                   ))}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
