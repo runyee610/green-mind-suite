@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Paperclip, Upload } from "lucide-react";
+import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
 
@@ -294,7 +294,7 @@ export function BasicRequirementsCard({
             <div className="border-r border-border/60 px-3 py-2 text-center">序号</div>
             <div className="border-r border-border/60 px-3 py-2">基本要求</div>
             <div className="border-r border-border/60 px-3 py-2 text-center">是否符合要求</div>
-            <div className="border-r border-border/60 px-3 py-2">证明材料（限 PDF 格式）</div>
+            <div className="border-r border-border/60 px-3 py-2">证明材料（PDF / 图片）</div>
             <div className="px-3 py-2">证明材料要求</div>
           </div>
           {data.map((item, idx) => (
@@ -351,7 +351,11 @@ export function BasicRequirementsCard({
                 <ul className="space-y-1.5 text-xs">
                   {item.proofs.map((f) => (
                     <li key={f} className="flex items-start gap-1.5">
-                      <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      {/\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(f) ? (
+                        <ImageIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
+                      ) : (
+                        <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      )}
                       <a
                         href="#"
                         className="break-all text-primary underline-offset-2 hover:underline"
@@ -367,7 +371,7 @@ export function BasicRequirementsCard({
                         type="button"
                         className="inline-flex items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40"
                       >
-                        <Paperclip className="h-3 w-3" />上传 PDF
+                        <Upload className="h-3 w-3" />上传（PDF / 图片）
                       </button>
                     </li>
                   )}

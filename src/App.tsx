@@ -18,6 +18,7 @@ import GreenMfgGovDeclarationDetail from "./pages/GreenMfgGovDeclarationDetail.t
 import GreenMfgGovDynamicEdit from "./pages/GreenMfgGovDynamicEdit.tsx";
 import GreenMfgEnt from "./pages/GreenMfgEnt.tsx";
 import GreenMfgEntDeclarationDetail from "./pages/GreenMfgEntDeclarationDetail.tsx";
+import GreenMfgEntDeclarationNew from "./pages/GreenMfgEntDeclarationNew.tsx";
 import GreenMfgEntDynamicEdit from "./pages/GreenMfgEntDynamicEdit.tsx";
 import Benchmark from "./pages/Benchmark.tsx";
 import Enterprise from "./pages/Enterprise.tsx";
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/green-mfg/gov/declaration/:id" element={<GreenMfgGovDeclarationDetail />} />
           <Route path="/green-mfg/gov/dynamic/:id" element={<GreenMfgGovDynamicEdit />} />
           <Route path="/green-mfg/ent" element={<GreenMfgEnt />} />
+          <Route path="/green-mfg/ent/declaration/new" element={<GreenMfgEntDeclarationNew />} />
           <Route path="/green-mfg/ent/declaration/:id" element={<GreenMfgEntDeclarationDetail />} />
           <Route path="/green-mfg/ent/dynamic/:id" element={<GreenMfgEntDynamicEdit />} />
           <Route path="/benchmark" element={<Benchmark />} />
