@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Paperclip, Upload } from "lucide-react";
+import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
 
