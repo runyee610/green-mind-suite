@@ -207,7 +207,7 @@ export function EvaluationIndicatorCard() {
 
 export function AuthenticityCommitmentCard() {
   return (
-    <Card className="panel">
+    <Card id="authenticity-commitment" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
           <FileSignature className="mr-1 inline h-4 w-4" />四、真实性承诺
