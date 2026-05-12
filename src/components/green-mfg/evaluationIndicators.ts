@@ -91,6 +91,8 @@ export const PLATFORM_FUNCTION_OPTIONS = [
 export const EVALUATION_INDICATORS: IndicatorRow[] = [
   {
     id: "1",
+    formula: "E_gi = E_i / G_i",
+    formulaHasStandard: "E_ui = E_i / Q_i",
     no: 1,
     l1: "能源低碳化",
     showL1: true,
@@ -117,6 +119,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "2",
+    formula: "C_gi = C_i / G_i",
     no: 2,
     l1: "能源低碳化",
     l2: "碳排放强度",
@@ -135,6 +138,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "3-1",
+    formula: "R_re = E_re / E × 100%",
     no: 3,
     showNo: true,
     noRowSpan: 4,
@@ -159,6 +163,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "3-2",
+    formula: "R_re = E_re / E × 100%",
     no: 3,
     showNo: false,
     isSubRow: true,
@@ -178,6 +183,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "3-3",
+    formula: "R_re = E_re / E × 100%",
     no: 3,
     showNo: false,
     isSubRow: true,
@@ -197,6 +203,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "3-4",
+    formula: "R_re = E_re / E × 100%",
     no: 3,
     showNo: false,
     isSubRow: true,
@@ -216,6 +223,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "4",
+    formula: "",
     no: 4,
     l1: "能源低碳化",
     l2: "能碳管理系统平台功能符合数量",
@@ -235,6 +243,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "5-1",
+    formula: "",
     no: 5,
     showNo: true,
     noRowSpan: 2,
@@ -257,6 +266,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "5-2",
+    formula: "",
     no: 5,
     showNo: false,
     isSubRow: true,
@@ -278,6 +288,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "6",
+    formula: "V_gi = V_i / G_i",
+    formulaHasStandard: "V_ui = V_i / Q_i",
     no: 6,
     l1: "资源高效化",
     l2: "取水强度",
@@ -302,6 +314,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "7",
+    formula: "R_w = V_r / (V + V_r) × 100%",
     no: 7,
     l1: "资源高效化",
     l2: "工业用水重复利用率",
@@ -321,6 +334,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "8",
+    formula: "K_r = Z_r / (Z + Z_w) × 100%",
     no: 8,
     l1: "资源高效化",
     l2: "一般工业固体废物综合利用率",
@@ -340,6 +354,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "9",
+    formula: "",
     no: 9,
     l1: "生产洁净化",
     showL1: true,
@@ -359,6 +374,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "10",
+    formula: "",
     no: 10,
     showNo: true,
     noRowSpan: 2,
@@ -381,6 +397,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "11",
+    formula: "",
     no: 10,
     showNo: false,
     isSubRow: true,
@@ -400,6 +417,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "12-1",
+    formula: "",
     no: 11,
     showNo: true,
     noRowSpan: 2,
@@ -424,6 +442,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "12-2",
+    formula: "",
     no: 11,
     showNo: false,
     isSubRow: true,
@@ -443,6 +462,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "13",
+    formula: "",
     no: 12,
     l1: "产品绿色化",
     showL1: true,
@@ -464,6 +484,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "14",
+    formula: "",
     no: 13,
     l1: "产品绿色化",
     l2: "产品碳足迹",
@@ -482,6 +503,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "14b",
+    formula: "",
     no: 14,
     l1: "产品绿色化",
     l2: "绿色产品",
@@ -500,6 +522,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "15",
+    formula: "g = G / A_用地",
     no: 15,
     showNo: true,
     noRowSpan: 3,
@@ -523,6 +546,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "16",
+    formula: "r = (a_总建筑物 + a_总构筑物 + a_堆场) / A_用地 × 100%",
     no: 15,
     showNo: false,
     isSubRow: true,
@@ -541,6 +565,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "17",
+    formula: "R = A_总建筑面积 / A_用地",
     no: 15,
     showNo: false,
     isSubRow: true,
