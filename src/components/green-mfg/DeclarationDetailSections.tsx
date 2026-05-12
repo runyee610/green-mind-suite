@@ -512,6 +512,12 @@ export function BasicRequirementsCard({
         </div>
       </CardContent>
     </Card>
+    <FilePreviewDialog
+      fileName={preview}
+      open={!!preview}
+      onOpenChange={(v) => !v && setPreview(null)}
+    />
+    </>
   );
 }
 
