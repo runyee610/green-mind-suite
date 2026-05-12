@@ -470,7 +470,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "%",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "8",
     reportValue: "100.00",
     proofs: ["1.产品碳足迹计算过程及其附件.pdf", "2.《工业产销总值及主要产品产量表》（B204-1表）.pdf", "3.产品碳足迹核查报告.pdf"],
     proofRequirement:
