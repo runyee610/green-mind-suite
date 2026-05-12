@@ -1064,15 +1064,22 @@ export function EvaluationIndicatorCard({
                                     )}
                                   </td>
                                   <td>
-                                    {entEditable ? (
-                                      <Input
-                                        value={p.reportValue}
-                                        placeholder="请填写"
-                                        className="h-7 text-center font-mono text-[11px]"
-                                        onChange={(e) => updateProduct(pi, { reportValue: e.target.value })}
-                                      />
+                                    {valueEditable ? (
+                                      <div className="space-y-1">
+                                        <Input
+                                          value={p.reportValue}
+                                          placeholder="请填写"
+                                          className="h-7 text-center font-mono text-[11px]"
+                                          onChange={(e) => updateProduct(pi, { reportValue: e.target.value })}
+                                        />
+                                        <OriginalHint original={row.originalProducts?.[pi]?.reportValue} small />
+                                      </div>
                                     ) : (
-                                      <span className="font-mono">{p.reportValue || "—"}</span>
+                                      <DiffValue
+                                        current={p.reportValue}
+                                        original={row.originalProducts?.[pi]?.reportValue}
+                                        small
+                                      />
                                     )}
                                   </td>
                                   {pi === 0 && (
