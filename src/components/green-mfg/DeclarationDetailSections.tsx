@@ -111,22 +111,23 @@ export function EnterpriseBasicInfoCard({
       </CardHeader>
       <CardContent>
         <div className="overflow-hidden rounded-md border border-border/60">
-          <Row label="工厂名称" value={text(data.factoryName, "请填写工厂名称")} />
-          <Row label="通讯地址" value={text(data.address, "请填写通讯地址")} />
-          <Row label="所属行业" value={text(data.industry, "如：机械行业")} />
-          <Row label="细分行业" value={text(data.subIndustry, "如：电线电缆")} />
+          <Row label="工厂名称" value={text(data.factoryName, "请填写工厂名称", "factoryName")} />
+          <Row label="通讯地址" value={text(data.address, "请填写通讯地址", "address")} />
+          <Row label="所属行业" value={text(data.industry, "如：机械行业", "industry")} />
+          <Row label="细分行业" value={text(data.subIndustry, "如：电线电缆", "subIndustry")} />
           <Row
             label="非重点细分行业（当企业细分行业是非重点行业时请填写）"
-            value={text(data.nonKeySubIndustry || "", "选填")}
+            value={text(data.nonKeySubIndustry || "", "选填", "nonKeySubIndustry")}
           />
           <Row
             label="按照企业主导产业类型填写统计局四位代码（只填写1个代码）"
             value={
               editable ? (
                 <Input
-                  defaultValue={data.statBureauCode}
+                  value={data.statBureauCode}
                   placeholder="如：3831"
                   className="h-8 w-40 font-mono text-sm"
+                  onChange={(e) => update({ statBureauCode: e.target.value })}
                 />
               ) : (
                 <span className="font-mono">
@@ -144,6 +145,7 @@ export function EnterpriseBasicInfoCard({
                   return (
                     <label
                       key={opt}
+                      onClick={() => editable && update({ unitNature: opt })}
                       className={cn(
                         "inline-flex items-center gap-1.5",
                         checked ? "text-foreground" : "text-muted-foreground",
@@ -165,17 +167,23 @@ export function EnterpriseBasicInfoCard({
               </div>
             }
           />
-          <Row label="申报工作联系部门" value={text(data.contactDept, "如：总师办")} />
+          <Row label="申报工作联系部门" value={text(data.contactDept, "如：总师办", "contactDept")} />
           <Row
             label="联系人"
             value={
               editable ? (
                 <div className="grid grid-cols-2 gap-3">
-                  <Input defaultValue={data.contactName} placeholder="联系人姓名" className="h-8 text-sm" />
                   <Input
-                    defaultValue={data.contactPhone}
+                    value={data.contactName}
+                    placeholder="联系人姓名"
+                    className="h-8 text-sm"
+                    onChange={(e) => update({ contactName: e.target.value })}
+                  />
+                  <Input
+                    value={data.contactPhone}
                     placeholder="联系电话"
                     className="h-8 font-mono text-sm"
+                    onChange={(e) => update({ contactPhone: e.target.value })}
                   />
                 </div>
               ) : (
@@ -196,9 +204,10 @@ export function EnterpriseBasicInfoCard({
             value={
               editable ? (
                 <Input
-                  defaultValue={data.contactEmail}
+                  value={data.contactEmail}
                   placeholder="example@company.com"
                   className="h-8 font-mono text-sm"
+                  onChange={(e) => update({ contactEmail: e.target.value })}
                 />
               ) : (
                 <span className="font-mono">
@@ -209,12 +218,12 @@ export function EnterpriseBasicInfoCard({
           />
           <Row
             label="企业工艺情况简介（200字）"
-            value={area(data.processIntro, "请简要介绍企业主要工艺情况，不超过200字")}
+            value={area(data.processIntro, "请简要介绍企业主要工艺情况，不超过200字", 4, "processIntro")}
             multiline
           />
           <Row
             label="企业绿色发展情况简要介绍（500字）"
-            value={area(data.greenDevIntro, "请简要介绍企业绿色发展情况，不超过500字", 6)}
+            value={area(data.greenDevIntro, "请简要介绍企业绿色发展情况，不超过500字", 6, "greenDevIntro")}
             multiline
             last
           />
