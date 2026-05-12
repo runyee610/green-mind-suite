@@ -45,6 +45,8 @@ export interface IndicatorRow {
   /** 二级指标在该行是否需要展示 */
   showL2?: boolean;
   l2RowSpan?: number;
+  /** 是否将二级指标与三级指标合并为一个单元格（合并后显示三级指标文本） */
+  mergeL2L3?: boolean;
   /** 序号列是否展示（用于多子行合并），默认 true */
   showNo?: boolean;
   noRowSpan?: number;
@@ -301,12 +303,13 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     l2: "工业用水重复利用率",
     showL2: true,
     l2RowSpan: 1,
+    mergeL2L3: true,
     l3: "工业用水重复利用率",
     type: "正向定量",
     unit: "%",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "8",
     reportValue: "/",
     proofs: [],
     proofRequirement:
@@ -319,12 +322,13 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     l2: "一般工业固体废物综合利用率",
     showL2: true,
     l2RowSpan: 1,
+    mergeL2L3: true,
     l3: "一般工业固体废物综合利用率",
     type: "正向定量",
     unit: "%",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "6",
     reportValue: "100.00",
     proofs: ["1.一般工业固体废物综合利用率计算过程及其附件.pdf", "2.固体废物管理台账统计汇总表.pdf", "3.综合利用文件.pdf"],
     proofRequirement:

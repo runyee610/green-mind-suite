@@ -1113,12 +1113,18 @@ export function EvaluationIndicatorCard({
                         {row.no}
                       </td>
                     )}
-                    {row.showL2 && (
-                      <td rowSpan={row.l2RowSpan ?? 1} className="bg-muted/10">
-                        {row.l2}
-                      </td>
+                    {row.mergeL2L3 ? (
+                      <td colSpan={2} className="bg-muted/10 leading-relaxed">{row.l3}</td>
+                    ) : (
+                      <>
+                        {row.showL2 && (
+                          <td rowSpan={row.l2RowSpan ?? 1} className="bg-muted/10">
+                            {row.l2}
+                          </td>
+                        )}
+                        <td className="leading-relaxed">{row.l3}</td>
+                      </>
                     )}
-                    <td className="leading-relaxed">{row.l3}</td>
                     <td className="text-center">
                       <span
                         className={cn(
