@@ -435,6 +435,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     id: "13",
     no: 12,
     l1: "产品绿色化",
+    showL1: true,
+    l1RowSpan: 2,
     l2: "绿色设计",
     showL2: true,
     l2RowSpan: 1,
