@@ -1183,30 +1183,44 @@ export function EvaluationIndicatorCard({
                     )}
                     <td>
                       {row.id === "4" ? (
-                        <PlatformFunctionsField
-                          value={row.platformFunctions ?? []}
-                          editable={entEditable}
-                          onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
-                        />
+                        <div className="space-y-1">
+                          <PlatformFunctionsField
+                            value={row.platformFunctions ?? []}
+                            editable={valueEditable}
+                            onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
+                          />
+                          {row.originalPlatformFunctions !== undefined && (
+                            <div className="rounded border border-dashed border-border/60 bg-muted/20 px-1.5 py-1 text-[10px] leading-tight text-muted-foreground">
+                              <span className="font-medium">原值：</span>
+                              {row.originalPlatformFunctions.length > 0
+                                ? `已勾选 ${row.originalPlatformFunctions.length} 项`
+                                : "未勾选"}
+                            </div>
+                          )}
+                        </div>
                       ) : row.reportOptions ? (
-                        <ReportRadioField
-                          options={row.reportOptions}
-                          value={row.reportValue ?? ""}
-                          editable={entEditable}
-                          onChange={(v) => updateRow(row.id, { reportValue: v })}
-                        />
-                      ) : entEditable ? (
-                        <Textarea
-                          value={row.reportValue ?? ""}
-                          rows={2}
-                          className="min-h-[44px] resize-none text-xs"
-                          placeholder="请填写"
-                          onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
-                        />
+                        <div className="space-y-1">
+                          <ReportRadioField
+                            options={row.reportOptions}
+                            value={row.reportValue ?? ""}
+                            editable={valueEditable}
+                            onChange={(v) => updateRow(row.id, { reportValue: v })}
+                          />
+                          <OriginalHint original={row.originalReportValue} />
+                        </div>
+                      ) : valueEditable ? (
+                        <div className="space-y-1">
+                          <Textarea
+                            value={row.reportValue ?? ""}
+                            rows={2}
+                            className="min-h-[44px] resize-none text-xs"
+                            placeholder="请填写"
+                            onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
+                          />
+                          <OriginalHint original={row.originalReportValue} />
+                        </div>
                       ) : (
-                        <span className="font-mono text-[12px] leading-relaxed">
-                          {row.reportValue || <span className="text-muted-foreground">—</span>}
-                        </span>
+                        <DiffValue current={row.reportValue} original={row.originalReportValue} />
                       )}
                     </td>
                     <td>
