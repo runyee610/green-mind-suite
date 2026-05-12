@@ -1347,7 +1347,7 @@ export function buildEmptyBasicRequirements(
 export function buildEmptyIndicators(
   source: IndicatorRow[] = EVALUATION_INDICATORS,
 ): IndicatorRow[] {
-  return source.map((it) => ({ ...it, reportValue: "", proofs: [], govRemark: "" }));
+  return source.map((it) => ({ ...it, reportValue: "", proofs: [], govRemark: "", platformFunctions: it.id === "4" ? [] : it.platformFunctions }));
 }
 
 function PlatformFunctionsField({
