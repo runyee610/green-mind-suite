@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -49,11 +50,44 @@ const UNIT_NATURE_OPTIONS: EnterpriseBasicInfo["unitNature"][] = [
   "外资企业",
 ];
 
+export const EMPTY_ENTERPRISE_BASIC: EnterpriseBasicInfo = {
+  factoryName: "",
+  address: "",
+  industry: "",
+  subIndustry: "",
+  nonKeySubIndustry: "",
+  statBureauCode: "",
+  unitNature: "民营企业",
+  contactDept: "",
+  contactName: "",
+  contactPhone: "",
+  contactEmail: "",
+  processIntro: "",
+  greenDevIntro: "",
+};
+
 export function EnterpriseBasicInfoCard({
   data = MOCK_ENTERPRISE_BASIC,
+  editable = false,
 }: {
   data?: EnterpriseBasicInfo;
+  editable?: boolean;
 }) {
+  const text = (v: string, placeholder: string) =>
+    editable ? (
+      <Input defaultValue={v} placeholder={placeholder} className="h-8 text-sm" />
+    ) : (
+      <span>{v || <span className="text-muted-foreground">—</span>}</span>
+    );
+  const area = (v: string, placeholder: string, rows = 4) =>
+    editable ? (
+      <Textarea defaultValue={v} placeholder={placeholder} rows={rows} className="text-sm" />
+    ) : (
+      <p className="whitespace-pre-line text-sm leading-relaxed">
+        {v || <span className="text-muted-foreground">—</span>}
+      </p>
+    );
+
   return (
     <Card id="basic-info" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
@@ -63,21 +97,29 @@ export function EnterpriseBasicInfoCard({
       </CardHeader>
       <CardContent>
         <div className="overflow-hidden rounded-md border border-border/60">
-          <Row label="工厂名称" value={data.factoryName} />
-          <Row label="通讯地址" value={data.address} />
-          <Row label="所属行业" value={data.industry} />
-          <Row label="细分行业" value={data.subIndustry} />
+          <Row label="工厂名称" value={text(data.factoryName, "请填写工厂名称")} />
+          <Row label="通讯地址" value={text(data.address, "请填写通讯地址")} />
+          <Row label="所属行业" value={text(data.industry, "如：机械行业")} />
+          <Row label="细分行业" value={text(data.subIndustry, "如：电线电缆")} />
           <Row
             label="非重点细分行业（当企业细分行业是非重点行业时请填写）"
-            value={
-              <span className="text-muted-foreground">
-                {data.nonKeySubIndustry || "—"}
-              </span>
-            }
+            value={text(data.nonKeySubIndustry || "", "选填")}
           />
           <Row
             label="按照企业主导产业类型填写统计局四位代码（只填写1个代码）"
-            value={<span className="font-mono">{data.statBureauCode}</span>}
+            value={
+              editable ? (
+                <Input
+                  defaultValue={data.statBureauCode}
+                  placeholder="如：3831"
+                  className="h-8 w-40 font-mono text-sm"
+                />
+              ) : (
+                <span className="font-mono">
+                  {data.statBureauCode || <span className="text-muted-foreground">—</span>}
+                </span>
+              )
+            }
           />
           <Row
             label="单位性质"
@@ -86,64 +128,79 @@ export function EnterpriseBasicInfoCard({
                 {UNIT_NATURE_OPTIONS.map((opt) => {
                   const checked = data.unitNature === opt;
                   return (
-                    <span
+                    <label
                       key={opt}
                       className={cn(
                         "inline-flex items-center gap-1.5",
                         checked ? "text-foreground" : "text-muted-foreground",
+                        editable && "cursor-pointer",
                       )}
                     >
                       <span
                         className={cn(
                           "inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border",
-                          checked
-                            ? "border-primary"
-                            : "border-muted-foreground/40",
+                          checked ? "border-primary" : "border-muted-foreground/40",
                         )}
                       >
-                        {checked && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        )}
+                        {checked && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
                       </span>
                       {opt}
-                    </span>
+                    </label>
                   );
                 })}
               </div>
             }
           />
-          <Row label="申报工作联系部门" value={data.contactDept} />
+          <Row label="申报工作联系部门" value={text(data.contactDept, "如：总师办")} />
           <Row
             label="联系人"
             value={
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <span>{data.contactName}</span>
-                <span className="text-xs text-muted-foreground">
-                  联系电话：
-                  <span className="ml-1 font-mono text-foreground">
-                    {data.contactPhone}
+              editable ? (
+                <div className="grid grid-cols-2 gap-3">
+                  <Input defaultValue={data.contactName} placeholder="联系人姓名" className="h-8 text-sm" />
+                  <Input
+                    defaultValue={data.contactPhone}
+                    placeholder="联系电话"
+                    className="h-8 font-mono text-sm"
+                  />
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <span>{data.contactName || <span className="text-muted-foreground">—</span>}</span>
+                  <span className="text-xs text-muted-foreground">
+                    联系电话：
+                    <span className="ml-1 font-mono text-foreground">
+                      {data.contactPhone || "—"}
+                    </span>
                   </span>
-                </span>
-              </div>
+                </div>
+              )
             }
           />
-          <Row label="联系邮箱" value={<span className="font-mono">{data.contactEmail}</span>} />
+          <Row
+            label="联系邮箱"
+            value={
+              editable ? (
+                <Input
+                  defaultValue={data.contactEmail}
+                  placeholder="example@company.com"
+                  className="h-8 font-mono text-sm"
+                />
+              ) : (
+                <span className="font-mono">
+                  {data.contactEmail || <span className="text-muted-foreground">—</span>}
+                </span>
+              )
+            }
+          />
           <Row
             label="企业工艺情况简介（200字）"
-            value={
-              <p className="whitespace-pre-line text-sm leading-relaxed">
-                {data.processIntro}
-              </p>
-            }
+            value={area(data.processIntro, "请简要介绍企业主要工艺情况，不超过200字")}
             multiline
           />
           <Row
             label="企业绿色发展情况简要介绍（500字）"
-            value={
-              <p className="whitespace-pre-line text-sm leading-relaxed">
-                {data.greenDevIntro}
-              </p>
-            }
+            value={area(data.greenDevIntro, "请简要介绍企业绿色发展情况，不超过500字", 6)}
             multiline
             last
           />
@@ -601,6 +658,18 @@ function PlaceholderBlock({ text }: { text: string }) {
       <p className="text-xs text-muted-foreground">{text}</p>
     </div>
   );
+}
+
+export function buildEmptyBasicRequirements(
+  source: BasicRequirementItem[] = MOCK_BASIC_REQUIREMENTS,
+): BasicRequirementItem[] {
+  return source.map((it) => ({ ...it, conform: null, proofs: [] }));
+}
+
+export function buildEmptyIndicators(
+  source: IndicatorRow[] = EVALUATION_INDICATORS,
+): IndicatorRow[] {
+  return source.map((it) => ({ ...it, reportValue: "", proofs: [], govRemark: "" }));
 }
 
 export function DeclarationDetailSections({ mode = "view" }: { mode?: DetailMode } = {}) {

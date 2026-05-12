@@ -12,6 +12,9 @@ import {
   BasicRequirementsCard,
   EvaluationIndicatorCard,
   AuthenticityCommitmentCard,
+  EMPTY_ENTERPRISE_BASIC,
+  buildEmptyBasicRequirements,
+  buildEmptyIndicators,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import { toast } from "sonner";
 
@@ -24,10 +27,10 @@ const ANCHORS = [
 
 export default function GreenMfgEntDeclarationNew() {
   const navigate = useNavigate();
-  const [enterpriseName, setEnterpriseName] = useState("上海华普电缆有限公司");
-  const [creditCode, setCreditCode] = useState("9131011263289475XL");
-  const [industry, setIndustry] = useState("机械行业");
-  const [batch, setBatch] = useState("2025年第二批");
+  const [enterpriseName, setEnterpriseName] = useState("");
+  const [creditCode, setCreditCode] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [batch, setBatch] = useState("");
 
   const handleSave = () => toast.success("草稿已保存");
   const handleSubmit = () => {
@@ -77,21 +80,21 @@ export default function GreenMfgEntDeclarationNew() {
         <CardContent className="grid gap-4 p-4 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-1.5">
             <Label htmlFor="ent-name" className="text-xs text-muted-foreground">企业名称</Label>
-            <Input id="ent-name" value={enterpriseName} onChange={(e) => setEnterpriseName(e.target.value)} />
+            <Input id="ent-name" placeholder="请填写企业名称" value={enterpriseName} onChange={(e) => setEnterpriseName(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="credit-code" className="text-xs text-muted-foreground">统一社会信用代码</Label>
-            <Input id="credit-code" className="font-mono" value={creditCode} onChange={(e) => setCreditCode(e.target.value)} />
+            <Input id="credit-code" className="font-mono" placeholder="请填写统一社会信用代码" value={creditCode} onChange={(e) => setCreditCode(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="industry" className="text-xs text-muted-foreground">所属行业</Label>
-            <Input id="industry" value={industry} onChange={(e) => setIndustry(e.target.value)} />
+            <Input id="industry" placeholder="如：机械行业" value={industry} onChange={(e) => setIndustry(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">申报批次</Label>
             <Select value={batch} onValueChange={setBatch}>
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="请选择申报批次" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="2025年第一批">2025年第一批</SelectItem>
@@ -105,9 +108,9 @@ export default function GreenMfgEntDeclarationNew() {
 
       {/* 申报书四部分（编辑模式） */}
       <div className="space-y-4">
-        <EnterpriseBasicInfoCard />
-        <BasicRequirementsCard editable />
-        <EvaluationIndicatorCard mode="ent" />
+        <EnterpriseBasicInfoCard data={EMPTY_ENTERPRISE_BASIC} editable />
+        <BasicRequirementsCard data={buildEmptyBasicRequirements()} editable />
+        <EvaluationIndicatorCard data={buildEmptyIndicators()} totalScore={0} mode="ent" />
         <AuthenticityCommitmentCard />
       </div>
 
