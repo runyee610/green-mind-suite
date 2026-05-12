@@ -991,13 +991,16 @@ export function AuthenticityCommitmentCard({
               <p className="text-[11px] text-muted-foreground">官方模板 · DOCX</p>
             </div>
           </div>
-          <a
-            href={COMMITMENT_TEMPLATE_URL}
-            download={COMMITMENT_TEMPLATE_NAME}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-input bg-background px-3 text-xs font-medium hover:bg-accent"
-          >
-            <FileText className="h-3.5 w-3.5" />下载模板
-          </a>
+          <div className="flex items-center gap-1.5">
+            <Button variant="outline" size="sm" className="h-8" onClick={() => setPreview(COMMITMENT_TEMPLATE_NAME)}>
+              <Eye className="mr-1 h-3.5 w-3.5" />预览
+            </Button>
+            <Button variant="outline" size="sm" className="h-8" asChild>
+              <a href={COMMITMENT_TEMPLATE_URL} download={COMMITMENT_TEMPLATE_NAME}>
+                <Download className="mr-1 h-3.5 w-3.5" />下载模板
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* 签章扫描件上传 / 展示 */}
