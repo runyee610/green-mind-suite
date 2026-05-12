@@ -411,7 +411,7 @@ export function BasicRequirementsCard({
   onChange?: (next: BasicRequirementItem[]) => void;
 }) {
   const updateItem = (no: number, patch: Partial<BasicRequirementItem>) =>
-    onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
+    onChange?.(data.map((it) => (it.id === id ? { ...it, ...patch } : it)));
   const [preview, setPreview] = useState<string | null>(null);
   return (
     <>
@@ -763,8 +763,8 @@ export function EvaluationIndicatorCard({
 } = {}) {
   const entEditable = mode === "ent";
   const govEditable = mode === "gov";
-  const updateRow = (no: number, patch: Partial<IndicatorRow>) =>
-    onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
+  const updateRow = (id: string, patch: Partial<IndicatorRow>) =>
+    onChange?.(data.map((it) => (it.id === id ? { ...it, ...patch } : it)));
   const totalCols = showGovRemark ? 13 : 12;
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -817,13 +817,13 @@ export function EvaluationIndicatorCard({
                     : [EMPTY_PRODUCT_ENERGY_ENTRY, EMPTY_PRODUCT_ENERGY_ENTRY, EMPTY_PRODUCT_ENERGY_ENTRY];
                   const updateProduct = (i: number, patch: Partial<ProductEnergyEntry>) => {
                     const next = products.map((p, pi) => (pi === i ? { ...p, ...patch } : p));
-                    updateRow(row.no, { products: next });
+                    updateRow(row.id, { products: next });
                   };
                   const standardSelector = entEditable ? (
                     <Select
                       value={has}
                       onValueChange={(v) =>
-                        updateRow(row.no, {
+                        updateRow(row.id, {
                           hasStandard: v as "有" | "无",
                           // 切换到"无"时还原默认加权参数 8
                           weight: v === "无" ? "8" : row.weight,
@@ -858,7 +858,7 @@ export function EvaluationIndicatorCard({
                   );
                   return (
                     <tr
-                      key={row.no}
+                      key={row.id}
                       className={cn(
                         "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
                         !last && "border-b border-border/60",
@@ -899,7 +899,7 @@ export function EvaluationIndicatorCard({
                                 rows={2}
                                 className="min-h-[44px] resize-none text-xs"
                                 placeholder="请填写"
-                                onChange={(e) => updateRow(row.no, { reportValue: e.target.value })}
+                                onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
                               />
                             ) : (
                               <span className="font-mono text-[12px] leading-relaxed">
@@ -911,7 +911,7 @@ export function EvaluationIndicatorCard({
                             <ProofList
                               proofs={row.proofs}
                               editable={entEditable}
-                              onChange={(next) => updateRow(row.no, { proofs: next })}
+                              onChange={(next) => updateRow(row.id, { proofs: next })}
                               onPreview={setPreview}
                             />
                           </td>
@@ -1039,7 +1039,7 @@ export function EvaluationIndicatorCard({
                               rows={2}
                               className="min-h-[44px] resize-none text-xs"
                               placeholder="如指标值有修订，请填写修订备注"
-                              onChange={(e) => updateRow(row.no, { govRemark: e.target.value })}
+                              onChange={(e) => updateRow(row.id, { govRemark: e.target.value })}
                             />
                           ) : row.govRemark ? (
                             <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
@@ -1054,7 +1054,7 @@ export function EvaluationIndicatorCard({
                 }
                 return (
                   <tr
-                    key={row.no}
+                    key={row.id}
                     className={cn(
                       "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
                       !last && "border-b border-border/60",
@@ -1096,7 +1096,7 @@ export function EvaluationIndicatorCard({
                           rows={2}
                           className="min-h-[44px] resize-none text-xs"
                           placeholder="请填写"
-                          onChange={(e) => updateRow(row.no, { reportValue: e.target.value })}
+                          onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
                         />
                       ) : (
                         <span className="font-mono text-[12px] leading-relaxed">
@@ -1108,7 +1108,7 @@ export function EvaluationIndicatorCard({
                       <ProofList
                         proofs={row.proofs}
                         editable={entEditable}
-                        onChange={(next) => updateRow(row.no, { proofs: next })}
+                        onChange={(next) => updateRow(row.id, { proofs: next })}
                         onPreview={setPreview}
                       />
                     </td>
@@ -1120,7 +1120,7 @@ export function EvaluationIndicatorCard({
                             rows={2}
                             className="min-h-[44px] resize-none text-xs"
                             placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
-                            onChange={(e) => updateRow(row.no, { govRemark: e.target.value })}
+                            onChange={(e) => updateRow(row.id, { govRemark: e.target.value })}
                           />
                         ) : row.govRemark ? (
                           <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
