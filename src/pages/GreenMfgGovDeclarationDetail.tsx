@@ -82,9 +82,26 @@ export default function GreenMfgGovDeclarationDetail() {
     >
       <div className="mb-4 flex items-center justify-between gap-3">
         <Badge variant="outline" className={stageBadgeClass(detail.stage)}>{detail.stage}</Badge>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/gov")}>
-          <ArrowLeft className="mr-1 h-4 w-4" />返回列表
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCultivateOpen(true)}
+            className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+          >
+            <Clock className="mr-1 h-4 w-4" />进入培育
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setApproveOpen(true)}
+            className="bg-success text-success-foreground hover:bg-success/90"
+          >
+            <ShieldCheck className="mr-1 h-4 w-4" />上报
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/gov")}>
+            <ArrowLeft className="mr-1 h-4 w-4" />返回列表
+          </Button>
+        </div>
       </div>
 
       {/* 分页 Tab 导航 */}
