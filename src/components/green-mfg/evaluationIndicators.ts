@@ -64,6 +64,12 @@ export interface IndicatorRow {
   products?: ProductEnergyEntry[];
   /** 仅序号 4：能碳管理系统平台功能符合数量 — 复选框选项 */
   platformFunctions?: string[];
+  /** 政府侧修改前的原始本年度指标值（仅当政府侧修改后写入） */
+  originalReportValue?: string;
+  /** 政府侧修改前的原始产品填报（仅序号 1/6 hasStandard='有'，gov 修改后写入） */
+  originalProducts?: ProductEnergyEntry[];
+  /** 政府侧修改前的原始平台功能勾选（仅序号 4，gov 修改后写入） */
+  originalPlatformFunctions?: string[];
   /** 当本年度指标值为单选项时使用 */
   reportOptions?: string[];
   /** 计算公式（来自 GB/T 36132—2025 附录 B），无公式则留空 */
