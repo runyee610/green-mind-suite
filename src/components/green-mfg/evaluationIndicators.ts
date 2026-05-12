@@ -45,6 +45,8 @@ export interface IndicatorRow {
   /** 二级指标在该行是否需要展示 */
   showL2?: boolean;
   l2RowSpan?: number;
+  /** 是否将二级指标与三级指标合并为一个单元格（合并后显示三级指标文本） */
+  mergeL2L3?: boolean;
   /** 序号列是否展示（用于多子行合并），默认 true */
   showNo?: boolean;
   noRowSpan?: number;
