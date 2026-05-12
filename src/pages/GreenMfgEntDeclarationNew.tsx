@@ -156,37 +156,35 @@ export default function GreenMfgEntDeclarationNew() {
     <AppLayout
       title="新增绿色工厂申报"
       subtitle={
-        <span className="text-xs text-muted-foreground">
-          填写企业基本信息、基本要求、评价指标表与真实性承诺，完成后提交区级审核。
-        </span>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <span><span className="text-muted-foreground/60">企业名称</span> · {DEFAULT_ENTERPRISE.name}</span>
+          <span><span className="text-muted-foreground/60">统一社会信用代码</span> · {DEFAULT_ENTERPRISE.creditCode}</span>
+          <span><span className="text-muted-foreground/60">所属行业</span> · {DEFAULT_ENTERPRISE.industry}</span>
+        </div>
       }
     >
-      <div className="mb-4 flex items-center justify-between">
+      {/* 顶部操作栏 */}
+      <div className="mb-4 flex items-center justify-end gap-3">
+        {draftSavedAt && (
+          <span className="text-[11px] text-muted-foreground">
+            草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
+          </span>
+        )}
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
-        <div className="flex items-center gap-3">
-          {draftSavedAt && (
-            <span className="text-[11px] text-muted-foreground">
-              草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
-            </span>
-          )}
-          <Button size="sm" variant="outline" onClick={handleSave}>
-            <Save className="mr-1 h-4 w-4" />保存草稿
-          </Button>
-          <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-            <Send className="mr-1 h-4 w-4" />提交申报
-          </Button>
-        </div>
+        <Button size="sm" variant="outline" onClick={handleSave}>
+          <Save className="mr-1 h-4 w-4" />保存草稿
+        </Button>
+        <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
+          <Send className="mr-1 h-4 w-4" />提交申报
+        </Button>
       </div>
 
-      {/* 申报头信息 - 企业名称/信用代码/行业由系统带入；申报批次由企业选择 */}
+      {/* 申报批次选择 */}
       <Card className="panel mb-4">
-        <CardContent className="grid gap-4 p-4 md:grid-cols-2 lg:grid-cols-4">
-          <ReadonlyField label="企业名称" value={DEFAULT_ENTERPRISE.name} />
-          <ReadonlyField label="统一社会信用代码" value={DEFAULT_ENTERPRISE.creditCode} mono />
-          <ReadonlyField label="所属行业" value={DEFAULT_ENTERPRISE.industry} />
-          <div className="space-y-1.5">
+        <CardContent className="flex flex-wrap items-center gap-4 p-4">
+          <div className="space-y-1.5 flex-1 min-w-[240px]">
             <Label className="text-xs text-muted-foreground">
               申报批次<span className="ml-1 text-destructive">*</span>
             </Label>
