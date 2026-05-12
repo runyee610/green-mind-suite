@@ -660,6 +660,18 @@ function PlaceholderBlock({ text }: { text: string }) {
   );
 }
 
+export function buildEmptyBasicRequirements(
+  source: BasicRequirementItem[] = MOCK_BASIC_REQUIREMENTS,
+): BasicRequirementItem[] {
+  return source.map((it) => ({ ...it, conform: null, proofs: [] }));
+}
+
+export function buildEmptyIndicators(
+  source: IndicatorRow[] = EVALUATION_INDICATORS,
+): IndicatorRow[] {
+  return source.map((it) => ({ ...it, reportValue: "", proofs: [], govRemark: "" }));
+}
+
 export function DeclarationDetailSections({ mode = "view" }: { mode?: DetailMode } = {}) {
   return (
     <div className="mt-4 space-y-4">
