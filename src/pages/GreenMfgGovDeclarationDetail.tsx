@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, ChevronRight, Clock, FileText, ShieldCheck, ShieldX, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronRight, Clock, FileText, ShieldCheck, ShieldX, Sparkles, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -143,45 +143,103 @@ export default function GreenMfgGovDeclarationDetail() {
         </TabsContent>
 
         <TabsContent value="smart-score" className="mt-0">
-          <Card className="panel">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Sparkles className="h-4 w-4 text-secondary" />
-                智能打分
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4 flex items-end justify-between rounded-md border border-border/60 bg-muted/20 px-3 py-2.5">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-semibold leading-none text-primary">{detail.score}</span>
-                  <span className="text-xs text-muted-foreground">/ 100</span>
-                </div>
-                <Badge variant="outline" className={cn(
-                  detail.score >= 80 ? "border-success/40 bg-success/10 text-success" :
-                  detail.score >= 60 ? "border-warning/40 bg-warning/10 text-warning" :
-                  "border-destructive/40 bg-destructive/10 text-destructive")}>
-                  {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议专家复核" : "不达标"}
-                </Badge>
-              </div>
-              <div className="space-y-2.5">
-                {SCORE_DIMENSIONS.map((d) => (
-                  <div key={d.name}>
-                    <div className="flex justify-between text-xs">
-                      <span>
-                        {d.name}
-                        <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                      </span>
-                      <span className="font-mono">{d.score}/{d.weight}</span>
-                    </div>
-                    <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card className="panel">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Sparkles className="h-4 w-4 text-secondary" />
+                  智能打分
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 flex items-end justify-between rounded-md border border-border/60 bg-muted/20 px-3 py-2.5">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-semibold leading-none text-primary">{detail.score}</span>
+                    <span className="text-xs text-muted-foreground">/ 100</span>
                   </div>
-                ))}
-              </div>
-              <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
-                合计 {totalScore} 分；模型基于近三年能源、碳排、固废等口径数据综合计算。
-              </p>
-            </CardContent>
-          </Card>
+                  <Badge variant="outline" className={cn(
+                    detail.score >= 80 ? "border-success/40 bg-success/10 text-success" :
+                    detail.score >= 60 ? "border-warning/40 bg-warning/10 text-warning" :
+                    "border-destructive/40 bg-destructive/10 text-destructive")}>
+                    {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议专家复核" : "不达标"}
+                  </Badge>
+                </div>
+                <div className="space-y-2.5">
+                  {SCORE_DIMENSIONS.map((d) => (
+                    <div key={d.name}>
+                      <div className="flex justify-between text-xs">
+                        <span>
+                          {d.name}
+                          <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
+                        </span>
+                        <span className="font-mono">{d.score}/{d.weight}</span>
+                      </div>
+                      <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
+                  合计 {totalScore} 分；模型基于近三年能源、碳排、固废等口径数据综合计算。
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="panel">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <UserCheck className="h-4 w-4 text-success" />
+                  专家打分
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 flex items-end justify-between rounded-md border border-border/60 bg-muted/20 px-3 py-2.5">
+                  {detail.manualScore != null ? (
+                    <>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-3xl font-semibold leading-none text-success">{detail.manualScore}</span>
+                        <span className="text-xs text-muted-foreground">/ 100</span>
+                      </div>
+                      <Badge variant="outline" className={cn(
+                        detail.manualScore >= 80 ? "border-success/40 bg-success/10 text-success" :
+                        detail.manualScore >= 60 ? "border-warning/40 bg-warning/10 text-warning" :
+                        "border-destructive/40 bg-destructive/10 text-destructive")}>
+                        {detail.manualScore >= 80 ? "通过" : detail.manualScore >= 60 ? "复核中" : "不达标"}
+                      </Badge>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-2xl font-semibold leading-none text-muted-foreground">—</span>
+                      <Badge variant="outline" className="border-muted-foreground/30 text-[10px] text-muted-foreground">
+                        待专家审核
+                      </Badge>
+                    </>
+                  )}
+                </div>
+                <div className="space-y-2.5">
+                  {SCORE_DIMENSIONS.map((d) => {
+                    const expert = Math.min(d.weight, Math.round(d.score * (detail.manualScore ? detail.manualScore / detail.score : 1)));
+                    return (
+                      <div key={d.name}>
+                        <div className="flex justify-between text-xs">
+                          <span>
+                            {d.name}
+                            <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
+                          </span>
+                          <span className="font-mono">{detail.manualScore != null ? `${expert}/${d.weight}` : `—/${d.weight}`}</span>
+                        </div>
+                        <Progress value={detail.manualScore != null ? (expert / d.weight) * 100 : 0} className="mt-1 h-1.5" />
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
+                  {detail.manualScore != null
+                    ? `专家组复核结论：${detail.comment ?? "已完成核验，结果以审批意见为准。"}`
+                    : "尚未分派专家或专家评审未完成。"}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="basic-info" className="mt-0">
