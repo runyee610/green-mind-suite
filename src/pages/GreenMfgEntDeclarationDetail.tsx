@@ -208,26 +208,7 @@ export default function GreenMfgEntDeclarationDetail() {
                         {detail.manualScore >= 80 ? "通过" : detail.manualScore >= 60 ? "复核中" : "不达标"}
                       </Badge>
                     </div>
-                    <div className="space-y-2.5">
-                      {SCORE_DIMENSIONS.map((d) => {
-                        const ratio = detail.manualScore! / 100;
-                        const expert = Math.min(d.weight, Math.round(d.weight * ratio * 10) / 10);
-                        return (
-                          <div key={d.name}>
-                            <div className="flex justify-between text-xs">
-                              <span>
-                                {d.name}
-                                <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                              </span>
-                              <span className="font-mono">
-                                {expert}/{d.weight}
-                              </span>
-                            </div>
-                            <Progress value={(expert / d.weight) * 100} className="mt-1 h-1.5" />
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <ScoreBreakdown ratio={detail.score ? detail.manualScore! / detail.score : 1} />
                     {detail.comment && (
                       <div className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed">
                         <span className="text-muted-foreground">专家意见：</span>
