@@ -411,7 +411,7 @@ export function BasicRequirementsCard({
   onChange?: (next: BasicRequirementItem[]) => void;
 }) {
   const updateItem = (no: number, patch: Partial<BasicRequirementItem>) =>
-    onChange?.(data.map((it) => (it.id === id ? { ...it, ...patch } : it)));
+    onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
   const [preview, setPreview] = useState<string | null>(null);
   return (
     <>
