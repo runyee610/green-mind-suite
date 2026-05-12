@@ -88,6 +88,8 @@ export default function GreenMfgEntDeclarationNew() {
                   ...it,
                   reportValue: saved.reportValue ?? "",
                   proofs: saved.proofs ?? [],
+                  hasStandard: saved.hasStandard ?? it.hasStandard,
+                  products: saved.products ?? it.products,
                 }
               : it;
           }),
