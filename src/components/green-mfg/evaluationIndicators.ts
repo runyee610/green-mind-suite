@@ -393,7 +393,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "12",
-    no: 12,
+    no: 11,
     l1: "产品绿色化",
     showL1: true,
     l1RowSpan: 3,
@@ -413,7 +413,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "13",
-    no: 13,
+    no: 12,
     l1: "产品绿色化",
     l2: "绿色设计",
     showL2: true,
@@ -431,7 +431,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "14",
-    no: 14,
+    no: 13,
     l1: "产品绿色化",
     l2: "产品碳足迹",
     showL2: true,
@@ -449,7 +449,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "15",
-    no: 15,
+    no: 14,
     l1: "用地集约化",
     showL1: true,
     l1RowSpan: 3,
@@ -468,7 +468,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "16",
-    no: 16,
+    no: 15,
     l1: "用地集约化",
     l2: "土地产出率",
     l3: "建筑系数",
@@ -483,7 +483,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "17",
-    no: 17,
+    no: 16,
     l1: "用地集约化",
     l2: "土地产出率",
     l3: "容积率",
