@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MOCK_AUDIT_FLOW,
   MOCK_DECLARATIONS,
-  SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
