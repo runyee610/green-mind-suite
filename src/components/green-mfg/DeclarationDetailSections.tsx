@@ -1106,6 +1106,13 @@ export function EvaluationIndicatorCard({
                           editable={entEditable}
                           onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
                         />
+                      ) : row.reportOptions ? (
+                        <ReportRadioField
+                          options={row.reportOptions}
+                          value={row.reportValue ?? ""}
+                          editable={entEditable}
+                          onChange={(v) => updateRow(row.id, { reportValue: v })}
+                        />
                       ) : entEditable ? (
                         <Textarea
                           value={row.reportValue ?? ""}
