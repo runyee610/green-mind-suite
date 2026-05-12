@@ -50,6 +50,7 @@ export default function GreenMfgGovDeclarationDetail() {
   const [activeTab, setActiveTab] = useState<string>(TABS[0].value);
 
   const totalScore = SCORE_DIMENSIONS.reduce((s, d) => s + d.score, 0);
+  const totalWeight = SCORE_DIMENSIONS.reduce((s, d) => s + d.weight, 0);
 
   const handleApprove = () => {
     toast.success(detail.stage === "区审批" ? "已上报市级审批" : "已上报，颁发市级绿色工厂");
