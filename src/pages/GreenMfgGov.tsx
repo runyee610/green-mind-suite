@@ -35,7 +35,18 @@ export default function GreenMfgGov() {
     const k = keyword.trim();
     if (k && !r.enterpriseName.includes(k) && !r.creditCode.includes(k)) return false;
     if (stageFilter !== "all" && r.stage !== stageFilter) return false;
-    if (industryFilter !== "all" && r.industry !== industryFilter) return false;
+    if (industryFilter !== "all") {
+      const node = INDUSTRY_TREE.find((i) => i.name === industryFilter);
+      if (node) {
+        if (r.industry !== industryFilter) return false;
+      } else {
+        // 选择的是细分行业
+        const parent = INDUSTRY_TREE.find((i) => i.children.includes(industryFilter));
+        if (!parent) return false;
+        if (r.industry !== parent.name) return false;
+        if ((r as { subIndustry?: string }).subIndustry && (r as { subIndustry?: string }).subIndustry !== industryFilter) return false;
+      }
+    }
     if (batchFilter !== "all" && r.batch !== batchFilter) return false;
     return true;
   });
