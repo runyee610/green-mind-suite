@@ -49,6 +49,7 @@ export default function GreenMfgGovDeclarationDetail() {
   const [cultivateOpen, setCultivateOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [activeTab, setActiveTab] = useState<string>(TABS[0].value);
+  const [indicators, setIndicators] = useState<IndicatorRow[]>(EVALUATION_INDICATORS);
 
   const totalScore = SCORE_DIMENSIONS.reduce((s, d) => s + d.score, 0);
   const totalWeight = SCORE_DIMENSIONS.reduce((s, d) => s + d.weight, 0);
