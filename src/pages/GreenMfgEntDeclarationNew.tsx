@@ -134,12 +134,20 @@ export default function GreenMfgEntDeclarationNew() {
     }
   };
 
+  const usedBatches = MOCK_DECLARATIONS
+    .filter((d) => d.enterpriseName === DEFAULT_ENTERPRISE.name)
+    .map((d) => d.batch);
+
   const handleSubmit = () => {
     if (!batch) {
       toast.warning("请选择申报批次");
       return;
     }
-    toast.success("申报已提交，等待区级审核");
+    if (usedBatches.includes(batch)) {
+      toast.error("该批次您已申报，不能重复申报");
+      return;
+    }
+    toast.success("申报已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent"), 600);
   };
