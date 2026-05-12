@@ -69,19 +69,33 @@ export const EMPTY_ENTERPRISE_BASIC: EnterpriseBasicInfo = {
 export function EnterpriseBasicInfoCard({
   data = MOCK_ENTERPRISE_BASIC,
   editable = false,
+  onChange,
 }: {
   data?: EnterpriseBasicInfo;
   editable?: boolean;
+  onChange?: (next: EnterpriseBasicInfo) => void;
 }) {
-  const text = (v: string, placeholder: string) =>
+  const update = (patch: Partial<EnterpriseBasicInfo>) => onChange?.({ ...data, ...patch });
+  const text = (v: string, placeholder: string, key?: keyof EnterpriseBasicInfo) =>
     editable ? (
-      <Input defaultValue={v} placeholder={placeholder} className="h-8 text-sm" />
+      <Input
+        value={v}
+        placeholder={placeholder}
+        className="h-8 text-sm"
+        onChange={(e) => key && update({ [key]: e.target.value } as Partial<EnterpriseBasicInfo>)}
+      />
     ) : (
       <span>{v || <span className="text-muted-foreground">—</span>}</span>
     );
-  const area = (v: string, placeholder: string, rows = 4) =>
+  const area = (v: string, placeholder: string, rows = 4, key?: keyof EnterpriseBasicInfo) =>
     editable ? (
-      <Textarea defaultValue={v} placeholder={placeholder} rows={rows} className="text-sm" />
+      <Textarea
+        value={v}
+        placeholder={placeholder}
+        rows={rows}
+        className="text-sm"
+        onChange={(e) => key && update({ [key]: e.target.value } as Partial<EnterpriseBasicInfo>)}
+      />
     ) : (
       <p className="whitespace-pre-line text-sm leading-relaxed">
         {v || <span className="text-muted-foreground">—</span>}
@@ -97,22 +111,23 @@ export function EnterpriseBasicInfoCard({
       </CardHeader>
       <CardContent>
         <div className="overflow-hidden rounded-md border border-border/60">
-          <Row label="工厂名称" value={text(data.factoryName, "请填写工厂名称")} />
-          <Row label="通讯地址" value={text(data.address, "请填写通讯地址")} />
-          <Row label="所属行业" value={text(data.industry, "如：机械行业")} />
-          <Row label="细分行业" value={text(data.subIndustry, "如：电线电缆")} />
+          <Row label="工厂名称" value={text(data.factoryName, "请填写工厂名称", "factoryName")} />
+          <Row label="通讯地址" value={text(data.address, "请填写通讯地址", "address")} />
+          <Row label="所属行业" value={text(data.industry, "如：机械行业", "industry")} />
+          <Row label="细分行业" value={text(data.subIndustry, "如：电线电缆", "subIndustry")} />
           <Row
             label="非重点细分行业（当企业细分行业是非重点行业时请填写）"
-            value={text(data.nonKeySubIndustry || "", "选填")}
+            value={text(data.nonKeySubIndustry || "", "选填", "nonKeySubIndustry")}
           />
           <Row
             label="按照企业主导产业类型填写统计局四位代码（只填写1个代码）"
             value={
               editable ? (
                 <Input
-                  defaultValue={data.statBureauCode}
+                  value={data.statBureauCode}
                   placeholder="如：3831"
                   className="h-8 w-40 font-mono text-sm"
+                  onChange={(e) => update({ statBureauCode: e.target.value })}
                 />
               ) : (
                 <span className="font-mono">
@@ -130,6 +145,7 @@ export function EnterpriseBasicInfoCard({
                   return (
                     <label
                       key={opt}
+                      onClick={() => editable && update({ unitNature: opt })}
                       className={cn(
                         "inline-flex items-center gap-1.5",
                         checked ? "text-foreground" : "text-muted-foreground",
@@ -151,17 +167,23 @@ export function EnterpriseBasicInfoCard({
               </div>
             }
           />
-          <Row label="申报工作联系部门" value={text(data.contactDept, "如：总师办")} />
+          <Row label="申报工作联系部门" value={text(data.contactDept, "如：总师办", "contactDept")} />
           <Row
             label="联系人"
             value={
               editable ? (
                 <div className="grid grid-cols-2 gap-3">
-                  <Input defaultValue={data.contactName} placeholder="联系人姓名" className="h-8 text-sm" />
                   <Input
-                    defaultValue={data.contactPhone}
+                    value={data.contactName}
+                    placeholder="联系人姓名"
+                    className="h-8 text-sm"
+                    onChange={(e) => update({ contactName: e.target.value })}
+                  />
+                  <Input
+                    value={data.contactPhone}
                     placeholder="联系电话"
                     className="h-8 font-mono text-sm"
+                    onChange={(e) => update({ contactPhone: e.target.value })}
                   />
                 </div>
               ) : (
@@ -182,9 +204,10 @@ export function EnterpriseBasicInfoCard({
             value={
               editable ? (
                 <Input
-                  defaultValue={data.contactEmail}
+                  value={data.contactEmail}
                   placeholder="example@company.com"
                   className="h-8 font-mono text-sm"
+                  onChange={(e) => update({ contactEmail: e.target.value })}
                 />
               ) : (
                 <span className="font-mono">
@@ -195,12 +218,12 @@ export function EnterpriseBasicInfoCard({
           />
           <Row
             label="企业工艺情况简介（200字）"
-            value={area(data.processIntro, "请简要介绍企业主要工艺情况，不超过200字")}
+            value={area(data.processIntro, "请简要介绍企业主要工艺情况，不超过200字", 4, "processIntro")}
             multiline
           />
           <Row
             label="企业绿色发展情况简要介绍（500字）"
-            value={area(data.greenDevIntro, "请简要介绍企业绿色发展情况，不超过500字", 6)}
+            value={area(data.greenDevIntro, "请简要介绍企业绿色发展情况，不超过500字", 6, "greenDevIntro")}
             multiline
             last
           />
@@ -334,10 +357,14 @@ export const MOCK_BASIC_REQUIREMENTS: BasicRequirementItem[] = [
 export function BasicRequirementsCard({
   data = MOCK_BASIC_REQUIREMENTS,
   editable = false,
+  onChange,
 }: {
   data?: BasicRequirementItem[];
   editable?: boolean;
+  onChange?: (next: BasicRequirementItem[]) => void;
 }) {
+  const updateItem = (no: number, patch: Partial<BasicRequirementItem>) =>
+    onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
   return (
     <Card id="basic-requirements" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
@@ -373,6 +400,7 @@ export function BasicRequirementsCard({
                     return (
                       <span
                         key={opt}
+                        onClick={() => editable && updateItem(item.no, { conform: opt })}
                         className={cn(
                           "inline-flex items-center gap-1.5",
                           checked ? "text-foreground" : "text-muted-foreground",
@@ -420,16 +448,26 @@ export function BasicRequirementsCard({
                       >
                         {f}
                       </a>
+                      {editable && (
+                        <button
+                          type="button"
+                          className="ml-auto text-[11px] text-muted-foreground hover:text-destructive"
+                          onClick={() =>
+                            updateItem(item.no, { proofs: item.proofs.filter((x) => x !== f) })
+                          }
+                        >
+                          删除
+                        </button>
+                      )}
                     </li>
                   ))}
                   {editable && (
                     <li className="pt-1">
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40"
-                      >
-                        <Upload className="h-3 w-3" />上传（PDF / 图片）
-                      </button>
+                      <UploadButton
+                        onPick={(names) =>
+                          updateItem(item.no, { proofs: [...item.proofs, ...names] })
+                        }
+                      />
                     </li>
                   )}
                 </ul>
@@ -447,14 +485,35 @@ function isImage(name: string) {
   return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(name);
 }
 
+function UploadButton({ onPick }: { onPick: (names: string[]) => void }) {
+  return (
+    <label className="inline-flex cursor-pointer items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40">
+      <Upload className="h-3 w-3" />上传（PDF / 图片）
+      <input
+        type="file"
+        multiple
+        accept=".pdf,image/*"
+        className="hidden"
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []);
+          if (files.length) onPick(files.map((f) => f.name));
+          e.target.value = "";
+        }}
+      />
+    </label>
+  );
+}
+
 function ProofList({
   proofs,
   editable,
   emptyText = "—",
+  onChange,
 }: {
   proofs: string[];
   editable?: boolean;
   emptyText?: string;
+  onChange?: (next: string[]) => void;
 }) {
   return (
     <ul className="space-y-1 text-xs">
@@ -475,16 +534,20 @@ function ProofList({
           >
             {f}
           </a>
+          {editable && onChange && (
+            <button
+              type="button"
+              className="ml-auto text-[11px] text-muted-foreground hover:text-destructive"
+              onClick={() => onChange(proofs.filter((x) => x !== f))}
+            >
+              删除
+            </button>
+          )}
         </li>
       ))}
       {editable && (
         <li className="pt-1">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40"
-          >
-            <Upload className="h-3 w-3" />上传（PDF / 图片）
-          </button>
+          <UploadButton onPick={(names) => onChange?.([...proofs, ...names])} />
         </li>
       )}
     </ul>
@@ -501,13 +564,20 @@ export function EvaluationIndicatorCard({
   data = EVALUATION_INDICATORS,
   totalScore = EVALUATION_TOTAL_SCORE,
   mode = "view",
+  showGovRemark = true,
+  onChange,
 }: {
   data?: IndicatorRow[];
   totalScore?: number;
   mode?: DetailMode;
+  showGovRemark?: boolean;
+  onChange?: (next: IndicatorRow[]) => void;
 } = {}) {
   const entEditable = mode === "ent";
   const govEditable = mode === "gov";
+  const updateRow = (no: number, patch: Partial<IndicatorRow>) =>
+    onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
+  const totalCols = showGovRemark ? 13 : 12;
 
   return (
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
@@ -528,7 +598,7 @@ export function EvaluationIndicatorCard({
       </CardHeader>
       <CardContent>
         <div className="overflow-auto rounded-md border border-border/60">
-          <table className="w-full min-w-[1400px] border-collapse text-xs">
+          <table className={cn("w-full border-collapse text-xs", showGovRemark ? "min-w-[1400px]" : "min-w-[1240px]")}>
             <thead className="bg-muted/40 text-[11px] text-muted-foreground">
               <tr className="[&>th]:border-r [&>th]:border-border/60 [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium">
                 <th className="w-[80px]">一级指标</th>
@@ -542,7 +612,7 @@ export function EvaluationIndicatorCard({
                 <th className="w-[80px] text-center">加权参数</th>
                 <th className="w-[160px]">本年度指标值</th>
                 <th className="w-[160px]">证明材料（PDF/图片）</th>
-                <th className="w-[180px]">审核备注（选填）</th>
+                {showGovRemark && <th className="w-[180px]">审核备注（选填）</th>}
                 <th className="min-w-[220px]">证明材料要求</th>
               </tr>
             </thead>
@@ -584,10 +654,11 @@ export function EvaluationIndicatorCard({
                     <td>
                       {entEditable ? (
                         <Textarea
-                          defaultValue={row.reportValue}
+                          value={row.reportValue ?? ""}
                           rows={2}
                           className="min-h-[44px] resize-none text-xs"
                           placeholder="请填写"
+                          onChange={(e) => updateRow(row.no, { reportValue: e.target.value })}
                         />
                       ) : (
                         <span className="font-mono text-[12px] leading-relaxed">
@@ -596,24 +667,31 @@ export function EvaluationIndicatorCard({
                       )}
                     </td>
                     <td>
-                      <ProofList proofs={row.proofs} editable={entEditable} />
+                      <ProofList
+                        proofs={row.proofs}
+                        editable={entEditable}
+                        onChange={(next) => updateRow(row.no, { proofs: next })}
+                      />
                     </td>
-                    <td>
-                      {govEditable ? (
-                        <Textarea
-                          defaultValue={row.govRemark}
-                          rows={2}
-                          className="min-h-[44px] resize-none text-xs"
-                          placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
-                        />
-                      ) : row.govRemark ? (
-                        <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
-                      ) : (
-                        <span className="text-[11px] text-muted-foreground">
-                          如指标值有修订，请填写修订备注
-                        </span>
-                      )}
-                    </td>
+                    {showGovRemark && (
+                      <td>
+                        {govEditable ? (
+                          <Textarea
+                            value={row.govRemark ?? ""}
+                            rows={2}
+                            className="min-h-[44px] resize-none text-xs"
+                            placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
+                            onChange={(e) => updateRow(row.no, { govRemark: e.target.value })}
+                          />
+                        ) : row.govRemark ? (
+                          <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground">
+                            如指标值有修订，请填写修订备注
+                          </span>
+                        )}
+                      </td>
+                    )}
                     <td className="leading-relaxed text-muted-foreground">
                       {row.proofRequirement}
                     </td>
@@ -621,7 +699,7 @@ export function EvaluationIndicatorCard({
                 );
               })}
               <tr className="border-t-2 border-border bg-muted/30 font-medium">
-                <td colSpan={12} className="px-3 py-2 text-right">
+                <td colSpan={totalCols - 1} className="px-3 py-2 text-right">
                   得分
                 </td>
                 <td className="px-3 py-2 font-mono text-primary">{totalScore.toFixed(2)}</td>
