@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Send } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -15,7 +14,10 @@ import {
   EMPTY_ENTERPRISE_BASIC,
   buildEmptyBasicRequirements,
   buildEmptyIndicators,
+  type EnterpriseBasicInfo,
+  type BasicRequirementItem,
 } from "@/components/green-mfg/DeclarationDetailSections";
+import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { toast } from "sonner";
 
 const ANCHORS = [
@@ -25,16 +27,110 @@ const ANCHORS = [
   { href: "authenticity-commitment", label: "真实性承诺" },
 ];
 
+// 默认企业信息（登录企业），新增申报时自动带入，不可编辑
+const DEFAULT_ENTERPRISE = {
+  name: "上海华普电缆有限公司",
+  creditCode: "91310112132456789X",
+  industry: "机械行业",
+};
+
+const DRAFT_KEY = "green-mfg-ent-declaration-draft";
+
+interface DraftPayload {
+  batch: string;
+  basicInfo: EnterpriseBasicInfo;
+  basicReqs: BasicRequirementItem[];
+  indicators: IndicatorRow[];
+  savedAt: string;
+}
+
 export default function GreenMfgEntDeclarationNew() {
   const navigate = useNavigate();
-  const [enterpriseName, setEnterpriseName] = useState("");
-  const [creditCode, setCreditCode] = useState("");
-  const [industry, setIndustry] = useState("");
   const [batch, setBatch] = useState("");
+  const [basicInfo, setBasicInfo] = useState<EnterpriseBasicInfo>(() => ({
+    ...EMPTY_ENTERPRISE_BASIC,
+    factoryName: DEFAULT_ENTERPRISE.name,
+    industry: DEFAULT_ENTERPRISE.industry,
+  }));
+  const [basicReqs, setBasicReqs] = useState<BasicRequirementItem[]>(() =>
+    buildEmptyBasicRequirements(),
+  );
+  const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
+  const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
 
-  const handleSave = () => toast.success("草稿已保存");
+  // 恢复草稿
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as DraftPayload;
+      setBatch(draft.batch ?? "");
+      if (draft.basicInfo) setBasicInfo(draft.basicInfo);
+      if (draft.basicReqs?.length) {
+        // 从存储恢复时仅保留 conform / proofs（requirement / proofRequirement 是 ReactNode，不会被序列化）
+        setBasicReqs((prev) =>
+          prev.map((it) => {
+            const saved = draft.basicReqs.find((s) => s.no === it.no);
+            return saved ? { ...it, conform: saved.conform, proofs: saved.proofs ?? [] } : it;
+          }),
+        );
+      }
+      if (draft.indicators?.length) {
+        setIndicators((prev) =>
+          prev.map((it) => {
+            const saved = draft.indicators.find((s) => s.no === it.no);
+            return saved
+              ? {
+                  ...it,
+                  reportValue: saved.reportValue ?? "",
+                  proofs: saved.proofs ?? [],
+                }
+              : it;
+          }),
+        );
+      }
+      setDraftSavedAt(draft.savedAt ?? null);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const handleSave = () => {
+    const savedAt = new Date().toISOString();
+    const payload: DraftPayload = {
+      batch,
+      basicInfo,
+      basicReqs: basicReqs.map((it) => ({
+        no: it.no,
+        conform: it.conform,
+        proofs: it.proofs,
+        // 占位字段，避免类型报错
+        requirement: null as unknown as React.ReactNode,
+        proofRequirement: null as unknown as React.ReactNode,
+      })),
+      indicators: indicators.map((it) => ({
+        ...it,
+        reportValue: it.reportValue ?? "",
+        proofs: it.proofs,
+      })),
+      savedAt,
+    };
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
+      setDraftSavedAt(savedAt);
+      toast.success("草稿已保存");
+    } catch {
+      toast.error("草稿保存失败");
+    }
+  };
+
   const handleSubmit = () => {
+    if (!batch) {
+      toast.warning("请选择申报批次");
+      return;
+    }
     toast.success("申报已提交，等待区级审核");
+    localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent"), 600);
   };
 
@@ -51,7 +147,12 @@ export default function GreenMfgEntDeclarationNew() {
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
+          {draftSavedAt && (
+            <span className="text-[11px] text-muted-foreground">
+              草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
+            </span>
+          )}
           <Button size="sm" variant="outline" onClick={handleSave}>
             <Save className="mr-1 h-4 w-4" />保存草稿
           </Button>
@@ -75,23 +176,16 @@ export default function GreenMfgEntDeclarationNew() {
         ))}
       </div>
 
-      {/* 申报头信息 */}
+      {/* 申报头信息 - 企业名称/信用代码/行业由系统带入；申报批次由企业选择 */}
       <Card className="panel mb-4">
         <CardContent className="grid gap-4 p-4 md:grid-cols-2 lg:grid-cols-4">
+          <ReadonlyField label="企业名称" value={DEFAULT_ENTERPRISE.name} />
+          <ReadonlyField label="统一社会信用代码" value={DEFAULT_ENTERPRISE.creditCode} mono />
+          <ReadonlyField label="所属行业" value={DEFAULT_ENTERPRISE.industry} />
           <div className="space-y-1.5">
-            <Label htmlFor="ent-name" className="text-xs text-muted-foreground">企业名称</Label>
-            <Input id="ent-name" placeholder="请填写企业名称" value={enterpriseName} onChange={(e) => setEnterpriseName(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="credit-code" className="text-xs text-muted-foreground">统一社会信用代码</Label>
-            <Input id="credit-code" className="font-mono" placeholder="请填写统一社会信用代码" value={creditCode} onChange={(e) => setCreditCode(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="industry" className="text-xs text-muted-foreground">所属行业</Label>
-            <Input id="industry" placeholder="如：机械行业" value={industry} onChange={(e) => setIndustry(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">申报批次</Label>
+            <Label className="text-xs text-muted-foreground">
+              申报批次<span className="ml-1 text-destructive">*</span>
+            </Label>
             <Select value={batch} onValueChange={setBatch}>
               <SelectTrigger>
                 <SelectValue placeholder="请选择申报批次" />
@@ -108,9 +202,15 @@ export default function GreenMfgEntDeclarationNew() {
 
       {/* 申报书四部分（编辑模式） */}
       <div className="space-y-4">
-        <EnterpriseBasicInfoCard data={EMPTY_ENTERPRISE_BASIC} editable />
-        <BasicRequirementsCard data={buildEmptyBasicRequirements()} editable />
-        <EvaluationIndicatorCard data={buildEmptyIndicators()} totalScore={0} mode="ent" />
+        <EnterpriseBasicInfoCard data={basicInfo} editable onChange={setBasicInfo} />
+        <BasicRequirementsCard data={basicReqs} editable onChange={setBasicReqs} />
+        <EvaluationIndicatorCard
+          data={indicators}
+          totalScore={0}
+          mode="ent"
+          showGovRemark={false}
+          onChange={setIndicators}
+        />
         <AuthenticityCommitmentCard />
       </div>
 
@@ -123,5 +223,21 @@ export default function GreenMfgEntDeclarationNew() {
         </Button>
       </div>
     </AppLayout>
+  );
+}
+
+function ReadonlyField({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <div
+        className={
+          "flex h-10 items-center rounded-md border border-border/50 bg-muted/30 px-3 text-sm text-foreground " +
+          (mono ? "font-mono" : "")
+        }
+      >
+        {value}
+      </div>
+    </div>
   );
 }
