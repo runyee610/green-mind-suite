@@ -8,11 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   ALL_INDUSTRIES,
+  INDUSTRY_TREE,
   DECLARATION_BATCHES,
   MOCK_DECLARATIONS,
   MOCK_DYNAMIC,
@@ -34,7 +35,18 @@ export default function GreenMfgGov() {
     const k = keyword.trim();
     if (k && !r.enterpriseName.includes(k) && !r.creditCode.includes(k)) return false;
     if (stageFilter !== "all" && r.stage !== stageFilter) return false;
-    if (industryFilter !== "all" && r.industry !== industryFilter) return false;
+    if (industryFilter !== "all") {
+      const node = INDUSTRY_TREE.find((i) => i.name === industryFilter);
+      if (node) {
+        if (r.industry !== industryFilter) return false;
+      } else {
+        // 选择的是细分行业
+        const parent = INDUSTRY_TREE.find((i) => i.children.includes(industryFilter));
+        if (!parent) return false;
+        if (r.industry !== parent.name) return false;
+        if ((r as { subIndustry?: string }).subIndustry && (r as { subIndustry?: string }).subIndustry !== industryFilter) return false;
+      }
+    }
     if (batchFilter !== "all" && r.batch !== batchFilter) return false;
     return true;
   });
@@ -105,14 +117,20 @@ export default function GreenMfgGov() {
                     />
                   </div>
                   <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                    <SelectTrigger className="h-8 w-40 text-xs">
+                    <SelectTrigger className="h-8 w-44 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
                       <SelectValue placeholder="行业" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-72">
+                    <SelectContent className="max-h-80">
                       <SelectItem value="all">全部行业</SelectItem>
-                      {ALL_INDUSTRIES.map((i) => (
-                        <SelectItem key={i} value={i}>{i}</SelectItem>
+                      {INDUSTRY_TREE.map((node) => (
+                        <SelectGroup key={node.name}>
+                          <SelectLabel className="text-[11px] text-muted-foreground">{node.name}</SelectLabel>
+                          <SelectItem value={node.name} className="text-xs">{node.name}（全部）</SelectItem>
+                          {node.children.map((c) => (
+                            <SelectItem key={c} value={c} className="pl-6 text-xs">{c}</SelectItem>
+                          ))}
+                        </SelectGroup>
                       ))}
                     </SelectContent>
                   </Select>
