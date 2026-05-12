@@ -1010,7 +1010,7 @@ export function EvaluationIndicatorCard({
                                     {entEditable ? (
                                       <Input
                                         value={p.leadValue}
-                                        placeholder="1级水平"
+                                        placeholder={cfg.leadPlaceholder}
                                         className="h-7 text-center font-mono text-[11px]"
                                         onChange={(e) => updateProduct(pi, { leadValue: e.target.value })}
                                       />
@@ -1022,7 +1022,7 @@ export function EvaluationIndicatorCard({
                                     {entEditable ? (
                                       <Input
                                         value={p.baseValue}
-                                        placeholder="2级水平"
+                                        placeholder={cfg.basePlaceholder}
                                         className="h-7 text-center font-mono text-[11px]"
                                         onChange={(e) => updateProduct(pi, { baseValue: e.target.value })}
                                       />
