@@ -204,7 +204,10 @@ export default function GreenMfgGov() {
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                       <TableCell>
-                        <div className="text-xs text-muted-foreground">{r.industry}</div>
+                        <div className="text-xs">{r.industry}</div>
+                        {r.subIndustry && (
+                          <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>
+                        )}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.batch}</TableCell>
                       <TableCell className="text-right">
