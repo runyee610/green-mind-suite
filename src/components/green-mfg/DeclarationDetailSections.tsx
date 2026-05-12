@@ -913,6 +913,12 @@ export function EvaluationIndicatorCard({
         </div>
       </CardContent>
     </Card>
+    <FilePreviewDialog
+      fileName={preview}
+      open={!!preview}
+      onOpenChange={(v) => !v && setPreview(null)}
+    />
+    </>
   );
 }
 
