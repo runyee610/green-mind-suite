@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ChevronRight, Sparkles, UserCheck } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -6,14 +6,29 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MOCK_AUDIT_FLOW,
   MOCK_DECLARATIONS,
   SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
-import { DeclarationDetailSections } from "@/components/green-mfg/DeclarationDetailSections";
+import {
+  EnterpriseBasicInfoCard,
+  BasicRequirementsCard,
+  EvaluationIndicatorCard,
+  AuthenticityCommitmentCard,
+} from "@/components/green-mfg/DeclarationDetailSections";
 import { cn } from "@/lib/utils";
+
+const TABS = [
+  { value: "audit-flow", label: "审批流转" },
+  { value: "smart-score", label: "智能打分明细" },
+  { value: "basic-info", label: "企业基本信息表" },
+  { value: "basic-requirements", label: "基本要求" },
+  { value: "evaluation-indicator", label: "评价指标表（通则）" },
+  { value: "authenticity-commitment", label: "真实性承诺" },
+];
 
 export default function GreenMfgEntDeclarationDetail() {
   const { id } = useParams();
@@ -22,6 +37,7 @@ export default function GreenMfgEntDeclarationDetail() {
     () => MOCK_DECLARATIONS.find((d) => d.id === id) ?? MOCK_DECLARATIONS[0],
     [id],
   );
+  const [activeTab, setActiveTab] = useState<string>(TABS[0].value);
 
   const scoreTone = (s: number) =>
     s >= 80
@@ -51,26 +67,19 @@ export default function GreenMfgEntDeclarationDetail() {
         </Button>
       </div>
 
-      {/* 锚点导航 */}
-      <div className="sticky top-0 z-10 -mx-1 mb-4 flex flex-wrap items-center gap-1 rounded-md border border-border/60 bg-background/80 px-2 py-1.5 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <span className="px-2 text-[11px] text-muted-foreground">快速跳转：</span>
-        {[
-          { href: "audit-flow", label: "审批流转" },
-          { href: "smart-score", label: "智能打分" },
-          { href: "basic-info", label: "企业基本信息表" },
-          { href: "basic-requirements", label: "基本要求" },
-          { href: "evaluation-indicator", label: "评价指标表（通则）" },
-          { href: "authenticity-commitment", label: "真实性承诺" },
-        ].map((a) => (
-          <a
-            key={a.href}
-            href={`#${a.href}`}
-            className="rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            {a.label}
-          </a>
-        ))}
-      </div>
+      {/* 分页 Tab 导航 */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="sticky top-0 z-10 h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1">
+          {TABS.map((t) => (
+            <TabsTrigger
+              key={t.value}
+              value={t.value}
+              className="text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              {t.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
       {/* 状态 + 打分 概览 */}
       <div className="mb-4 grid gap-3 md:grid-cols-3">
@@ -141,108 +150,118 @@ export default function GreenMfgEntDeclarationDetail() {
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-5">
-        {/* 审核流转 */}
-        <Card id="audit-flow" className="panel scroll-mt-24 lg:col-span-3">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <ChevronRight className="h-4 w-4 text-primary" />审批流转
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ol className="relative space-y-4 border-l border-border/60 pl-5">
-              {MOCK_AUDIT_FLOW.map((n, i) => (
-                <li key={i} className="relative">
-                  <span
-                    className={cn(
-                      "absolute -left-[26px] top-1 h-3 w-3 rounded-full border-2 border-background",
-                      n.result === "通过"
-                        ? "bg-success"
-                        : n.result === "驳回"
-                        ? "bg-destructive"
-                        : n.result === "进入培育"
-                        ? "bg-warning"
-                        : n.result === "提交"
-                        ? "bg-primary"
-                        : "bg-muted-foreground/40",
-                    )}
-                  />
-                  <div className="flex items-center justify-between gap-2 text-sm">
-                    <span className="font-medium">{n.stage}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-[11px] text-muted-foreground">{n.time}</span>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "h-5 text-[10px]",
-                          n.result === "通过"
-                            ? "border-success/40 bg-success/10 text-success"
-                            : n.result === "驳回"
-                            ? "border-destructive/40 bg-destructive/10 text-destructive"
-                            : n.result === "进入培育"
-                            ? "border-warning/40 bg-warning/10 text-warning"
-                            : n.result === "提交"
-                            ? "border-primary/40 bg-primary/10 text-primary"
-                            : "border-border",
-                        )}
-                      >
-                        {n.result}
-                      </Badge>
+        <TabsContent value="audit-flow" className="mt-0">
+          <Card className="panel">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <ChevronRight className="h-4 w-4 text-primary" />审批流转
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ol className="relative space-y-4 border-l border-border/60 pl-5">
+                {MOCK_AUDIT_FLOW.map((n, i) => (
+                  <li key={i} className="relative">
+                    <span
+                      className={cn(
+                        "absolute -left-[26px] top-1 h-3 w-3 rounded-full border-2 border-background",
+                        n.result === "通过"
+                          ? "bg-success"
+                          : n.result === "驳回"
+                          ? "bg-destructive"
+                          : n.result === "进入培育"
+                          ? "bg-warning"
+                          : n.result === "提交"
+                          ? "bg-primary"
+                          : "bg-muted-foreground/40",
+                      )}
+                    />
+                    <div className="flex items-center justify-between gap-2 text-sm">
+                      <span className="font-medium">{n.stage}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[11px] text-muted-foreground">{n.time}</span>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "h-5 text-[10px]",
+                            n.result === "通过"
+                              ? "border-success/40 bg-success/10 text-success"
+                              : n.result === "驳回"
+                              ? "border-destructive/40 bg-destructive/10 text-destructive"
+                              : n.result === "进入培育"
+                              ? "border-warning/40 bg-warning/10 text-warning"
+                              : n.result === "提交"
+                              ? "border-primary/40 bg-primary/10 text-primary"
+                              : "border-border",
+                          )}
+                        >
+                          {n.result}
+                        </Badge>
+                      </div>
                     </div>
-                  </div>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{n.operator}</p>
-                  {n.comment && (
-                    <p className="mt-1 rounded bg-muted/40 p-2 text-xs leading-relaxed">{n.comment}</p>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </CardContent>
-        </Card>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{n.operator}</p>
+                    {n.comment && (
+                      <p className="mt-1 rounded bg-muted/40 p-2 text-xs leading-relaxed">{n.comment}</p>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        {/* 智能打分 明细 */}
-        <Card id="smart-score" className="panel scroll-mt-24 lg:col-span-2">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Sparkles className="h-4 w-4 text-secondary" />智能打分明细
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* 总分 */}
-            <div className="mb-4 flex items-center justify-between rounded-md border border-border/60 bg-muted/30 p-3">
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-semibold text-primary">{detail.score}</span>
-                <span className="text-xs text-muted-foreground">/ 100</span>
-              </div>
-              <Badge variant="outline" className={scoreTone(detail.score)}>
-                {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议复核" : "不达标"}
-              </Badge>
-            </div>
-            <div className="space-y-2.5">
-              {SCORE_DIMENSIONS.map((d) => (
-                <div key={d.name}>
-                  <div className="flex justify-between text-xs">
-                    <span>
-                      {d.name}
-                      <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                    </span>
-                    <span className="font-mono">
-                      {d.score}/{d.weight}
-                    </span>
-                  </div>
-                  <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
+        <TabsContent value="smart-score" className="mt-0">
+          <Card className="panel">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Sparkles className="h-4 w-4 text-secondary" />智能打分明细
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4 flex items-center justify-between rounded-md border border-border/60 bg-muted/30 p-3">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-semibold text-primary">{detail.score}</span>
+                  <span className="text-xs text-muted-foreground">/ 100</span>
                 </div>
-              ))}
-            </div>
-            <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
-              基于近三年能源、碳排、固废等口径数据综合计算。
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+                <Badge variant="outline" className={scoreTone(detail.score)}>
+                  {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议复核" : "不达标"}
+                </Badge>
+              </div>
+              <div className="space-y-2.5">
+                {SCORE_DIMENSIONS.map((d) => (
+                  <div key={d.name}>
+                    <div className="flex justify-between text-xs">
+                      <span>
+                        {d.name}
+                        <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
+                      </span>
+                      <span className="font-mono">
+                        {d.score}/{d.weight}
+                      </span>
+                    </div>
+                    <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
+                基于近三年能源、碳排、固废等口径数据综合计算。
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* 申报书四部分 */}
-      <DeclarationDetailSections mode="ent" />
+        <TabsContent value="basic-info" className="mt-0">
+          <EnterpriseBasicInfoCard />
+        </TabsContent>
+        <TabsContent value="basic-requirements" className="mt-0">
+          <BasicRequirementsCard />
+        </TabsContent>
+        <TabsContent value="evaluation-indicator" className="mt-0">
+          <EvaluationIndicatorCard mode="ent" />
+        </TabsContent>
+        <TabsContent value="authenticity-commitment" className="mt-0">
+          <AuthenticityCommitmentCard />
+        </TabsContent>
+      </Tabs>
     </AppLayout>
   );
 }

@@ -605,7 +605,7 @@ export function EvaluationIndicatorCard({
                 <th className="w-[44px] text-center">序号</th>
                 <th className="w-[120px]">二级指标</th>
                 <th className="min-w-[260px]">三级指标</th>
-                <th className="w-[72px] text-center">指标类型</th>
+                <th className="w-[64px] text-center">指标类型</th>
                 <th className="w-[90px] text-center">单位</th>
                 <th className="w-[72px] text-center">引领值</th>
                 <th className="w-[72px] text-center">基准值</th>
@@ -643,9 +643,14 @@ export function EvaluationIndicatorCard({
                     )}
                     <td className="leading-relaxed">{row.l3}</td>
                     <td className="text-center">
-                      <Badge variant="outline" className={cn("h-5 text-[10px]", TYPE_TONE[row.type])}>
+                      <span
+                        className={cn(
+                          "inline-block whitespace-normal break-words rounded-full border px-1.5 py-0.5 text-center text-[10px] leading-tight",
+                          TYPE_TONE[row.type],
+                        )}
+                      >
                         {row.type}
-                      </Badge>
+                      </span>
                     </td>
                     <td className="text-center">{row.unit}</td>
                     <td className="text-center font-mono">{row.leadValue ?? "/"}</td>

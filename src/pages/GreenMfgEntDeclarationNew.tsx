@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save, Send } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Save, Send } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
@@ -57,6 +58,7 @@ export default function GreenMfgEntDeclarationNew() {
   );
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
 
   // 恢复草稿
   useEffect(() => {
@@ -162,20 +164,6 @@ export default function GreenMfgEntDeclarationNew() {
         </div>
       </div>
 
-      {/* 锚点导航 */}
-      <div className="sticky top-0 z-10 -mx-1 mb-4 flex flex-wrap items-center gap-1 rounded-md border border-border/60 bg-background/80 px-2 py-1.5 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <span className="px-2 text-[11px] text-muted-foreground">快速跳转：</span>
-        {ANCHORS.map((a) => (
-          <a
-            key={a.href}
-            href={`#${a.href}`}
-            className="rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            {a.label}
-          </a>
-        ))}
-      </div>
-
       {/* 申报头信息 - 企业名称/信用代码/行业由系统带入；申报批次由企业选择 */}
       <Card className="panel mb-4">
         <CardContent className="grid gap-4 p-4 md:grid-cols-2 lg:grid-cols-4">
@@ -200,29 +188,103 @@ export default function GreenMfgEntDeclarationNew() {
         </CardContent>
       </Card>
 
-      {/* 申报书四部分（编辑模式） */}
-      <div className="space-y-4">
-        <EnterpriseBasicInfoCard data={basicInfo} editable onChange={setBasicInfo} />
-        <BasicRequirementsCard data={basicReqs} editable onChange={setBasicReqs} />
-        <EvaluationIndicatorCard
-          data={indicators}
-          totalScore={0}
-          mode="ent"
-          showGovRemark={false}
-          onChange={setIndicators}
-        />
-        <AuthenticityCommitmentCard />
-      </div>
+      {/* 分步骤填报 Tabs */}
+      <StepTabs
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        steps={ANCHORS}
+      >
+        {currentStep === ANCHORS[0].href && (
+          <EnterpriseBasicInfoCard data={basicInfo} editable onChange={setBasicInfo} />
+        )}
+        {currentStep === ANCHORS[1].href && (
+          <BasicRequirementsCard data={basicReqs} editable onChange={setBasicReqs} />
+        )}
+        {currentStep === ANCHORS[2].href && (
+          <EvaluationIndicatorCard
+            data={indicators}
+            totalScore={0}
+            mode="ent"
+            showGovRemark={false}
+            onChange={setIndicators}
+          />
+        )}
+        {currentStep === ANCHORS[3].href && <AuthenticityCommitmentCard />}
+      </StepTabs>
 
-      <div className="mt-6 flex justify-end gap-2">
-        <Button variant="outline" onClick={handleSave}>
-          <Save className="mr-1 h-4 w-4" />保存草稿
+      <div className="mt-6 flex items-center justify-between gap-2">
+        <Button
+          variant="outline"
+          disabled={currentStep === ANCHORS[0].href}
+          onClick={() => {
+            const idx = ANCHORS.findIndex((a) => a.href === currentStep);
+            if (idx > 0) setCurrentStep(ANCHORS[idx - 1].href);
+          }}
+        >
+          <ChevronLeft className="mr-1 h-4 w-4" />上一步
         </Button>
-        <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-          <Send className="mr-1 h-4 w-4" />提交申报
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleSave}>
+            <Save className="mr-1 h-4 w-4" />保存草稿
+          </Button>
+          {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
+            <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
+              <Send className="mr-1 h-4 w-4" />提交申报
+            </Button>
+          ) : (
+            <Button
+              className="bg-gradient-primary text-primary-foreground"
+              onClick={() => {
+                const idx = ANCHORS.findIndex((a) => a.href === currentStep);
+                if (idx < ANCHORS.length - 1) setCurrentStep(ANCHORS[idx + 1].href);
+              }}
+            >
+              下一步<ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
     </AppLayout>
+  );
+}
+
+function StepTabs({
+  steps,
+  currentStep,
+  onStepChange,
+  children,
+}: {
+  steps: { href: string; label: string }[];
+  currentStep: string;
+  onStepChange: (s: string) => void;
+  children: React.ReactNode;
+}) {
+  const idx = Math.max(0, steps.findIndex((s) => s.href === currentStep));
+  return (
+    <Tabs value={currentStep} onValueChange={onStepChange} className="space-y-4">
+      <TabsList className="h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1">
+        {steps.map((s, i) => (
+          <TabsTrigger
+            key={s.href}
+            value={s.href}
+            className="flex items-center gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            <span
+              className={
+                "inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] " +
+                (i <= idx ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground")
+              }
+            >
+              {i + 1}
+            </span>
+            {s.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      <TabsContent value={currentStep} forceMount className="mt-0">
+        {children}
+      </TabsContent>
+    </Tabs>
   );
 }
 
