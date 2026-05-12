@@ -764,8 +764,24 @@ export function EvaluationIndicatorCard({
 } = {}) {
   const entEditable = mode === "ent";
   const govEditable = mode === "gov";
+  const valueEditable = entEditable || govEditable;
   const updateRow = (id: string, patch: Partial<IndicatorRow>) =>
-    onChange?.(data.map((it) => (it.id === id ? { ...it, ...patch } : it)));
+    onChange?.(data.map((it) => {
+      if (it.id !== id) return it;
+      const next: IndicatorRow = { ...it, ...patch };
+      if (govEditable) {
+        if ("reportValue" in patch && it.originalReportValue === undefined) {
+          next.originalReportValue = it.reportValue ?? "";
+        }
+        if ("products" in patch && it.originalProducts === undefined) {
+          next.originalProducts = it.products ? it.products.map((p) => ({ ...p })) : undefined;
+        }
+        if ("platformFunctions" in patch && it.originalPlatformFunctions === undefined) {
+          next.originalPlatformFunctions = it.platformFunctions ? [...it.platformFunctions] : [];
+        }
+      }
+      return next;
+    }));
   const totalCols = showGovRemark ? 13 : 12;
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -933,18 +949,19 @@ export function EvaluationIndicatorCard({
                           <td className="text-center font-mono">{row.baseValue ?? "/"}</td>
                           <td className="text-center font-mono">{row.weight ?? "8"}</td>
                           <td>
-                            {entEditable ? (
-                              <Textarea
-                                value={row.reportValue ?? ""}
-                                rows={2}
-                                className="min-h-[44px] resize-none text-xs"
-                                placeholder="请填写"
-                                onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
-                              />
+                            {valueEditable ? (
+                              <div className="space-y-1">
+                                <Textarea
+                                  value={row.reportValue ?? ""}
+                                  rows={2}
+                                  className="min-h-[44px] resize-none text-xs"
+                                  placeholder="请填写"
+                                  onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
+                                />
+                                <OriginalHint original={row.originalReportValue} />
+                              </div>
                             ) : (
-                              <span className="font-mono text-[12px] leading-relaxed">
-                                {row.reportValue || <span className="text-muted-foreground">—</span>}
-                              </span>
+                              <DiffValue current={row.reportValue} original={row.originalReportValue} />
                             )}
                           </td>
                           <td>
@@ -1047,15 +1064,22 @@ export function EvaluationIndicatorCard({
                                     )}
                                   </td>
                                   <td>
-                                    {entEditable ? (
-                                      <Input
-                                        value={p.reportValue}
-                                        placeholder="请填写"
-                                        className="h-7 text-center font-mono text-[11px]"
-                                        onChange={(e) => updateProduct(pi, { reportValue: e.target.value })}
-                                      />
+                                    {valueEditable ? (
+                                      <div className="space-y-1">
+                                        <Input
+                                          value={p.reportValue}
+                                          placeholder="请填写"
+                                          className="h-7 text-center font-mono text-[11px]"
+                                          onChange={(e) => updateProduct(pi, { reportValue: e.target.value })}
+                                        />
+                                        <OriginalHint original={row.originalProducts?.[pi]?.reportValue} small />
+                                      </div>
                                     ) : (
-                                      <span className="font-mono">{p.reportValue || "—"}</span>
+                                      <DiffValue
+                                        current={p.reportValue}
+                                        original={row.originalProducts?.[pi]?.reportValue}
+                                        small
+                                      />
                                     )}
                                   </td>
                                   {pi === 0 && (
@@ -1159,30 +1183,44 @@ export function EvaluationIndicatorCard({
                     )}
                     <td>
                       {row.id === "4" ? (
-                        <PlatformFunctionsField
-                          value={row.platformFunctions ?? []}
-                          editable={entEditable}
-                          onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
-                        />
+                        <div className="space-y-1">
+                          <PlatformFunctionsField
+                            value={row.platformFunctions ?? []}
+                            editable={valueEditable}
+                            onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
+                          />
+                          {row.originalPlatformFunctions !== undefined && (
+                            <div className="rounded border border-dashed border-border/60 bg-muted/20 px-1.5 py-1 text-[10px] leading-tight text-muted-foreground">
+                              <span className="font-medium">原值：</span>
+                              {row.originalPlatformFunctions.length > 0
+                                ? `已勾选 ${row.originalPlatformFunctions.length} 项`
+                                : "未勾选"}
+                            </div>
+                          )}
+                        </div>
                       ) : row.reportOptions ? (
-                        <ReportRadioField
-                          options={row.reportOptions}
-                          value={row.reportValue ?? ""}
-                          editable={entEditable}
-                          onChange={(v) => updateRow(row.id, { reportValue: v })}
-                        />
-                      ) : entEditable ? (
-                        <Textarea
-                          value={row.reportValue ?? ""}
-                          rows={2}
-                          className="min-h-[44px] resize-none text-xs"
-                          placeholder="请填写"
-                          onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
-                        />
+                        <div className="space-y-1">
+                          <ReportRadioField
+                            options={row.reportOptions}
+                            value={row.reportValue ?? ""}
+                            editable={valueEditable}
+                            onChange={(v) => updateRow(row.id, { reportValue: v })}
+                          />
+                          <OriginalHint original={row.originalReportValue} />
+                        </div>
+                      ) : valueEditable ? (
+                        <div className="space-y-1">
+                          <Textarea
+                            value={row.reportValue ?? ""}
+                            rows={2}
+                            className="min-h-[44px] resize-none text-xs"
+                            placeholder="请填写"
+                            onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
+                          />
+                          <OriginalHint original={row.originalReportValue} />
+                        </div>
                       ) : (
-                        <span className="font-mono text-[12px] leading-relaxed">
-                          {row.reportValue || <span className="text-muted-foreground">—</span>}
-                        </span>
+                        <DiffValue current={row.reportValue} original={row.originalReportValue} />
                       )}
                     </td>
                     <td>
@@ -1507,6 +1545,50 @@ function ReportRadioField({
           </label>
         );
       })}
+    </div>
+  );
+}
+
+/** 政府侧编辑模式下，于输入框下方提示原始（修改前）值。 */
+function OriginalHint({ original, small }: { original?: string; small?: boolean }) {
+  if (original === undefined) return null;
+  return (
+    <div
+      className={cn(
+        "rounded border border-dashed border-border/60 bg-muted/20 px-1.5 py-0.5 text-muted-foreground",
+        small ? "text-[10px] leading-tight" : "text-[11px] leading-snug",
+      )}
+    >
+      <span className="font-medium">原值：</span>
+      <span className="font-mono">{original || "—"}</span>
+    </div>
+  );
+}
+
+/** 查看模式下，若政府侧已修改则展示「原值 → 现值」对比，否则仅显示当前值。 */
+function DiffValue({
+  current,
+  original,
+  small,
+}: {
+  current?: string;
+  original?: string;
+  small?: boolean;
+}) {
+  const changed = original !== undefined && (current ?? "") !== original;
+  const sizeCls = small ? "text-[11px]" : "text-[12px]";
+  if (!changed) {
+    return (
+      <span className={cn("font-mono leading-relaxed", sizeCls)}>
+        {current || <span className="text-muted-foreground">—</span>}
+      </span>
+    );
+  }
+  return (
+    <div className={cn("space-y-0.5 leading-snug", sizeCls)}>
+      <div className="font-mono text-muted-foreground line-through">{original || "—"}</div>
+      <div className="font-mono text-warning">→ {current || "—"}</div>
+      <div className="text-[10px] text-warning/80">已由政府侧修订</div>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import {
   SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
+import { EVALUATION_INDICATORS, type IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 import {
@@ -48,6 +49,7 @@ export default function GreenMfgGovDeclarationDetail() {
   const [cultivateOpen, setCultivateOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [activeTab, setActiveTab] = useState<string>(TABS[0].value);
+  const [indicators, setIndicators] = useState<IndicatorRow[]>(EVALUATION_INDICATORS);
 
   const totalScore = SCORE_DIMENSIONS.reduce((s, d) => s + d.score, 0);
   const totalWeight = SCORE_DIMENSIONS.reduce((s, d) => s + d.weight, 0);
@@ -202,7 +204,7 @@ export default function GreenMfgGovDeclarationDetail() {
           <BasicRequirementsCard />
         </TabsContent>
         <TabsContent value="evaluation-indicator" className="mt-0">
-          <EvaluationIndicatorCard mode="gov" />
+          <EvaluationIndicatorCard mode="gov" data={indicators} onChange={setIndicators} />
         </TabsContent>
         <TabsContent value="authenticity-commitment" className="mt-0">
           <AuthenticityCommitmentCard defaultSignedFileName="真实性承诺函-签章扫描件.pdf" />
