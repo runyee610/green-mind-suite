@@ -874,6 +874,7 @@ export function EvaluationIndicatorCard({
                         proofs={row.proofs}
                         editable={entEditable}
                         onChange={(next) => updateRow(row.no, { proofs: next })}
+                        onPreview={setPreview}
                       />
                     </td>
                     {showGovRemark && (
