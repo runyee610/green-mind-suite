@@ -2,6 +2,8 @@ import { Check, X, Clock, Send, Hourglass, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AuditFlowNode } from "./data";
 
+const SCORED_STAGES = new Set(["系统智能打分", "区级审批", "市级审批"]);
+
 const resultStyle = (result: string) => {
   switch (result) {
     case "通过":
@@ -54,6 +56,15 @@ export function AuditFlowTimeline({ nodes, dense = false }: { nodes: AuditFlowNo
               <div className="mt-2 px-1">
                 <p className={cn("text-xs font-medium", isPending && "text-muted-foreground")}>{n.stage}</p>
                 <p className={cn("mt-0.5 text-[10px] font-medium uppercase tracking-wide", s.text)}>{s.label}</p>
+                {SCORED_STAGES.has(n.stage) && (
+                  <p className="mt-1">
+                    <span className="text-[10px] text-muted-foreground">最终评分 </span>
+                    <span className={cn("font-mono text-xs font-semibold", n.score != null ? s.text : "text-muted-foreground")}>
+                      {n.score != null ? n.score : "—"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground"> / 100</span>
+                  </p>
+                )}
                 <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">{n.time}</p>
                 <p className="mt-0.5 text-[11px] text-muted-foreground line-clamp-1">{n.operator}</p>
               </div>
@@ -94,9 +105,16 @@ export function AuditFlowTimeline({ nodes, dense = false }: { nodes: AuditFlowNo
               />
               <div className="flex items-center justify-between gap-2 text-sm">
                 <span className="font-medium">{n.stage}</span>
-                <span className={cn("text-[10px] font-medium", s.text)}>{s.label}</span>
+                <div className="flex items-center gap-2">
+                  {SCORED_STAGES.has(n.stage) && (
+                    <span className={cn("font-mono text-xs", n.score != null ? s.text : "text-muted-foreground")}>
+                      {n.score != null ? `${n.score} 分` : "—"}
+                    </span>
+                  )}
+                  <span className={cn("text-[10px] font-medium", s.text)}>{s.label}</span>
+                </div>
               </div>
-              <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">{n.time} · {n.operator}</p>
+              <p className="mt-0.5 font-mono to-[10px] text-[10px] text-muted-foreground">{n.time} · {n.operator}</p>
               {n.comment && <p className="mt-1 rounded bg-muted/40 p-2 text-xs leading-relaxed">{n.comment}</p>}
             </li>
           );
