@@ -17,21 +17,34 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-export default function GreenMfgEnt() {
+export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
-  const [tab, setTab] = useState("declaration");
+  const [tab, setTab] = useState<string>(section ?? "declaration");
 
   // 假设当前企业 = MOCK_DECLARATIONS[0]
   const myDeclaration = MOCK_DECLARATIONS[0];
   const myDynamics = MOCK_DYNAMIC.filter((_, i) => i < 2);
 
   return (
-    <AppLayout title="绿色工厂（梯度培育）· 企业侧" subtitle="申报、动态管理表填报、审核进度查看">
+    <AppLayout
+      title={
+        section === "dynamic"
+          ? "绿色工厂动态管理 · 企业侧"
+          : "绿色工厂梯度培育 · 企业侧"
+      }
+      subtitle={
+        section === "dynamic"
+          ? "市级绿色工厂年度动态管理表填报"
+          : "申报、审核进度查看"
+      }
+    >
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList>
-          <TabsTrigger value="declaration">绿色工厂申报</TabsTrigger>
-          <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
-        </TabsList>
+        {!section && (
+          <TabsList>
+            <TabsTrigger value="declaration">绿色工厂申报</TabsTrigger>
+            <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
+          </TabsList>
+        )}
 
         <TabsContent value="declaration" className="mt-4 space-y-4">
           {/* 申报状态卡 */}
