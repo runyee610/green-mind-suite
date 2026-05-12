@@ -173,9 +173,6 @@ export default function GreenMfgGov() {
                       <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                       <TableCell>
                         <div className="text-xs text-muted-foreground">{r.industry}</div>
-                        <Badge variant="outline" className={r.industryType === "重点行业" ? "border-warning/40 bg-warning/10 text-warning mt-0.5" : "border-primary/40 bg-primary/10 text-primary mt-0.5"}>
-                          {r.industryType}
-                        </Badge>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.batch}</TableCell>
                       <TableCell className="text-right">
