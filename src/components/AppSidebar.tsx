@@ -76,8 +76,10 @@ export const navItems: NavItem[] = [
     url: "/green-mfg",
     icon: Leaf,
     children: [
-      { title: "绿色工厂梯度培育 · 政府侧", url: "/green-mfg/gov", icon: ShieldCheck },
-      { title: "绿色工厂梯度培育 · 企业侧", url: "/green-mfg/ent", icon: ClipboardList },
+      { title: "绿色工厂申报 · 政府侧", url: "/green-mfg/gov", icon: ShieldCheck },
+      { title: "绿色工厂申报 · 企业侧", url: "/green-mfg/ent", icon: ClipboardList },
+      { title: "绿色工厂培育库 · 政府侧", url: "/green-mfg/gov/incubator", icon: ShieldCheck },
+      { title: "绿色工厂培育库 · 企业侧", url: "/green-mfg/ent/incubator", icon: ClipboardList },
       { title: "绿色工厂动态管理 · 政府侧", url: "/green-mfg/gov/dynamic", icon: ShieldCheck },
       { title: "绿色工厂动态管理 · 企业侧", url: "/green-mfg/ent/dynamic", icon: ClipboardList },
     ],
