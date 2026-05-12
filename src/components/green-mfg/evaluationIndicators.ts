@@ -45,6 +45,17 @@ export interface IndicatorRow {
   /** 二级指标在该行是否需要展示 */
   showL2?: boolean;
   l2RowSpan?: number;
+  /** 序号列是否展示（用于多子行合并），默认 true */
+  showNo?: boolean;
+  noRowSpan?: number;
+  /** 加权参数列是否展示（用于多子行合并），默认 true */
+  showWeight?: boolean;
+  weightRowSpan?: number;
+  /** 证明材料要求列是否展示（用于多子行合并），默认 true */
+  showProofReq?: boolean;
+  proofReqRowSpan?: number;
+  /** 是否为子行（更紧凑的行高） */
+  isSubRow?: boolean;
   /** 仅序号 1：是否有适用国家强制性能源消耗限额标准 */
   hasStandard?: "有" | "无";
   /** 仅序号 1 且 hasStandard='有' 时使用：产品一/二/三的填报数据 */
