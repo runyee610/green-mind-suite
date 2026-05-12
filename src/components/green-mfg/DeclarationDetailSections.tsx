@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Building2, ClipboardCheck, Download, Eye, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
+import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
 import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
 
 export type DetailMode = "ent" | "gov" | "view";
@@ -809,6 +809,249 @@ export function EvaluationIndicatorCard({
             <tbody>
               {data.map((row, idx) => {
                 const last = idx === data.length - 1;
+                // ============= 序号 1 特殊处理：根据 hasStandard 切换填报形态 =============
+                if (row.no === 1) {
+                  const has = row.hasStandard ?? "无";
+                  const products: ProductEnergyEntry[] = row.products?.length === 3
+                    ? row.products
+                    : [EMPTY_PRODUCT_ENERGY_ENTRY, EMPTY_PRODUCT_ENERGY_ENTRY, EMPTY_PRODUCT_ENERGY_ENTRY];
+                  const updateProduct = (i: number, patch: Partial<ProductEnergyEntry>) => {
+                    const next = products.map((p, pi) => (pi === i ? { ...p, ...patch } : p));
+                    updateRow(row.no, { products: next });
+                  };
+                  const standardSelector = entEditable ? (
+                    <Select
+                      value={has}
+                      onValueChange={(v) =>
+                        updateRow(row.no, {
+                          hasStandard: v as "有" | "无",
+                          // 切换到"无"时还原默认加权参数 8
+                          weight: v === "无" ? "8" : row.weight,
+                        })
+                      }
+                    >
+                      <SelectTrigger className="h-7 w-40 text-[11px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="有">有适用国家强制性能源消耗限额标准</SelectItem>
+                        <SelectItem value="无">无适用国家强制性能源消耗限额标准</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] text-primary">
+                      {has === "有" ? "有适用国家强制性能源消耗限额标准" : "无适用国家强制性能源消耗限额标准"}
+                    </Badge>
+                  );
+                  const l3Cell = (
+                    <div className="space-y-1.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[11px] font-medium text-muted-foreground">是否有适用国家强制性能源消耗限额标准：</span>
+                        {standardSelector}
+                      </div>
+                      <p className="leading-relaxed">
+                        {has === "有"
+                          ? "单位产品综合能耗（有适用国家强制性能源消耗限额标准时必选，涉及多种产品适用标准时，仅填写综合能耗排序前三以内的产品）"
+                          : "单位产值综合能耗（无适用国家强制性能源消耗限额标准时选用）"}
+                      </p>
+                    </div>
+                  );
+                  return (
+                    <tr
+                      key={row.no}
+                      className={cn(
+                        "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
+                        !last && "border-b border-border/60",
+                      )}
+                    >
+                      {row.showL1 && (
+                        <td rowSpan={row.l1RowSpan ?? 1} className="bg-muted/20 text-center font-medium">
+                          {row.l1}
+                        </td>
+                      )}
+                      <td className="text-center font-mono">{row.no}</td>
+                      {row.showL2 && (
+                        <td rowSpan={row.l2RowSpan ?? 1} className="bg-muted/10">
+                          {row.l2}
+                        </td>
+                      )}
+                      <td className="leading-relaxed">{l3Cell}</td>
+                      <td className="text-center">
+                        <span
+                          className={cn(
+                            "inline-block whitespace-normal break-words rounded-full border px-1.5 py-0.5 text-center text-[10px] leading-tight",
+                            TYPE_TONE[row.type],
+                          )}
+                        >
+                          {row.type}
+                        </span>
+                      </td>
+                      {has === "无" ? (
+                        <>
+                          <td className="text-center">{row.unit}</td>
+                          <td className="text-center font-mono">{row.leadValue ?? "/"}</td>
+                          <td className="text-center font-mono">{row.baseValue ?? "/"}</td>
+                          <td className="text-center font-mono">{row.weight ?? "8"}</td>
+                          <td>
+                            {entEditable ? (
+                              <Textarea
+                                value={row.reportValue ?? ""}
+                                rows={2}
+                                className="min-h-[44px] resize-none text-xs"
+                                placeholder="请填写"
+                                onChange={(e) => updateRow(row.no, { reportValue: e.target.value })}
+                              />
+                            ) : (
+                              <span className="font-mono text-[12px] leading-relaxed">
+                                {row.reportValue || <span className="text-muted-foreground">—</span>}
+                              </span>
+                            )}
+                          </td>
+                          <td>
+                            <ProofList
+                              proofs={row.proofs}
+                              editable={entEditable}
+                              onChange={(next) => updateRow(row.no, { proofs: next })}
+                              onPreview={setPreview}
+                            />
+                          </td>
+                        </>
+                      ) : (
+                        <td colSpan={6} className="!p-0">
+                          <table className="w-full border-collapse text-[11px]">
+                            <thead className="bg-muted/30 text-[10px] text-muted-foreground">
+                              <tr className="[&>th]:border-b [&>th]:border-r [&>th]:border-border/60 [&>th]:px-2 [&>th]:py-1.5 [&>th]:text-center [&>th]:font-medium last:[&>th]:border-r-0">
+                                <th className="w-[110px]">产品名称</th>
+                                <th className="w-[120px]">单位</th>
+                                <th className="w-[80px]">引领值</th>
+                                <th className="w-[80px]">基准值</th>
+                                <th className="w-[110px]">加权参数<br/>（吨标煤）</th>
+                                <th className="w-[120px]">本年度指标值</th>
+                                <th>证明材料</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {products.map((p, pi) => (
+                                <tr
+                                  key={pi}
+                                  className={cn(
+                                    "align-top [&>td]:border-r [&>td]:px-2 [&>td]:py-1.5 last:[&>td]:border-r-0",
+                                    pi !== products.length - 1 && "border-b border-border/40",
+                                  )}
+                                >
+                                  <td>
+                                    {entEditable ? (
+                                      <Input
+                                        value={p.name}
+                                        placeholder={`产品${["一", "二", "三"][pi]}名称`}
+                                        className="h-7 text-[11px]"
+                                        onChange={(e) => updateProduct(pi, { name: e.target.value })}
+                                      />
+                                    ) : (
+                                      <span>{p.name || <span className="text-muted-foreground">—</span>}</span>
+                                    )}
+                                  </td>
+                                  <td>
+                                    {entEditable ? (
+                                      <Select
+                                        value={p.unit}
+                                        onValueChange={(v) => updateProduct(pi, { unit: v })}
+                                      >
+                                        <SelectTrigger className="h-7 text-[11px]">
+                                          <SelectValue placeholder="选择单位" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="tce/产品单位">tce/产品单位</SelectItem>
+                                          <SelectItem value="kgce/产品单位">kgce/产品单位</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    ) : (
+                                      <span className="text-center font-mono">{p.unit || "—"}</span>
+                                    )}
+                                  </td>
+                                  <td className="text-center">
+                                    {entEditable ? (
+                                      <Input
+                                        value={p.leadValue}
+                                        placeholder="1级水平"
+                                        className="h-7 text-center font-mono text-[11px]"
+                                        onChange={(e) => updateProduct(pi, { leadValue: e.target.value })}
+                                      />
+                                    ) : (
+                                      <span className="font-mono">{p.leadValue || "—"}</span>
+                                    )}
+                                  </td>
+                                  <td className="text-center">
+                                    {entEditable ? (
+                                      <Input
+                                        value={p.baseValue}
+                                        placeholder="2级水平"
+                                        className="h-7 text-center font-mono text-[11px]"
+                                        onChange={(e) => updateProduct(pi, { baseValue: e.target.value })}
+                                      />
+                                    ) : (
+                                      <span className="font-mono">{p.baseValue || "—"}</span>
+                                    )}
+                                  </td>
+                                  <td className="text-center">
+                                    {entEditable ? (
+                                      <Input
+                                        value={p.weight}
+                                        placeholder="吨标煤"
+                                        className="h-7 text-center font-mono text-[11px]"
+                                        onChange={(e) => updateProduct(pi, { weight: e.target.value })}
+                                      />
+                                    ) : (
+                                      <span className="font-mono">{p.weight || "—"}</span>
+                                    )}
+                                  </td>
+                                  <td>
+                                    {entEditable ? (
+                                      <Input
+                                        value={p.reportValue}
+                                        placeholder="请填写"
+                                        className="h-7 text-center font-mono text-[11px]"
+                                        onChange={(e) => updateProduct(pi, { reportValue: e.target.value })}
+                                      />
+                                    ) : (
+                                      <span className="font-mono">{p.reportValue || "—"}</span>
+                                    )}
+                                  </td>
+                                  <td>
+                                    <ProofList
+                                      proofs={p.proofs}
+                                      editable={entEditable}
+                                      onChange={(next) => updateProduct(pi, { proofs: next })}
+                                      onPreview={setPreview}
+                                    />
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </td>
+                      )}
+                      {showGovRemark && (
+                        <td>
+                          {govEditable ? (
+                            <Textarea
+                              value={row.govRemark ?? ""}
+                              rows={2}
+                              className="min-h-[44px] resize-none text-xs"
+                              placeholder="如指标值有修订，请填写修订备注"
+                              onChange={(e) => updateRow(row.no, { govRemark: e.target.value })}
+                            />
+                          ) : row.govRemark ? (
+                            <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground">如指标值有修订，请填写修订备注</span>
+                          )}
+                        </td>
+                      )}
+                      <td className="leading-relaxed text-muted-foreground">{row.proofRequirement}</td>
+                    </tr>
+                  );
+                }
                 return (
                   <tr
                     key={row.no}

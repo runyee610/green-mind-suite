@@ -3,6 +3,27 @@
 
 export type IndicatorType = "正向定量" | "逆向定量" | "正向定性";
 
+/** 序号 1：当“有适用国家强制性能源消耗限额标准”时，企业按产品填报 */
+export interface ProductEnergyEntry {
+  name: string;          // 产品名称
+  unit: string;          // 单位（tce/产品单位 或 kgce/产品单位）
+  leadValue: string;     // 引领值（适用国家强制性能源消耗限额标准1级水平）
+  baseValue: string;     // 基准值（适用国家强制性能源消耗限额标准2级水平）
+  weight: string;        // 加权参数（三级指标对应的产品综合能耗（吨标煤））
+  reportValue: string;   // 本年度指标值
+  proofs: string[];      // 证明材料
+}
+
+export const EMPTY_PRODUCT_ENERGY_ENTRY: ProductEnergyEntry = {
+  name: "",
+  unit: "",
+  leadValue: "",
+  baseValue: "",
+  weight: "",
+  reportValue: "",
+  proofs: [],
+};
+
 export interface IndicatorRow {
   no: number;
   l1: string; // 一级指标
@@ -23,6 +44,10 @@ export interface IndicatorRow {
   /** 二级指标在该行是否需要展示 */
   showL2?: boolean;
   l2RowSpan?: number;
+  /** 仅序号 1：是否有适用国家强制性能源消耗限额标准 */
+  hasStandard?: "有" | "无";
+  /** 仅序号 1 且 hasStandard='有' 时使用：产品一/二/三的填报数据 */
+  products?: ProductEnergyEntry[];
 }
 
 export const EVALUATION_INDICATORS: IndicatorRow[] = [
@@ -39,11 +64,17 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "kgce/万元",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "8",
     reportValue: "21.52",
     proofs: ["1.单位产值综合能耗_计算过程及其附件.pdf", "2.《能源购进、消费与库存》.pdf"],
     proofRequirement:
       "1、指标计算过程及其附件；2、报统计部门《工业产销总值及主要产品产量》（B204-1）、《能源购进、消费与库存》（205-1表）；3、《能源加工转换与回收利用》（205-2表）（如有）、《主要耗能工业企业单位产品能源消费情况》（205-3表）（如有）、《能源生产、销售与库存》（205-6表）（如有）；4、《重点用能单位能源利用状况报告》（如有）。",
+    hasStandard: "无",
+    products: [
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+    ],
   },
   {
     no: 2,
