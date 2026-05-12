@@ -745,8 +745,8 @@ function ProofList({
 
 const TYPE_TONE: Record<IndicatorRow["type"], string> = {
   正向定量: "border-primary/40 bg-primary/10 text-primary",
-  逆向定量: "border-warning/40 bg-warning/10 text-warning",
-  正向定性: "border-secondary/40 bg-secondary/10 text-secondary",
+  逆向定量: "border-warning/50 bg-warning/15 text-warning-foreground",
+  正向定性: "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
 };
 
 export function EvaluationIndicatorCard({
