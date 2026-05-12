@@ -17,6 +17,7 @@ import {
   buildEmptyIndicators,
   type EnterpriseBasicInfo,
   type BasicRequirementItem,
+  type AuthenticityCommitmentValue,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { toast } from "sonner";
@@ -59,6 +60,7 @@ export default function GreenMfgEntDeclarationNew() {
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
+  const [commitment, setCommitment] = useState<AuthenticityCommitmentValue>({});
 
   // 恢复草稿
   useEffect(() => {
@@ -209,7 +211,9 @@ export default function GreenMfgEntDeclarationNew() {
             onChange={setIndicators}
           />
         )}
-        {currentStep === ANCHORS[3].href && <AuthenticityCommitmentCard />}
+        {currentStep === ANCHORS[3].href && (
+          <AuthenticityCommitmentCard editable value={commitment} onChange={setCommitment} />
+        )}
       </StepTabs>
 
       <div className="mt-6 flex items-center justify-between gap-2">

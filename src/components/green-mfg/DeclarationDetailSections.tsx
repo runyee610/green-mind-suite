@@ -760,7 +760,37 @@ export function EvaluationIndicatorCard({
   );
 }
 
-export function AuthenticityCommitmentCard() {
+const COMMITMENT_TEMPLATE_URL = "/templates/真实性承诺-自我声明模板.docx";
+const COMMITMENT_TEMPLATE_NAME = "真实性承诺-自我声明模板.docx";
+
+export interface AuthenticityCommitmentValue {
+  signedFileName?: string;
+  uploadedAt?: string; // ISO
+}
+
+export function AuthenticityCommitmentCard({
+  editable = false,
+  value,
+  onChange,
+  defaultSignedFileName,
+}: {
+  editable?: boolean;
+  value?: AuthenticityCommitmentValue;
+  onChange?: (next: AuthenticityCommitmentValue) => void;
+  defaultSignedFileName?: string;
+} = {}) {
+  // 已上传文件（受控或默认 mock）
+  const signed: AuthenticityCommitmentValue =
+    value ?? (defaultSignedFileName
+      ? { signedFileName: defaultSignedFileName, uploadedAt: "2025-09-12T10:20:00Z" }
+      : {});
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    onChange?.({ signedFileName: f.name, uploadedAt: new Date().toISOString() });
+  };
+
   return (
     <Card id="authenticity-commitment" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
@@ -768,8 +798,88 @@ export function AuthenticityCommitmentCard() {
           <FileSignature className="mr-1 inline h-4 w-4" />四、真实性承诺
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <PlaceholderBlock text="真实性承诺函（企业公章、法定代表人签章、承诺日期等）将在此呈现，待细化字段后补齐。" />
+      <CardContent className="space-y-4">
+        {/* 步骤说明 */}
+        <ol className="space-y-1.5 rounded-md border border-border/60 bg-muted/20 p-3 text-xs leading-relaxed text-muted-foreground">
+          <li>
+            <span className="mr-1 font-medium text-foreground">第一步</span>
+            下载《真实性承诺函（自我声明）》模板。
+          </li>
+          <li>
+            <span className="mr-1 font-medium text-foreground">第二步</span>
+            由企业法定代表人签字、加盖公司公章。
+          </li>
+          <li>
+            <span className="mr-1 font-medium text-foreground">第三步</span>
+            将签章后的文件扫描成 PDF（或 JPG / PNG），上传至本平台。
+          </li>
+        </ol>
+
+        {/* 模板下载 */}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border/60 bg-card p-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <FileText className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">{COMMITMENT_TEMPLATE_NAME}</p>
+              <p className="text-[11px] text-muted-foreground">官方模板 · DOCX</p>
+            </div>
+          </div>
+          <a
+            href={COMMITMENT_TEMPLATE_URL}
+            download={COMMITMENT_TEMPLATE_NAME}
+            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-input bg-background px-3 text-xs font-medium hover:bg-accent"
+          >
+            <FileText className="h-3.5 w-3.5" />下载模板
+          </a>
+        </div>
+
+        {/* 签章扫描件上传 / 展示 */}
+        <div className="rounded-md border border-border/60 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs font-medium">签章扫描件</p>
+            {editable && (
+              <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-input bg-background px-2.5 text-[11px] font-medium hover:bg-accent">
+                <Upload className="h-3 w-3" />
+                {signed.signedFileName ? "重新上传" : "上传扫描件"}
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={handleFile}
+                />
+              </label>
+            )}
+          </div>
+          {signed.signedFileName ? (
+            <div className="flex items-center gap-3 rounded-md bg-muted/30 p-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-success/10 text-success">
+                {/\.(jpg|jpeg|png)$/i.test(signed.signedFileName) ? (
+                  <ImageIcon className="h-4 w-4" />
+                ) : (
+                  <FileText className="h-4 w-4" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm">{signed.signedFileName}</p>
+                {signed.uploadedAt && (
+                  <p className="text-[11px] text-muted-foreground">
+                    上传时间：{new Date(signed.uploadedAt).toLocaleString("zh-CN")}
+                  </p>
+                )}
+              </div>
+              <Badge variant="outline" className="border-success/40 bg-success/10 text-[10px] text-success">
+                已上传
+              </Badge>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 rounded-md border border-dashed border-border/60 bg-muted/20 p-4 text-xs text-muted-foreground">
+              <Upload className="h-4 w-4" />
+              {editable ? "请上传已签字盖章的扫描件（PDF / JPG / PNG）" : "尚未上传签章扫描件"}
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

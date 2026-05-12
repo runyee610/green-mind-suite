@@ -252,7 +252,7 @@ export default function GreenMfgGovDeclarationDetail() {
           <EvaluationIndicatorCard mode="gov" />
         </TabsContent>
         <TabsContent value="authenticity-commitment" className="mt-0">
-          <AuthenticityCommitmentCard />
+          <AuthenticityCommitmentCard defaultSignedFileName="真实性承诺函-签章扫描件.pdf" />
         </TabsContent>
       </Tabs>
 
