@@ -881,6 +881,7 @@ export function EvaluationIndicatorCard({
                       {has === "有" ? cfg.hasOptionLabel : cfg.noOptionLabel}
                     </Badge>
                   );
+                  const formulaText = has === "有" ? (row.formulaHasStandard ?? row.formula) : row.formula;
                   const l3Cell = (
                     <div className="space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
@@ -890,6 +891,9 @@ export function EvaluationIndicatorCard({
                       <p className="leading-relaxed">
                         {has === "有" ? cfg.l3HasText : cfg.l3NoText}
                       </p>
+                      {formulaText && (
+                        <div className="font-mono text-[11px] text-primary/80">公式：{formulaText}</div>
+                      )}
                     </div>
                   );
                   return (
