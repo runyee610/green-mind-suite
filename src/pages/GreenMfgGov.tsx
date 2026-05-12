@@ -117,14 +117,20 @@ export default function GreenMfgGov() {
                     />
                   </div>
                   <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                    <SelectTrigger className="h-8 w-40 text-xs">
+                    <SelectTrigger className="h-8 w-44 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
                       <SelectValue placeholder="行业" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-72">
+                    <SelectContent className="max-h-80">
                       <SelectItem value="all">全部行业</SelectItem>
-                      {ALL_INDUSTRIES.map((i) => (
-                        <SelectItem key={i} value={i}>{i}</SelectItem>
+                      {INDUSTRY_TREE.map((node) => (
+                        <SelectGroup key={node.name}>
+                          <SelectLabel className="text-[11px] text-muted-foreground">{node.name}</SelectLabel>
+                          <SelectItem value={node.name} className="text-xs">{node.name}（全部）</SelectItem>
+                          {node.children.map((c) => (
+                            <SelectItem key={c} value={c} className="pl-6 text-xs">{c}</SelectItem>
+                          ))}
+                        </SelectGroup>
                       ))}
                     </SelectContent>
                   </Select>
