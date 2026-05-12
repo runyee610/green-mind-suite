@@ -448,16 +448,26 @@ export function BasicRequirementsCard({
                       >
                         {f}
                       </a>
+                      {editable && (
+                        <button
+                          type="button"
+                          className="ml-auto text-[11px] text-muted-foreground hover:text-destructive"
+                          onClick={() =>
+                            updateItem(item.no, { proofs: item.proofs.filter((x) => x !== f) })
+                          }
+                        >
+                          删除
+                        </button>
+                      )}
                     </li>
                   ))}
                   {editable && (
                     <li className="pt-1">
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40"
-                      >
-                        <Upload className="h-3 w-3" />上传（PDF / 图片）
-                      </button>
+                      <UploadButton
+                        onPick={(names) =>
+                          updateItem(item.no, { proofs: [...item.proofs, ...names] })
+                        }
+                      />
                     </li>
                   )}
                 </ul>
