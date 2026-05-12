@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ChevronRight, Sparkles, UserCheck } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -6,14 +6,29 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MOCK_AUDIT_FLOW,
   MOCK_DECLARATIONS,
   SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
-import { DeclarationDetailSections } from "@/components/green-mfg/DeclarationDetailSections";
+import {
+  EnterpriseBasicInfoCard,
+  BasicRequirementsCard,
+  EvaluationIndicatorCard,
+  AuthenticityCommitmentCard,
+} from "@/components/green-mfg/DeclarationDetailSections";
 import { cn } from "@/lib/utils";
+
+const TABS = [
+  { value: "audit-flow", label: "审批流转" },
+  { value: "smart-score", label: "智能打分明细" },
+  { value: "basic-info", label: "企业基本信息表" },
+  { value: "basic-requirements", label: "基本要求" },
+  { value: "evaluation-indicator", label: "评价指标表（通则）" },
+  { value: "authenticity-commitment", label: "真实性承诺" },
+];
 
 export default function GreenMfgEntDeclarationDetail() {
   const { id } = useParams();
