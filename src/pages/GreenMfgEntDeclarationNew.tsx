@@ -20,7 +20,10 @@ import {
   type AuthenticityCommitmentValue,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
+import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import { toast } from "sonner";
+
+const ALL_BATCHES = ["2025年第一批", "2025年第二批", "2026年第一批"];
 
 const ANCHORS = [
   { href: "basic-info", label: "企业基本信息表" },
