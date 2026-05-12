@@ -451,7 +451,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "/",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "8",
     reportValue: "提供绿色设计典型应用案例",
     reportOptions: ["提供绿色设计典型应用案例", "未提供"],
     proofs: ["1.设计开发控制程序.pdf", "2.生态设计自评价报告.pdf", "3.回料使用比率规范.pdf"],
