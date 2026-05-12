@@ -485,14 +485,35 @@ function isImage(name: string) {
   return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(name);
 }
 
+function UploadButton({ onPick }: { onPick: (names: string[]) => void }) {
+  return (
+    <label className="inline-flex cursor-pointer items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40">
+      <Upload className="h-3 w-3" />上传（PDF / 图片）
+      <input
+        type="file"
+        multiple
+        accept=".pdf,image/*"
+        className="hidden"
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []);
+          if (files.length) onPick(files.map((f) => f.name));
+          e.target.value = "";
+        }}
+      />
+    </label>
+  );
+}
+
 function ProofList({
   proofs,
   editable,
   emptyText = "—",
+  onChange,
 }: {
   proofs: string[];
   editable?: boolean;
   emptyText?: string;
+  onChange?: (next: string[]) => void;
 }) {
   return (
     <ul className="space-y-1 text-xs">
@@ -513,16 +534,20 @@ function ProofList({
           >
             {f}
           </a>
+          {editable && onChange && (
+            <button
+              type="button"
+              className="ml-auto text-[11px] text-muted-foreground hover:text-destructive"
+              onClick={() => onChange(proofs.filter((x) => x !== f))}
+            >
+              删除
+            </button>
+          )}
         </li>
       ))}
       {editable && (
         <li className="pt-1">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 rounded border border-dashed border-border/60 px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted/40"
-          >
-            <Upload className="h-3 w-3" />上传（PDF / 图片）
-          </button>
+          <UploadButton onPick={(names) => onChange?.([...proofs, ...names])} />
         </li>
       )}
     </ul>
