@@ -60,7 +60,25 @@ export interface IndicatorRow {
   hasStandard?: "有" | "无";
   /** 仅序号 1 且 hasStandard='有' 时使用：产品一/二/三的填报数据 */
   products?: ProductEnergyEntry[];
+  /** 仅序号 4：能碳管理系统平台功能符合数量 — 复选框选项 */
+  platformFunctions?: string[];
 }
+
+/** 序号 4：能碳管理系统平台功能符合项 候选 */
+export const PLATFORM_FUNCTION_OPTIONS = [
+  "能耗查询",
+  "能源消费量和强度计算",
+  "能源消费分析与用能策略推荐",
+  "能效对标",
+  "能流分析",
+  "能效平衡与优化",
+  "用能与碳排放预算管理",
+  "碳排放核算",
+  "碳足迹核算",
+  "供应链碳管理",
+  "碳核查支撑",
+  "碳资产管理",
+] as const;
 
 export const EVALUATION_INDICATORS: IndicatorRow[] = [
   {
