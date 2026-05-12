@@ -1406,6 +1406,53 @@ function PlatformFunctionsField({
   );
 }
 
+function ReportRadioField({
+  options,
+  value,
+  editable,
+  onChange,
+}: {
+  options: string[];
+  value: string;
+  editable: boolean;
+  onChange: (v: string) => void;
+}) {
+  if (!editable) {
+    return (
+      <span className="text-[12px] leading-relaxed">
+        {value || <span className="text-muted-foreground">—</span>}
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-1.5">
+      {options.map((opt) => {
+        const checked = value === opt;
+        return (
+          <label
+            key={opt}
+            onClick={() => onChange(opt)}
+            className={cn(
+              "flex cursor-pointer items-start gap-1.5 text-[12px] leading-snug",
+              checked ? "text-foreground" : "text-muted-foreground",
+            )}
+          >
+            <span
+              className={cn(
+                "mt-0.5 inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border",
+                checked ? "border-primary" : "border-muted-foreground/40",
+              )}
+            >
+              {checked && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+            </span>
+            <span>{opt}</span>
+          </label>
+        );
+      })}
+    </div>
+  );
+}
+
 export function DeclarationDetailSections({ mode = "view" }: { mode?: DetailMode } = {}) {
   return (
     <div className="mt-4 space-y-4">
