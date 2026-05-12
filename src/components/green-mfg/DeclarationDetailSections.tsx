@@ -764,8 +764,24 @@ export function EvaluationIndicatorCard({
 } = {}) {
   const entEditable = mode === "ent";
   const govEditable = mode === "gov";
+  const valueEditable = entEditable || govEditable;
   const updateRow = (id: string, patch: Partial<IndicatorRow>) =>
-    onChange?.(data.map((it) => (it.id === id ? { ...it, ...patch } : it)));
+    onChange?.(data.map((it) => {
+      if (it.id !== id) return it;
+      const next: IndicatorRow = { ...it, ...patch };
+      if (govEditable) {
+        if ("reportValue" in patch && it.originalReportValue === undefined) {
+          next.originalReportValue = it.reportValue ?? "";
+        }
+        if ("products" in patch && it.originalProducts === undefined) {
+          next.originalProducts = it.products ? it.products.map((p) => ({ ...p })) : undefined;
+        }
+        if ("platformFunctions" in patch && it.originalPlatformFunctions === undefined) {
+          next.originalPlatformFunctions = it.platformFunctions ? [...it.platformFunctions] : [];
+        }
+      }
+      return next;
+    }));
   const totalCols = showGovRemark ? 13 : 12;
   const [preview, setPreview] = useState<string | null>(null);
 
