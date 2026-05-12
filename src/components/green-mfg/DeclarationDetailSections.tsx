@@ -718,11 +718,13 @@ function ProofList({
   editable,
   emptyText = "—",
   onChange,
+  onPreview,
 }: {
   proofs: string[];
   editable?: boolean;
   emptyText?: string;
   onChange?: (next: string[]) => void;
+  onPreview: (n: string) => void;
 }) {
   return (
     <ul className="space-y-1 text-xs">
@@ -730,29 +732,14 @@ function ProofList({
         <li className="text-muted-foreground">{emptyText}</li>
       )}
       {proofs.map((f) => (
-        <li key={f} className="flex items-start gap-1.5">
-          {isImage(f) ? (
-            <ImageIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
-          ) : (
-            <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-          )}
-          <a
-            href="#"
-            className="break-all text-primary underline-offset-2 hover:underline"
-            onClick={(e) => e.preventDefault()}
-          >
-            {f}
-          </a>
-          {editable && onChange && (
-            <button
-              type="button"
-              className="ml-auto text-[11px] text-muted-foreground hover:text-destructive"
-              onClick={() => onChange(proofs.filter((x) => x !== f))}
-            >
-              删除
-            </button>
-          )}
-        </li>
+        <FileItem
+          key={f}
+          name={f}
+          onPreview={onPreview}
+          onRemove={
+            editable && onChange ? () => onChange(proofs.filter((x) => x !== f)) : undefined
+          }
+        />
       ))}
       {editable && (
         <li className="pt-1">
