@@ -10,14 +10,29 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MOCK_AUDIT_FLOW,
   MOCK_DECLARATIONS,
   SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
-import { DeclarationDetailSections } from "@/components/green-mfg/DeclarationDetailSections";
+import {
+  EnterpriseBasicInfoCard,
+  BasicRequirementsCard,
+  EvaluationIndicatorCard,
+  AuthenticityCommitmentCard,
+} from "@/components/green-mfg/DeclarationDetailSections";
 import { cn } from "@/lib/utils";
+
+const TABS = [
+  { value: "audit-record", label: "审批记录" },
+  { value: "smart-score", label: "智能打分" },
+  { value: "basic-info", label: "企业基本信息表" },
+  { value: "basic-requirements", label: "基本要求" },
+  { value: "evaluation-indicator", label: "评价指标表（通则）" },
+  { value: "authenticity-commitment", label: "真实性承诺" },
+];
 
 export default function GreenMfgGovDeclarationDetail() {
   const { id } = useParams();
