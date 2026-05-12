@@ -9,6 +9,7 @@ export interface DeclarationRecord {
   creditCode: string;
   district: string;
   industry: string;
+  subIndustry?: string;
   industryType: "重点行业" | "非重点行业/通则";
   outputValue: number; // 产值（万元）
   batch: string; // 申报批次
