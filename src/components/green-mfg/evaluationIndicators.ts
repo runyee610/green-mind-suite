@@ -348,7 +348,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "项",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "6",
     reportValue: "2",
     proofs: ["1.采用相关生产工艺和设备的说明.pdf"],
     proofRequirement: "1、采用相关生产工艺和设备的说明。",
@@ -356,6 +356,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   {
     id: "10",
     no: 10,
+    showNo: true,
+    noRowSpan: 2,
     l1: "生产洁净化",
     l2: "绿色低碳改造升级",
     showL2: true,
@@ -365,7 +367,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "项",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "4",
     reportValue: "1.00",
     proofs: ["1.节能技改项目清单.pdf"],
     proofRequirement:
@@ -373,7 +375,9 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "11",
-    no: 11,
+    no: 10,
+    showNo: false,
+    isSubRow: true,
     l1: "生产洁净化",
     l2: "绿色低碳改造升级",
     l3: "近3年绿色低碳改造升级项目投资额占比",
@@ -389,7 +393,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "12",
-    no: 12,
+    no: 11,
     l1: "产品绿色化",
     showL1: true,
     l1RowSpan: 3,
@@ -409,7 +413,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "13",
-    no: 13,
+    no: 12,
     l1: "产品绿色化",
     l2: "绿色设计",
     showL2: true,
@@ -427,7 +431,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "14",
-    no: 14,
+    no: 13,
     l1: "产品绿色化",
     l2: "产品碳足迹",
     showL2: true,
@@ -445,7 +449,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "15",
-    no: 15,
+    no: 14,
     l1: "用地集约化",
     showL1: true,
     l1RowSpan: 3,
@@ -464,7 +468,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "16",
-    no: 16,
+    no: 15,
     l1: "用地集约化",
     l2: "土地产出率",
     l3: "建筑系数",
@@ -479,7 +483,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "17",
-    no: 17,
+    no: 16,
     l1: "用地集约化",
     l2: "土地产出率",
     l3: "容积率",
