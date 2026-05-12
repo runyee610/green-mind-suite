@@ -881,6 +881,7 @@ export function EvaluationIndicatorCard({
                       {has === "有" ? cfg.hasOptionLabel : cfg.noOptionLabel}
                     </Badge>
                   );
+                  const formulaText = has === "有" ? (row.formulaHasStandard ?? row.formula) : row.formula;
                   const l3Cell = (
                     <div className="space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
@@ -890,6 +891,9 @@ export function EvaluationIndicatorCard({
                       <p className="leading-relaxed">
                         {has === "有" ? cfg.l3HasText : cfg.l3NoText}
                       </p>
+                      {formulaText && (
+                        <div className="font-mono text-[11px] text-primary/80">公式：{formulaText}</div>
+                      )}
                     </div>
                   );
                   return (
@@ -1114,7 +1118,12 @@ export function EvaluationIndicatorCard({
                       </td>
                     )}
                     {row.mergeL2L3 ? (
-                      <td colSpan={2} className="bg-muted/10 leading-relaxed">{row.l3}</td>
+                      <td colSpan={2} className="bg-muted/10 leading-relaxed">
+                        <div>{row.l3}</div>
+                        {row.formula && (
+                          <div className="mt-1 font-mono text-[11px] text-primary/80">公式：{row.formula}</div>
+                        )}
+                      </td>
                     ) : (
                       <>
                         {row.showL2 && (
@@ -1122,7 +1131,12 @@ export function EvaluationIndicatorCard({
                             {row.l2}
                           </td>
                         )}
-                        <td className="leading-relaxed">{row.l3}</td>
+                        <td className="leading-relaxed">
+                          <div>{row.l3}</div>
+                          {row.formula && (
+                            <div className="mt-1 font-mono text-[11px] text-primary/80">公式：{row.formula}</div>
+                          )}
+                        </td>
                       </>
                     )}
                     <td className="text-center">
