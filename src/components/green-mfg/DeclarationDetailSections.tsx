@@ -1549,6 +1549,50 @@ function ReportRadioField({
   );
 }
 
+/** 政府侧编辑模式下，于输入框下方提示原始（修改前）值。 */
+function OriginalHint({ original, small }: { original?: string; small?: boolean }) {
+  if (original === undefined) return null;
+  return (
+    <div
+      className={cn(
+        "rounded border border-dashed border-border/60 bg-muted/20 px-1.5 py-0.5 text-muted-foreground",
+        small ? "text-[10px] leading-tight" : "text-[11px] leading-snug",
+      )}
+    >
+      <span className="font-medium">原值：</span>
+      <span className="font-mono">{original || "—"}</span>
+    </div>
+  );
+}
+
+/** 查看模式下，若政府侧已修改则展示「原值 → 现值」对比，否则仅显示当前值。 */
+function DiffValue({
+  current,
+  original,
+  small,
+}: {
+  current?: string;
+  original?: string;
+  small?: boolean;
+}) {
+  const changed = original !== undefined && (current ?? "") !== original;
+  const sizeCls = small ? "text-[11px]" : "text-[12px]";
+  if (!changed) {
+    return (
+      <span className={cn("font-mono leading-relaxed", sizeCls)}>
+        {current || <span className="text-muted-foreground">—</span>}
+      </span>
+    );
+  }
+  return (
+    <div className={cn("space-y-0.5 leading-snug", sizeCls)}>
+      <div className="font-mono text-muted-foreground line-through">{original || "—"}</div>
+      <div className="font-mono text-warning">→ {current || "—"}</div>
+      <div className="text-[10px] text-warning/80">已由政府侧修订</div>
+    </div>
+  );
+}
+
 export function DeclarationDetailSections({ mode = "view" }: { mode?: DetailMode } = {}) {
   return (
     <div className="mt-4 space-y-4">
