@@ -1023,7 +1023,13 @@ export function AuthenticityCommitmentCard({
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm">{signed.signedFileName}</p>
+                <button
+                  type="button"
+                  onClick={() => signed.signedFileName && setPreview(signed.signedFileName)}
+                  className="block max-w-full truncate text-left text-sm text-primary underline-offset-2 hover:underline"
+                >
+                  {signed.signedFileName}
+                </button>
                 {signed.uploadedAt && (
                   <p className="text-[11px] text-muted-foreground">
                     上传时间：{new Date(signed.uploadedAt).toLocaleString("zh-CN")}
@@ -1033,24 +1039,14 @@ export function AuthenticityCommitmentCard({
               <Badge variant="outline" className="border-success/40 bg-success/10 text-[10px] text-success">
                 已上传
               </Badge>
-              <div className="ml-1 flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => signed.signedFileName && setPreview(signed.signedFileName)}
-                >
-                  <Eye className="mr-1 h-3.5 w-3.5" />预览
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => signed.signedFileName && triggerMockDownload(signed.signedFileName)}
-                >
-                  <Download className="mr-1 h-3.5 w-3.5" />下载
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs"
+                onClick={() => signed.signedFileName && triggerMockDownload(signed.signedFileName)}
+              >
+                <Download className="mr-1 h-3.5 w-3.5" />下载
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-3 rounded-md border border-dashed border-border/60 bg-muted/20 p-4 text-xs text-muted-foreground">
