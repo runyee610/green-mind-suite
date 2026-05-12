@@ -282,11 +282,17 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "m3/万元",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
-    reportValue: "/",
+    weight: "8",
+    reportValue: "",
     proofs: [],
     proofRequirement:
       "1、指标计算过程及其附件；2、报统计部门《工业产销总值及主要产品产量》（B204-1）、《工业企业用水情况》（205-4表）；3、工业用水统计台账。",
+    hasStandard: "无",
+    products: [
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+    ],
   },
   {
     id: "7",

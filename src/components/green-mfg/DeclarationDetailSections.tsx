@@ -745,7 +745,7 @@ function ProofList({
 
 const TYPE_TONE: Record<IndicatorRow["type"], string> = {
   正向定量: "border-primary/40 bg-primary/10 text-primary",
-  逆向定量: "border-warning/50 bg-warning/15 text-warning-foreground",
+  逆向定量: "border-amber-500/50 bg-amber-500/15 text-amber-700 dark:text-amber-300",
   正向定性: "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
 };
 
@@ -810,8 +810,46 @@ export function EvaluationIndicatorCard({
             <tbody>
               {data.map((row, idx) => {
                 const last = idx === data.length - 1;
-                // ============= 序号 1 特殊处理：根据 hasStandard 切换填报形态 =============
-                if (row.no === 1) {
+                // ============= 序号 1 / 6 特殊处理：根据 hasStandard 切换填报形态 =============
+                if (row.no === 1 || row.no === 6) {
+                  const isWater = row.no === 6;
+                  const cfg = isWater
+                    ? {
+                        selectorLabel: "是否有适用工业用水定额国家标准：",
+                        hasOptionLabel: "有适用工业用水定额国家标准",
+                        noOptionLabel: "无适用工业用水定额国家标准",
+                        l3HasText:
+                          "单位产品取水量（有适用工业用水定额国家标准时必选，涉及多种产品适用标准时，仅填写取水量排序前三以内的产品）",
+                        l3NoText: "单位产值取水量（无适用工业用水定额国家标准时选用）",
+                        unitOptions: ["m3/产品单位"],
+                        leadPlaceholder: "先进值水平",
+                        basePlaceholder: "通用值水平",
+                        weightHeader: (
+                          <>
+                            加权参数
+                            <br />
+                            （产品取水量 m3）
+                          </>
+                        ),
+                      }
+                    : {
+                        selectorLabel: "是否有适用国家强制性能源消耗限额标准：",
+                        hasOptionLabel: "有适用国家强制性能源消耗限额标准",
+                        noOptionLabel: "无适用国家强制性能源消耗限额标准",
+                        l3HasText:
+                          "单位产品综合能耗（有适用国家强制性能源消耗限额标准时必选，涉及多种产品适用标准时，仅填写综合能耗排序前三以内的产品）",
+                        l3NoText: "单位产值综合能耗（无适用国家强制性能源消耗限额标准时选用）",
+                        unitOptions: ["tce/产品单位", "kgce/产品单位"],
+                        leadPlaceholder: "1级水平",
+                        basePlaceholder: "2级水平",
+                        weightHeader: (
+                          <>
+                            加权参数
+                            <br />
+                            （吨标煤）
+                          </>
+                        ),
+                      };
                   const has = row.hasStandard ?? "无";
                   const products: ProductEnergyEntry[] = row.products?.length === 3
                     ? row.products
@@ -826,7 +864,6 @@ export function EvaluationIndicatorCard({
                       onValueChange={(v) =>
                         updateRow(row.id, {
                           hasStandard: v as "有" | "无",
-                          // 切换到"无"时还原默认加权参数 8
                           weight: v === "无" ? "8" : row.weight,
                         })
                       }
@@ -835,25 +872,23 @@ export function EvaluationIndicatorCard({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="有">有适用国家强制性能源消耗限额标准</SelectItem>
-                        <SelectItem value="无">无适用国家强制性能源消耗限额标准</SelectItem>
+                        <SelectItem value="有">{cfg.hasOptionLabel}</SelectItem>
+                        <SelectItem value="无">{cfg.noOptionLabel}</SelectItem>
                       </SelectContent>
                     </Select>
                   ) : (
                     <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] text-primary">
-                      {has === "有" ? "有适用国家强制性能源消耗限额标准" : "无适用国家强制性能源消耗限额标准"}
+                      {has === "有" ? cfg.hasOptionLabel : cfg.noOptionLabel}
                     </Badge>
                   );
                   const l3Cell = (
                     <div className="space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] font-medium text-muted-foreground">是否有适用国家强制性能源消耗限额标准：</span>
+                        <span className="text-[11px] font-medium text-muted-foreground">{cfg.selectorLabel}</span>
                         {standardSelector}
                       </div>
                       <p className="leading-relaxed">
-                        {has === "有"
-                          ? "单位产品综合能耗（有适用国家强制性能源消耗限额标准时必选，涉及多种产品适用标准时，仅填写综合能耗排序前三以内的产品）"
-                          : "单位产值综合能耗（无适用国家强制性能源消耗限额标准时选用）"}
+                        {has === "有" ? cfg.l3HasText : cfg.l3NoText}
                       </p>
                     </div>
                   );
@@ -926,7 +961,7 @@ export function EvaluationIndicatorCard({
                                 <th className="w-[120px]">单位</th>
                                 <th className="w-[80px]">引领值</th>
                                 <th className="w-[80px]">基准值</th>
-                                <th className="w-[110px]">加权参数<br/>（吨标煤）</th>
+                                <th className="w-[110px]">{cfg.weightHeader}</th>
                                 <th className="w-[120px]">本年度指标值</th>
                                 <th>证明材料</th>
                               </tr>
@@ -962,8 +997,9 @@ export function EvaluationIndicatorCard({
                                           <SelectValue placeholder="选择单位" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="tce/产品单位">tce/产品单位</SelectItem>
-                                          <SelectItem value="kgce/产品单位">kgce/产品单位</SelectItem>
+                                          {cfg.unitOptions.map((u) => (
+                                            <SelectItem key={u} value={u}>{u}</SelectItem>
+                                          ))}
                                         </SelectContent>
                                       </Select>
                                     ) : (
@@ -974,7 +1010,7 @@ export function EvaluationIndicatorCard({
                                     {entEditable ? (
                                       <Input
                                         value={p.leadValue}
-                                        placeholder="1级水平"
+                                        placeholder={cfg.leadPlaceholder}
                                         className="h-7 text-center font-mono text-[11px]"
                                         onChange={(e) => updateProduct(pi, { leadValue: e.target.value })}
                                       />
@@ -986,7 +1022,7 @@ export function EvaluationIndicatorCard({
                                     {entEditable ? (
                                       <Input
                                         value={p.baseValue}
-                                        placeholder="2级水平"
+                                        placeholder={cfg.basePlaceholder}
                                         className="h-7 text-center font-mono text-[11px]"
                                         onChange={(e) => updateProduct(pi, { baseValue: e.target.value })}
                                       />
