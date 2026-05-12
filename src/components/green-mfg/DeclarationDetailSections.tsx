@@ -1114,7 +1114,12 @@ export function EvaluationIndicatorCard({
                       </td>
                     )}
                     {row.mergeL2L3 ? (
-                      <td colSpan={2} className="bg-muted/10 leading-relaxed">{row.l3}</td>
+                      <td colSpan={2} className="bg-muted/10 leading-relaxed">
+                        <div>{row.l3}</div>
+                        {row.formula && (
+                          <div className="mt-1 font-mono text-[11px] text-primary/80">公式：{row.formula}</div>
+                        )}
+                      </td>
                     ) : (
                       <>
                         {row.showL2 && (
@@ -1122,7 +1127,12 @@ export function EvaluationIndicatorCard({
                             {row.l2}
                           </td>
                         )}
-                        <td className="leading-relaxed">{row.l3}</td>
+                        <td className="leading-relaxed">
+                          <div>{row.l3}</div>
+                          {row.formula && (
+                            <div className="mt-1 font-mono text-[11px] text-primary/80">公式：{row.formula}</div>
+                          )}
+                        </td>
                       </>
                     )}
                     <td className="text-center">
