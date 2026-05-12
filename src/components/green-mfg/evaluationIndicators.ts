@@ -436,7 +436,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     no: 12,
     l1: "产品绿色化",
     showL1: true,
-    l1RowSpan: 2,
+    l1RowSpan: 3,
     l2: "绿色设计",
     showL2: true,
     l2RowSpan: 1,
@@ -447,6 +447,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     baseValue: "/",
     weight: "/",
     reportValue: "提供绿色设计典型应用案例",
+    reportOptions: ["提供绿色设计典型应用案例", "未提供"],
     proofs: ["1.设计开发控制程序.pdf", "2.生态设计自评价报告.pdf", "3.回料使用比率规范.pdf"],
     proofRequirement:
       "1、绿色设计典型应用案例（围绕轻量化、无害化、长寿命、节能、易回收、可拆解、易再生等方面提供绿色设计典型应用案例，全面展示企业研发人员在设计环节运用绿色设计理念开展绿色设计）。",
