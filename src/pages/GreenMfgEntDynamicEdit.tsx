@@ -43,15 +43,13 @@ export default function GreenMfgEntDynamicEdit() {
 
   return (
     <AppLayout title="动态管理表填报" subtitle={`${year} 年度 · ${existing?.enterpriseName ?? "本企业"} · 年度更新一次`}>
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex items-center justify-end gap-3">
+        {existing && <Badge variant="outline" className={dynamicStatusClass(existing.status)}>{existing.status}</Badge>}
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
-        <div className="flex flex-wrap gap-2">
-          {existing && <Badge variant="outline" className={dynamicStatusClass(existing.status)}>{existing.status}</Badge>}
-          <Button variant="outline" size="sm" onClick={handleSave}><Save className="mr-1 h-4 w-4" />保存草稿</Button>
-          <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}><Send className="mr-1 h-4 w-4" />提交审核</Button>
-        </div>
+        <Button variant="outline" size="sm" onClick={handleSave}><Save className="mr-1 h-4 w-4" />保存草稿</Button>
+        <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}><Send className="mr-1 h-4 w-4" />提交审核</Button>
       </div>
 
       {existing?.status === "已驳回" && (
