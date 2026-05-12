@@ -1099,7 +1099,13 @@ export function EvaluationIndicatorCard({
                       </td>
                     )}
                     <td>
-                      {entEditable ? (
+                      {row.id === "4" ? (
+                        <PlatformFunctionsField
+                          value={row.platformFunctions ?? []}
+                          editable={entEditable}
+                          onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
+                        />
+                      ) : entEditable ? (
                         <Textarea
                           value={row.reportValue ?? ""}
                           rows={2}
