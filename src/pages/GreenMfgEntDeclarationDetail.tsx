@@ -67,26 +67,19 @@ export default function GreenMfgEntDeclarationDetail() {
         </Button>
       </div>
 
-      {/* 锚点导航 */}
-      <div className="sticky top-0 z-10 -mx-1 mb-4 flex flex-wrap items-center gap-1 rounded-md border border-border/60 bg-background/80 px-2 py-1.5 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <span className="px-2 text-[11px] text-muted-foreground">快速跳转：</span>
-        {[
-          { href: "audit-flow", label: "审批流转" },
-          { href: "smart-score", label: "智能打分" },
-          { href: "basic-info", label: "企业基本信息表" },
-          { href: "basic-requirements", label: "基本要求" },
-          { href: "evaluation-indicator", label: "评价指标表（通则）" },
-          { href: "authenticity-commitment", label: "真实性承诺" },
-        ].map((a) => (
-          <a
-            key={a.href}
-            href={`#${a.href}`}
-            className="rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            {a.label}
-          </a>
-        ))}
-      </div>
+      {/* 分页 Tab 导航 */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="sticky top-0 z-10 h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1">
+          {TABS.map((t) => (
+            <TabsTrigger
+              key={t.value}
+              value={t.value}
+              className="text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              {t.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
       {/* 状态 + 打分 概览 */}
       <div className="mb-4 grid gap-3 md:grid-cols-3">
