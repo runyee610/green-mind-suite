@@ -58,6 +58,7 @@ export default function GreenMfgEntDeclarationNew() {
   );
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
 
   // 恢复草稿
   useEffect(() => {
