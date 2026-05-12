@@ -13,6 +13,7 @@ import {
   SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
+import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
