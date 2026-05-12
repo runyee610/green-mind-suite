@@ -18,6 +18,7 @@ import {
   stageBadgeClass,
 } from "@/components/green-mfg/data";
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
+import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
@@ -49,6 +50,7 @@ export default function GreenMfgGovDeclarationDetail() {
   const [activeTab, setActiveTab] = useState<string>(TABS[0].value);
 
   const totalScore = SCORE_DIMENSIONS.reduce((s, d) => s + d.score, 0);
+  const totalWeight = SCORE_DIMENSIONS.reduce((s, d) => s + d.weight, 0);
 
   const handleApprove = () => {
     toast.success(detail.stage === "区审批" ? "已上报市级审批" : "已上报，颁发市级绿色工厂");
@@ -141,22 +143,9 @@ export default function GreenMfgGovDeclarationDetail() {
                     {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议专家复核" : "不达标"}
                   </Badge>
                 </div>
-                <div className="space-y-2.5">
-                  {SCORE_DIMENSIONS.map((d) => (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs">
-                        <span>
-                          {d.name}
-                          <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                        </span>
-                        <span className="font-mono">{d.score}/{d.weight}</span>
-                      </div>
-                      <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
-                    </div>
-                  ))}
-                </div>
+                <ScoreBreakdown />
                 <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
-                  合计 {totalScore} 分；模型基于近三年能源、碳排、固废等口径数据综合计算。
+                  合计 {totalScore} / {totalWeight} 分；模型基于近三年能源、碳排、固废等口径数据综合计算。
                 </p>
               </CardContent>
             </Card>
@@ -192,23 +181,10 @@ export default function GreenMfgGovDeclarationDetail() {
                     </>
                   )}
                 </div>
-                <div className="space-y-2.5">
-                  {SCORE_DIMENSIONS.map((d) => {
-                    const expert = Math.min(d.weight, Math.round(d.score * (detail.manualScore ? detail.manualScore / detail.score : 1)));
-                    return (
-                      <div key={d.name}>
-                        <div className="flex justify-between text-xs">
-                          <span>
-                            {d.name}
-                            <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                          </span>
-                          <span className="font-mono">{detail.manualScore != null ? `${expert}/${d.weight}` : `—/${d.weight}`}</span>
-                        </div>
-                        <Progress value={detail.manualScore != null ? (expert / d.weight) * 100 : 0} className="mt-1 h-1.5" />
-                      </div>
-                    );
-                  })}
-                </div>
+                <ScoreBreakdown
+                  ratio={detail.manualScore != null && detail.score ? detail.manualScore / detail.score : 1}
+                  hideValues={detail.manualScore == null}
+                />
                 <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
                   {detail.manualScore != null
                     ? `专家组复核结论：${detail.comment ?? "已完成核验，结果以审批意见为准。"}`

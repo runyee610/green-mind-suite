@@ -10,10 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MOCK_AUDIT_FLOW,
   MOCK_DECLARATIONS,
-  SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
+import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
@@ -182,22 +182,7 @@ export default function GreenMfgEntDeclarationDetail() {
                     {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议复核" : "不达标"}
                   </Badge>
                 </div>
-                <div className="space-y-2.5">
-                  {SCORE_DIMENSIONS.map((d) => (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs">
-                        <span>
-                          {d.name}
-                          <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                        </span>
-                        <span className="font-mono">
-                          {d.score}/{d.weight}
-                        </span>
-                      </div>
-                      <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
-                    </div>
-                  ))}
-                </div>
+                <ScoreBreakdown />
                 <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
                   基于近三年能源、碳排、固废等口径数据综合计算。
                 </p>
@@ -222,26 +207,7 @@ export default function GreenMfgEntDeclarationDetail() {
                         {detail.manualScore >= 80 ? "通过" : detail.manualScore >= 60 ? "复核中" : "不达标"}
                       </Badge>
                     </div>
-                    <div className="space-y-2.5">
-                      {SCORE_DIMENSIONS.map((d) => {
-                        const ratio = detail.manualScore! / 100;
-                        const expert = Math.min(d.weight, Math.round(d.weight * ratio * 10) / 10);
-                        return (
-                          <div key={d.name}>
-                            <div className="flex justify-between text-xs">
-                              <span>
-                                {d.name}
-                                <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                              </span>
-                              <span className="font-mono">
-                                {expert}/{d.weight}
-                              </span>
-                            </div>
-                            <Progress value={(expert / d.weight) * 100} className="mt-1 h-1.5" />
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <ScoreBreakdown ratio={detail.score ? detail.manualScore! / detail.score : 1} />
                     {detail.comment && (
                       <div className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed">
                         <span className="text-muted-foreground">专家意见：</span>

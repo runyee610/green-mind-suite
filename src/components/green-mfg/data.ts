@@ -230,13 +230,51 @@ export const MOCK_AUDIT_FLOW: AuditFlowNode[] = [
   { stage: "市级审批", operator: "—", time: "—", result: "待办", score: undefined },
 ];
 
-export const SCORE_DIMENSIONS = [
-  { name: "能源管理", weight: 25, score: 22 },
-  { name: "资源利用", weight: 20, score: 17 },
-  { name: "环境排放", weight: 20, score: 18 },
-  { name: "绿色产品", weight: 15, score: 12 },
-  { name: "基础管理", weight: 10, score: 9 },
-  { name: "技术创新", weight: 10, score: 8 },
+// 打分维度：按一级指标（汇总二级指标分数）+ 二级指标名称组织
+export interface ScoreL2Dim { name: string; weight: number; score: number; }
+export interface ScoreL1Dim { name: string; weight: number; score: number; children: ScoreL2Dim[]; }
+
+export const SCORE_DIMENSIONS: ScoreL1Dim[] = [
+  {
+    name: "能源低碳化", weight: 30, score: 26,
+    children: [
+      { name: "能源消耗强度", weight: 8, score: 7 },
+      { name: "碳排放强度", weight: 8, score: 7 },
+      { name: "可再生能源利用率", weight: 8, score: 7 },
+      { name: "能碳管理系统平台功能符合数量", weight: 6, score: 5 },
+    ],
+  },
+  {
+    name: "资源高效化", weight: 22, score: 19,
+    children: [
+      { name: "节约原材料", weight: 0, score: 0 },
+      { name: "取水强度", weight: 8, score: 7 },
+      { name: "工业用水重复利用率", weight: 8, score: 7 },
+      { name: "一般工业固体废物综合利用率", weight: 6, score: 5 },
+    ],
+  },
+  {
+    name: "生产洁净化", weight: 16, score: 14,
+    children: [
+      { name: "生产工艺设备先进性", weight: 6, score: 5 },
+      { name: "绿色低碳改造升级", weight: 4, score: 3 },
+      { name: "主要污染物年均排放浓度", weight: 6, score: 6 },
+    ],
+  },
+  {
+    name: "产品绿色化", weight: 16, score: 13,
+    children: [
+      { name: "绿色设计", weight: 8, score: 7 },
+      { name: "产品碳足迹", weight: 8, score: 6 },
+      { name: "绿色产品", weight: 0, score: 0 },
+    ],
+  },
+  {
+    name: "用地集约化", weight: 8, score: 7,
+    children: [
+      { name: "土地产出率", weight: 8, score: 7 },
+    ],
+  },
 ];
 
 export const DYNAMIC_FIELD_DEFS: Array<{

@@ -3,7 +3,8 @@ import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { MOCK_DECLARATIONS, SCORE_DIMENSIONS } from "@/components/green-mfg/data";
+import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
+import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 
 export default function GreenMfgEntIncubator() {
   // 假定当前企业为培育中样本，否则取首个
@@ -90,21 +91,7 @@ export default function GreenMfgEntIncubator() {
           <CardTitle className="text-base">各维度得分情况</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {SCORE_DIMENSIONS.map((d) => {
-            const ratio = (d.score / d.weight) * 100;
-            const weak = ratio < 80;
-            return (
-              <div key={d.name} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium">{d.name}</span>
-                  <span className={weak ? "text-warning font-mono" : "font-mono text-muted-foreground"}>
-                    {d.score} / {d.weight}
-                  </span>
-                </div>
-                <Progress value={ratio} className={weak ? "[&>div]:bg-warning" : ""} />
-              </div>
-            );
-          })}
+          <ScoreBreakdown warnUnderRatio={80} />
         </CardContent>
       </Card>
 
