@@ -17,6 +17,7 @@ import {
   SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
+import { EVALUATION_INDICATORS, type IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 import {
