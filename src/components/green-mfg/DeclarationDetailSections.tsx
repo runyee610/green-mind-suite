@@ -949,18 +949,19 @@ export function EvaluationIndicatorCard({
                           <td className="text-center font-mono">{row.baseValue ?? "/"}</td>
                           <td className="text-center font-mono">{row.weight ?? "8"}</td>
                           <td>
-                            {entEditable ? (
-                              <Textarea
-                                value={row.reportValue ?? ""}
-                                rows={2}
-                                className="min-h-[44px] resize-none text-xs"
-                                placeholder="请填写"
-                                onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
-                              />
+                            {valueEditable ? (
+                              <div className="space-y-1">
+                                <Textarea
+                                  value={row.reportValue ?? ""}
+                                  rows={2}
+                                  className="min-h-[44px] resize-none text-xs"
+                                  placeholder="请填写"
+                                  onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
+                                />
+                                <OriginalHint original={row.originalReportValue} />
+                              </div>
                             ) : (
-                              <span className="font-mono text-[12px] leading-relaxed">
-                                {row.reportValue || <span className="text-muted-foreground">—</span>}
-                              </span>
+                              <DiffValue current={row.reportValue} original={row.originalReportValue} />
                             )}
                           </td>
                           <td>
