@@ -54,6 +54,15 @@ export function AuditFlowTimeline({ nodes, dense = false }: { nodes: AuditFlowNo
               <div className="mt-2 px-1">
                 <p className={cn("text-xs font-medium", isPending && "text-muted-foreground")}>{n.stage}</p>
                 <p className={cn("mt-0.5 text-[10px] font-medium uppercase tracking-wide", s.text)}>{s.label}</p>
+                {SCORED_STAGES.has(n.stage) && (
+                  <p className="mt-1">
+                    <span className="text-[10px] text-muted-foreground">最终评分 </span>
+                    <span className={cn("font-mono text-xs font-semibold", n.score != null ? s.text : "text-muted-foreground")}>
+                      {n.score != null ? n.score : "—"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground"> / 100</span>
+                  </p>
+                )}
                 <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">{n.time}</p>
                 <p className="mt-0.5 text-[11px] text-muted-foreground line-clamp-1">{n.operator}</p>
               </div>
