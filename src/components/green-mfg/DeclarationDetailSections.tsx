@@ -2,9 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
+import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
 
 export type DetailMode = "ent" | "gov" | "view";
 
