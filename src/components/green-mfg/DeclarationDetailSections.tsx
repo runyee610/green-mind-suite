@@ -412,7 +412,9 @@ export function BasicRequirementsCard({
 }) {
   const updateItem = (no: number, patch: Partial<BasicRequirementItem>) =>
     onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
+  const [preview, setPreview] = useState<string | null>(null);
   return (
+    <>
     <Card id="basic-requirements" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
