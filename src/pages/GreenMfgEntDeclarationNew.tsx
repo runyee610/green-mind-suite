@@ -12,6 +12,9 @@ import {
   BasicRequirementsCard,
   EvaluationIndicatorCard,
   AuthenticityCommitmentCard,
+  EMPTY_ENTERPRISE_BASIC,
+  buildEmptyBasicRequirements,
+  buildEmptyIndicators,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import { toast } from "sonner";
 
