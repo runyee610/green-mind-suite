@@ -82,7 +82,7 @@ export default function GreenMfgEntDeclarationNew() {
       if (draft.indicators?.length) {
         setIndicators((prev) =>
           prev.map((it) => {
-            const saved = draft.indicators.find((s) => s.no === it.no);
+            const saved = draft.indicators.find((s) => s.id === it.id);
             return saved
               ? {
                   ...it,
