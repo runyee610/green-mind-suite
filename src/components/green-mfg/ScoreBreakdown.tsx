@@ -31,7 +31,7 @@ function scale(score: number, weight: number, ratio: number) {
 function ScoreL1Block({
   l1, ratio, hideValues, warnUnderRatio,
 }: { l1: ScoreL1Dim; ratio: number; hideValues: boolean; warnUnderRatio?: number }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const l1Score = scale(l1.score, l1.weight, ratio);
   const l1Pct = l1.weight === 0 ? 0 : (l1Score / l1.weight) * 100;
   const l1Weak = warnUnderRatio != null && l1.weight > 0 && l1Pct < warnUnderRatio;
