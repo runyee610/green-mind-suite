@@ -6,37 +6,6 @@ import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon,
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
 
-export const EMPTY_ENTERPRISE_BASIC: EnterpriseBasicInfo = {
-  factoryName: "",
-  address: "",
-  industry: "",
-  subIndustry: "",
-  nonKeySubIndustry: "",
-  statBureauCode: "",
-  unitNature: "民营企业",
-  contactDept: "",
-  contactName: "",
-  contactPhone: "",
-  contactEmail: "",
-  processIntro: "",
-  greenDevIntro: "",
-};
-
-export const EMPTY_BASIC_REQUIREMENTS: BasicRequirementItem[] = MOCK_BASIC_REQUIREMENTS_PLACEHOLDER();
-
-function MOCK_BASIC_REQUIREMENTS_PLACEHOLDER(): BasicRequirementItem[] {
-  // 占位：在 MOCK_BASIC_REQUIREMENTS 定义后被覆盖
-  return [];
-}
-
-export function buildEmptyBasicRequirements(source: BasicRequirementItem[]): BasicRequirementItem[] {
-  return source.map((it) => ({ ...it, conform: null, proofs: [] }));
-}
-
-export function buildEmptyIndicators(source: IndicatorRow[]): IndicatorRow[] {
-  return source.map((it) => ({ ...it, reportValue: "", proofs: [], govRemark: "" }));
-}
-
 export type DetailMode = "ent" | "gov" | "view";
 
 export interface EnterpriseBasicInfo {
