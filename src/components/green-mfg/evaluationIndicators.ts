@@ -100,7 +100,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     no: 5,
     l1: "资源高效化",
     showL1: true,
-    l1RowSpan: 4,
+    l1RowSpan: 5,
     l2: "节约原材料",
     showL2: true,
     l2RowSpan: 2,
