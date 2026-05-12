@@ -210,43 +210,100 @@ export default function GreenMfgEntDeclarationDetail() {
         </TabsContent>
 
         <TabsContent value="smart-score" className="mt-0">
-          <Card className="panel">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Sparkles className="h-4 w-4 text-secondary" />智能打分明细
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4 flex items-center justify-between rounded-md border border-border/60 bg-muted/30 p-3">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-semibold text-primary">{detail.score}</span>
-                  <span className="text-xs text-muted-foreground">/ 100</span>
-                </div>
-                <Badge variant="outline" className={scoreTone(detail.score)}>
-                  {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议复核" : "不达标"}
-                </Badge>
-              </div>
-              <div className="space-y-2.5">
-                {SCORE_DIMENSIONS.map((d) => (
-                  <div key={d.name}>
-                    <div className="flex justify-between text-xs">
-                      <span>
-                        {d.name}
-                        <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                      </span>
-                      <span className="font-mono">
-                        {d.score}/{d.weight}
-                      </span>
-                    </div>
-                    <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
+          <div className="grid gap-3 lg:grid-cols-2">
+            <Card className="panel">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Sparkles className="h-4 w-4 text-secondary" />智能打分明细
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 flex items-center justify-between rounded-md border border-border/60 bg-muted/30 p-3">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-semibold text-primary">{detail.score}</span>
+                    <span className="text-xs text-muted-foreground">/ 100</span>
                   </div>
-                ))}
-              </div>
-              <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
-                基于近三年能源、碳排、固废等口径数据综合计算。
-              </p>
-            </CardContent>
-          </Card>
+                  <Badge variant="outline" className={scoreTone(detail.score)}>
+                    {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议复核" : "不达标"}
+                  </Badge>
+                </div>
+                <div className="space-y-2.5">
+                  {SCORE_DIMENSIONS.map((d) => (
+                    <div key={d.name}>
+                      <div className="flex justify-between text-xs">
+                        <span>
+                          {d.name}
+                          <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
+                        </span>
+                        <span className="font-mono">
+                          {d.score}/{d.weight}
+                        </span>
+                      </div>
+                      <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
+                  基于近三年能源、碳排、固废等口径数据综合计算。
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="panel">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <UserCheck className="h-4 w-4 text-success" />专家打分
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {detail.manualScore != null ? (
+                  <>
+                    <div className="mb-4 flex items-center justify-between rounded-md border border-border/60 bg-muted/30 p-3">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-semibold text-success">{detail.manualScore}</span>
+                        <span className="text-xs text-muted-foreground">/ 100</span>
+                      </div>
+                      <Badge variant="outline" className={scoreTone(detail.manualScore)}>
+                        {detail.manualScore >= 80 ? "通过" : detail.manualScore >= 60 ? "复核中" : "不达标"}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2.5">
+                      {SCORE_DIMENSIONS.map((d) => {
+                        const ratio = detail.manualScore! / 100;
+                        const expert = Math.min(d.weight, Math.round(d.weight * ratio * 10) / 10);
+                        return (
+                          <div key={d.name}>
+                            <div className="flex justify-between text-xs">
+                              <span>
+                                {d.name}
+                                <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
+                              </span>
+                              <span className="font-mono">
+                                {expert}/{d.weight}
+                              </span>
+                            </div>
+                            <Progress value={(expert / d.weight) * 100} className="mt-1 h-1.5" />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {detail.comment && (
+                      <div className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed">
+                        <span className="text-muted-foreground">专家意见：</span>
+                        {detail.comment}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border/60 bg-muted/20 p-6 text-center">
+                    <UserCheck className="h-6 w-6 text-muted-foreground/50" />
+                    <p className="text-sm text-muted-foreground">尚未完成专家打分</p>
+                    <p className="text-[11px] text-muted-foreground">智能打分通过后，将由行业专家进行复核打分。</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="basic-info" className="mt-0">
@@ -259,7 +316,7 @@ export default function GreenMfgEntDeclarationDetail() {
           <EvaluationIndicatorCard mode="ent" />
         </TabsContent>
         <TabsContent value="authenticity-commitment" className="mt-0">
-          <AuthenticityCommitmentCard />
+          <AuthenticityCommitmentCard defaultSignedFileName="真实性承诺函-签章扫描件.pdf" />
         </TabsContent>
       </Tabs>
     </AppLayout>
