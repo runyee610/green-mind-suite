@@ -58,9 +58,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
-                  <Button size="sm" variant="outline" className="h-8" onClick={() => navigate(`/green-mfg/ent/declaration/${myDeclaration.id}`)}>
-                    <Eye className="mr-1 h-4 w-4" />查看详情
-                  </Button>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new")}>
                     <Plus className="mr-1 h-4 w-4" />新增申报
                   </Button>
@@ -72,16 +69,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <Field label="专家打分" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
               <Field label="所属区" value={myDeclaration.district} />
               <Field label="当前等级" value={myDeclaration.level} />
-            </CardContent>
-          </Card>
-
-          {/* 流转节点 */}
-          <Card className="panel">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base"><ChevronRight className="mr-1 inline h-4 w-4" />审核流转状态</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AuditFlowTimeline nodes={MOCK_AUDIT_FLOW} />
             </CardContent>
           </Card>
 

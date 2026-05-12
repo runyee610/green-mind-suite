@@ -20,7 +20,10 @@ import {
   type AuthenticityCommitmentValue,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
+import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import { toast } from "sonner";
+
+const ALL_BATCHES = ["2025年第一批", "2025年第二批", "2026年第一批"];
 
 const ANCHORS = [
   { href: "basic-info", label: "企业基本信息表" },
@@ -131,12 +134,20 @@ export default function GreenMfgEntDeclarationNew() {
     }
   };
 
+  const usedBatches = MOCK_DECLARATIONS
+    .filter((d) => d.enterpriseName === DEFAULT_ENTERPRISE.name)
+    .map((d) => d.batch);
+
   const handleSubmit = () => {
     if (!batch) {
       toast.warning("请选择申报批次");
       return;
     }
-    toast.success("申报已提交，等待区级审核");
+    if (usedBatches.includes(batch)) {
+      toast.error("该批次您已申报，不能重复申报");
+      return;
+    }
+    toast.success("申报已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent"), 600);
   };
@@ -184,9 +195,14 @@ export default function GreenMfgEntDeclarationNew() {
                 <SelectValue placeholder="请选择申报批次" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2025年第一批">2025年第一批</SelectItem>
-                <SelectItem value="2025年第二批">2025年第二批</SelectItem>
-                <SelectItem value="2026年第一批">2026年第一批</SelectItem>
+                {ALL_BATCHES.map((b) => {
+                  const used = usedBatches.includes(b);
+                  return (
+                    <SelectItem key={b} value={b} disabled={used}>
+                      {b}{used ? "（已申报）" : ""}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
