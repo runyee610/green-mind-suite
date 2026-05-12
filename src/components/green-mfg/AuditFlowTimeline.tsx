@@ -2,6 +2,8 @@ import { Check, X, Clock, Send, Hourglass, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AuditFlowNode } from "./data";
 
+const SCORED_STAGES = new Set(["系统智能打分", "区级审批", "市级审批"]);
+
 const resultStyle = (result: string) => {
   switch (result) {
     case "通过":
