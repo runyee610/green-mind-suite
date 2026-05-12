@@ -665,14 +665,6 @@ function FileItem({
       <div className="ml-auto flex shrink-0 items-center gap-1 opacity-70 group-hover:opacity-100">
         <button
           type="button"
-          title="在线预览"
-          className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
-          onClick={() => onPreview(name)}
-        >
-          <Eye className="h-3 w-3" />
-        </button>
-        <button
-          type="button"
           title="下载"
           className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
           onClick={() => triggerMockDownload(name)}
