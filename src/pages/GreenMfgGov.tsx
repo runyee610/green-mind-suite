@@ -21,9 +21,9 @@ import {
   stageBadgeClass,
 } from "@/components/green-mfg/data";
 
-export default function GreenMfgGov() {
+export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
-  const [tab, setTab] = useState("declaration");
+  const [tab, setTab] = useState<string>(section ?? "declaration");
   const [keyword, setKeyword] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
