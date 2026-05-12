@@ -92,7 +92,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>申报编号</TableHead>
+                    <TableHead>申报批次</TableHead>
                     <TableHead className="text-right">智能打分</TableHead>
                     <TableHead className="text-right">专家打分</TableHead>
                     <TableHead className="text-center">状态</TableHead>
@@ -104,7 +104,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                 <TableBody>
                   {MOCK_DECLARATIONS.slice(0, 3).map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell className="font-mono text-xs">{r.id}</TableCell>
+                      <TableCell className="font-mono text-xs">{r.batch}</TableCell>
                       <TableCell className="text-right font-mono text-xs"><Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.score}</TableCell>
                       <TableCell className="text-right font-mono text-xs">{r.manualScore ?? "—"}</TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge></TableCell>
