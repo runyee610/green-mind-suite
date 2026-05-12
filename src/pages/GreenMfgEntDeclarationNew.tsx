@@ -27,10 +27,10 @@ const ANCHORS = [
 
 export default function GreenMfgEntDeclarationNew() {
   const navigate = useNavigate();
-  const [enterpriseName, setEnterpriseName] = useState("上海华普电缆有限公司");
-  const [creditCode, setCreditCode] = useState("9131011263289475XL");
-  const [industry, setIndustry] = useState("机械行业");
-  const [batch, setBatch] = useState("2025年第二批");
+  const [enterpriseName, setEnterpriseName] = useState("");
+  const [creditCode, setCreditCode] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [batch, setBatch] = useState("");
 
   const handleSave = () => toast.success("草稿已保存");
   const handleSubmit = () => {
