@@ -45,6 +45,17 @@ export interface IndicatorRow {
   /** 二级指标在该行是否需要展示 */
   showL2?: boolean;
   l2RowSpan?: number;
+  /** 序号列是否展示（用于多子行合并），默认 true */
+  showNo?: boolean;
+  noRowSpan?: number;
+  /** 加权参数列是否展示（用于多子行合并），默认 true */
+  showWeight?: boolean;
+  weightRowSpan?: number;
+  /** 证明材料要求列是否展示（用于多子行合并），默认 true */
+  showProofReq?: boolean;
+  proofReqRowSpan?: number;
+  /** 是否为子行（更紧凑的行高） */
+  isSubRow?: boolean;
   /** 仅序号 1：是否有适用国家强制性能源消耗限额标准 */
   hasStandard?: "有" | "无";
   /** 仅序号 1 且 hasStandard='有' 时使用：产品一/二/三的填报数据 */
@@ -99,6 +110,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   {
     id: "3-1",
     no: 3,
+    showNo: true,
+    noRowSpan: 4,
     l1: "能源低碳化",
     l2: "可再生能源利用率",
     showL2: true,
@@ -109,14 +122,20 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     leadValue: "/",
     baseValue: "/",
     weight: "8",
+    showWeight: true,
+    weightRowSpan: 4,
     reportValue: "",
     proofs: [],
+    showProofReq: true,
+    proofReqRowSpan: 4,
     proofRequirement:
       "1、指标计算过程及其附件；2、《能源购进、消费与库存》（205-1表）、《能源加工转换与回收利用》（205-2表）（如有）、《能源生产、销售与库存》（205-6表）（如有）；3、《可再生能源电力消纳核算清单》；4、可再生能源消费凭证（绿色电力市场化交易合同、交易结算凭证、绿证 GEC 等）；非电力形式可再生能源利用相关合同、协议等。注：《可再生能源电力消纳核算清单》可由电力交易机构出具或企业自行整理填报。",
   },
   {
     id: "3-2",
     no: 3,
+    showNo: false,
+    isSubRow: true,
     l1: "能源低碳化",
     l2: "可再生能源利用率",
     l3: "可再生能源利用率-年综合能源消费量5000吨及以上不满10000吨标煤的用能单位",
@@ -125,14 +144,17 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     leadValue: "/",
     baseValue: "/",
     weight: "8",
+    showWeight: false,
     reportValue: "",
     proofs: [],
-    proofRequirement:
-      "1、指标计算过程及其附件；2、《能源购进、消费与库存》（205-1表）、《能源加工转换与回收利用》（205-2表）（如有）、《能源生产、销售与库存》（205-6表）（如有）；3、《可再生能源电力消纳核算清单》；4、可再生能源消费凭证（绿色电力市场化交易合同、交易结算凭证、绿证 GEC 等）；非电力形式可再生能源利用相关合同、协议等。注：《可再生能源电力消纳核算清单》可由电力交易机构出具或企业自行整理填报。",
+    showProofReq: false,
+    proofRequirement: "",
   },
   {
     id: "3-3",
     no: 3,
+    showNo: false,
+    isSubRow: true,
     l1: "能源低碳化",
     l2: "可再生能源利用率",
     l3: "可再生能源利用率-年综合能源消费量3000吨及以上不满5000吨标煤的用能单位",
@@ -141,14 +163,17 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     leadValue: "/",
     baseValue: "/",
     weight: "8",
+    showWeight: false,
     reportValue: "",
     proofs: [],
-    proofRequirement:
-      "1、指标计算过程及其附件；2、《能源购进、消费与库存》（205-1表）、《能源加工转换与回收利用》（205-2表）（如有）、《能源生产、销售与库存》（205-6表）（如有）；3、《可再生能源电力消纳核算清单》；4、可再生能源消费凭证（绿色电力市场化交易合同、交易结算凭证、绿证 GEC 等）；非电力形式可再生能源利用相关合同、协议等。注：《可再生能源电力消纳核算清单》可由电力交易机构出具或企业自行整理填报。",
+    showProofReq: false,
+    proofRequirement: "",
   },
   {
     id: "3-4",
     no: 3,
+    showNo: false,
+    isSubRow: true,
     l1: "能源低碳化",
     l2: "可再生能源利用率",
     l3: "可再生能源利用率-年综合能源消费量3000吨标煤以下的用能单位",
@@ -157,10 +182,11 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     leadValue: "/",
     baseValue: "/",
     weight: "8",
+    showWeight: false,
     reportValue: "20.60",
     proofs: ["1.可再生能源利用率计算过程及其附件.pdf", "2.可再生能源电力消纳清单.pdf", "3.光伏照片.pdf"],
-    proofRequirement:
-      "1、指标计算过程及其附件；2、《能源购进、消费与库存》（205-1表）、《能源加工转换与回收利用》（205-2表）（如有）、《能源生产、销售与库存》（205-6表）（如有）；3、《可再生能源电力消纳核算清单》；4、可再生能源消费凭证（绿色电力市场化交易合同、交易结算凭证、绿证 GEC 等）；非电力形式可再生能源利用相关合同、协议等。注：《可再生能源电力消纳核算清单》可由电力交易机构出具或企业自行整理填报。",
+    showProofReq: false,
+    proofRequirement: "",
   },
   {
     id: "4",
