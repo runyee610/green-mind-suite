@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Building2, ClipboardCheck, Download, Eye, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
+import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, PLATFORM_FUNCTION_OPTIONS, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
+import { Checkbox } from "@/components/ui/checkbox";
 import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
 
 export type DetailMode = "ent" | "gov" | "view";
@@ -1099,7 +1100,13 @@ export function EvaluationIndicatorCard({
                       </td>
                     )}
                     <td>
-                      {entEditable ? (
+                      {row.id === "4" ? (
+                        <PlatformFunctionsField
+                          value={row.platformFunctions ?? []}
+                          editable={entEditable}
+                          onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
+                        />
+                      ) : entEditable ? (
                         <Textarea
                           value={row.reportValue ?? ""}
                           rows={2}
@@ -1340,7 +1347,56 @@ export function buildEmptyBasicRequirements(
 export function buildEmptyIndicators(
   source: IndicatorRow[] = EVALUATION_INDICATORS,
 ): IndicatorRow[] {
-  return source.map((it) => ({ ...it, reportValue: "", proofs: [], govRemark: "" }));
+  return source.map((it) => ({ ...it, reportValue: "", proofs: [], govRemark: "", platformFunctions: it.id === "4" ? [] : it.platformFunctions }));
+}
+
+function PlatformFunctionsField({
+  value,
+  editable,
+  onChange,
+}: {
+  value: string[];
+  editable: boolean;
+  onChange: (next: string[]) => void;
+}) {
+  const toggle = (opt: string, checked: boolean) => {
+    const set = new Set(value);
+    if (checked) set.add(opt);
+    else set.delete(opt);
+    onChange(PLATFORM_FUNCTION_OPTIONS.filter((o) => set.has(o)));
+  };
+  if (!editable) {
+    return (
+      <div className="space-y-1 text-[12px] leading-relaxed">
+        <div className="text-muted-foreground">已勾选 <span className="font-mono text-foreground">{value.length}</span> 项</div>
+        {value.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {value.map((v) => (
+              <span key={v} className="rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[11px]">{v}</span>
+            ))}
+          </div>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-1.5">
+      <div className="text-[11px] text-muted-foreground">已勾选 <span className="font-mono text-foreground">{value.length}</span> 项</div>
+      <div className="grid grid-cols-1 gap-1">
+        {PLATFORM_FUNCTION_OPTIONS.map((opt) => {
+          const checked = value.includes(opt);
+          return (
+            <label key={opt} className="flex cursor-pointer items-center gap-1.5 text-[12px] leading-tight">
+              <Checkbox checked={checked} onCheckedChange={(c) => toggle(opt, !!c)} />
+              <span>{opt}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 export function DeclarationDetailSections({ mode = "view" }: { mode?: DetailMode } = {}) {
