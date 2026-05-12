@@ -17,6 +17,7 @@ import {
   SCORE_DIMENSIONS,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
+import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
@@ -113,31 +114,7 @@ export default function GreenMfgGovDeclarationDetail() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ol className="relative space-y-4 border-l border-border/60 pl-5">
-                {MOCK_AUDIT_FLOW.map((n, i) => (
-                  <li key={i} className="relative">
-                    <span className={cn("absolute -left-[26px] top-1 h-3 w-3 rounded-full border-2 border-background",
-                      n.result === "通过" ? "bg-success" :
-                      n.result === "驳回" ? "bg-destructive" :
-                      n.result === "进入培育" ? "bg-warning" :
-                      n.result === "提交" ? "bg-primary" : "bg-muted-foreground/40")} />
-                    <div className="flex items-center justify-between gap-2 text-sm">
-                      <span className="font-medium">{n.stage}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] text-muted-foreground">{n.time}</span>
-                        <Badge variant="outline" className={cn("h-5 text-[10px]",
-                          n.result === "通过" ? "border-success/40 bg-success/10 text-success" :
-                          n.result === "驳回" ? "border-destructive/40 bg-destructive/10 text-destructive" :
-                          n.result === "进入培育" ? "border-warning/40 bg-warning/10 text-warning" :
-                          n.result === "提交" ? "border-primary/40 bg-primary/10 text-primary" :
-                          "border-border")}>{n.result}</Badge>
-                      </div>
-                    </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{n.operator}</p>
-                    {n.comment && <p className="mt-1 rounded bg-muted/40 p-2 text-xs leading-relaxed">{n.comment}</p>}
-                  </li>
-                ))}
-              </ol>
+              <AuditFlowTimeline nodes={MOCK_AUDIT_FLOW} />
             </CardContent>
           </Card>
         </TabsContent>
