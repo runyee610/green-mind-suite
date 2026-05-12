@@ -368,6 +368,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     leadValue: "/",
     baseValue: "/",
     weight: "4",
+    showWeight: true,
+    weightRowSpan: 2,
     reportValue: "1.00",
     proofs: ["1.节能技改项目清单.pdf"],
     proofRequirement:
@@ -386,6 +388,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     leadValue: "/",
     baseValue: "/",
     weight: "/",
+    showWeight: false,
     reportValue: "8.86",
     proofs: ["1.近三年绿色低碳改造升级项目投资额占比计算过程及其附件.pdf", "2.节能技改项目清单.pdf", "3.光伏发电项目安装合同.pdf"],
     proofRequirement:
