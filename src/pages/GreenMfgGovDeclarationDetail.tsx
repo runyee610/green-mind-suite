@@ -181,23 +181,10 @@ export default function GreenMfgGovDeclarationDetail() {
                     </>
                   )}
                 </div>
-                <div className="space-y-2.5">
-                  {SCORE_DIMENSIONS.map((d) => {
-                    const expert = Math.min(d.weight, Math.round(d.score * (detail.manualScore ? detail.manualScore / detail.score : 1)));
-                    return (
-                      <div key={d.name}>
-                        <div className="flex justify-between text-xs">
-                          <span>
-                            {d.name}
-                            <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                          </span>
-                          <span className="font-mono">{detail.manualScore != null ? `${expert}/${d.weight}` : `—/${d.weight}`}</span>
-                        </div>
-                        <Progress value={detail.manualScore != null ? (expert / d.weight) * 100 : 0} className="mt-1 h-1.5" />
-                      </div>
-                    );
-                  })}
-                </div>
+                <ScoreBreakdown
+                  ratio={detail.manualScore != null && detail.score ? detail.manualScore / detail.score : 1}
+                  hideValues={detail.manualScore == null}
+                />
                 <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
                   {detail.manualScore != null
                     ? `专家组复核结论：${detail.comment ?? "已完成核验，结果以审批意见为准。"}`
