@@ -339,7 +339,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     no: 9,
     l1: "生产洁净化",
     showL1: true,
-    l1RowSpan: 3,
+    l1RowSpan: 5,
     l2: "生产工艺设备先进性",
     showL2: true,
     l2RowSpan: 1,
