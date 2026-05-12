@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Building2, ClipboardCheck, Download, Eye, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
+import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
 import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
 
 export type DetailMode = "ent" | "gov" | "view";
