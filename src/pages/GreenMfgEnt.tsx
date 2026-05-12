@@ -80,20 +80,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <CardTitle className="text-base"><ChevronRight className="mr-1 inline h-4 w-4" />审核流转状态</CardTitle>
             </CardHeader>
             <CardContent>
-              <ol className="grid gap-2 md:grid-cols-4">
-                {MOCK_AUDIT_FLOW.map((n, i) => (
-                  <li key={i} className={cn("rounded-md border p-3",
-                    n.result === "通过" ? "border-success/40 bg-success/5" :
-                    n.result === "驳回" ? "border-destructive/40 bg-destructive/5" :
-                    n.result === "提交" ? "border-primary/40 bg-primary/5" :
-                    n.result === "进入培育" ? "border-warning/40 bg-warning/5" :
-                    "border-border bg-muted/30")}>
-                    <p className="text-xs font-medium">{n.stage}</p>
-                    <p className="mt-1 font-mono text-[10px] text-muted-foreground">{n.time}</p>
-                    <p className="mt-1 text-[11px]">{n.operator}</p>
-                  </li>
-                ))}
-              </ol>
+              <AuditFlowTimeline nodes={MOCK_AUDIT_FLOW} />
             </CardContent>
           </Card>
 
