@@ -482,31 +482,16 @@ export function BasicRequirementsCard({
               <div className="border-r border-border/60 px-3 py-3">
                 <ul className="space-y-1.5 text-xs">
                   {item.proofs.map((f) => (
-                    <li key={f} className="flex items-start gap-1.5">
-                      {/\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(f) ? (
-                        <ImageIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
-                      ) : (
-                        <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-                      )}
-                      <a
-                        href="#"
-                        className="break-all text-primary underline-offset-2 hover:underline"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        {f}
-                      </a>
-                      {editable && (
-                        <button
-                          type="button"
-                          className="ml-auto text-[11px] text-muted-foreground hover:text-destructive"
-                          onClick={() =>
-                            updateItem(item.no, { proofs: item.proofs.filter((x) => x !== f) })
-                          }
-                        >
-                          删除
-                        </button>
-                      )}
-                    </li>
+                    <FileItem
+                      key={f}
+                      name={f}
+                      onPreview={setPreview}
+                      onRemove={
+                        editable
+                          ? () => updateItem(item.no, { proofs: item.proofs.filter((x) => x !== f) })
+                          : undefined
+                      }
+                    />
                   ))}
                   {editable && (
                     <li className="pt-1">
