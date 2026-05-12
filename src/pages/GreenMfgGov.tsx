@@ -87,7 +87,7 @@ export default function GreenMfgGov() {
   return (
     <AppLayout
       title="绿色工厂（梯度培育）· 政府侧"
-      subtitle="申报监管、智能预审、人工审批、动态管理表年度复核"
+      subtitle="申报监管、智能预审、专家审批、动态管理表年度复核"
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
@@ -205,6 +205,7 @@ export default function GreenMfgGov() {
                     <TableHead>行业</TableHead>
                     <TableHead>申报批次</TableHead>
                     <TableHead className="text-right">智能打分 / 专家打分</TableHead>
+                    <TableHead className="text-right">综合能耗（吨标煤）</TableHead>
                     <TableHead className="text-right">产值（万元）</TableHead>
                     <TableHead className="text-center">流转状态</TableHead>
                     <TableHead>提交时间</TableHead>
@@ -212,7 +213,9 @@ export default function GreenMfgGov() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {declarations.map((r) => (
+                  {declarations.map((r) => {
+                    const dyn = MOCK_DYNAMIC.find((d) => d.enterpriseName === r.enterpriseName);
+                    return (
                     <TableRow key={r.id} className="h-12 border-border/40">
                       <TableCell>
                         <div className="text-sm">{r.enterpriseName}</div>
@@ -229,6 +232,9 @@ export default function GreenMfgGov() {
                       <TableCell className="text-right">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
+                      <TableCell className="text-right font-mono text-xs">
+                        {dyn?.energyConsumption != null ? dyn.energyConsumption.toLocaleString() : <span className="text-muted-foreground">—</span>}
+                      </TableCell>
                       <TableCell className="text-right font-mono text-xs">{r.outputValue.toLocaleString()}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
@@ -240,9 +246,10 @@ export default function GreenMfgGov() {
                         </Button>
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
