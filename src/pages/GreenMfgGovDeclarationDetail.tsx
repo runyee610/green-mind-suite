@@ -160,7 +160,7 @@ export default function GreenMfgGovDeclarationDetail() {
                   detail.score >= 80 ? "border-success/40 bg-success/10 text-success" :
                   detail.score >= 60 ? "border-warning/40 bg-warning/10 text-warning" :
                   "border-destructive/40 bg-destructive/10 text-destructive")}>
-                  {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议人工复核" : "不达标"}
+                  {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议专家复核" : "不达标"}
                 </Badge>
               </div>
               <div className="space-y-2.5">
