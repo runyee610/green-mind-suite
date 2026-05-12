@@ -33,19 +33,17 @@ export default function GreenMfgGovDynamicEdit() {
 
   return (
     <AppLayout title="动态管理表 · 政府侧审核" subtitle={`${row.id} · ${row.enterpriseName} · ${row.year} 年度`}>
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex items-center justify-end gap-3">
+        <Badge variant="outline" className={dynamicStatusClass(row.status)}>{row.status}</Badge>
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/gov")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回列表
         </Button>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className={dynamicStatusClass(row.status)}>{row.status}</Badge>
-          {row.status === "已填报" && (
-            <>
-              <Button variant="destructive" size="sm" onClick={() => setRejectOpen(true)}><ShieldX className="mr-1 h-4 w-4" />驳回</Button>
-              <Button size="sm" className="bg-success text-success-foreground hover:bg-success/90" onClick={() => setApproveOpen(true)}><ShieldCheck className="mr-1 h-4 w-4" />通过</Button>
-            </>
-          )}
-        </div>
+        {row.status === "已填报" && (
+          <>
+            <Button variant="destructive" size="sm" onClick={() => setRejectOpen(true)}><ShieldX className="mr-1 h-4 w-4" />驳回</Button>
+            <Button size="sm" className="bg-success text-success-foreground hover:bg-success/90" onClick={() => setApproveOpen(true)}><ShieldCheck className="mr-1 h-4 w-4" />通过</Button>
+          </>
+        )}
       </div>
 
       <Card className="panel">
