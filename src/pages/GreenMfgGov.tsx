@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { toast } from "sonner";
 import {
   ALL_INDUSTRIES,
+  INDUSTRY_TREE,
   DECLARATION_BATCHES,
   MOCK_DECLARATIONS,
   MOCK_DYNAMIC,
