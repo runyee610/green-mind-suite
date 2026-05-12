@@ -997,8 +997,9 @@ export function EvaluationIndicatorCard({
                                           <SelectValue placeholder="选择单位" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="tce/产品单位">tce/产品单位</SelectItem>
-                                          <SelectItem value="kgce/产品单位">kgce/产品单位</SelectItem>
+                                          {cfg.unitOptions.map((u) => (
+                                            <SelectItem key={u} value={u}>{u}</SelectItem>
+                                          ))}
                                         </SelectContent>
                                       </Select>
                                     ) : (
