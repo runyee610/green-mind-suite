@@ -62,7 +62,7 @@ export default function GreenMfgEntDeclarationDetail() {
         </span>
       }
     >
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-end gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
