@@ -665,14 +665,6 @@ function FileItem({
       <div className="ml-auto flex shrink-0 items-center gap-1 opacity-70 group-hover:opacity-100">
         <button
           type="button"
-          title="在线预览"
-          className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
-          onClick={() => onPreview(name)}
-        >
-          <Eye className="h-3 w-3" />
-        </button>
-        <button
-          type="button"
           title="下载"
           className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
           onClick={() => triggerMockDownload(name)}
@@ -987,20 +979,21 @@ export function AuthenticityCommitmentCard({
               <FileText className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{COMMITMENT_TEMPLATE_NAME}</p>
+              <button
+                type="button"
+                onClick={() => setPreview(COMMITMENT_TEMPLATE_NAME)}
+                className="block max-w-full truncate text-left text-sm font-medium text-primary underline-offset-2 hover:underline"
+              >
+                {COMMITMENT_TEMPLATE_NAME}
+              </button>
               <p className="text-[11px] text-muted-foreground">官方模板 · DOCX</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Button variant="outline" size="sm" className="h-8" onClick={() => setPreview(COMMITMENT_TEMPLATE_NAME)}>
-              <Eye className="mr-1 h-3.5 w-3.5" />预览
-            </Button>
-            <Button variant="outline" size="sm" className="h-8" asChild>
-              <a href={COMMITMENT_TEMPLATE_URL} download={COMMITMENT_TEMPLATE_NAME}>
-                <Download className="mr-1 h-3.5 w-3.5" />下载模板
-              </a>
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" className="h-8" asChild>
+            <a href={COMMITMENT_TEMPLATE_URL} download={COMMITMENT_TEMPLATE_NAME}>
+              <Download className="mr-1 h-3.5 w-3.5" />下载模板
+            </a>
+          </Button>
         </div>
 
         {/* 签章扫描件上传 / 展示 */}
@@ -1030,7 +1023,13 @@ export function AuthenticityCommitmentCard({
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm">{signed.signedFileName}</p>
+                <button
+                  type="button"
+                  onClick={() => signed.signedFileName && setPreview(signed.signedFileName)}
+                  className="block max-w-full truncate text-left text-sm text-primary underline-offset-2 hover:underline"
+                >
+                  {signed.signedFileName}
+                </button>
                 {signed.uploadedAt && (
                   <p className="text-[11px] text-muted-foreground">
                     上传时间：{new Date(signed.uploadedAt).toLocaleString("zh-CN")}
@@ -1040,24 +1039,14 @@ export function AuthenticityCommitmentCard({
               <Badge variant="outline" className="border-success/40 bg-success/10 text-[10px] text-success">
                 已上传
               </Badge>
-              <div className="ml-1 flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => signed.signedFileName && setPreview(signed.signedFileName)}
-                >
-                  <Eye className="mr-1 h-3.5 w-3.5" />预览
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => signed.signedFileName && triggerMockDownload(signed.signedFileName)}
-                >
-                  <Download className="mr-1 h-3.5 w-3.5" />下载
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs"
+                onClick={() => signed.signedFileName && triggerMockDownload(signed.signedFileName)}
+              >
+                <Download className="mr-1 h-3.5 w-3.5" />下载
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-3 rounded-md border border-dashed border-border/60 bg-muted/20 p-4 text-xs text-muted-foreground">
