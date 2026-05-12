@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,9 @@ export default function GreenMfgGov() {
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
   const [batchFilter, setBatchFilter] = useState<string>("all");
+  const [expandedIndustries, setExpandedIndustries] = useState<Record<string, boolean>>({});
+  const toggleIndustry = (name: string) =>
+    setExpandedIndustries((p) => ({ ...p, [name]: !p[name] }));
   const [batches, setBatches] = useState<string[]>([...DECLARATION_BATCHES]);
   const [batchDialogOpen, setBatchDialogOpen] = useState(false);
 
