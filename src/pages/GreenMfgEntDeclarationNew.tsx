@@ -90,6 +90,7 @@ export default function GreenMfgEntDeclarationNew() {
                   proofs: saved.proofs ?? [],
                   hasStandard: saved.hasStandard ?? it.hasStandard,
                   products: saved.products ?? it.products,
+                  platformFunctions: saved.platformFunctions ?? it.platformFunctions,
                 }
               : it;
           }),
