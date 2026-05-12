@@ -1040,6 +1040,24 @@ export function AuthenticityCommitmentCard({
               <Badge variant="outline" className="border-success/40 bg-success/10 text-[10px] text-success">
                 已上传
               </Badge>
+              <div className="ml-1 flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => signed.signedFileName && setPreview(signed.signedFileName)}
+                >
+                  <Eye className="mr-1 h-3.5 w-3.5" />预览
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => signed.signedFileName && triggerMockDownload(signed.signedFileName)}
+                >
+                  <Download className="mr-1 h-3.5 w-3.5" />下载
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="flex items-center gap-3 rounded-md border border-dashed border-border/60 bg-muted/20 p-4 text-xs text-muted-foreground">
@@ -1050,6 +1068,12 @@ export function AuthenticityCommitmentCard({
         </div>
       </CardContent>
     </Card>
+    <FilePreviewDialog
+      fileName={preview}
+      open={!!preview}
+      onOpenChange={(v) => !v && setPreview(null)}
+    />
+    </>
   );
 }
 
