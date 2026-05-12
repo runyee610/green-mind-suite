@@ -105,9 +105,16 @@ export function AuditFlowTimeline({ nodes, dense = false }: { nodes: AuditFlowNo
               />
               <div className="flex items-center justify-between gap-2 text-sm">
                 <span className="font-medium">{n.stage}</span>
-                <span className={cn("text-[10px] font-medium", s.text)}>{s.label}</span>
+                <div className="flex items-center gap-2">
+                  {SCORED_STAGES.has(n.stage) && (
+                    <span className={cn("font-mono text-xs", n.score != null ? s.text : "text-muted-foreground")}>
+                      {n.score != null ? `${n.score} 分` : "—"}
+                    </span>
+                  )}
+                  <span className={cn("text-[10px] font-medium", s.text)}>{s.label}</span>
+                </div>
               </div>
-              <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">{n.time} · {n.operator}</p>
+              <p className="mt-0.5 font-mono to-[10px] text-[10px] text-muted-foreground">{n.time} · {n.operator}</p>
               {n.comment && <p className="mt-1 rounded bg-muted/40 p-2 text-xs leading-relaxed">{n.comment}</p>}
             </li>
           );
