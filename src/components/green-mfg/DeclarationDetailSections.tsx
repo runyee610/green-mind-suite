@@ -1054,14 +1054,16 @@ export function EvaluationIndicatorCard({
                                       <span className="font-mono">{p.reportValue || "—"}</span>
                                     )}
                                   </td>
-                                  <td>
-                                    <ProofList
-                                      proofs={p.proofs}
-                                      editable={entEditable}
-                                      onChange={(next) => updateProduct(pi, { proofs: next })}
-                                      onPreview={setPreview}
-                                    />
-                                  </td>
+                                  {pi === 0 && (
+                                    <td rowSpan={products.length} className="align-top">
+                                      <ProofList
+                                        proofs={row.proofs}
+                                        editable={entEditable}
+                                        onChange={(next) => updateRow(row.id, { proofs: next })}
+                                        onPreview={setPreview}
+                                      />
+                                    </td>
+                                  )}
                                 </tr>
                               ))}
                             </tbody>
