@@ -117,18 +117,32 @@ export default function GreenMfgGov() {
                     />
                   </div>
                   <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                    <SelectTrigger className="h-8 w-44 text-xs">
+                    <SelectTrigger className="h-8 w-52 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
                       <SelectValue placeholder="行业" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80">
-                      <SelectItem value="all">全部行业</SelectItem>
-                      {INDUSTRY_TREE.map((node) => (
+                    <SelectContent className="max-h-96">
+                      <SelectItem value="all" className="text-xs font-medium">全部行业</SelectItem>
+                      <div className="my-1 h-px bg-border/60" />
+                      <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-warning">重点行业</div>
+                      {INDUSTRY_TREE.filter((n) => n.type === "重点行业").map((node) => (
                         <SelectGroup key={node.name}>
-                          <SelectLabel className="text-[11px] text-muted-foreground">{node.name}</SelectLabel>
-                          <SelectItem value={node.name} className="text-xs">{node.name}（全部）</SelectItem>
+                          <SelectLabel className="flex items-center gap-1.5 px-2 pl-2 text-[11px] font-semibold text-foreground">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning" />
+                            {node.name}
+                          </SelectLabel>
+                          <SelectItem value={node.name} className="pl-7 text-xs text-muted-foreground">全部 {node.name}</SelectItem>
                           {node.children.map((c) => (
-                            <SelectItem key={c} value={c} className="pl-6 text-xs">{c}</SelectItem>
+                            <SelectItem key={c} value={c} className="pl-7 text-xs">{c}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      ))}
+                      <div className="my-1 h-px bg-border/60" />
+                      <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">非重点行业</div>
+                      {INDUSTRY_TREE.filter((n) => n.type !== "重点行业").map((node) => (
+                        <SelectGroup key={node.name}>
+                          {node.children.map((c) => (
+                            <SelectItem key={c} value={c} className="pl-7 text-xs">{c}</SelectItem>
                           ))}
                         </SelectGroup>
                       ))}
@@ -190,7 +204,10 @@ export default function GreenMfgGov() {
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                       <TableCell>
-                        <div className="text-xs text-muted-foreground">{r.industry}</div>
+                        <div className="text-xs">{r.industry}</div>
+                        {r.subIndustry && (
+                          <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>
+                        )}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.batch}</TableCell>
                       <TableCell className="text-right">

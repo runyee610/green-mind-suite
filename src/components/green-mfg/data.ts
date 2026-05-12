@@ -9,6 +9,7 @@ export interface DeclarationRecord {
   creditCode: string;
   district: string;
   industry: string;
+  subIndustry?: string;
   industryType: "重点行业" | "非重点行业/通则";
   outputValue: number; // 产值（万元）
   batch: string; // 申报批次
@@ -82,6 +83,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     creditCode: "91310000132198765X",
     district: "宝山区",
     industry: "钢铁行业",
+    subIndustry: "短流程钢铁企业",
     industryType: "重点行业",
     outputValue: 128500,
     batch: "2025年第二批",
@@ -98,6 +100,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     creditCode: "91310115MA1K38XYZ1",
     district: "浦东新区",
     industry: "机械行业",
+    subIndustry: "汽车整车",
     industryType: "重点行业",
     outputValue: 45600,
     batch: "2025年第二批",
@@ -112,6 +115,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     creditCode: "913100007896543210",
     district: "闵行区",
     industry: "机械行业",
+    subIndustry: "电机",
     industryType: "重点行业",
     outputValue: 32000,
     batch: "2025年第一批",
@@ -129,6 +133,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     creditCode: "91310116MA1H23ABC4",
     district: "金山区",
     industry: "石化化工行业",
+    subIndustry: "煤制烯烃",
     industryType: "重点行业",
     outputValue: 89500,
     batch: "2025年第一批",
@@ -146,6 +151,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     creditCode: "91310115MA1K0DEF56",
     district: "浦东新区",
     industry: "电子行业",
+    subIndustry: "集成电路",
     industryType: "重点行业",
     outputValue: 67000,
     batch: "2025年第二批",
