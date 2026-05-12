@@ -21,14 +21,26 @@ export interface DeclarationRecord {
   comment?: string;
 }
 
-// 53 个重点行业（节选示例，实际可补齐）
-export const KEY_INDUSTRIES = [
-  "黑色金属冶炼", "有色金属冶炼", "化学原料", "化学纤维", "石油加工",
-  "煤炭加工", "建材水泥", "造纸", "纺织印染", "汽车零部件",
-  "电气机械", "电子专用设备", "医药制造", "食品加工", "橡胶塑料",
+// 8 大重点行业及细分行业 + 非重点行业（通则）
+export const INDUSTRY_TREE: Array<{ name: string; type: "重点行业" | "非重点行业/通则"; children: string[] }> = [
+  { name: "钢铁行业", type: "重点行业", children: ["长流程钢铁企业", "短流程钢铁企业", "铁合金", "焦化"] },
+  { name: "石化化工行业", type: "重点行业", children: ["石油化工一体化企业", "精对苯二甲酸", "煤制烯烃", "烧碱", "纯碱", "钛白粉", "磷铵", "尿素", "黄磷", "电石", "涂料", "聚氯乙烯", "轮胎"] },
+  { name: "有色行业", type: "重点行业", children: ["铜冶炼", "锌冶炼", "铅冶炼", "电解铝", "氧化铝", "工业硅"] },
+  { name: "建材行业", type: "重点行业", children: ["水泥", "平板玻璃及制品", "建筑陶瓷", "卫生陶瓷"] },
+  { name: "机械行业", type: "重点行业", children: ["汽车整车", "船舶", "铸造", "锅炉", "内燃机", "压缩机", "电机", "变压器", "电线电缆", "风电装备"] },
+  { name: "轻工行业", type: "重点行业", children: ["家用电器", "日用陶瓷", "造纸", "皮革", "制糖"] },
+  { name: "纺织行业", type: "重点行业", children: ["印染", "棉纺织", "色纺纱", "化学纤维"] },
+  { name: "电子行业", type: "重点行业", children: ["光伏", "锂离子电池", "计算机", "印制电路板", "集成电路", "显示器件", "移动通信终端"] },
+  { name: "非重点行业", type: "非重点行业/通则", children: ["通则"] },
 ];
 
-export const ALL_INDUSTRIES = [...KEY_INDUSTRIES, "其他（非重点/通则）"];
+export const KEY_INDUSTRIES = INDUSTRY_TREE.filter((i) => i.type === "重点行业").map((i) => i.name);
+export const ALL_INDUSTRIES = INDUSTRY_TREE.map((i) => i.name);
+export const ALL_SUB_INDUSTRIES = INDUSTRY_TREE.flatMap((i) => i.children);
+export const getIndustryType = (industry: string): "重点行业" | "非重点行业/通则" =>
+  INDUSTRY_TREE.find((i) => i.name === industry)?.type ?? "非重点行业/通则";
+export const getSubIndustries = (industry: string): string[] =>
+  INDUSTRY_TREE.find((i) => i.name === industry)?.children ?? [];
 
 export const DECLARATION_BATCHES = [
   "2025年第二批",
@@ -69,7 +81,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     enterpriseName: "上海宝武特种合金有限公司",
     creditCode: "91310000132198765X",
     district: "宝山区",
-    industry: "黑色金属冶炼",
+    industry: "钢铁行业",
     industryType: "重点行业",
     outputValue: 128500,
     batch: "2025年第二批",
@@ -85,7 +97,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     enterpriseName: "华域汽车电子有限公司",
     creditCode: "91310115MA1K38XYZ1",
     district: "浦东新区",
-    industry: "汽车零部件",
+    industry: "机械行业",
     industryType: "重点行业",
     outputValue: 45600,
     batch: "2025年第二批",
@@ -99,8 +111,8 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     enterpriseName: "申能电力设备股份有限公司",
     creditCode: "913100007896543210",
     district: "闵行区",
-    industry: "电气机械",
-    industryType: "非重点行业/通则",
+    industry: "机械行业",
+    industryType: "重点行业",
     outputValue: 32000,
     batch: "2025年第一批",
     submitDate: "2025-08-21",
@@ -116,7 +128,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     enterpriseName: "上海石化化工新材料分公司",
     creditCode: "91310116MA1H23ABC4",
     district: "金山区",
-    industry: "化学原料",
+    industry: "石化化工行业",
     industryType: "重点行业",
     outputValue: 89500,
     batch: "2025年第一批",
@@ -133,8 +145,8 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     enterpriseName: "中微半导体设备(上海)股份有限公司",
     creditCode: "91310115MA1K0DEF56",
     district: "浦东新区",
-    industry: "电子专用设备",
-    industryType: "非重点行业/通则",
+    industry: "电子行业",
+    industryType: "重点行业",
     outputValue: 67000,
     batch: "2025年第二批",
     submitDate: "2025-09-20",

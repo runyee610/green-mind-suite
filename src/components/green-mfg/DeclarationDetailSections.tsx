@@ -2,9 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
+import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
 
 export type DetailMode = "ent" | "gov" | "view";
 
@@ -113,8 +115,49 @@ export function EnterpriseBasicInfoCard({
         <div className="overflow-hidden rounded-md border border-border/60">
           <Row label="工厂名称" value={text(data.factoryName, "请填写工厂名称", "factoryName")} />
           <Row label="通讯地址" value={text(data.address, "请填写通讯地址", "address")} />
-          <Row label="所属行业" value={text(data.industry, "如：机械行业", "industry")} />
-          <Row label="细分行业" value={text(data.subIndustry, "如：电线电缆", "subIndustry")} />
+          <Row
+            label="所属行业"
+            value={
+              editable ? (
+                <Select
+                  value={data.industry}
+                  onValueChange={(v) => update({ industry: v, subIndustry: "" })}
+                >
+                  <SelectTrigger className="h-8 w-56 text-sm"><SelectValue placeholder="请选择所属行业" /></SelectTrigger>
+                  <SelectContent>
+                    {ALL_INDUSTRIES.map((i) => (
+                      <SelectItem key={i} value={i}>{i}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <span>{data.industry || <span className="text-muted-foreground">—</span>}</span>
+              )
+            }
+          />
+          <Row
+            label="细分行业"
+            value={
+              editable ? (
+                <Select
+                  value={data.subIndustry}
+                  onValueChange={(v) => update({ subIndustry: v })}
+                  disabled={!data.industry}
+                >
+                  <SelectTrigger className="h-8 w-56 text-sm">
+                    <SelectValue placeholder={data.industry ? "请选择细分行业" : "请先选择所属行业"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getSubIndustries(data.industry).map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <span>{data.subIndustry || <span className="text-muted-foreground">—</span>}</span>
+              )
+            }
+          />
           <Row
             label="非重点细分行业（当企业细分行业是非重点行业时请填写）"
             value={text(data.nonKeySubIndustry || "", "选填", "nonKeySubIndustry")}
