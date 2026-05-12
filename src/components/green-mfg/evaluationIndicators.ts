@@ -62,6 +62,8 @@ export interface IndicatorRow {
   products?: ProductEnergyEntry[];
   /** 仅序号 4：能碳管理系统平台功能符合数量 — 复选框选项 */
   platformFunctions?: string[];
+  /** 当本年度指标值为单选项时使用 */
+  reportOptions?: string[];
 }
 
 /** 序号 4：能碳管理系统平台功能符合项 候选 */
