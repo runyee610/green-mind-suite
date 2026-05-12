@@ -979,20 +979,21 @@ export function AuthenticityCommitmentCard({
               <FileText className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{COMMITMENT_TEMPLATE_NAME}</p>
+              <button
+                type="button"
+                onClick={() => setPreview(COMMITMENT_TEMPLATE_NAME)}
+                className="block max-w-full truncate text-left text-sm font-medium text-primary underline-offset-2 hover:underline"
+              >
+                {COMMITMENT_TEMPLATE_NAME}
+              </button>
               <p className="text-[11px] text-muted-foreground">官方模板 · DOCX</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Button variant="outline" size="sm" className="h-8" onClick={() => setPreview(COMMITMENT_TEMPLATE_NAME)}>
-              <Eye className="mr-1 h-3.5 w-3.5" />预览
-            </Button>
-            <Button variant="outline" size="sm" className="h-8" asChild>
-              <a href={COMMITMENT_TEMPLATE_URL} download={COMMITMENT_TEMPLATE_NAME}>
-                <Download className="mr-1 h-3.5 w-3.5" />下载模板
-              </a>
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" className="h-8" asChild>
+            <a href={COMMITMENT_TEMPLATE_URL} download={COMMITMENT_TEMPLATE_NAME}>
+              <Download className="mr-1 h-3.5 w-3.5" />下载模板
+            </a>
+          </Button>
         </div>
 
         {/* 签章扫描件上传 / 展示 */}
