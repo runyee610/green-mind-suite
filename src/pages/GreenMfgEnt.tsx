@@ -14,6 +14,7 @@ import {
   dynamicStatusClass,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
+import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
