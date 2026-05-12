@@ -117,7 +117,7 @@ export default function GreenMfgEntDeclarationDetail() {
         <Card className="panel">
           <CardContent className="flex h-full flex-col justify-between gap-2 p-4">
             <p className="text-xs text-muted-foreground">
-              <UserCheck className="mr-1 inline h-3.5 w-3.5 text-success" />人工打分
+              <UserCheck className="mr-1 inline h-3.5 w-3.5 text-success" />专家打分
             </p>
             <div className="flex items-end justify-between">
               {detail.manualScore != null ? (
@@ -134,7 +134,7 @@ export default function GreenMfgEntDeclarationDetail() {
                 <>
                   <span className="text-2xl font-semibold leading-none text-muted-foreground">—</span>
                   <Badge variant="outline" className="border-muted-foreground/30 text-[10px] text-muted-foreground">
-                    待人工审核
+                    待专家审核
                   </Badge>
                 </>
               )}
