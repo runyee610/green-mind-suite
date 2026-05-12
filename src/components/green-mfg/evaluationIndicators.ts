@@ -64,11 +64,17 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "kgce/万元",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "8",
     reportValue: "21.52",
     proofs: ["1.单位产值综合能耗_计算过程及其附件.pdf", "2.《能源购进、消费与库存》.pdf"],
     proofRequirement:
       "1、指标计算过程及其附件；2、报统计部门《工业产销总值及主要产品产量》（B204-1）、《能源购进、消费与库存》（205-1表）；3、《能源加工转换与回收利用》（205-2表）（如有）、《主要耗能工业企业单位产品能源消费情况》（205-3表）（如有）、《能源生产、销售与库存》（205-6表）（如有）；4、《重点用能单位能源利用状况报告》（如有）。",
+    hasStandard: "无",
+    products: [
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+      { ...EMPTY_PRODUCT_ENERGY_ENTRY },
+    ],
   },
   {
     no: 2,
