@@ -100,7 +100,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
         <KpiTile icon={ClipboardList} label="待审申报" value={declarations.filter((d) => d.stage === "区审批" || d.stage === "市审批").length} accent="primary" />
-        <KpiTile icon={CheckCircle2} label="本年已通过" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已通过").length} accent="success" />
+        <KpiTile icon={CheckCircle2} label="本年绿色工厂" value={MOCK_DECLARATIONS.filter((d) => d.stage === "绿色工厂").length} accent="success" />
         <KpiTile icon={FileBarChart} label="培育中企业" value={MOCK_DECLARATIONS.filter((d) => d.stage === "培育中").length} accent="warning" />
         <KpiTile icon={ClipboardList} label="动态管理待审" value={MOCK_DYNAMIC.filter((d) => d.status === "已填报").length} accent="primary" />
       </div>
@@ -196,11 +196,11 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
+                      <SelectItem value="填报中">填报中</SelectItem>
                       <SelectItem value="区审批">区审批</SelectItem>
                       <SelectItem value="市审批">市审批</SelectItem>
-                      <SelectItem value="已通过">已通过</SelectItem>
                       <SelectItem value="培育中">培育中</SelectItem>
-                      <SelectItem value="已驳回">已驳回</SelectItem>
+                      <SelectItem value="绿色工厂">绿色工厂</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
