@@ -62,6 +62,8 @@ export interface IndicatorRow {
   products?: ProductEnergyEntry[];
   /** 仅序号 4：能碳管理系统平台功能符合数量 — 复选框选项 */
   platformFunctions?: string[];
+  /** 当本年度指标值为单选项时使用 */
+  reportOptions?: string[];
 }
 
 /** 序号 4：能碳管理系统平台功能符合项 候选 */
@@ -226,8 +228,10 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、平台系统架构设计文档，说明与相关业务功能的对应关系；2、平台开发采购合同、部署验收报告（如有）；3、平台功能实现或效果验证材料，例如用户操作手册、功能截图（大屏看板、APP能耗实时展示等功能界面）等。",
   },
   {
-    id: "5",
+    id: "5-1",
     no: 5,
+    showNo: true,
+    noRowSpan: 2,
     l1: "资源高效化",
     showL1: true,
     l1RowSpan: 5,
@@ -241,12 +245,15 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     baseValue: "/",
     weight: "/",
     reportValue: "提供本单位减少生产过程中原辅材料消耗的应用案例",
+    reportOptions: ["提供本单位减少生产过程中原辅材料消耗的应用案例", "未提供"],
     proofs: ["1.节约原材料自评价报告.pdf", "2.设计开发控制程序.pdf"],
     proofRequirement: "1、提供本单位减少生产过程中原辅材料消耗的应用案例。",
   },
   {
-    id: "6",
-    no: 6,
+    id: "5-2",
+    no: 5,
+    showNo: false,
+    isSubRow: true,
     l1: "资源高效化",
     l2: "节约原材料",
     l3: "使用再生材料、回收再利用材料或可回收材料替代原生材料、不可回收材料改善应用案例",
@@ -256,12 +263,16 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     baseValue: "/",
     weight: "/",
     reportValue: "提供本单位使用再生材料、回收再利用材料或可回收材料替代原生材料、不可回收材料改善应用案例",
+    reportOptions: [
+      "提供本单位使用再生材料、回收再利用材料或可回收材料替代原生材料、不可回收材料改善应用案例",
+      "未提供",
+    ],
     proofs: ["1.回料使用比率规范.pdf", "2.回料掺比表2024.pdf"],
     proofRequirement: "1、提供本单位使用再生材料、回收再利用材料或可回收材料替代原生材料、不可回收材料改善应用案例。",
   },
   {
-    id: "7",
-    no: 7,
+    id: "6",
+    no: 6,
     l1: "资源高效化",
     l2: "取水强度",
     showL2: true,
@@ -278,8 +289,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、指标计算过程及其附件；2、报统计部门《工业产销总值及主要产品产量》（B204-1）、《工业企业用水情况》（205-4表）；3、工业用水统计台账。",
   },
   {
-    id: "8",
-    no: 8,
+    id: "7",
+    no: 7,
     l1: "资源高效化",
     l2: "工业用水重复利用率",
     showL2: true,
@@ -296,8 +307,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、指标计算过程及其附件；2、报统计部门《工业企业用水情况》（205-4表）；3、重复用水量证明，例如循环水量、串联水量、废水处理回用水量等计量或记录台账；4、重复用水设施、关键区域现场实景照片。",
   },
   {
-    id: "9",
-    no: 9,
+    id: "8",
+    no: 8,
     l1: "资源高效化",
     l2: "一般工业固体废物综合利用率",
     showL2: true,
@@ -314,8 +325,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、指标计算过程及其附件；2、一般工业固体废物统计台账，包含年度产生量、综合利用量、综合利用往年贮存量等指标计算关键参数信息；3、报生态环境部门《工业企业污染物和温室气体排放及治理情况》（基101表）（如有）；4、综合利用证明，例如资源化技术方案、工艺流程图等自行利用说明；委外综合利用协议及综合利用单位资质证明、转移量确认单或相关凭证。",
   },
   {
-    id: "10",
-    no: 10,
+    id: "9",
+    no: 9,
     l1: "生产洁净化",
     showL1: true,
     l1RowSpan: 3,
@@ -333,8 +344,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     proofRequirement: "1、采用相关生产工艺和设备的说明。",
   },
   {
-    id: "11",
-    no: 11,
+    id: "10",
+    no: 10,
     l1: "生产洁净化",
     l2: "绿色低碳改造升级",
     showL2: true,
@@ -351,8 +362,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、近三年绿色低碳改造升级项目清单（按项目完成时间在近三年计）；2、项目相关合同及立项、审批、验收材料（如有）；3、项目结题报告（包含节能、降碳、减污、节材等效益计算说明）（如有）。",
   },
   {
-    id: "12",
-    no: 12,
+    id: "11",
+    no: 11,
     l1: "生产洁净化",
     l2: "绿色低碳改造升级",
     l3: "近3年绿色低碳改造升级项目投资额占比",
@@ -367,8 +378,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、指标计算过程及其附件；2、近三年绿色低碳改造升级项目清单（按项目完成时间在近三年计）；3、项目投资证明，例如项目合同、验收材料、支付凭证、专项审计报告等；4、报统计部门《工业产销总值及主要产品产量》（B204-1）。",
   },
   {
-    id: "13",
-    no: 13,
+    id: "12",
+    no: 12,
     l1: "产品绿色化",
     showL1: true,
     l1RowSpan: 3,
@@ -387,8 +398,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、指标计算过程及其附件；2、排污许可相关文件，例如排污许可证正本、副本，排污登记表；3、排污许可证执行报告年报（如有）；4、报生态环境部门《工业企业污染物和温室气体排放及治理情况》（基101表）（如有）；5、污染物在线监测记录（包含年均排放浓度数据）；如不能提供，请提交环境检测报告（监测频次至少季度1次/季节性生产单位应保证在生产期内监测次数不少于4次或不低于每月1次）；6、污染物治理措施说明。",
   },
   {
-    id: "14",
-    no: 14,
+    id: "13",
+    no: 13,
     l1: "产品绿色化",
     l2: "绿色设计",
     showL2: true,
@@ -405,8 +416,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、绿色设计典型应用案例（围绕轻量化、无害化、长寿命、节能、易回收、可拆解、易再生等方面提供绿色设计典型应用案例，全面展示企业研发人员在设计环节运用绿色设计理念开展绿色设计）。",
   },
   {
-    id: "15",
-    no: 15,
+    id: "14",
+    no: 14,
     l1: "产品绿色化",
     l2: "产品碳足迹",
     showL2: true,
@@ -423,8 +434,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
       "1、指标计算过程及其附件；2、报统计部门《工业产销总值及主要产品产量》（B204-1）；3、提供评价年相关产品碳足迹报告（参考 GB/T 24067 等相关依据标准给出的报告模板）。",
   },
   {
-    id: "16",
-    no: 16,
+    id: "15",
+    no: 15,
     l1: "用地集约化",
     showL1: true,
     l1RowSpan: 3,
@@ -442,8 +453,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     proofRequirement: "1、指标计算过程及其附件；2、报统计部门《工业产销总值及主要产品产量》（B204-1）。",
   },
   {
-    id: "17",
-    no: 17,
+    id: "16",
+    no: 16,
     l1: "用地集约化",
     l2: "土地产出率",
     l3: "建筑系数",
@@ -457,8 +468,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     proofRequirement: "1、指标计算过程及其附件；2、项目建设工程规划许可证及附图；3、厂区总平面图。",
   },
   {
-    id: "18",
-    no: 18,
+    id: "17",
+    no: 17,
     l1: "用地集约化",
     l2: "土地产出率",
     l3: "容积率",

@@ -745,8 +745,8 @@ function ProofList({
 
 const TYPE_TONE: Record<IndicatorRow["type"], string> = {
   正向定量: "border-primary/40 bg-primary/10 text-primary",
-  逆向定量: "border-warning/40 bg-warning/10 text-warning",
-  正向定性: "border-secondary/40 bg-secondary/10 text-secondary",
+  逆向定量: "border-warning/50 bg-warning/15 text-warning-foreground",
+  正向定性: "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
 };
 
 export function EvaluationIndicatorCard({
@@ -1106,6 +1106,13 @@ export function EvaluationIndicatorCard({
                           editable={entEditable}
                           onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
                         />
+                      ) : row.reportOptions ? (
+                        <ReportRadioField
+                          options={row.reportOptions}
+                          value={row.reportValue ?? ""}
+                          editable={entEditable}
+                          onChange={(v) => updateRow(row.id, { reportValue: v })}
+                        />
                       ) : entEditable ? (
                         <Textarea
                           value={row.reportValue ?? ""}
@@ -1395,6 +1402,53 @@ function PlatformFunctionsField({
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function ReportRadioField({
+  options,
+  value,
+  editable,
+  onChange,
+}: {
+  options: string[];
+  value: string;
+  editable: boolean;
+  onChange: (v: string) => void;
+}) {
+  if (!editable) {
+    return (
+      <span className="text-[12px] leading-relaxed">
+        {value || <span className="text-muted-foreground">—</span>}
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-1.5">
+      {options.map((opt) => {
+        const checked = value === opt;
+        return (
+          <label
+            key={opt}
+            onClick={() => onChange(opt)}
+            className={cn(
+              "flex cursor-pointer items-start gap-1.5 text-[12px] leading-snug",
+              checked ? "text-foreground" : "text-muted-foreground",
+            )}
+          >
+            <span
+              className={cn(
+                "mt-0.5 inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border",
+                checked ? "border-primary" : "border-muted-foreground/40",
+              )}
+            >
+              {checked && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+            </span>
+            <span>{opt}</span>
+          </label>
+        );
+      })}
     </div>
   );
 }
