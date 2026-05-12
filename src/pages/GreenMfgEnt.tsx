@@ -72,16 +72,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
             </CardContent>
           </Card>
 
-          {/* 流转节点 */}
-          <Card className="panel">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base"><ChevronRight className="mr-1 inline h-4 w-4" />审核流转状态</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AuditFlowTimeline nodes={MOCK_AUDIT_FLOW} />
-            </CardContent>
-          </Card>
-
           {/* 历年申报记录 */}
           <Card className="panel">
             <CardHeader className="pb-3"><CardTitle className="text-base"><ClipboardList className="mr-1 inline h-4 w-4" />历史申报记录</CardTitle></CardHeader>
