@@ -400,6 +400,7 @@ export function BasicRequirementsCard({
                     return (
                       <span
                         key={opt}
+                        onClick={() => editable && updateItem(item.no, { conform: opt })}
                         className={cn(
                           "inline-flex items-center gap-1.5",
                           checked ? "text-foreground" : "text-muted-foreground",
