@@ -3,7 +3,8 @@ import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { MOCK_DECLARATIONS, SCORE_DIMENSIONS } from "@/components/green-mfg/data";
+import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
+import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 
 export default function GreenMfgEntIncubator() {
   // 假定当前企业为培育中样本，否则取首个
