@@ -55,7 +55,7 @@ export default function GreenMfgEnt() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
               <Field label="智能预审得分" value={`${myDeclaration.score}`} accent="primary" />
-              <Field label="人工审核得分" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
+              <Field label="专家打分" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
               <Field label="所属区" value={myDeclaration.district} />
               <Field label="当前等级" value={myDeclaration.level} />
             </CardContent>
@@ -93,7 +93,7 @@ export default function GreenMfgEnt() {
                   <TableRow className="border-border/60 hover:bg-transparent">
                     <TableHead>申报编号</TableHead>
                     <TableHead className="text-right">智能打分</TableHead>
-                    <TableHead className="text-right">人工得分</TableHead>
+                    <TableHead className="text-right">专家打分</TableHead>
                     <TableHead className="text-center">状态</TableHead>
                     <TableHead className="text-center">结果</TableHead>
                     <TableHead>提交日期</TableHead>
