@@ -953,7 +953,10 @@ export function AuthenticityCommitmentCard({
     onChange?.({ signedFileName: f.name, uploadedAt: new Date().toISOString() });
   };
 
+  const [preview, setPreview] = useState<string | null>(null);
+
   return (
+    <>
     <Card id="authenticity-commitment" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
