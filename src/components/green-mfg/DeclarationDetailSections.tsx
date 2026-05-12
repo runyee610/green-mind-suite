@@ -1056,7 +1056,8 @@ export function EvaluationIndicatorCard({
                   <tr
                     key={row.id}
                     className={cn(
-                      "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
+                      "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2",
+                      row.isSubRow ? "[&>td]:py-1" : "[&>td]:py-2",
                       !last && "border-b border-border/60",
                     )}
                   >
@@ -1068,7 +1069,11 @@ export function EvaluationIndicatorCard({
                         {row.l1}
                       </td>
                     )}
-                    <td className="text-center font-mono">{row.no}</td>
+                    {(row.showNo ?? true) && (
+                      <td rowSpan={row.noRowSpan ?? 1} className="text-center font-mono">
+                        {row.no}
+                      </td>
+                    )}
                     {row.showL2 && (
                       <td rowSpan={row.l2RowSpan ?? 1} className="bg-muted/10">
                         {row.l2}
@@ -1088,7 +1093,11 @@ export function EvaluationIndicatorCard({
                     <td className="text-center">{row.unit}</td>
                     <td className="text-center font-mono">{row.leadValue ?? "/"}</td>
                     <td className="text-center font-mono">{row.baseValue ?? "/"}</td>
-                    <td className="text-center font-mono">{row.weight ?? "/"}</td>
+                    {(row.showWeight ?? true) && (
+                      <td rowSpan={row.weightRowSpan ?? 1} className="text-center font-mono">
+                        {row.weight ?? "/"}
+                      </td>
+                    )}
                     <td>
                       {entEditable ? (
                         <Textarea
@@ -1131,9 +1140,11 @@ export function EvaluationIndicatorCard({
                         )}
                       </td>
                     )}
-                    <td className="leading-relaxed text-muted-foreground">
-                      {row.proofRequirement}
-                    </td>
+                    {(row.showProofReq ?? true) && (
+                      <td rowSpan={row.proofReqRowSpan ?? 1} className="leading-relaxed text-muted-foreground">
+                        {row.proofRequirement}
+                      </td>
+                    )}
                   </tr>
                 );
               })}
