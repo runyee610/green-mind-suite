@@ -774,8 +774,10 @@ export function EvaluationIndicatorCard({
   const updateRow = (no: number, patch: Partial<IndicatorRow>) =>
     onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
   const totalCols = showGovRemark ? 13 : 12;
+  const [preview, setPreview] = useState<string | null>(null);
 
   return (
+    <>
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
