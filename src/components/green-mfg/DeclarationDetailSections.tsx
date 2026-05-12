@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, ClipboardCheck, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Building2, ClipboardCheck, Download, Eye, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, type IndicatorRow } from "./evaluationIndicators";
 import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
@@ -408,7 +412,9 @@ export function BasicRequirementsCard({
 }) {
   const updateItem = (no: number, patch: Partial<BasicRequirementItem>) =>
     onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
+  const [preview, setPreview] = useState<string | null>(null);
   return (
+    <>
     <Card id="basic-requirements" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
@@ -478,31 +484,16 @@ export function BasicRequirementsCard({
               <div className="border-r border-border/60 px-3 py-3">
                 <ul className="space-y-1.5 text-xs">
                   {item.proofs.map((f) => (
-                    <li key={f} className="flex items-start gap-1.5">
-                      {/\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(f) ? (
-                        <ImageIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
-                      ) : (
-                        <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-                      )}
-                      <a
-                        href="#"
-                        className="break-all text-primary underline-offset-2 hover:underline"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        {f}
-                      </a>
-                      {editable && (
-                        <button
-                          type="button"
-                          className="ml-auto text-[11px] text-muted-foreground hover:text-destructive"
-                          onClick={() =>
-                            updateItem(item.no, { proofs: item.proofs.filter((x) => x !== f) })
-                          }
-                        >
-                          删除
-                        </button>
-                      )}
-                    </li>
+                    <FileItem
+                      key={f}
+                      name={f}
+                      onPreview={setPreview}
+                      onRemove={
+                        editable
+                          ? () => updateItem(item.no, { proofs: item.proofs.filter((x) => x !== f) })
+                          : undefined
+                      }
+                    />
                   ))}
                   {editable && (
                     <li className="pt-1">
@@ -521,12 +512,187 @@ export function BasicRequirementsCard({
         </div>
       </CardContent>
     </Card>
+    <FilePreviewDialog
+      fileName={preview}
+      open={!!preview}
+      onOpenChange={(v) => !v && setPreview(null)}
+    />
+    </>
   );
 }
 
 function isImage(name: string) {
   return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(name);
 }
+
+function isPdf(name: string) {
+  return /\.pdf$/i.test(name);
+}
+
+function fileExt(name: string) {
+  const m = name.match(/\.([a-z0-9]+)$/i);
+  return m ? m[1].toUpperCase() : "FILE";
+}
+
+/** 示意性"下载"——前端生成一个占位文件触发浏览器下载 */
+function triggerMockDownload(name: string) {
+  const ext = (name.match(/\.([a-z0-9]+)$/i)?.[1] || "txt").toLowerCase();
+  const isImg = /^(png|jpe?g|gif|webp|bmp|svg)$/i.test(ext);
+  const blob = isImg
+    ? new Blob([
+        // 1x1 透明 png 占位
+        Uint8Array.from(atob(
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+        ), (c) => c.charCodeAt(0)),
+      ], { type: `image/${ext === "jpg" ? "jpeg" : ext}` })
+    : new Blob([
+        `这是 ${name} 的示意文件内容\n（演示环境占位，实际平台请下载真实材料）`,
+      ], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast.success(`已下载：${name}`);
+}
+
+/** 示意性在线预览弹窗 */
+export function FilePreviewDialog({
+  fileName,
+  open,
+  onOpenChange,
+}: {
+  fileName: string | null;
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
+  if (!fileName) return null;
+  const img = isImage(fileName);
+  const pdf = isPdf(fileName);
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-base">
+            {img ? (
+              <ImageIcon className="h-4 w-4 text-secondary" />
+            ) : (
+              <FileText className="h-4 w-4 text-primary" />
+            )}
+            <span className="truncate">{fileName}</span>
+            <Badge variant="outline" className="ml-1 text-[10px]">{fileExt(fileName)}</Badge>
+          </DialogTitle>
+          <DialogDescription className="text-xs">
+            在线预览（示意）— 演示环境下展示占位内容，实际平台将渲染真实文件。
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[60vh] overflow-auto rounded-md border border-border/60 bg-muted/30 p-4">
+          {img ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-6">
+              <div className="flex h-48 w-72 items-center justify-center rounded-md border border-dashed border-border/60 bg-background text-xs text-muted-foreground">
+                <ImageIcon className="mr-2 h-5 w-5 opacity-60" />图片预览占位
+              </div>
+              <p className="text-[11px] text-muted-foreground">{fileName}</p>
+            </div>
+          ) : pdf ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((p) => (
+                <div
+                  key={p}
+                  className="rounded-sm border border-border/60 bg-background p-4 shadow-sm"
+                >
+                  <div className="mb-3 text-[11px] text-muted-foreground">第 {p} / 3 页</div>
+                  <div className="space-y-2">
+                    <div className="h-3 w-3/5 rounded bg-muted" />
+                    <div className="h-2 w-full rounded bg-muted/70" />
+                    <div className="h-2 w-11/12 rounded bg-muted/70" />
+                    <div className="h-2 w-10/12 rounded bg-muted/70" />
+                    <div className="h-2 w-1/2 rounded bg-muted/70" />
+                    <div className="my-3 h-px w-full bg-border/60" />
+                    <div className="h-2 w-full rounded bg-muted/70" />
+                    <div className="h-2 w-9/12 rounded bg-muted/70" />
+                    <div className="h-2 w-8/12 rounded bg-muted/70" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="py-10 text-center text-xs text-muted-foreground">
+              该格式暂不支持在线预览，请下载后查看。
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+            关闭
+          </Button>
+          <Button size="sm" onClick={() => triggerMockDownload(fileName)}>
+            <Download className="mr-1 h-3.5 w-3.5" />下载
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** 单个文件行（含图标、名称、预览、下载、可选删除） */
+function FileItem({
+  name,
+  onPreview,
+  onRemove,
+}: {
+  name: string;
+  onPreview: (n: string) => void;
+  onRemove?: () => void;
+}) {
+  return (
+    <li className="group flex items-start gap-1.5">
+      {isImage(name) ? (
+        <ImageIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
+      ) : (
+        <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+      )}
+      <button
+        type="button"
+        className="break-all text-left text-primary underline-offset-2 hover:underline"
+        onClick={() => onPreview(name)}
+      >
+        {name}
+      </button>
+      <div className="ml-auto flex shrink-0 items-center gap-1 opacity-70 group-hover:opacity-100">
+        <button
+          type="button"
+          title="在线预览"
+          className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
+          onClick={() => onPreview(name)}
+        >
+          <Eye className="h-3 w-3" />
+        </button>
+        <button
+          type="button"
+          title="下载"
+          className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
+          onClick={() => triggerMockDownload(name)}
+        >
+          <Download className="h-3 w-3" />
+        </button>
+        {onRemove && (
+          <button
+            type="button"
+            className="text-[11px] text-muted-foreground hover:text-destructive"
+            onClick={onRemove}
+          >
+            删除
+          </button>
+        )}
+      </div>
+    </li>
+  );
+}
+
 
 function UploadButton({ onPick }: { onPick: (names: string[]) => void }) {
   return (
@@ -552,11 +718,13 @@ function ProofList({
   editable,
   emptyText = "—",
   onChange,
+  onPreview,
 }: {
   proofs: string[];
   editable?: boolean;
   emptyText?: string;
   onChange?: (next: string[]) => void;
+  onPreview: (n: string) => void;
 }) {
   return (
     <ul className="space-y-1 text-xs">
@@ -564,29 +732,14 @@ function ProofList({
         <li className="text-muted-foreground">{emptyText}</li>
       )}
       {proofs.map((f) => (
-        <li key={f} className="flex items-start gap-1.5">
-          {isImage(f) ? (
-            <ImageIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
-          ) : (
-            <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-          )}
-          <a
-            href="#"
-            className="break-all text-primary underline-offset-2 hover:underline"
-            onClick={(e) => e.preventDefault()}
-          >
-            {f}
-          </a>
-          {editable && onChange && (
-            <button
-              type="button"
-              className="ml-auto text-[11px] text-muted-foreground hover:text-destructive"
-              onClick={() => onChange(proofs.filter((x) => x !== f))}
-            >
-              删除
-            </button>
-          )}
-        </li>
+        <FileItem
+          key={f}
+          name={f}
+          onPreview={onPreview}
+          onRemove={
+            editable && onChange ? () => onChange(proofs.filter((x) => x !== f)) : undefined
+          }
+        />
       ))}
       {editable && (
         <li className="pt-1">
@@ -621,8 +774,10 @@ export function EvaluationIndicatorCard({
   const updateRow = (no: number, patch: Partial<IndicatorRow>) =>
     onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
   const totalCols = showGovRemark ? 13 : 12;
+  const [preview, setPreview] = useState<string | null>(null);
 
   return (
+    <>
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
@@ -719,6 +874,7 @@ export function EvaluationIndicatorCard({
                         proofs={row.proofs}
                         editable={entEditable}
                         onChange={(next) => updateRow(row.no, { proofs: next })}
+                        onPreview={setPreview}
                       />
                     </td>
                     {showGovRemark && (
@@ -757,6 +913,12 @@ export function EvaluationIndicatorCard({
         </div>
       </CardContent>
     </Card>
+    <FilePreviewDialog
+      fileName={preview}
+      open={!!preview}
+      onOpenChange={(v) => !v && setPreview(null)}
+    />
+    </>
   );
 }
 
@@ -791,7 +953,10 @@ export function AuthenticityCommitmentCard({
     onChange?.({ signedFileName: f.name, uploadedAt: new Date().toISOString() });
   };
 
+  const [preview, setPreview] = useState<string | null>(null);
+
   return (
+    <>
     <Card id="authenticity-commitment" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
@@ -826,13 +991,16 @@ export function AuthenticityCommitmentCard({
               <p className="text-[11px] text-muted-foreground">官方模板 · DOCX</p>
             </div>
           </div>
-          <a
-            href={COMMITMENT_TEMPLATE_URL}
-            download={COMMITMENT_TEMPLATE_NAME}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-input bg-background px-3 text-xs font-medium hover:bg-accent"
-          >
-            <FileText className="h-3.5 w-3.5" />下载模板
-          </a>
+          <div className="flex items-center gap-1.5">
+            <Button variant="outline" size="sm" className="h-8" onClick={() => setPreview(COMMITMENT_TEMPLATE_NAME)}>
+              <Eye className="mr-1 h-3.5 w-3.5" />预览
+            </Button>
+            <Button variant="outline" size="sm" className="h-8" asChild>
+              <a href={COMMITMENT_TEMPLATE_URL} download={COMMITMENT_TEMPLATE_NAME}>
+                <Download className="mr-1 h-3.5 w-3.5" />下载模板
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* 签章扫描件上传 / 展示 */}
@@ -872,6 +1040,24 @@ export function AuthenticityCommitmentCard({
               <Badge variant="outline" className="border-success/40 bg-success/10 text-[10px] text-success">
                 已上传
               </Badge>
+              <div className="ml-1 flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => signed.signedFileName && setPreview(signed.signedFileName)}
+                >
+                  <Eye className="mr-1 h-3.5 w-3.5" />预览
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => signed.signedFileName && triggerMockDownload(signed.signedFileName)}
+                >
+                  <Download className="mr-1 h-3.5 w-3.5" />下载
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="flex items-center gap-3 rounded-md border border-dashed border-border/60 bg-muted/20 p-4 text-xs text-muted-foreground">
@@ -882,6 +1068,12 @@ export function AuthenticityCommitmentCard({
         </div>
       </CardContent>
     </Card>
+    <FilePreviewDialog
+      fileName={preview}
+      open={!!preview}
+      onOpenChange={(v) => !v && setPreview(null)}
+    />
+    </>
   );
 }
 
