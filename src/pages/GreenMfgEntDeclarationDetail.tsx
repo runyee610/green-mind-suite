@@ -182,22 +182,7 @@ export default function GreenMfgEntDeclarationDetail() {
                     {detail.score >= 80 ? "推荐通过" : detail.score >= 60 ? "建议复核" : "不达标"}
                   </Badge>
                 </div>
-                <div className="space-y-2.5">
-                  {SCORE_DIMENSIONS.map((d) => (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs">
-                        <span>
-                          {d.name}
-                          <span className="ml-1 text-muted-foreground">（权重 {d.weight}）</span>
-                        </span>
-                        <span className="font-mono">
-                          {d.score}/{d.weight}
-                        </span>
-                      </div>
-                      <Progress value={(d.score / d.weight) * 100} className="mt-1 h-1.5" />
-                    </div>
-                  ))}
-                </div>
+                <ScoreBreakdown />
                 <p className="mt-3 rounded bg-muted/40 p-2 text-[11px] leading-relaxed text-muted-foreground">
                   基于近三年能源、碳排、固废等口径数据综合计算。
                 </p>
