@@ -195,9 +195,14 @@ export default function GreenMfgEntDeclarationNew() {
                 <SelectValue placeholder="请选择申报批次" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2025年第一批">2025年第一批</SelectItem>
-                <SelectItem value="2025年第二批">2025年第二批</SelectItem>
-                <SelectItem value="2026年第一批">2026年第一批</SelectItem>
+                {ALL_BATCHES.map((b) => {
+                  const used = usedBatches.includes(b);
+                  return (
+                    <SelectItem key={b} value={b} disabled={used}>
+                      {b}{used ? "（已申报）" : ""}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
