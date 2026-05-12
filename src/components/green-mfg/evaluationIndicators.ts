@@ -348,7 +348,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "项",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "6",
     reportValue: "2",
     proofs: ["1.采用相关生产工艺和设备的说明.pdf"],
     proofRequirement: "1、采用相关生产工艺和设备的说明。",
@@ -356,6 +356,8 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   {
     id: "10",
     no: 10,
+    showNo: true,
+    noRowSpan: 2,
     l1: "生产洁净化",
     l2: "绿色低碳改造升级",
     showL2: true,
@@ -365,7 +367,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "项",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "4",
     reportValue: "1.00",
     proofs: ["1.节能技改项目清单.pdf"],
     proofRequirement:
@@ -373,7 +375,9 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
   },
   {
     id: "11",
-    no: 11,
+    no: 10,
+    showNo: false,
+    isSubRow: true,
     l1: "生产洁净化",
     l2: "绿色低碳改造升级",
     l3: "近3年绿色低碳改造升级项目投资额占比",
