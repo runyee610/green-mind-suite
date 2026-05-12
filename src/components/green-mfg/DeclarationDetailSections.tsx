@@ -961,7 +961,7 @@ export function EvaluationIndicatorCard({
                                 <th className="w-[120px]">单位</th>
                                 <th className="w-[80px]">引领值</th>
                                 <th className="w-[80px]">基准值</th>
-                                <th className="w-[110px]">加权参数<br/>（吨标煤）</th>
+                                <th className="w-[110px]">{cfg.weightHeader}</th>
                                 <th className="w-[120px]">本年度指标值</th>
                                 <th>证明材料</th>
                               </tr>
