@@ -225,9 +225,9 @@ export const MOCK_DYNAMIC: DynamicRecord[] = [
 
 export const MOCK_AUDIT_FLOW: AuditFlowNode[] = [
   { stage: "企业提交", operator: "张工/企业填报员", time: "2025-09-12 10:24", result: "提交", comment: "已上传申报书及附件 12 份" },
-  { stage: "系统智能打分", operator: "系统", time: "2025-09-12 10:25", result: "通过", comment: "综合得分 86 分，达到推荐线" },
-  { stage: "区级审批", operator: "李审核/宝山区生态局", time: "2025-09-15 14:08", result: "通过", comment: "能耗、碳排、固废等核心指标达标，建议上报市级。" },
-  { stage: "市级审批", operator: "—", time: "—", result: "待办" },
+  { stage: "系统智能打分", operator: "系统", time: "2025-09-12 10:25", result: "通过", score: 86, comment: "综合得分 86 分，达到推荐线" },
+  { stage: "区级审批", operator: "李审核/宝山区生态局", time: "2025-09-15 14:08", result: "通过", score: 88, comment: "能耗、碳排、固废等核心指标达标，建议上报市级。" },
+  { stage: "市级审批", operator: "—", time: "—", result: "待办", score: undefined },
 ];
 
 export const SCORE_DIMENSIONS = [
