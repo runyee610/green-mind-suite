@@ -14,6 +14,7 @@ import {
   stageBadgeClass,
 } from "@/components/green-mfg/data";
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
+import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
