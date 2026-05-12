@@ -69,19 +69,33 @@ export const EMPTY_ENTERPRISE_BASIC: EnterpriseBasicInfo = {
 export function EnterpriseBasicInfoCard({
   data = MOCK_ENTERPRISE_BASIC,
   editable = false,
+  onChange,
 }: {
   data?: EnterpriseBasicInfo;
   editable?: boolean;
+  onChange?: (next: EnterpriseBasicInfo) => void;
 }) {
-  const text = (v: string, placeholder: string) =>
+  const update = (patch: Partial<EnterpriseBasicInfo>) => onChange?.({ ...data, ...patch });
+  const text = (v: string, placeholder: string, key?: keyof EnterpriseBasicInfo) =>
     editable ? (
-      <Input defaultValue={v} placeholder={placeholder} className="h-8 text-sm" />
+      <Input
+        value={v}
+        placeholder={placeholder}
+        className="h-8 text-sm"
+        onChange={(e) => key && update({ [key]: e.target.value } as Partial<EnterpriseBasicInfo>)}
+      />
     ) : (
       <span>{v || <span className="text-muted-foreground">—</span>}</span>
     );
-  const area = (v: string, placeholder: string, rows = 4) =>
+  const area = (v: string, placeholder: string, rows = 4, key?: keyof EnterpriseBasicInfo) =>
     editable ? (
-      <Textarea defaultValue={v} placeholder={placeholder} rows={rows} className="text-sm" />
+      <Textarea
+        value={v}
+        placeholder={placeholder}
+        rows={rows}
+        className="text-sm"
+        onChange={(e) => key && update({ [key]: e.target.value } as Partial<EnterpriseBasicInfo>)}
+      />
     ) : (
       <p className="whitespace-pre-line text-sm leading-relaxed">
         {v || <span className="text-muted-foreground">—</span>}
