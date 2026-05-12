@@ -564,13 +564,20 @@ export function EvaluationIndicatorCard({
   data = EVALUATION_INDICATORS,
   totalScore = EVALUATION_TOTAL_SCORE,
   mode = "view",
+  showGovRemark = true,
+  onChange,
 }: {
   data?: IndicatorRow[];
   totalScore?: number;
   mode?: DetailMode;
+  showGovRemark?: boolean;
+  onChange?: (next: IndicatorRow[]) => void;
 } = {}) {
   const entEditable = mode === "ent";
   const govEditable = mode === "gov";
+  const updateRow = (no: number, patch: Partial<IndicatorRow>) =>
+    onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
+  const totalCols = showGovRemark ? 13 : 12;
 
   return (
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
@@ -591,7 +598,7 @@ export function EvaluationIndicatorCard({
       </CardHeader>
       <CardContent>
         <div className="overflow-auto rounded-md border border-border/60">
-          <table className="w-full min-w-[1400px] border-collapse text-xs">
+          <table className={cn("w-full border-collapse text-xs", showGovRemark ? "min-w-[1400px]" : "min-w-[1240px]")}>
             <thead className="bg-muted/40 text-[11px] text-muted-foreground">
               <tr className="[&>th]:border-r [&>th]:border-border/60 [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium">
                 <th className="w-[80px]">一级指标</th>
@@ -605,7 +612,7 @@ export function EvaluationIndicatorCard({
                 <th className="w-[80px] text-center">加权参数</th>
                 <th className="w-[160px]">本年度指标值</th>
                 <th className="w-[160px]">证明材料（PDF/图片）</th>
-                <th className="w-[180px]">审核备注（选填）</th>
+                {showGovRemark && <th className="w-[180px]">审核备注（选填）</th>}
                 <th className="min-w-[220px]">证明材料要求</th>
               </tr>
             </thead>
@@ -647,10 +654,11 @@ export function EvaluationIndicatorCard({
                     <td>
                       {entEditable ? (
                         <Textarea
-                          defaultValue={row.reportValue}
+                          value={row.reportValue ?? ""}
                           rows={2}
                           className="min-h-[44px] resize-none text-xs"
                           placeholder="请填写"
+                          onChange={(e) => updateRow(row.no, { reportValue: e.target.value })}
                         />
                       ) : (
                         <span className="font-mono text-[12px] leading-relaxed">
@@ -659,24 +667,31 @@ export function EvaluationIndicatorCard({
                       )}
                     </td>
                     <td>
-                      <ProofList proofs={row.proofs} editable={entEditable} />
+                      <ProofList
+                        proofs={row.proofs}
+                        editable={entEditable}
+                        onChange={(next) => updateRow(row.no, { proofs: next })}
+                      />
                     </td>
-                    <td>
-                      {govEditable ? (
-                        <Textarea
-                          defaultValue={row.govRemark}
-                          rows={2}
-                          className="min-h-[44px] resize-none text-xs"
-                          placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
-                        />
-                      ) : row.govRemark ? (
-                        <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
-                      ) : (
-                        <span className="text-[11px] text-muted-foreground">
-                          如指标值有修订，请填写修订备注
-                        </span>
-                      )}
-                    </td>
+                    {showGovRemark && (
+                      <td>
+                        {govEditable ? (
+                          <Textarea
+                            value={row.govRemark ?? ""}
+                            rows={2}
+                            className="min-h-[44px] resize-none text-xs"
+                            placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
+                            onChange={(e) => updateRow(row.no, { govRemark: e.target.value })}
+                          />
+                        ) : row.govRemark ? (
+                          <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground">
+                            如指标值有修订，请填写修订备注
+                          </span>
+                        )}
+                      </td>
+                    )}
                     <td className="leading-relaxed text-muted-foreground">
                       {row.proofRequirement}
                     </td>
@@ -684,7 +699,7 @@ export function EvaluationIndicatorCard({
                 );
               })}
               <tr className="border-t-2 border-border bg-muted/30 font-medium">
-                <td colSpan={12} className="px-3 py-2 text-right">
+                <td colSpan={totalCols - 1} className="px-3 py-2 text-right">
                   得分
                 </td>
                 <td className="px-3 py-2 font-mono text-primary">{totalScore.toFixed(2)}</td>
