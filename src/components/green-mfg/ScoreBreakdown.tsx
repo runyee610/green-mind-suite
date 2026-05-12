@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { SCORE_DIMENSIONS, type ScoreL1Dim } from "./data";
 import { cn } from "@/lib/utils";
