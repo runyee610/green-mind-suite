@@ -21,9 +21,9 @@ import {
   stageBadgeClass,
 } from "@/components/green-mfg/data";
 
-export default function GreenMfgGov() {
+export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
-  const [tab, setTab] = useState("declaration");
+  const [tab, setTab] = useState<string>(section ?? "declaration");
   const [keyword, setKeyword] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
@@ -86,8 +86,16 @@ export default function GreenMfgGov() {
   };
   return (
     <AppLayout
-      title="绿色工厂（梯度培育）· 政府侧"
-      subtitle="申报监管、智能预审、专家审批、动态管理表年度复核"
+      title={
+        section === "dynamic"
+          ? "绿色工厂动态管理 · 政府侧"
+          : "绿色工厂梯度培育 · 政府侧"
+      }
+      subtitle={
+        section === "dynamic"
+          ? "市级绿色工厂年度动态管理表复核"
+          : "申报监管、智能预审、专家审批"
+      }
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
@@ -98,10 +106,12 @@ export default function GreenMfgGov() {
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList>
-          <TabsTrigger value="declaration">绿色工厂申报管理</TabsTrigger>
-          <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
-        </TabsList>
+        {!section && (
+          <TabsList>
+            <TabsTrigger value="declaration">绿色工厂申报管理</TabsTrigger>
+            <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
+          </TabsList>
+        )}
 
         {/* 申报管理 */}
         <TabsContent value="declaration" className="mt-4">
