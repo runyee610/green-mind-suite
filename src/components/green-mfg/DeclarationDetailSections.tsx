@@ -1350,6 +1350,55 @@ export function buildEmptyIndicators(
   return source.map((it) => ({ ...it, reportValue: "", proofs: [], govRemark: "" }));
 }
 
+function PlatformFunctionsField({
+  value,
+  editable,
+  onChange,
+}: {
+  value: string[];
+  editable: boolean;
+  onChange: (next: string[]) => void;
+}) {
+  const toggle = (opt: string, checked: boolean) => {
+    const set = new Set(value);
+    if (checked) set.add(opt);
+    else set.delete(opt);
+    onChange(PLATFORM_FUNCTION_OPTIONS.filter((o) => set.has(o)));
+  };
+  if (!editable) {
+    return (
+      <div className="space-y-1 text-[12px] leading-relaxed">
+        <div className="text-muted-foreground">已勾选 <span className="font-mono text-foreground">{value.length}</span> 项</div>
+        {value.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {value.map((v) => (
+              <span key={v} className="rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[11px]">{v}</span>
+            ))}
+          </div>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-1.5">
+      <div className="text-[11px] text-muted-foreground">已勾选 <span className="font-mono text-foreground">{value.length}</span> 项</div>
+      <div className="grid grid-cols-1 gap-1">
+        {PLATFORM_FUNCTION_OPTIONS.map((opt) => {
+          const checked = value.includes(opt);
+          return (
+            <label key={opt} className="flex cursor-pointer items-center gap-1.5 text-[12px] leading-tight">
+              <Checkbox checked={checked} onCheckedChange={(c) => toggle(opt, !!c)} />
+              <span>{opt}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function DeclarationDetailSections({ mode = "view" }: { mode?: DetailMode } = {}) {
   return (
     <div className="mt-4 space-y-4">
