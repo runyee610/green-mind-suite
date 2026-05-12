@@ -250,8 +250,10 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     proofRequirement: "1、提供本单位减少生产过程中原辅材料消耗的应用案例。",
   },
   {
-    id: "6",
-    no: 6,
+    id: "5-2",
+    no: 5,
+    showNo: false,
+    isSubRow: true,
     l1: "资源高效化",
     l2: "节约原材料",
     l3: "使用再生材料、回收再利用材料或可回收材料替代原生材料、不可回收材料改善应用案例",
@@ -261,6 +263,10 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     baseValue: "/",
     weight: "/",
     reportValue: "提供本单位使用再生材料、回收再利用材料或可回收材料替代原生材料、不可回收材料改善应用案例",
+    reportOptions: [
+      "提供本单位使用再生材料、回收再利用材料或可回收材料替代原生材料、不可回收材料改善应用案例",
+      "未提供",
+    ],
     proofs: ["1.回料使用比率规范.pdf", "2.回料掺比表2024.pdf"],
     proofRequirement: "1、提供本单位使用再生材料、回收再利用材料或可回收材料替代原生材料、不可回收材料改善应用案例。",
   },
