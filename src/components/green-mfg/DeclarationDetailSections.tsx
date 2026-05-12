@@ -357,10 +357,14 @@ export const MOCK_BASIC_REQUIREMENTS: BasicRequirementItem[] = [
 export function BasicRequirementsCard({
   data = MOCK_BASIC_REQUIREMENTS,
   editable = false,
+  onChange,
 }: {
   data?: BasicRequirementItem[];
   editable?: boolean;
+  onChange?: (next: BasicRequirementItem[]) => void;
 }) {
+  const updateItem = (no: number, patch: Partial<BasicRequirementItem>) =>
+    onChange?.(data.map((it) => (it.no === no ? { ...it, ...patch } : it)));
   return (
     <Card id="basic-requirements" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
