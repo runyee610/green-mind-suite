@@ -66,6 +66,10 @@ export interface IndicatorRow {
   platformFunctions?: string[];
   /** 当本年度指标值为单选项时使用 */
   reportOptions?: string[];
+  /** 计算公式（来自 GB/T 36132—2025 附录 B），无公式则留空 */
+  formula?: string;
+  /** 当 hasStandard='有' 时使用的备选公式（仅用于序号 1、6） */
+  formulaHasStandard?: string;
 }
 
 /** 序号 4：能碳管理系统平台功能符合项 候选 */
