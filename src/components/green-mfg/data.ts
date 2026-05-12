@@ -74,6 +74,7 @@ export interface AuditFlowNode {
   time: string;
   result: "通过" | "驳回" | "提交" | "进入培育" | "待办";
   comment?: string;
+  score?: number; // 该环节最终评分（0-100）
 }
 
 export const MOCK_DECLARATIONS: DeclarationRecord[] = [
