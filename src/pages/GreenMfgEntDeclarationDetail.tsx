@@ -37,6 +37,7 @@ export default function GreenMfgEntDeclarationDetail() {
     () => MOCK_DECLARATIONS.find((d) => d.id === id) ?? MOCK_DECLARATIONS[0],
     [id],
   );
+  const [activeTab, setActiveTab] = useState<string>(TABS[0].value);
 
   const scoreTone = (s: number) =>
     s >= 80
