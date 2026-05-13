@@ -763,79 +763,49 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="glass-card glass-card-green p-4 flex flex-col">
-          <SectionTitle icon={Brain} title="AI Agent 对话" accent="green" />
-          <div ref={chatScrollRef} className="flex-1 space-y-2 overflow-y-auto text-xs mb-2 min-h-[180px] max-h-[260px] pr-1 scroll-smooth">
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                data-mid={m.id}
-                ref={(el) => {
-                  if (el) msgRefs.current.set(m.id, el);
-                  else msgRefs.current.delete(m.id);
-                }}
-                className={`flex gap-2 ${m.role === "user" ? "justify-end" : ""}`}
-              >
-                {m.role === "ai" && (
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
-                    <Brain className="h-3.5 w-3.5 text-white" />
-                  </div>
-                )}
-                <div className={`max-w-[80%] flex flex-col gap-0.5 ${m.role === "user" ? "items-end" : "items-start"}`}>
-                  <div
-                    className={`rounded-lg p-2 leading-relaxed text-slate-700 ${
-                      m.role === "user" ? "bg-cyan-100/70" : "bg-white/60"
-                    } ${m.role === "ai" && !m.read ? "ring-2 ring-emerald-400/60 shadow-sm" : ""}`}
-                  >
-                    {m.text}
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px] text-slate-500 px-1">
-                    <span>{m.ts}</span>
-                    {m.role === "user" &&
-                      (m.read ? (
-                        <CheckCheck className="h-3 w-3 text-emerald-600" />
-                      ) : (
-                        <Check className="h-3 w-3 text-slate-400" />
-                      ))}
-                    {m.role === "ai" && !m.read && (
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    )}
-                  </div>
-                </div>
+        <button
+          type="button"
+          onClick={() => navigate("/green-mfg-agent")}
+          className="group relative overflow-hidden rounded-xl p-5 text-left flex flex-col justify-between bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 text-white shadow-xl ring-1 ring-cyan-400/20 hover:ring-cyan-400/60 transition"
+        >
+          <div className="absolute -top-12 -right-10 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-12 -left-10 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl pointer-events-none" />
+
+          <div className="relative">
+            <div className="flex items-center gap-2">
+              <div className="h-9 w-9 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center">
+                <Brain className="h-5 w-5 text-cyan-300" />
+              </div>
+              <span className="text-[11px] tracking-widest uppercase text-cyan-300/80">AI Agent</span>
+            </div>
+            <h3 className="mt-3 text-xl font-bold leading-tight flex items-center gap-2">
+              绿色制造数字智能体
+              <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
+            </h3>
+            <p className="mt-2 text-[12px] text-slate-300 leading-relaxed">
+              基于全市绿色制造体系数据，提供 <span className="text-cyan-300">企业潜力识别</span>、
+              <span className="text-emerald-300">晋级路径分析</span> 与 <span className="text-amber-300">政策匹配</span>。
+            </p>
+          </div>
+
+          <div className="relative mt-4 space-y-1.5">
+            {[
+              "嘉定区培育潜力 TOP10？",
+              "汽车产业绿色化率？",
+              "对比浦东与金山的体系完成度",
+            ].map((q) => (
+              <div key={q} className="flex items-center gap-2 text-[12px] text-slate-200/90 px-2.5 py-1.5 rounded-md bg-white/5 ring-1 ring-white/10">
+                <MessageSquare className="h-3 w-3 text-cyan-300/80 shrink-0" />
+                <span className="truncate">{q}</span>
               </div>
             ))}
-            {aiTyping && (
-              <div className="flex gap-2">
-                <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
-                  <Sparkles className="h-3.5 w-3.5 text-white" />
-                </div>
-                <div className="bg-white/60 rounded-lg p-2 text-slate-500 inline-flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "120ms" }} />
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "240ms" }} />
-                </div>
-              </div>
-            )}
-            <div ref={bottomRef} />
           </div>
-          <div className="flex gap-2 pt-2 border-t border-border/50">
-            <Input
-              value={aiInput}
-              onChange={(e) => setAiInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
-              placeholder="问问 AI Agent：如何优化本市绿色供应链协同效率？"
-              className="h-9 text-xs bg-white/70 border-emerald-200"
-            />
-            <Button size="icon" onClick={sendMessage} className="h-9 w-9 bg-gradient-to-br from-cyan-500 to-emerald-500 hover:opacity-90">
-              <Send className="h-3.5 w-3.5" />
-            </Button>
+
+          <div className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-300 group-hover:gap-2.5 transition-all">
+            进入 AI 对话
+            <ArrowRight className="h-4 w-4" />
           </div>
-        </div>
+        </button>
       </div>
     </AppLayout>
   );
