@@ -390,41 +390,32 @@ export function AIScoringAgentPanel() {
                           ))}
                         </div>
                       )}
-                      <div className="overflow-hidden rounded-lg border border-[hsl(215_30%_18%)] bg-[hsl(215_32%_8%)] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.6)]">
-                        {/* terminal title bar */}
-                        <div className="flex items-center justify-between border-b border-[hsl(215_30%_16%)] bg-[hsl(215_32%_11%)] px-3 py-1.5">
-                          <div className="flex items-center gap-1.5">
-                            <span className="h-2.5 w-2.5 rounded-full bg-[hsl(0_70%_60%)]/80" />
-                            <span className="h-2.5 w-2.5 rounded-full bg-[hsl(40_85%_55%)]/80" />
-                            <span className="h-2.5 w-2.5 rounded-full bg-[hsl(140_60%_50%)]/80" />
-                            <span className="ml-2 font-mono text-[10px] text-white/40">
-                              agent.log · step_{String(idx + 1).padStart(2, "0")}_{step.id}
-                            </span>
+                      <div className="rounded-lg border border-border bg-muted/20">
+                        <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
+                          <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-foreground">
+                            <Activity className="h-3 w-3 text-primary" />
+                            执行明细
                           </div>
-                          <span className="font-mono text-[10px] text-white/30">
-                            {status === "running" ? "STREAMING" : "READY"}
+                          <span className="text-[10px] text-muted-foreground">
+                            共 {step.logs.length} 条
                           </span>
                         </div>
-                        {/* logs with line numbers */}
-                        <ul className="divide-y divide-white/[0.04] font-mono text-[11px] leading-relaxed">
+                        <ul className="divide-y divide-border/50">
                           {step.logs.map((l, i) => (
-                            <li key={i} className="flex items-start gap-3 px-3 py-1.5 hover:bg-white/[0.02] transition-colors">
-                              <span className="select-none text-right text-white/25 tabular-nums w-5 shrink-0">
-                                {String(i + 1).padStart(2, "0")}
+                            <li key={i} className="flex items-start gap-3 px-3 py-2">
+                              <span className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
+                                <CheckCircle2 className="h-2.5 w-2.5" />
                               </span>
-                              <span className="select-none text-[hsl(190_80%_60%)]/70">$</span>
-                              <span className="text-[hsl(150_70%_75%)] break-all">{l}</span>
+                              <span className="text-[12px] leading-relaxed text-foreground/90">{l}</span>
                             </li>
                           ))}
                           {status === "running" && (
-                            <li className="flex items-start gap-3 px-3 py-1.5">
-                              <span className="select-none text-right text-white/25 tabular-nums w-5 shrink-0">
-                                {String(step.logs.length + 1).padStart(2, "0")}
+                            <li className="flex items-start gap-3 px-3 py-2 bg-primary/5">
+                              <span className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                <Loader2 className="h-2.5 w-2.5 animate-spin" />
                               </span>
-                              <span className="select-none text-[hsl(190_80%_60%)]/70">$</span>
-                              <span className="text-[hsl(190_80%_75%)] inline-flex items-center gap-1">
-                                正在生成下一条推理记录
-                                <span className="inline-block h-3 w-1.5 bg-[hsl(190_80%_70%)] animate-pulse" />
+                              <span className="text-[12px] leading-relaxed text-primary">
+                                正在生成下一条推理记录…
                               </span>
                             </li>
                           )}
