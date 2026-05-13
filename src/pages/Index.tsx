@@ -278,7 +278,7 @@ function SectionTitle({ icon: Icon, title, accent, right }: { icon: any; title: 
     <div className="flex items-center gap-2 mb-3">
       <Icon className={`h-4 w-4 ${accent === "cyan" ? "text-primary" : "text-primary"}`} />
       <h3 className="text-sm font-semibold tracking-wide text-foreground">{title}</h3>
-      <div className={`flex-1 h-px ${accent === "cyan" ? "bg-gradient-to-r from-cyan-400/50 to-transparent" : "bg-gradient-to-r from-emerald-400/50 to-transparent"}`} />
+      <div className={`flex-1 h-px ${accent === "cyan" ? "bg-gradient-to-r from-primary/30 to-transparent" : "bg-gradient-to-r from-primary/30 to-transparent"}`} />
       {right}
     </div>
   );
@@ -343,7 +343,7 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
   ];
 
   const filterChip = (district !== "全市" || industry !== "全部产业") && (
-    <Badge className="h-5 px-2 text-[10px] bg-emerald-100 text-emerald-700 border-0">
+    <Badge className="h-5 px-2 text-[10px] bg-primary/10 text-primary border-0">
       已联动：{district !== "全市" ? district : ""}{district !== "全市" && industry !== "全部产业" ? " · " : ""}{industry !== "全部产业" ? industry : ""}
     </Badge>
   );
@@ -359,14 +359,14 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
         right={
           <div className="flex items-center gap-2">
             {filterChip}
-            <Badge className="h-5 px-2 text-[10px] bg-cyan-100 text-cyan-700 border-0">523 工厂 · 75 供应链 · 29 园区</Badge>
+            <Badge className="h-5 px-2 text-[10px] bg-muted text-foreground/80 border-0">523 工厂 · 75 供应链 · 29 园区</Badge>
           </div>
         }
       />
       <Tabs value={tab} onValueChange={setTab} className="flex flex-col">
         <TabsList className="bg-white/60 backdrop-blur h-9 self-start">
           {tabsCfg.map((t) => (
-            <TabsTrigger key={t.key} value={t.key} className="text-xs data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">
+            <TabsTrigger key={t.key} value={t.key} className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               {t.label}
             </TabsTrigger>
           ))}
@@ -493,18 +493,18 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
       </Tabs>
 
       {/* Recent batch lists */}
-      <div className="border-t border-cyan-200/60 pt-3 flex-1 flex flex-col min-h-0">
+      <div className="border-t border-border pt-3 flex-1 flex flex-col min-h-0">
         <div className="flex items-center gap-2 mb-2">
           <ListChecks className="h-5 w-5 text-primary" />
           <h4 className="text-[16px] font-bold text-slate-800 tracking-wide">最近批次入选名单</h4>
           <Tabs value={batchTab} onValueChange={(v) => setBatchTab(v as any)} className="ml-auto">
             <TabsList className="h-8 bg-white/60">
-              <TabsTrigger value="city" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">市级</TabsTrigger>
-              <TabsTrigger value="nation" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">国家级</TabsTrigger>
+              <TabsTrigger value="city" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">市级</TabsTrigger>
+              <TabsTrigger value="nation" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">国家级</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
-        <div className="text-[13px] font-semibold text-slate-700 mb-2 px-2 py-1 rounded-md bg-gradient-to-r from-cyan-50 to-emerald-50 border border-cyan-200/60">{batch.label}</div>
+        <div className="text-[13px] font-semibold text-slate-700 mb-2 px-2 py-1 rounded-md bg-muted/40 border border-border">{batch.label}</div>
         <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
           {[
             { title: "绿色工厂", color: CYAN, items: batch.factories },
@@ -554,10 +554,10 @@ const Index = () => {
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="relative">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg">
+              <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center shadow-lg">
                 <Brain className="h-6 w-6 text-white" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 h-3.5 w-3.5 text-cyan-500 animate-pulse" />
+              <Sparkles className="absolute -top-1 -right-1 h-3.5 w-3.5 text-primary animate-pulse" />
             </div>
             <div>
               <h1 className="text-[26px] font-bold tracking-tight bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent leading-tight">
@@ -565,7 +565,7 @@ const Index = () => {
               </h1>
               <p className="text-xs text-slate-600 mt-1">
                 数据来源：上海市绿色制造体系名单（2025.11） · AI 智能体驱动 · 一屏通览
-                <span className="ml-2 inline-flex items-center gap-1 text-emerald-600">
+                <span className="ml-2 inline-flex items-center gap-1 text-primary">
                   <span className="glow-dot" /> 实时联动：<span className="font-semibold">{linkedSummary}</span>
                 </span>
               </p>
@@ -574,15 +574,15 @@ const Index = () => {
 
           <div className="flex flex-wrap items-center gap-2">
             <Select value={year} onValueChange={setYear}>
-              <SelectTrigger className="h-9 w-[120px] bg-white/70 backdrop-blur border-cyan-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-[120px] bg-white/70 backdrop-blur border-border text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>{YEARS.map((y) => (<SelectItem key={y} value={y}>年度 {y}</SelectItem>))}</SelectContent>
             </Select>
             <Select value={district} onValueChange={setDistrict}>
-              <SelectTrigger className="h-9 w-[140px] bg-white/70 backdrop-blur border-cyan-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-[140px] bg-white/70 backdrop-blur border-border text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>{DISTRICTS.map((d) => (<SelectItem key={d} value={d}>{d}</SelectItem>))}</SelectContent>
             </Select>
             <Select value={industry} onValueChange={setIndustry}>
-              <SelectTrigger className="h-9 w-[160px] bg-white/70 backdrop-blur border-emerald-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-[160px] bg-white/70 backdrop-blur border-border text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>{INDUSTRIES.map((i) => (<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent>
             </Select>
             {(district !== "全市" || industry !== "全部产业") && (
@@ -620,12 +620,12 @@ const Index = () => {
             <div className="space-y-1.5">
               {GROUP_RANK.map((g, i) => (
                 <div key={g.name} className="flex items-center gap-2 text-xs">
-                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-gradient-to-br from-cyan-500 to-emerald-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>
                     {i + 1}
                   </span>
                   <span className="flex-1 truncate text-slate-700">{g.name}</span>
                   <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-cyan-400 to-emerald-500" style={{ width: `${(g.value / 17) * 100}%` }} />
+                    <div className="h-full bg-primary" style={{ width: `${(g.value / 17) * 100}%` }} />
                   </div>
                   <span className="w-6 text-right font-mono font-semibold text-primary">{g.value}</span>
                 </div>
@@ -638,12 +638,12 @@ const Index = () => {
             <div className="space-y-1.5">
               {DISTRICT_NATION_TOP.map((g, i) => (
                 <div key={g.name} className="flex items-center gap-2 text-xs">
-                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-gradient-to-br from-amber-500 to-orange-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-amber-500 text-white" : "bg-muted text-muted-foreground"}`}>
                     {i + 1}
                   </span>
                   <span className="flex-1 truncate text-slate-700">{g.name}</span>
                   <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-emerald-400 to-amber-500" style={{ width: `${(g.value / 45) * 100}%` }} />
+                    <div className="h-full bg-primary/70" style={{ width: `${(g.value / 45) * 100}%` }} />
                   </div>
                   <span className="w-6 text-right font-mono font-semibold text-amber-700">{g.value}</span>
                 </div>
