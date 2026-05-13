@@ -148,7 +148,7 @@ export default function PolicyAgent() {
           : "企业侧 · 绿色制造主动政策匹配 + 申报材料 AI 辅导"
       }
     >
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_440px] xl:grid-cols-[minmax(0,1fr)_520px]">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_440px] xl:grid-cols-[minmax(0,1fr)_520px]">
         {/* 左侧：政策推送 */}
         <div className="flex min-w-0 flex-col gap-4">
           {/* 列表 + 详情 */}
