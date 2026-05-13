@@ -88,7 +88,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         {(() => {
-          const overview = overviewItems;
+          const overview = role === "ent" ? [] : overviewItems;
           const green = greenItemsByRole[role];
           const renderItem = (item: NavItem) => (
             <SidebarMenuItem key={item.url}>
@@ -107,16 +107,18 @@ export function AppSidebar() {
           );
           return (
             <>
-              <SidebarGroup>
-                {!collapsed && (
-                  <SidebarGroupLabel className="text-[11px] uppercase tracking-widest text-sidebar-foreground/60">
-                    总览
-                  </SidebarGroupLabel>
-                )}
-                <SidebarGroupContent>
-                  <SidebarMenu>{overview.map(renderItem)}</SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
+              {overview.length > 0 && (
+                <SidebarGroup>
+                  {!collapsed && (
+                    <SidebarGroupLabel className="text-[11px] uppercase tracking-widest text-sidebar-foreground/60">
+                      总览
+                    </SidebarGroupLabel>
+                  )}
+                  <SidebarGroupContent>
+                    <SidebarMenu>{overview.map(renderItem)}</SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              )}
               <SidebarGroup>
                 {!collapsed && (
                   <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-sidebar-foreground/80">
