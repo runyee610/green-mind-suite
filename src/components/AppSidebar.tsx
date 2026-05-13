@@ -74,7 +74,7 @@ export function AppSidebar() {
           </div>
           {!collapsed && (
             <div className="flex flex-col leading-tight">
-              <span className="text-xl font-bold text-sidebar-foreground tracking-wide bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-sidebar-foreground tracking-wide bg-gradient-primary bg-clip-text text-[#56d7bd]">
                 AI 能碳数智空间
               </span>
             </div>
