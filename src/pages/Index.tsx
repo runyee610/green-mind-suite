@@ -769,7 +769,7 @@ const Index = () => {
                 <Brain className="h-3.5 w-3.5 text-white" />
               </div>
               <div className="bg-white/60 rounded-lg p-2 leading-relaxed text-slate-700">
-                您好，我是 <span className="font-semibold neon-text-green">能碳智能体</span>。当前覆盖 16 区 · 523 家市级绿色工厂 · 196 家国家级。试试问："汽车产业绿色化率？"
+                您好，我是 <span className="font-semibold neon-text-green">绿色制造数字智能体</span>。当前覆盖 16 区 · 523 家市级绿色工厂 · 196 家国家级。试试问："汽车产业绿色化率？"
               </div>
             </div>
             <div className="flex gap-2 justify-end">
