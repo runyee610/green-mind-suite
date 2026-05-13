@@ -327,7 +327,7 @@ function StatCard({ icon, label, value, accent }: {
     primary: "text-primary border-primary/30 bg-primary/5",
     destructive: "text-destructive border-destructive/30 bg-destructive/5",
     warning: "text-warning border-warning/30 bg-warning/5",
-    secondary: "text-secondary border-secondary/30 bg-secondary/5",
+    secondary: "text-info border-info/30 bg-info/5",
   };
   return (
     <div className={cn("rounded-lg border p-3", accentMap[accent])}>
