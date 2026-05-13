@@ -31,7 +31,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理 · 企业侧"
-          : "绿色工厂自评价-上海"
+          : "绿色工厂自评价-上海石化化工新材料分公司"
       }
       subtitle={
         section === "dynamic"
