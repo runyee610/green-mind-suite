@@ -274,19 +274,6 @@ export default function PolicyAgent() {
 
                 <div className="space-y-3 text-xs">
                   <div>
-                    <div className="text-muted-foreground mb-1.5 inline-flex items-center gap-1">
-                      <TagIcon className="h-3 w-3" /> 标签匹配
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {selected.tags.map((t) => (
-                        <Badge key={t.label} variant="outline" className={cn("text-[10px]", tagColor[t.type])}>
-                          {t.label}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
                     <div className="text-muted-foreground mb-1.5">政策概要</div>
                     <p className="text-foreground leading-relaxed">{selected.summary}</p>
                   </div>
