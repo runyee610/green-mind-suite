@@ -6,6 +6,7 @@ import {
   BrainCircuit,
   Sprout,
   BadgeCheck,
+  Megaphone,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
@@ -46,6 +47,10 @@ const greenItemsByRole: Record<"gov" | "ent", NavItem[]> = {
     { title: "动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
   ],
 };
+
+const policyItems: NavItem[] = [
+  { title: "政策智能推送", url: "/policy-agent", icon: Megaphone },
+];
 
 export const navItems: NavItem[] = [
   ...overviewItems,
