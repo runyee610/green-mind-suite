@@ -44,53 +44,13 @@ type NavItem = {
 };
 
 export const navItems: NavItem[] = [
-  { title: "全景监测", url: "/", icon: LayoutDashboard },
-  {
-    title: "节能月度报告",
-    url: "/report-monthly",
-    icon: FileBarChart,
-    children: [
-      { title: "政府侧 · 月报管理", url: "/report-monthly", icon: ClipboardList },
-      { title: "企业侧 · 月报填报", url: "/report-monthly/filling", icon: BookOpen },
-    ],
-  },
-  { title: "节能年度报告", url: "/report-yearly", icon: CalendarRange },
-  {
-    title: "能源限额报告",
-    url: "/energy-quota",
-    icon: Gauge,
-    children: [
-      { title: "标准库管理", url: "/energy-quota/standard", icon: BookOpen },
-      { title: "限额申报管理", url: "/energy-quota/declaration", icon: ClipboardList },
-    ],
-  },
-  { title: "节能管理档案", url: "/archives", icon: FolderArchive },
-  { title: "双控考核管理", url: "/dual-control", icon: ClipboardCheck },
-  { title: "固定资产管理", url: "/assets", icon: Boxes },
-  {
-    title: "绿色制造管理",
-    url: "/green-mfg",
-    icon: Leaf,
-    children: [
-      { title: "绿色工厂申报 · 政府侧", url: "/green-mfg/gov", icon: ShieldCheck },
-      { title: "绿色工厂申报 · 企业侧", url: "/green-mfg/ent", icon: ClipboardList },
-      { title: "绿色工厂培育库 · 政府侧", url: "/green-mfg/gov/incubator", icon: ShieldCheck },
-      { title: "绿色工厂培育库 · 企业侧", url: "/green-mfg/ent/incubator", icon: ClipboardList },
-      { title: "绿色工厂动态管理 · 政府侧", url: "/green-mfg/gov/dynamic", icon: ShieldCheck },
-      { title: "绿色工厂动态管理 · 企业侧", url: "/green-mfg/ent/dynamic", icon: ClipboardList },
-    ],
-  },
-  { title: "设备对标管理", url: "/benchmark", icon: Crosshair },
-  { title: "企业管理", url: "/enterprise", icon: Building2 },
-  {
-    title: "系统管理",
-    url: "/system",
-    icon: Settings,
-    children: [
-      { title: "用户管理", url: "/system/users", icon: ClipboardList },
-      { title: "权限配置中心", url: "/system/permissions", icon: ShieldCheck },
-    ],
-  },
+  { title: "全景视图看板", url: "/", icon: LayoutDashboard },
+  { title: "绿色工厂申报 · 政府侧", url: "/green-mfg/gov", icon: ShieldCheck },
+  { title: "绿色工厂申报 · 企业侧", url: "/green-mfg/ent", icon: ClipboardList },
+  { title: "绿色工厂培育库 · 政府侧", url: "/green-mfg/gov/incubator", icon: Sprout },
+  { title: "绿色工厂培育库 · 企业侧", url: "/green-mfg/ent/incubator", icon: Leaf },
+  { title: "绿色工厂动态管理 · 政府侧", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
+  { title: "绿色工厂动态管理 · 企业侧", url: "/green-mfg/ent/dynamic", icon: Recycle },
 ];
 
 export function AppSidebar() {
