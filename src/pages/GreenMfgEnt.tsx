@@ -115,54 +115,79 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
           </Card>
         </TabsContent>
 
-        <TabsContent value="dynamic" className="mt-4">
-          <Card className="panel">
-            <CardHeader className="pb-3">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <CardTitle className="text-base">动态管理表填报</CardTitle>
-                  <p className="mt-1 text-xs text-muted-foreground">市级绿色工厂年度复核：每年填报一次，由市级生态主管部门审核。</p>
-                </div>
-                <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/dynamic/new")}>
-                  <FileEdit className="mr-1 h-4 w-4" />填报本年度
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>编号</TableHead>
-                    <TableHead className="text-center">年度</TableHead>
-                    <TableHead className="text-right">综合能耗</TableHead>
-                    <TableHead className="text-right">碳排放</TableHead>
-                    <TableHead className="text-right">固废利用率</TableHead>
-                    <TableHead className="text-center">状态</TableHead>
-                    <TableHead>提交日期</TableHead>
-                    <TableHead className="text-right">操作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {myDynamics.map((r) => (
-                    <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell className="font-mono text-xs">{r.id}</TableCell>
-                      <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.wasteRecycleRate != null ? `${r.wasteRecycleRate}%` : "—"}</TableCell>
-                      <TableCell className="text-center"><Badge variant="outline" className={dynamicStatusClass(r.status)}>{r.status}</Badge></TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate ?? "—"}</TableCell>
-                      <TableCell className="text-right">
-                        <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/ent/dynamic/${r.id}`)}>
-                          {r.status === "待填报" || r.status === "已驳回" ? <><FileEdit className="mr-1 h-3 w-3" />填报</> : <><Eye className="mr-1 h-3 w-3" />查看</>}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+        <TabsContent value="dynamic" className="mt-4 space-y-4">
+          <Tabs defaultValue="report">
+            <TabsList>
+              <TabsTrigger value="report">动态管理表</TabsTrigger>
+              <TabsTrigger value="archive">绿色档案</TabsTrigger>
+              <TabsTrigger value="risk">
+                风险预警
+                {entRiskOpen > 0 && (
+                  <span className="ml-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">
+                    {entRiskOpen}
+                  </span>
+                )}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="report" className="mt-4">
+              <Card className="panel">
+                <CardHeader className="pb-3">
+                  <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                      <CardTitle className="text-base">动态管理表填报</CardTitle>
+                      <p className="mt-1 text-xs text-muted-foreground">市级绿色工厂年度复核：每年填报一次，由市级生态主管部门审核。</p>
+                    </div>
+                    <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/dynamic/new")}>
+                      <FileEdit className="mr-1 h-4 w-4" />填报本年度
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-border/60 hover:bg-transparent">
+                        <TableHead>编号</TableHead>
+                        <TableHead className="text-center">年度</TableHead>
+                        <TableHead className="text-right">综合能耗</TableHead>
+                        <TableHead className="text-right">碳排放</TableHead>
+                        <TableHead className="text-right">固废利用率</TableHead>
+                        <TableHead className="text-center">状态</TableHead>
+                        <TableHead>提交日期</TableHead>
+                        <TableHead className="text-right">操作</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {myDynamics.map((r) => (
+                        <TableRow key={r.id} className="h-12 border-border/40">
+                          <TableCell className="font-mono text-xs">{r.id}</TableCell>
+                          <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
+                          <TableCell className="text-right font-mono text-xs">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
+                          <TableCell className="text-right font-mono text-xs">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
+                          <TableCell className="text-right font-mono text-xs">{r.wasteRecycleRate != null ? `${r.wasteRecycleRate}%` : "—"}</TableCell>
+                          <TableCell className="text-center"><Badge variant="outline" className={dynamicStatusClass(r.status)}>{r.status}</Badge></TableCell>
+                          <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate ?? "—"}</TableCell>
+                          <TableCell className="text-right">
+                            <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/ent/dynamic/${r.id}`)}>
+                              {r.status === "待填报" || r.status === "已驳回" ? <><FileEdit className="mr-1 h-3 w-3" />填报</> : <><Eye className="mr-1 h-3 w-3" />查看</>}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="archive" className="mt-4">
+              <GreenArchivePanel mode="ent" creditCode={entCreditCode} />
+            </TabsContent>
+
+            <TabsContent value="risk" className="mt-4">
+              <RiskWarningPanel mode="ent" creditCode={entCreditCode} />
+            </TabsContent>
+          </Tabs>
         </TabsContent>
       </Tabs>
     </AppLayout>
