@@ -60,12 +60,15 @@ const INDUSTRIES = [
   "汽车", "高端装备", "先进材料", "时尚消费品",
 ];
 
+// Tech-style unified palette: cyan / teal / emerald + blue, with amber reserved for 国家级 highlight
 const CYAN = "hsl(189 90% 45%)";
-const GREEN = "hsl(155 70% 38%)";
+const GREEN = "hsl(160 70% 38%)";
+const TEAL = "hsl(178 75% 38%)";
+const BLUE = "hsl(210 85% 55%)";
 const AMBER = "hsl(38 92% 50%)";
 const SLATE = "hsl(215 28% 28%)";
-const VIOLET = "hsl(265 70% 55%)";
-const ROSE = "hsl(340 75% 55%)";
+const VIOLET = BLUE;   // alias: replace prior violet usage with tech blue
+const ROSE = TEAL;     // alias: replace prior rose usage with teal
 const LABEL = "hsl(215 30% 22%)";
 
 /* ============== Real data ============== */
