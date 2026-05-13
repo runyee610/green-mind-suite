@@ -625,6 +625,24 @@ const Index = () => {
               ))}
             </div>
           </div>
+
+          <div className="glass-card glass-card-green p-4 flex-1">
+            <SectionTitle icon={Trophy} title="各区县国家级绿色工厂数 TOP10" accent="green" />
+            <div className="space-y-1.5">
+              {DISTRICT_NATION_TOP.map((g, i) => (
+                <div key={g.name} className="flex items-center gap-2 text-xs">
+                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-gradient-to-br from-amber-500 to-orange-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                    {i + 1}
+                  </span>
+                  <span className="flex-1 truncate text-slate-700">{g.name}</span>
+                  <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-emerald-400 to-amber-500" style={{ width: `${(g.value / 45) * 100}%` }} />
+                  </div>
+                  <span className="w-6 text-right font-mono font-semibold text-amber-700">{g.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Center: multi-dim */}
