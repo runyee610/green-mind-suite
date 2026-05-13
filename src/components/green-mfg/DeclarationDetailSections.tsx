@@ -1014,7 +1014,7 @@ export function EvaluationIndicatorCard({
                         basePlaceholder: "通用值水平",
                         weightHeader: (
                           <>
-                            加权参数
+                            权重分值
                             <br />
                             （产品取水量 m3）
                           </>
