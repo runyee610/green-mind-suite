@@ -84,27 +84,13 @@ function MessageBubble({ m }: { m: Msg }) {
 }
 
 export default function GreenMfgAgent() {
-  const initRef = useRef(false);
-  const [convs, setConvs] = useState<Conversation[]>([]);
-  const [activeId, setActiveId] = useState<string>("");
+  const initial = useMemo(() => bootstrap(), []);
+  const [convs, setConvs] = useState<Conversation[]>(initial.convs);
+  const [activeId, setActiveId] = useState<string>(initial.activeId);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  // Idempotent bootstrap
-  if (!initRef.current) {
-    initRef.current = true;
-    const { convs: c, activeId: id } = bootstrap();
-    // Set state synchronously on first render
-    if (convs.length === 0) {
-      // schedule after mount via microtask
-      queueMicrotask(() => {
-        setConvs(c);
-        setActiveId(id);
-      });
-    }
-  }
 
   // Persist
   useEffect(() => {
