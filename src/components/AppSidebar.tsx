@@ -79,41 +79,49 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          {!collapsed && (
-            <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-sidebar-foreground/50">
-              功能模块
-            </SidebarGroupLabel>
-          )}
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) =>
-                item.children ? (
-                  <NavItemWithChildren
-                    key={item.url}
-                    item={item}
-                    collapsed={collapsed}
-                    pathname={pathname}
-                  />
-                ) : (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton asChild tooltip={item.title} className="h-11 text-[15px] font-medium">
-                      <NavLink
-                        to={item.url}
-                        end
-                        className="hover:bg-sidebar-accent/60"
-                        activeClassName="!bg-sidebar-accent !text-sidebar-accent-foreground font-semibold border-l-2 border-sidebar-primary"
-                      >
-                        <item.icon className="h-5 w-5 shrink-0" />
-                        {!collapsed && <span className="whitespace-nowrap">{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ),
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {(() => {
+          const overview = navItems.filter((i) => !i.url.startsWith("/green-mfg"));
+          const green = navItems.filter((i) => i.url.startsWith("/green-mfg"));
+          const renderItem = (item: NavItem) => (
+            <SidebarMenuItem key={item.url}>
+              <SidebarMenuButton asChild tooltip={item.title} className="h-11 text-[15px] font-medium">
+                <NavLink
+                  to={item.url}
+                  end
+                  className="hover:bg-sidebar-accent/60"
+                  activeClassName="!bg-sidebar-accent !text-sidebar-accent-foreground font-semibold border-l-2 border-sidebar-primary"
+                >
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  {!collapsed && <span className="whitespace-nowrap">{item.title}</span>}
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+          return (
+            <>
+              <SidebarGroup>
+                {!collapsed && (
+                  <SidebarGroupLabel className="text-[11px] uppercase tracking-widest text-sidebar-foreground/60">
+                    总览
+                  </SidebarGroupLabel>
+                )}
+                <SidebarGroupContent>
+                  <SidebarMenu>{overview.map(renderItem)}</SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+              <SidebarGroup>
+                {!collapsed && (
+                  <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-sidebar-foreground/80">
+                    绿色制造智能体
+                  </SidebarGroupLabel>
+                )}
+                <SidebarGroupContent>
+                  <SidebarMenu>{green.map(renderItem)}</SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </>
+          );
+        })()}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
