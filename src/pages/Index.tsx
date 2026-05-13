@@ -8,7 +8,7 @@ import { EnergyMixChart } from "@/components/dashboard/EnergyMixChart";
 
 const Index = () => {
   return (
-    <AppLayout title="全景监测" subtitle="园区能源全景实时监测与碳排放管控">
+    <AppLayout title="全景视图看板" subtitle="园区能源全景实时监测与碳排放管控">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
         <KpiCard label="实时电耗" value="4,820" unit="kWh" delta={-3.2} icon={Zap} accent="primary" />
         <KpiCard label="天然气" value="1,240" unit="m³" delta={1.8} icon={Flame} accent="warning" />
