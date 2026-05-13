@@ -3,7 +3,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
-  BrainCircuit,
   Sprout,
   BadgeCheck,
   Megaphone,
@@ -11,6 +10,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { useRole } from "@/contexts/RoleContext";
+import logoUrl from "@/assets/logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -40,11 +40,13 @@ const greenItemsByRole: Record<"gov" | "ent", NavItem[]> = {
     { title: "自评价管理", url: "/green-mfg/gov", icon: ShieldCheck },
     { title: "梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
+    { title: "AI 对话", url: "/green-mfg-agent", icon: Megaphone },
   ],
   ent: [
     { title: "自评价管理", url: "/green-mfg/ent", icon: ShieldCheck },
     { title: "梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
+    { title: "AI 对话", url: "/green-mfg-agent", icon: Megaphone },
   ],
 };
 
@@ -68,8 +70,8 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-2 py-3">
-          <div className="relative flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-primary shadow-md">
-            <BrainCircuit className="h-6 w-6 text-primary-foreground" />
+          <div className="relative flex h-11 w-11 items-center justify-center rounded-lg bg-white shadow-md ring-1 ring-sidebar-border overflow-hidden">
+            <img src={logoUrl} alt="能碳数智空间 Logo" className="h-9 w-9 object-contain" />
           </div>
           {!collapsed && (
             <div className="flex flex-col leading-tight">

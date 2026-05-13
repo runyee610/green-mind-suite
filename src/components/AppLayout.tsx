@@ -1,9 +1,7 @@
-import { Bell, Search, Sun, User, Building2, Briefcase } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Bell, Sun, User, Building2, Briefcase, ChevronRight } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRole, type Role } from "@/contexts/RoleContext";
@@ -16,35 +14,41 @@ interface AppLayoutProps {
   children: React.ReactNode;
 }
 
+const ROUTE_TITLES: Array<{ match: RegExp; crumbs: string[] }> = [
+  { match: /^\/$/, crumbs: ["全景视图看板"] },
+  { match: /^\/green-mfg\/(gov|ent)\/incubator/, crumbs: ["绿色制造智能体", "梯度培育"] },
+  { match: /^\/green-mfg\/(gov|ent)\/dynamic\/[^/]+/, crumbs: ["绿色制造智能体", "动态管理", "详情"] },
+  { match: /^\/green-mfg\/(gov|ent)\/dynamic/, crumbs: ["绿色制造智能体", "动态管理"] },
+  { match: /^\/green-mfg\/(gov|ent)\/declaration\/new/, crumbs: ["绿色制造智能体", "自评价管理", "新建申报"] },
+  { match: /^\/green-mfg\/(gov|ent)\/declaration\/[^/]+/, crumbs: ["绿色制造智能体", "自评价管理", "详情"] },
+  { match: /^\/green-mfg\/(gov|ent)$/, crumbs: ["绿色制造智能体", "自评价管理"] },
+  { match: /^\/green-mfg-agent/, crumbs: ["绿色制造智能体", "AI 对话"] },
+  { match: /^\/policy-agent/, crumbs: ["政策智能体", "政策智能推送"] },
+  { match: /^\/system\/users/, crumbs: ["系统管理", "用户管理"] },
+  { match: /^\/system\/permissions/, crumbs: ["系统管理", "权限管理"] },
+  { match: /^\/system/, crumbs: ["系统管理"] },
+];
+
+function getCrumbs(pathname: string): string[] {
+  for (const r of ROUTE_TITLES) if (r.match.test(pathname)) return r.crumbs;
+  return ["页面"];
+}
+
 export function AppLayout({ title, subtitle, hideHeader = false, children }: AppLayoutProps) {
-  const [now, setNow] = useState(new Date());
   const { role, setRole } = useRole();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const crumbs = getCrumbs(pathname);
 
   const switchRole = (next: Role) => {
     if (next === role) return;
     setRole(next);
-    // 同步切换 green-mfg 路由的政府/企业前缀
     const m = pathname.match(/^\/green-mfg\/(gov|ent)(\/.*)?$/);
     if (m) {
       const rest = m[2] ?? "";
       navigate(`/green-mfg/${next}${rest}`);
     }
   };
-
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const dateStr = now.toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    weekday: "long",
-  });
-  const timeStr = now.toLocaleTimeString("zh-CN", { hour12: false });
 
   return (
     <SidebarProvider>
@@ -53,25 +57,34 @@ export function AppLayout({ title, subtitle, hideHeader = false, children }: App
 
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 flex items-center gap-3 border-b border-border bg-card px-4 sticky top-0 z-30 shadow-sm">
-            <div className="hidden md:flex items-center gap-2">
-              <span className="glow-dot" />
-              <span className="text-sm text-muted-foreground">系统运行正常</span>
-            </div>
+            <nav className="flex items-center gap-1.5 text-sm min-w-0" aria-label="面包屑">
+              {crumbs.map((c, i) => (
+                <span key={i} className="flex items-center gap-1.5 min-w-0">
+                  {i > 0 && <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0" />}
+                  <span
+                    className={cn(
+                      "truncate",
+                      i === crumbs.length - 1
+                        ? "font-semibold text-foreground"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {c}
+                  </span>
+                </span>
+              ))}
+            </nav>
 
             <div className="ml-auto flex items-center gap-3">
-              <div className="hidden lg:flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{dateStr}</span>
-                <span className="font-mono text-primary">{timeStr}</span>
-              </div>
-
-              <div className="relative hidden md:block">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                <Input
-                  placeholder="搜索设备 / 报表..."
-                  className="h-8 w-56 pl-8 bg-muted/40 border-border text-xs"
-                />
-              </div>
-
+              <Button variant="ghost" size="icon" className="relative h-8 w-8">
+                <Bell className="h-4 w-4" />
+                <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 bg-destructive text-destructive-foreground text-[10px]">
+                  3
+                </Badge>
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Sun className="h-4 w-4" />
+              </Button>
               <Button variant="ghost" size="icon" className="relative h-8 w-8">
                 <Bell className="h-4 w-4" />
                 <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 bg-destructive text-destructive-foreground text-[10px]">

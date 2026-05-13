@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, CheckCheck } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Activity,
   Brain,
@@ -8,7 +8,6 @@ import {
   Zap,
   Boxes,
   Layers,
-  Send,
   AlertTriangle,
   Sparkles,
   TrendingDown,
@@ -16,10 +15,11 @@ import {
   Trophy,
   BarChart3,
   ListChecks,
+  ArrowRight,
+  MessageSquare,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,8 +32,6 @@ import {
 } from "@/components/ui/select";
 import {
   ResponsiveContainer,
-  FunnelChart,
-  Funnel,
   LabelList,
   BarChart,
   Bar,
@@ -60,12 +58,15 @@ const INDUSTRIES = [
   "汽车", "高端装备", "先进材料", "时尚消费品",
 ];
 
+// Tech-style unified palette: cyan / teal / emerald + blue, with amber reserved for 国家级 highlight
 const CYAN = "hsl(189 90% 45%)";
-const GREEN = "hsl(155 70% 38%)";
+const GREEN = "hsl(160 70% 38%)";
+const TEAL = "hsl(178 75% 38%)";
+const BLUE = "hsl(210 85% 55%)";
 const AMBER = "hsl(38 92% 50%)";
 const SLATE = "hsl(215 28% 28%)";
-const VIOLET = "hsl(265 70% 55%)";
-const ROSE = "hsl(340 75% 55%)";
+const VIOLET = BLUE;   // alias: replace prior violet usage with tech blue
+const ROSE = TEAL;     // alias: replace prior rose usage with teal
 const LABEL = "hsl(215 30% 22%)";
 
 /* ============== Real data ============== */
@@ -532,73 +533,7 @@ const Index = () => {
   const [year, setYear] = useState("2025");
   const [district, setDistrict] = useState("全市");
   const [industry, setIndustry] = useState("全部产业");
-  const [aiInput, setAiInput] = useState("");
-
-  type ChatMsg = { id: number; role: "ai" | "user"; text: string; read: boolean; ts: string };
-  const fmtTime = () => new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
-  const [messages, setMessages] = useState<ChatMsg[]>([
-    { id: 1, role: "ai", text: '您好，我是绿色制造数字智能体。当前覆盖 16 区 · 523 家市级绿色工厂 · 196 家国家级。试试问："汽车产业绿色化率？"', read: true, ts: "09:00" },
-    { id: 2, role: "user", text: "嘉定区培育潜力 TOP10？", read: true, ts: "09:01" },
-    { id: 3, role: "ai", text: "嘉定区已有 72 家市级绿色工厂（汽车占比 38%）。AI 识别 10 家高潜：上汽乘用车、采埃孚、舍弗勒、博世汽车…评分 ≥ 78，建议优先纳入 2026 年市级培育库。", read: true, ts: "09:01" },
-  ]);
-  const [aiTyping, setAiTyping] = useState(false);
-  const chatScrollRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const msgRefs = useRef<Map<number, HTMLDivElement>>(new Map());
-
-  // Auto-scroll to bottom on new messages / typing
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages.length, aiTyping]);
-
-  // Mark visible AI messages as read using IntersectionObserver
-  useEffect(() => {
-    const root = chatScrollRef.current;
-    if (!root) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const seen = new Set<number>();
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            const id = Number((e.target as HTMLElement).dataset.mid);
-            if (!Number.isNaN(id)) seen.add(id);
-          }
-        });
-        if (seen.size > 0) {
-          setMessages((prev) => prev.map((m) => (seen.has(m.id) && !m.read ? { ...m, read: true } : m)));
-        }
-      },
-      { root, threshold: 0.6 }
-    );
-    msgRefs.current.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [messages.length]);
-
-  const sendMessage = () => {
-    const text = aiInput.trim();
-    if (!text) return;
-    const uid = Date.now();
-    setMessages((prev) => [...prev, { id: uid, role: "user", text, read: false, ts: fmtTime() }]);
-    setAiInput("");
-    setAiTyping(true);
-    // Mock AI ack + reply
-    setTimeout(() => {
-      setMessages((prev) => prev.map((m) => (m.id === uid ? { ...m, read: true } : m)));
-    }, 600);
-    setTimeout(() => {
-      setAiTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          role: "ai",
-          text: "已收到您的问题，正在基于全市绿色制造体系数据进行分析…（示例回复）",
-          read: false,
-          ts: fmtTime(),
-        },
-      ]);
-    }, 1400);
-  };
+  const navigate = useNavigate();
 
   const linkedSummary = useMemo(() => {
     const parts = [`年度 ${year}`];
@@ -828,79 +763,49 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="glass-card glass-card-green p-4 flex flex-col">
-          <SectionTitle icon={Brain} title="AI Agent 对话" accent="green" />
-          <div ref={chatScrollRef} className="flex-1 space-y-2 overflow-y-auto text-xs mb-2 min-h-[180px] max-h-[260px] pr-1 scroll-smooth">
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                data-mid={m.id}
-                ref={(el) => {
-                  if (el) msgRefs.current.set(m.id, el);
-                  else msgRefs.current.delete(m.id);
-                }}
-                className={`flex gap-2 ${m.role === "user" ? "justify-end" : ""}`}
-              >
-                {m.role === "ai" && (
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
-                    <Brain className="h-3.5 w-3.5 text-white" />
-                  </div>
-                )}
-                <div className={`max-w-[80%] flex flex-col gap-0.5 ${m.role === "user" ? "items-end" : "items-start"}`}>
-                  <div
-                    className={`rounded-lg p-2 leading-relaxed text-slate-700 ${
-                      m.role === "user" ? "bg-cyan-100/70" : "bg-white/60"
-                    } ${m.role === "ai" && !m.read ? "ring-2 ring-emerald-400/60 shadow-sm" : ""}`}
-                  >
-                    {m.text}
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px] text-slate-500 px-1">
-                    <span>{m.ts}</span>
-                    {m.role === "user" &&
-                      (m.read ? (
-                        <CheckCheck className="h-3 w-3 text-emerald-600" />
-                      ) : (
-                        <Check className="h-3 w-3 text-slate-400" />
-                      ))}
-                    {m.role === "ai" && !m.read && (
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    )}
-                  </div>
-                </div>
+        <button
+          type="button"
+          onClick={() => navigate("/green-mfg-agent")}
+          className="group relative overflow-hidden rounded-xl p-5 text-left flex flex-col justify-between bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 text-white shadow-xl ring-1 ring-cyan-400/20 hover:ring-cyan-400/60 transition"
+        >
+          <div className="absolute -top-12 -right-10 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-12 -left-10 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl pointer-events-none" />
+
+          <div className="relative">
+            <div className="flex items-center gap-2">
+              <div className="h-9 w-9 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center">
+                <Brain className="h-5 w-5 text-cyan-300" />
+              </div>
+              <span className="text-[11px] tracking-widest uppercase text-cyan-300/80">AI Agent</span>
+            </div>
+            <h3 className="mt-3 text-xl font-bold leading-tight flex items-center gap-2">
+              绿色制造数字智能体
+              <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
+            </h3>
+            <p className="mt-2 text-[12px] text-slate-300 leading-relaxed">
+              基于全市绿色制造体系数据，提供 <span className="text-cyan-300">企业潜力识别</span>、
+              <span className="text-emerald-300">晋级路径分析</span> 与 <span className="text-amber-300">政策匹配</span>。
+            </p>
+          </div>
+
+          <div className="relative mt-4 space-y-1.5">
+            {[
+              "嘉定区培育潜力 TOP10？",
+              "汽车产业绿色化率？",
+              "对比浦东与金山的体系完成度",
+            ].map((q) => (
+              <div key={q} className="flex items-center gap-2 text-[12px] text-slate-200/90 px-2.5 py-1.5 rounded-md bg-white/5 ring-1 ring-white/10">
+                <MessageSquare className="h-3 w-3 text-cyan-300/80 shrink-0" />
+                <span className="truncate">{q}</span>
               </div>
             ))}
-            {aiTyping && (
-              <div className="flex gap-2">
-                <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
-                  <Sparkles className="h-3.5 w-3.5 text-white" />
-                </div>
-                <div className="bg-white/60 rounded-lg p-2 text-slate-500 inline-flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "120ms" }} />
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "240ms" }} />
-                </div>
-              </div>
-            )}
-            <div ref={bottomRef} />
           </div>
-          <div className="flex gap-2 pt-2 border-t border-border/50">
-            <Input
-              value={aiInput}
-              onChange={(e) => setAiInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
-              placeholder="问问 AI Agent：如何优化本市绿色供应链协同效率？"
-              className="h-9 text-xs bg-white/70 border-emerald-200"
-            />
-            <Button size="icon" onClick={sendMessage} className="h-9 w-9 bg-gradient-to-br from-cyan-500 to-emerald-500 hover:opacity-90">
-              <Send className="h-3.5 w-3.5" />
-            </Button>
+
+          <div className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-300 group-hover:gap-2.5 transition-all">
+            进入 AI 对话
+            <ArrowRight className="h-4 w-4" />
           </div>
-        </div>
+        </button>
       </div>
     </AppLayout>
   );
