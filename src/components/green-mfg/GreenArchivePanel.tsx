@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import {
   Sheet,
   SheetContent,
@@ -72,7 +72,7 @@ export function GreenArchivePanel({ mode, creditCode }: Props) {
   if (mode === "ent") {
     const my = list[0];
     return my ? (
-      <ArchiveDetailCard archive={my} embedded />
+      <ArchiveDetailCard archive={my} />
     ) : (
       <Card className="panel">
         <CardContent className="py-12 text-center text-sm text-muted-foreground">
@@ -94,7 +94,7 @@ export function GreenArchivePanel({ mode, creditCode }: Props) {
                 <Archive className="h-4 w-4 text-primary" />企业绿色制造数字化档案
               </CardTitle>
               <p className="mt-1 text-xs text-muted-foreground">
-                自动归集历史申报、年度动态、整改与预警；点击行查看完整档案。
+                自动归集历史自评价、年度动态、整改与预警；点击行查看完整档案。
               </p>
             </div>
             <div className="relative">
@@ -116,7 +116,7 @@ export function GreenArchivePanel({ mode, creditCode }: Props) {
                 <TableHead>所属区 / 行业</TableHead>
                 <TableHead className="text-center">认定等级</TableHead>
                 <TableHead className="text-center">最近得分</TableHead>
-                <TableHead className="text-center">申报次数</TableHead>
+                <TableHead className="text-center">自评价次数</TableHead>
                 <TableHead className="text-center">动态填报</TableHead>
                 <TableHead className="text-center">整改</TableHead>
                 <TableHead className="text-center">未关闭预警</TableHead>
@@ -197,7 +197,7 @@ export function GreenArchivePanel({ mode, creditCode }: Props) {
   );
 }
 
-function ArchiveDetailCard({ archive, embedded = false }: { archive: GreenArchive; embedded?: boolean }) {
+function ArchiveDetailCard({ archive }: { archive: GreenArchive }) {
   return (
     <div className="space-y-4">
       {/* 认定信息 + KPI */}
@@ -212,7 +212,7 @@ function ArchiveDetailCard({ archive, embedded = false }: { archive: GreenArchiv
           <KpiBlock label="首次获评" value={archive.certifyDate ?? "—"} />
           <KpiBlock label="证书有效期" value={archive.validUntil ?? "—"} />
           <KpiBlock label="最近综合得分" value={String(archive.latestScore ?? "—")} accent="success" />
-          <KpiBlock label="累计申报" value={String(archive.declarationCount)} />
+          <KpiBlock label="累计自评价" value={String(archive.declarationCount)} />
           <KpiBlock label="动态填报" value={String(archive.dynamicReportCount)} />
           <KpiBlock label="整改记录" value={String(archive.rectificationCount)} />
           <KpiBlock label="未关闭预警" value={String(archive.riskOpenCount)} accent={archive.riskOpenCount > 0 ? "destructive" : undefined} />
@@ -272,35 +272,33 @@ function ArchiveDetailCard({ archive, embedded = false }: { archive: GreenArchiv
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className={embedded ? "h-[360px] pr-3" : "h-[280px] pr-3"}>
-            <ol className="relative space-y-4 border-l border-border/60 pl-5">
-              {archive.timeline.map((n, i) => (
-                <li key={i} className="relative">
-                  <span className={cn(
-                    "absolute -left-[26px] top-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background",
-                    typeBadgeBg(n.type),
-                  )}>
-                    <span className="h-1.5 w-1.5 rounded-full bg-background" />
-                  </span>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="outline" className="text-[10px]">{n.type}</Badge>
-                    <span className="text-sm font-medium">{n.title}</span>
-                    {n.score != null && (
-                      <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-                        <Sparkles className="mr-0.5 h-3 w-3" />{n.score} 分
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3" />{n.date}
-                    {n.source && <><span>·</span><span>{n.source}</span></>}
-                    {n.result && <><span>·</span><span>{n.result}</span></>}
-                  </p>
-                  {n.detail && <p className="mt-1 text-xs text-muted-foreground">{n.detail}</p>}
-                </li>
-              ))}
-            </ol>
-          </ScrollArea>
+          <ol className="relative space-y-4 border-l border-border/60 pl-5">
+            {archive.timeline.map((n, i) => (
+              <li key={i} className="relative">
+                <span className={cn(
+                  "absolute -left-[26px] top-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background",
+                  typeBadgeBg(n.type),
+                )}>
+                  <span className="h-1.5 w-1.5 rounded-full bg-background" />
+                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="outline" className="text-[10px]">{n.type}</Badge>
+                  <span className="text-sm font-medium">{n.title}</span>
+                  {n.score != null && (
+                    <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
+                      <Sparkles className="mr-0.5 h-3 w-3" />{n.score} 分
+                    </Badge>
+                  )}
+                </div>
+                <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3" />{n.date}
+                  {n.source && <><span>·</span><span>{n.source}</span></>}
+                  {n.result && <><span>·</span><span>{n.result}</span></>}
+                </p>
+                {n.detail && <p className="mt-1 text-xs text-muted-foreground">{n.detail}</p>}
+              </li>
+            ))}
+          </ol>
         </CardContent>
       </Card>
 

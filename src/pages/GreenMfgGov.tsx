@@ -84,7 +84,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     toast.success(`已更新为「${v}」`);
   };
   const handleDeleteBatch = (b: string) => {
-    if (batchInUse(b)) return toast.error("该批次下存在申报记录，无法删除");
+    if (batchInUse(b)) return toast.error("该批次下存在自评价记录，无法删除");
     setBatches(batches.filter((x) => x !== b));
     if (batchFilter === b) setBatchFilter("all");
     toast.success(`已删除批次「${b}」`);
@@ -99,7 +99,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表复核"
-          : "申报监管、AI 智能预审、专家审批"
+          : "自评价监管、AI 智能预审、专家审批"
       }
     >
       {/* 概览指标 */}
@@ -113,12 +113,12 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       <Tabs value={tab} onValueChange={setTab}>
         {!section && (
           <TabsList>
-            <TabsTrigger value="declaration">绿色工厂申报管理</TabsTrigger>
+            <TabsTrigger value="declaration">绿色工厂自评价管理</TabsTrigger>
             <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
           </TabsList>
         )}
 
-        {/* 申报管理 */}
+        {/* 自评价管理 */}
         <TabsContent value="declaration" className="mt-4">
           <Card className="panel">
             <CardHeader className="pb-3">
@@ -264,7 +264,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     );
                   })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的申报</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的自评价</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -299,7 +299,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                   <Table>
                     <TableHeader>
                       <TableRow className="border-border/60 hover:bg-transparent">
-                        <TableHead>编号</TableHead>
+                        
                         <TableHead>企业名称</TableHead>
                         <TableHead>所属区</TableHead>
                         <TableHead className="text-center">年度</TableHead>
@@ -313,7 +313,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableBody>
                       {dynamicRows.map((r) => (
                         <TableRow key={r.id} className="h-12 border-border/40">
-                          <TableCell className="font-mono text-xs">{r.id}</TableCell>
+                          
                           <TableCell className="text-sm">{r.enterpriseName}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                           <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>

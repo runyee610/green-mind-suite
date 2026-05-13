@@ -109,11 +109,11 @@ const PAGES: PageItem[] = [
   {
     id: "p_quota",
     name: "能源限额",
-    desc: "限额申报与审核",
+    desc: "限额自评价与审核",
     actions: [
       { id: "a_q_view", name: "查看", kind: "view", desc: "查看限额情况" },
-      { id: "a_q_declare", name: "限额申报", kind: "edit", desc: "提交限额申报" },
-      { id: "a_q_audit", name: "限额审核", kind: "audit", desc: "审核限额申报" },
+      { id: "a_q_declare", name: "限额自评价", kind: "edit", desc: "提交限额自评价" },
+      { id: "a_q_audit", name: "限额审核", kind: "audit", desc: "审核限额自评价" },
     ],
   },
   {

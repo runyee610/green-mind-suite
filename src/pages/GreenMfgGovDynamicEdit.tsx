@@ -35,7 +35,7 @@ export default function GreenMfgGovDynamicEdit() {
     <AppLayout title="动态管理表 · 政府侧审核" subtitle={`${row.id} · ${row.enterpriseName} · ${row.year} 年度`}>
       <div className="mb-4 flex items-center justify-end gap-3">
         <Badge variant="outline" className={dynamicStatusClass(row.status)}>{row.status}</Badge>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/gov")}>
+        <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/gov/dynamic")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回列表
         </Button>
         {row.status === "已填报" && (

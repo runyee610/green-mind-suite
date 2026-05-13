@@ -180,7 +180,7 @@ const ALERTS = [
   { site: "浦东-IDC 数据中心 #2", level: "low", msg: "PUE 趋势上行", time: "08:30" },
 ];
 
-// 跨周期 — 全国绿色示范企业申报情况（来自附件「全国绿色示范企业申报情况」表）
+// 跨周期 — 全国绿色示范企业自评价情况（来自附件「全国绿色示范企业自评价情况」表）
 const NATION_TRACK = [
   { y: "2016", 绿色工厂: 201, 绿色园区: 24, 绿色产品: 193, 绿色供应链: 15 },
   { y: "2017", 绿色工厂: 208, 绿色园区: 22, 绿色产品: 53, 绿色供应链: 4 },
@@ -790,7 +790,7 @@ const Index = () => {
         <div className="lg:col-span-2 glass-card p-4">
           <SectionTitle
             icon={Activity}
-            title="跨周期目标追踪 · 全国绿色示范企业历年申报情况（2016-2024）"
+            title="跨周期目标追踪 · 全国绿色示范企业历年自评价情况（2016-2024）"
             accent="cyan"
             right={
               <div className="flex items-center gap-3 text-[10px] text-slate-600">
@@ -824,7 +824,7 @@ const Index = () => {
             </ResponsiveContainer>
           </div>
           <div className="text-[11px] text-slate-600 mt-1">
-            数据源：附件「全国绿色示范企业申报情况」表 · 累计：工厂 6,532，园区 498，产品 3,803，供应链 739
+            数据源：附件「全国绿色示范企业自评价情况」表 · 累计：工厂 6,532，园区 498，产品 3,803，供应链 739
           </div>
         </div>
 

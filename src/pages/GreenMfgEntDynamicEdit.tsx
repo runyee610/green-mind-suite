@@ -36,7 +36,7 @@ export default function GreenMfgEntDynamicEdit() {
     const missing = DYNAMIC_FIELD_DEFS.filter((d) => !values[d.key as string]?.trim());
     if (missing.length) { toast.error(`请填写：${missing.map((m) => m.label).join("、")}`); return; }
     toast.success("已提交，等待市级生态主管部门审核");
-    navigate("/green-mfg/ent");
+    navigate("/green-mfg/ent/dynamic");
   };
 
   const year = existing?.year ?? new Date().getFullYear();
@@ -45,7 +45,7 @@ export default function GreenMfgEntDynamicEdit() {
     <AppLayout title="动态管理表填报" subtitle={`${year} 年度 · ${existing?.enterpriseName ?? "本企业"} · 年度更新一次`}>
       <div className="mb-4 flex items-center justify-end gap-3">
         {existing && <Badge variant="outline" className={dynamicStatusClass(existing.status)}>{existing.status}</Badge>}
-        <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
+        <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent/dynamic")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
         <Button variant="outline" size="sm" onClick={handleSave}><Save className="mr-1 h-4 w-4" />保存草稿</Button>
