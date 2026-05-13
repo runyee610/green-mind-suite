@@ -266,19 +266,23 @@ export default function PolicyAgent() {
 
                 <Separator className="my-3" />
 
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <div className="text-muted-foreground mb-1.5">政策概要</div>
-                    <p className="text-foreground leading-relaxed">{selected.summary}</p>
+                {/* AI 政策解读 */}
+                <div className="rounded-lg border border-primary/30 bg-gradient-to-br from-primary/[0.06] to-transparent overflow-hidden">
+                  <div className="flex items-center gap-1.5 border-b border-primary/20 bg-primary/5 px-3 py-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-[12px] font-semibold text-primary">AI 政策解读</span>
                   </div>
-
-                  <div className="rounded-md border border-primary/30 bg-primary/5 p-2.5">
-                    <div className="text-primary mb-1 text-[11px] inline-flex items-center gap-1 font-medium">
-                      <Sparkles className="h-3 w-3" /> AI 匹配理由
+                  <div className="space-y-3 p-3 text-xs">
+                    <div>
+                      <div className="text-muted-foreground mb-1 text-[11px]">政策概要</div>
+                      <p className="text-foreground leading-relaxed">{selected.summary}</p>
                     </div>
-                    <p className="text-foreground text-xs leading-relaxed">{selected.matchReason}</p>
+                    <div>
+                      <div className="text-muted-foreground mb-1 text-[11px]">匹配理由</div>
+                      <p className="text-foreground leading-relaxed">{selected.matchReason}</p>
+                    </div>
                     {selected.bindProject && (
-                      <div className="mt-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                      <div className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
                         <FileText className="h-3 w-3" />
                         绑定项目：<span className="text-foreground">{selected.bindProject}</span>
                       </div>
@@ -286,24 +290,30 @@ export default function PolicyAgent() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button size="sm" className="gap-1" onClick={() => handleApply(selected)}>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Button size="sm" className="h-9 gap-1.5" onClick={() => handleApply(selected)}>
                     <ArrowRight className="h-3.5 w-3.5" /> 一键申报
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    className="gap-1"
+                    className="h-9 gap-1.5"
                     onClick={() =>
                       sendMessage(`请帮我分析《${selected.title}》的申报材料清单和填写要点`)
                     }
                   >
-                    <Bot className="h-3.5 w-3.5" /> 让 AI 辅导填报
+                    <Bot className="h-3.5 w-3.5" /> AI 辅导填报
                   </Button>
-                  <Button size="sm" variant="ghost" className="gap-1">
-                    <Bookmark className="h-3.5 w-3.5" /> 收藏
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-9 gap-1.5"
+                    onClick={() => toggleBookmark(selected.id)}
+                  >
+                    <Bookmark className={cn("h-3.5 w-3.5", bookmarks.has(selected.id) && "fill-primary text-primary")} />
+                    {bookmarks.has(selected.id) ? "已收藏" : "收藏"}
                   </Button>
-                  <Button size="sm" variant="ghost" className="gap-1 ml-auto">
+                  <Button size="sm" variant="outline" className="h-9 gap-1.5">
                     <ExternalLink className="h-3.5 w-3.5" /> 政策原文
                   </Button>
                 </div>
