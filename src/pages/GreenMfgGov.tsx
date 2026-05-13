@@ -313,7 +313,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableBody>
                       {dynamicRows.map((r) => (
                         <TableRow key={r.id} className="h-12 border-border/40">
-                          <TableCell className="font-mono text-xs">{r.id}</TableCell>
+                          
                           <TableCell className="text-sm">{r.enterpriseName}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                           <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
