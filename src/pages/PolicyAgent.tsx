@@ -495,6 +495,7 @@ export default function PolicyAgent() {
             </p>
           </div>
         </Card>
+        </div>
       </div>
     </AppLayout>
   );
