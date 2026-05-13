@@ -3,18 +3,13 @@ import {
   Leaf,
   PanelLeftClose,
   PanelLeftOpen,
-  BookOpen,
   ClipboardList,
-  ChevronDown,
   ShieldCheck,
   BrainCircuit,
-  Factory,
   Sprout,
   Recycle,
   BadgeCheck,
-  Building,
 } from "lucide-react";
-import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -28,19 +23,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
 
-type NavChild = { title: string; url: string; icon: typeof BookOpen };
 type NavItem = {
   title: string;
   url: string;
   icon: typeof LayoutDashboard;
-  children?: NavChild[];
 };
 
 export const navItems: NavItem[] = [
