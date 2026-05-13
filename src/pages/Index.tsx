@@ -58,16 +58,21 @@ const INDUSTRIES = [
   "汽车", "高端装备", "先进材料", "时尚消费品",
 ];
 
-// Tech-style unified palette: cyan / teal / emerald + blue, with amber reserved for 国家级 highlight
-const CYAN = "hsl(189 90% 45%)";
-const GREEN = "hsl(160 70% 38%)";
-const TEAL = "hsl(178 75% 38%)";
-const BLUE = "hsl(210 85% 55%)";
-const AMBER = "hsl(38 92% 50%)";
+/* 政务风格统一色板：深绿主色 + 信息蓝辅色 + 中性灰 + 金色仅用于「国家级」勋章 */
+const PRIMARY = "hsl(168 72% 21%)";       // 深绿 主色
+const PRIMARY_SOFT = "hsl(168 50% 40%)";   // 中绿 辅
+const INFO = "hsl(211 70% 45%)";           // 沉稳信息蓝
+const AMBER = "hsl(38 80% 48%)";           // 国家级勋章
 const SLATE = "hsl(215 28% 28%)";
-const VIOLET = BLUE;   // alias: replace prior violet usage with tech blue
-const ROSE = TEAL;     // alias: replace prior rose usage with teal
-const LABEL = "hsl(215 30% 22%)";
+const MUTED = "hsl(215 16% 55%)";
+const LABEL = "hsl(215 25% 30%)";
+// 兼容历史命名
+const CYAN = INFO;
+const GREEN = PRIMARY;
+const TEAL = PRIMARY_SOFT;
+const BLUE = INFO;
+const VIOLET = INFO;
+const ROSE = PRIMARY_SOFT;
 
 /* ============== Real data ============== */
 const KPI = {
