@@ -85,15 +85,6 @@ export function AppLayout({ title, subtitle, hideHeader = false, children }: App
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <Sun className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="relative h-8 w-8">
-                <Bell className="h-4 w-4" />
-                <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 bg-destructive text-destructive-foreground text-[10px]">
-                  3
-                </Badge>
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Sun className="h-4 w-4" />
-              </Button>
               <div className="flex items-center gap-2 pl-2 border-l border-border">
                 <div className="inline-flex items-center rounded-md border border-border bg-muted/40 p-0.5">
                   <button

@@ -58,16 +58,21 @@ const INDUSTRIES = [
   "汽车", "高端装备", "先进材料", "时尚消费品",
 ];
 
-// Tech-style unified palette: cyan / teal / emerald + blue, with amber reserved for 国家级 highlight
-const CYAN = "hsl(189 90% 45%)";
-const GREEN = "hsl(160 70% 38%)";
-const TEAL = "hsl(178 75% 38%)";
-const BLUE = "hsl(210 85% 55%)";
-const AMBER = "hsl(38 92% 50%)";
+/* 政务风格统一色板：深绿主色 + 信息蓝辅色 + 中性灰 + 金色仅用于「国家级」勋章 */
+const PRIMARY = "hsl(168 72% 21%)";       // 深绿 主色
+const PRIMARY_SOFT = "hsl(168 50% 40%)";   // 中绿 辅
+const INFO = "hsl(211 70% 45%)";           // 沉稳信息蓝
+const AMBER = "hsl(38 80% 48%)";           // 国家级勋章
 const SLATE = "hsl(215 28% 28%)";
-const VIOLET = BLUE;   // alias: replace prior violet usage with tech blue
-const ROSE = TEAL;     // alias: replace prior rose usage with teal
-const LABEL = "hsl(215 30% 22%)";
+const MUTED = "hsl(215 16% 55%)";
+const LABEL = "hsl(215 25% 30%)";
+// 兼容历史命名
+const CYAN = INFO;
+const GREEN = PRIMARY;
+const TEAL = PRIMARY_SOFT;
+const BLUE = INFO;
+const VIOLET = INFO;
+const ROSE = PRIMARY_SOFT;
 
 /* ============== Real data ============== */
 const KPI = {
@@ -157,12 +162,12 @@ const STAR = [
   { name: "三星", value: 82, fill: GREEN },
 ];
 
-// 培育梯度漏斗 — 增加区级
+// 培育梯度漏斗 — 深绿色阶 + 国家级金边
 const FUNNEL = [
-  { name: "培育库企业", value: 1280, fill: "hsl(189 85% 55%)", glow: "hsl(189 95% 65% / 0.55)" },
-  { name: "区级培育", value: 820, fill: "hsl(180 78% 45%)", glow: "hsl(180 85% 55% / 0.55)" },
-  { name: "市级绿色工厂", value: 523, fill: "hsl(168 72% 38%)", glow: "hsl(168 80% 48% / 0.55)" },
-  { name: "国家级绿色工厂", value: 196, fill: "hsl(150 80% 28%)", glow: "hsl(40 95% 55% / 0.6)" },
+  { name: "培育库企业", value: 1280, fill: "hsl(168 35% 60%)", glow: "hsl(168 50% 70% / 0.25)" },
+  { name: "区级培育", value: 820, fill: "hsl(168 45% 45%)", glow: "hsl(168 55% 55% / 0.25)" },
+  { name: "市级绿色工厂", value: 523, fill: "hsl(168 60% 32%)", glow: "hsl(168 65% 40% / 0.3)" },
+  { name: "国家级绿色工厂", value: 196, fill: "hsl(168 75% 22%)", glow: "hsl(38 80% 55% / 0.45)" },
 ];
 
 const ENERGY_CARBON = [
@@ -229,22 +234,22 @@ function KpiTile({
   delta?: { v: number; label: string }; variant?: "cyan" | "green";
 }) {
   return (
-    <div className={`glass-card ${variant === "cyan" ? "glass-card-cyan" : "glass-card-green"} p-4 h-full flex flex-col`}>
+    <div className={`panel ${variant === "cyan" ? "panel-cyan" : "panel-green"} p-4 h-full flex flex-col`}>
       <div className="flex items-start justify-between">
         <div className="text-[13px] font-semibold text-slate-800 tracking-wide">{label}</div>
-        <Icon className={`h-4 w-4 ${variant === "cyan" ? "neon-text-cyan" : "neon-text-green"}`} />
+        <Icon className={`h-4 w-4 ${variant === "cyan" ? "text-primary" : "text-primary"}`} />
       </div>
       <div className="mt-2 flex items-baseline gap-1">
-        <span className={`text-[32px] leading-none font-bold tabular-nums tracking-tight ${variant === "cyan" ? "neon-text-cyan" : "neon-text-green"}`}>
+        <span className={`text-[32px] leading-none font-bold tabular-nums tracking-tight ${variant === "cyan" ? "text-primary" : "text-primary"}`}>
           {value}
         </span>
         {unit && <span className="text-xs text-slate-600">{unit}</span>}
       </div>
       {nation !== undefined && (
-        <div className="mt-2 flex items-center gap-1.5 rounded-md px-2 py-1 bg-gradient-to-r from-amber-100/80 via-rose-100/70 to-amber-100/40 border border-amber-300/60 shadow-inner">
-          <Trophy className="h-3.5 w-3.5 text-amber-600" />
-          <span className="text-[10px] font-semibold text-amber-800 tracking-wide border-0 whitespace-nowrap">国家级</span>
-          <span className="text-[20px] font-extrabold tabular-nums text-amber-700 leading-none ml-0.5" style={{ textShadow: "0 0 10px hsl(35 95% 55% / 0.35)" }}>{nation}</span>
+        <div className="mt-2 flex items-center gap-1.5 rounded-md px-2 py-1 bg-amber-50 border border-amber-200">
+          <Trophy className="h-3.5 w-3.5 text-amber-700" />
+          <span className="text-[10px] font-semibold text-amber-800 tracking-wide whitespace-nowrap">国家级</span>
+          <span className="text-[20px] font-extrabold tabular-nums text-amber-700 leading-none ml-0.5">{nation}</span>
           <span className="text-[10px] text-amber-700/90">{nationUnit}</span>
           {nationExtra && <span className="ml-auto text-[10px] text-amber-700/80 font-medium text-right leading-tight break-words min-w-0">{nationExtra}</span>}
         </div>
@@ -271,9 +276,9 @@ function KpiTile({
 function SectionTitle({ icon: Icon, title, accent, right }: { icon: any; title: string; accent: "cyan" | "green"; right?: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 mb-3">
-      <Icon className={`h-4 w-4 ${accent === "cyan" ? "neon-text-cyan" : "neon-text-green"}`} />
+      <Icon className={`h-4 w-4 ${accent === "cyan" ? "text-primary" : "text-primary"}`} />
       <h3 className="text-sm font-semibold tracking-wide text-foreground">{title}</h3>
-      <div className={`flex-1 h-px ${accent === "cyan" ? "bg-gradient-to-r from-cyan-400/50 to-transparent" : "bg-gradient-to-r from-emerald-400/50 to-transparent"}`} />
+      <div className={`flex-1 h-px ${accent === "cyan" ? "bg-gradient-to-r from-primary/30 to-transparent" : "bg-gradient-to-r from-primary/30 to-transparent"}`} />
       {right}
     </div>
   );
@@ -338,7 +343,7 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
   ];
 
   const filterChip = (district !== "全市" || industry !== "全部产业") && (
-    <Badge className="h-5 px-2 text-[10px] bg-emerald-100 text-emerald-700 border-0">
+    <Badge className="h-5 px-2 text-[10px] bg-primary/10 text-primary border-0">
       已联动：{district !== "全市" ? district : ""}{district !== "全市" && industry !== "全部产业" ? " · " : ""}{industry !== "全部产业" ? industry : ""}
     </Badge>
   );
@@ -346,7 +351,7 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
   const batch = BATCH_LISTS[batchTab];
 
   return (
-    <div className="glass-card glass-card-cyan p-4 h-full flex flex-col gap-3">
+    <div className="panel p-4 h-full flex flex-col gap-3">
       <SectionTitle
         icon={BarChart3}
         title="多维度分布分析 · 实时联动"
@@ -354,14 +359,14 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
         right={
           <div className="flex items-center gap-2">
             {filterChip}
-            <Badge className="h-5 px-2 text-[10px] bg-cyan-100 text-cyan-700 border-0">523 工厂 · 75 供应链 · 29 园区</Badge>
+            <Badge className="h-5 px-2 text-[10px] bg-muted text-foreground/80 border-0">523 工厂 · 75 供应链 · 29 园区</Badge>
           </div>
         }
       />
       <Tabs value={tab} onValueChange={setTab} className="flex flex-col">
         <TabsList className="bg-white/60 backdrop-blur h-9 self-start">
           {tabsCfg.map((t) => (
-            <TabsTrigger key={t.key} value={t.key} className="text-xs data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">
+            <TabsTrigger key={t.key} value={t.key} className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               {t.label}
             </TabsTrigger>
           ))}
@@ -488,18 +493,18 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
       </Tabs>
 
       {/* Recent batch lists */}
-      <div className="border-t border-cyan-200/60 pt-3 flex-1 flex flex-col min-h-0">
+      <div className="border-t border-border pt-3 flex-1 flex flex-col min-h-0">
         <div className="flex items-center gap-2 mb-2">
-          <ListChecks className="h-5 w-5 neon-text-green" />
+          <ListChecks className="h-5 w-5 text-primary" />
           <h4 className="text-[16px] font-bold text-slate-800 tracking-wide">最近批次入选名单</h4>
           <Tabs value={batchTab} onValueChange={(v) => setBatchTab(v as any)} className="ml-auto">
             <TabsList className="h-8 bg-white/60">
-              <TabsTrigger value="city" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">市级</TabsTrigger>
-              <TabsTrigger value="nation" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">国家级</TabsTrigger>
+              <TabsTrigger value="city" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">市级</TabsTrigger>
+              <TabsTrigger value="nation" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">国家级</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
-        <div className="text-[13px] font-semibold text-slate-700 mb-2 px-2 py-1 rounded-md bg-gradient-to-r from-cyan-50 to-emerald-50 border border-cyan-200/60">{batch.label}</div>
+        <div className="text-[13px] font-semibold text-slate-700 mb-2 px-2 py-1 rounded-md bg-muted/40 border border-border">{batch.label}</div>
         <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
           {[
             { title: "绿色工厂", color: CYAN, items: batch.factories },
@@ -548,19 +553,16 @@ const Index = () => {
       <div className="mb-4">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="relative">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg">
-                <Brain className="h-6 w-6 text-white" />
-              </div>
-              <Sparkles className="absolute -top-1 -right-1 h-3.5 w-3.5 text-cyan-500 animate-pulse" />
+            <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+              <Brain className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-[26px] font-bold tracking-tight bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent leading-tight">
+              <h1 className="text-[24px] font-semibold tracking-tight text-foreground leading-tight">
                 上海市绿色制造体系能碳数智全景看板
               </h1>
-              <p className="text-xs text-slate-600 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 数据来源：上海市绿色制造体系名单（2025.11） · AI 智能体驱动 · 一屏通览
-                <span className="ml-2 inline-flex items-center gap-1 text-emerald-600">
+                <span className="ml-2 inline-flex items-center gap-1 text-primary">
                   <span className="glow-dot" /> 实时联动：<span className="font-semibold">{linkedSummary}</span>
                 </span>
               </p>
@@ -569,15 +571,15 @@ const Index = () => {
 
           <div className="flex flex-wrap items-center gap-2">
             <Select value={year} onValueChange={setYear}>
-              <SelectTrigger className="h-9 w-[120px] bg-white/70 backdrop-blur border-cyan-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-[120px] bg-white/70 backdrop-blur border-border text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>{YEARS.map((y) => (<SelectItem key={y} value={y}>年度 {y}</SelectItem>))}</SelectContent>
             </Select>
             <Select value={district} onValueChange={setDistrict}>
-              <SelectTrigger className="h-9 w-[140px] bg-white/70 backdrop-blur border-cyan-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-[140px] bg-white/70 backdrop-blur border-border text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>{DISTRICTS.map((d) => (<SelectItem key={d} value={d}>{d}</SelectItem>))}</SelectContent>
             </Select>
             <Select value={industry} onValueChange={setIndustry}>
-              <SelectTrigger className="h-9 w-[160px] bg-white/70 backdrop-blur border-emerald-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-[160px] bg-white/70 backdrop-blur border-border text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>{INDUSTRIES.map((i) => (<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent>
             </Select>
             {(district !== "全市" || industry !== "全部产业") && (
@@ -602,43 +604,43 @@ const Index = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
         {/* Left col */}
         <div className="lg:col-span-3 flex flex-col gap-4">
-          <div className="glass-card p-4 flex flex-col" style={{ minHeight: 360 }}>
+          <div className="panel p-4 flex flex-col" style={{ minHeight: 360 }}>
             <SectionTitle icon={Layers} title="梯度培育漏斗" accent="cyan" />
             <GradientFunnel />
             <div className="text-[11px] text-slate-600 mt-2 pt-2 border-t border-border/40 leading-relaxed">
-              培育→区级 <span className="neon-text-cyan font-semibold">64.1%</span> · 区级→市级 <span className="neon-text-cyan font-semibold">63.8%</span> · 市级→国家级 <span className="neon-text-green font-semibold">37.5%</span>
+              培育→区级 <span className="text-primary font-semibold">64.1%</span> · 区级→市级 <span className="text-primary font-semibold">63.8%</span> · 市级→国家级 <span className="text-primary font-semibold">37.5%</span>
             </div>
           </div>
 
-          <div className="glass-card p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={Trophy} title="重点集团绿色工厂数 TOP10" accent="green" />
             <div className="space-y-1.5">
               {GROUP_RANK.map((g, i) => (
                 <div key={g.name} className="flex items-center gap-2 text-xs">
-                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-gradient-to-br from-cyan-500 to-emerald-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>
                     {i + 1}
                   </span>
                   <span className="flex-1 truncate text-slate-700">{g.name}</span>
                   <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-cyan-400 to-emerald-500" style={{ width: `${(g.value / 17) * 100}%` }} />
+                    <div className="h-full bg-primary" style={{ width: `${(g.value / 17) * 100}%` }} />
                   </div>
-                  <span className="w-6 text-right font-mono font-semibold neon-text-cyan">{g.value}</span>
+                  <span className="w-6 text-right font-mono font-semibold text-primary">{g.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="glass-card glass-card-green p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={Trophy} title="各区县国家级绿色工厂数 TOP10" accent="green" />
             <div className="space-y-1.5">
               {DISTRICT_NATION_TOP.map((g, i) => (
                 <div key={g.name} className="flex items-center gap-2 text-xs">
-                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-gradient-to-br from-amber-500 to-orange-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-amber-500 text-white" : "bg-muted text-muted-foreground"}`}>
                     {i + 1}
                   </span>
                   <span className="flex-1 truncate text-slate-700">{g.name}</span>
                   <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-emerald-400 to-amber-500" style={{ width: `${(g.value / 45) * 100}%` }} />
+                    <div className="h-full bg-primary/70" style={{ width: `${(g.value / 45) * 100}%` }} />
                   </div>
                   <span className="w-6 text-right font-mono font-semibold text-amber-700">{g.value}</span>
                 </div>
@@ -654,7 +656,7 @@ const Index = () => {
 
         {/* Right col */}
         <div className="lg:col-span-3 flex flex-col gap-4">
-          <div className="glass-card p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={Zap} title="能耗与碳排双控趋势" accent="green" />
             <div className="h-[200px]">
               <ResponsiveContainer>
@@ -676,7 +678,7 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="glass-card p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={Activity} title="国家级绿色工厂 · 历年新增" accent="cyan" />
             <div className="h-[200px]">
               <ResponsiveContainer>
@@ -698,11 +700,11 @@ const Index = () => {
               </ResponsiveContainer>
             </div>
             <div className="text-[11px] text-slate-600 mt-1">
-              累计 <span className="neon-text-cyan font-semibold">196 家</span> · 2024 年单年新增 <span className="neon-text-green font-semibold">55 家</span> 创历史新高
+              累计 <span className="text-primary font-semibold">196 家</span> · 2024 年单年新增 <span className="text-primary font-semibold">55 家</span> 创历史新高
             </div>
           </div>
 
-          <div className="glass-card p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={AlertTriangle} title="AI 异常预警" accent="green" />
             <div className="space-y-2">
               {ALERTS.map((a, i) => (
@@ -722,7 +724,7 @@ const Index = () => {
 
       {/* Bottom */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 glass-card p-4">
+        <div className="lg:col-span-2 panel p-4">
           <SectionTitle
             icon={Activity}
             title="跨周期目标追踪 · 全国绿色示范企业历年自评价情况（2016-2024）"
@@ -766,25 +768,23 @@ const Index = () => {
         <button
           type="button"
           onClick={() => navigate("/green-mfg-agent")}
-          className="group relative overflow-hidden rounded-xl p-5 text-left flex flex-col justify-between bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 text-white shadow-xl ring-1 ring-cyan-400/20 hover:ring-cyan-400/60 transition"
+          className="group relative overflow-hidden rounded-lg p-5 text-left flex flex-col justify-between bg-[hsl(168_55%_12%)] text-white shadow-md ring-1 ring-[hsl(168_50%_25%)] hover:ring-[hsl(168_60%_40%)] transition"
         >
-          <div className="absolute -top-12 -right-10 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-12 -left-10 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[hsl(168_60%_18%)] via-transparent to-transparent pointer-events-none" />
 
           <div className="relative">
             <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center">
-                <Brain className="h-5 w-5 text-cyan-300" />
+              <div className="h-9 w-9 rounded-md bg-white/10 ring-1 ring-white/15 flex items-center justify-center">
+                <Brain className="h-5 w-5 text-white/90" />
               </div>
-              <span className="text-[11px] tracking-widest uppercase text-cyan-300/80">AI Agent</span>
+              <span className="text-[11px] tracking-widest uppercase text-white/60">AI Agent</span>
             </div>
-            <h3 className="mt-3 text-xl font-bold leading-tight flex items-center gap-2">
+            <h3 className="mt-3 text-lg font-semibold leading-tight flex items-center gap-2">
               绿色制造数字智能体
-              <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
             </h3>
-            <p className="mt-2 text-[12px] text-slate-300 leading-relaxed">
-              基于全市绿色制造体系数据，提供 <span className="text-cyan-300">企业潜力识别</span>、
-              <span className="text-emerald-300">晋级路径分析</span> 与 <span className="text-amber-300">政策匹配</span>。
+            <p className="mt-2 text-[12px] text-white/70 leading-relaxed">
+              基于全市绿色制造体系数据，提供企业潜力识别、晋级路径分析与政策匹配。
             </p>
           </div>
 
@@ -794,14 +794,14 @@ const Index = () => {
               "汽车产业绿色化率？",
               "对比浦东与金山的体系完成度",
             ].map((q) => (
-              <div key={q} className="flex items-center gap-2 text-[12px] text-slate-200/90 px-2.5 py-1.5 rounded-md bg-white/5 ring-1 ring-white/10">
-                <MessageSquare className="h-3 w-3 text-cyan-300/80 shrink-0" />
+              <div key={q} className="flex items-center gap-2 text-[12px] text-white/85 px-2.5 py-1.5 rounded-md bg-white/5 ring-1 ring-white/10">
+                <MessageSquare className="h-3 w-3 text-white/60 shrink-0" />
                 <span className="truncate">{q}</span>
               </div>
             ))}
           </div>
 
-          <div className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-300 group-hover:gap-2.5 transition-all">
+          <div className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white group-hover:gap-2.5 transition-all">
             进入 AI 对话
             <ArrowRight className="h-4 w-4" />
           </div>
