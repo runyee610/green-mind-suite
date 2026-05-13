@@ -3,7 +3,6 @@ import {
   Sparkles,
   Send,
   Search,
-  Filter,
   Bot,
   User as UserIcon,
   Bookmark,
@@ -11,10 +10,7 @@ import {
   Calendar,
   Coins,
   Building2,
-  Tag as TagIcon,
-  Zap,
   FileText,
-  CheckCircle2,
   ArrowRight,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
