@@ -36,7 +36,7 @@ export default function GreenMfgEntDynamicEdit() {
     const missing = DYNAMIC_FIELD_DEFS.filter((d) => !values[d.key as string]?.trim());
     if (missing.length) { toast.error(`请填写：${missing.map((m) => m.label).join("、")}`); return; }
     toast.success("已提交，等待市级生态主管部门审核");
-    navigate("/green-mfg/ent");
+    navigate("/green-mfg/ent/dynamic");
   };
 
   const year = existing?.year ?? new Date().getFullYear();
