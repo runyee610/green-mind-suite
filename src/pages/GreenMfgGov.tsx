@@ -20,6 +20,8 @@ import {
   dynamicStatusClass,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
+import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
+import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
 
 export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
@@ -271,59 +273,77 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
         </TabsContent>
 
         {/* 动态管理 */}
-        <TabsContent value="dynamic" className="mt-4">
-          <Card className="panel">
-            <CardHeader className="pb-3">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <CardTitle className="text-base">动态管理表 · {new Date().getFullYear()} 年度</CardTitle>
-                  <p className="mt-1 text-xs text-muted-foreground">仅市级绿色工厂需逐年填报；填报后由市级生态主管部门复核。</p>
-                </div>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="搜索企业名称 / 信用代码" className="h-8 w-64 pl-8 text-xs" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>编号</TableHead>
-                    <TableHead>企业名称</TableHead>
-                    <TableHead>所属区</TableHead>
-                    <TableHead className="text-center">年度</TableHead>
-                    <TableHead className="text-center">综合能耗</TableHead>
-                    <TableHead className="text-center">碳排放</TableHead>
-                    <TableHead className="text-center">固废利用率</TableHead>
-                    <TableHead className="text-center">状态</TableHead>
-                    <TableHead className="text-right">操作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {dynamicRows.map((r) => (
-                    <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell className="font-mono text-xs">{r.id}</TableCell>
-                      <TableCell className="text-sm">{r.enterpriseName}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
-                      <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.wasteRecycleRate != null ? `${r.wasteRecycleRate}%` : "—"}</TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="outline" className={dynamicStatusClass(r.status)}>{r.status}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/dynamic/${r.id}`)}>
-                          <Eye className="mr-1 h-3 w-3" />查看/审核
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+        <TabsContent value="dynamic" className="mt-4 space-y-4">
+          <Tabs defaultValue="report">
+            <TabsList>
+              <TabsTrigger value="report">动态管理表</TabsTrigger>
+              <TabsTrigger value="archive">绿色档案</TabsTrigger>
+              <TabsTrigger value="risk">风险预警</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="report" className="mt-4">
+              <Card className="panel">
+                <CardHeader className="pb-3">
+                  <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                      <CardTitle className="text-base">动态管理表 · {new Date().getFullYear()} 年度</CardTitle>
+                      <p className="mt-1 text-xs text-muted-foreground">仅市级绿色工厂需逐年填报；填报后由市级生态主管部门复核。</p>
+                    </div>
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                      <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="搜索企业名称 / 信用代码" className="h-8 w-64 pl-8 text-xs" />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-border/60 hover:bg-transparent">
+                        <TableHead>编号</TableHead>
+                        <TableHead>企业名称</TableHead>
+                        <TableHead>所属区</TableHead>
+                        <TableHead className="text-center">年度</TableHead>
+                        <TableHead className="text-center">综合能耗</TableHead>
+                        <TableHead className="text-center">碳排放</TableHead>
+                        <TableHead className="text-center">固废利用率</TableHead>
+                        <TableHead className="text-center">状态</TableHead>
+                        <TableHead className="text-right">操作</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {dynamicRows.map((r) => (
+                        <TableRow key={r.id} className="h-12 border-border/40">
+                          <TableCell className="font-mono text-xs">{r.id}</TableCell>
+                          <TableCell className="text-sm">{r.enterpriseName}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
+                          <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
+                          <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
+                          <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
+                          <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.wasteRecycleRate != null ? `${r.wasteRecycleRate}%` : "—"}</TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="outline" className={dynamicStatusClass(r.status)}>{r.status}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/dynamic/${r.id}`)}>
+                              <Eye className="mr-1 h-3 w-3" />查看/审核
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="archive" className="mt-4">
+              <GreenArchivePanel mode="gov" />
+            </TabsContent>
+
+            <TabsContent value="risk" className="mt-4">
+              <RiskWarningPanel mode="gov" />
+            </TabsContent>
+          </Tabs>
         </TabsContent>
       </Tabs>
       <BatchManageDialog
