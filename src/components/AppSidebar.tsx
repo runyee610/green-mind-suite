@@ -1,17 +1,15 @@
 import {
   LayoutDashboard,
-  Leaf,
   PanelLeftClose,
   PanelLeftOpen,
-  ClipboardList,
   ShieldCheck,
   BrainCircuit,
   Sprout,
-  Recycle,
   BadgeCheck,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
+import { useRole } from "@/contexts/RoleContext";
 import {
   Sidebar,
   SidebarContent,
@@ -32,14 +30,27 @@ type NavItem = {
   icon: typeof LayoutDashboard;
 };
 
-export const navItems: NavItem[] = [
+const overviewItems: NavItem[] = [
   { title: "全景视图看板", url: "/", icon: LayoutDashboard },
-  { title: "绿色工厂自评价管理 · 政府侧", url: "/green-mfg/gov", icon: ShieldCheck },
-  { title: "绿色工厂申报 · 企业侧", url: "/green-mfg/ent", icon: ClipboardList },
-  { title: "绿色工厂培育库 · 政府侧", url: "/green-mfg/gov/incubator", icon: Sprout },
-  { title: "绿色工厂培育库 · 企业侧", url: "/green-mfg/ent/incubator", icon: Leaf },
-  { title: "绿色工厂动态管理 · 政府侧", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
-  { title: "绿色工厂动态管理 · 企业侧", url: "/green-mfg/ent/dynamic", icon: Recycle },
+];
+
+const greenItemsByRole: Record<"gov" | "ent", NavItem[]> = {
+  gov: [
+    { title: "绿色工厂自评价管理", url: "/green-mfg/gov", icon: ShieldCheck },
+    { title: "绿色工厂梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
+    { title: "绿色工厂动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
+  ],
+  ent: [
+    { title: "绿色工厂自评价管理", url: "/green-mfg/ent", icon: ShieldCheck },
+    { title: "绿色工厂梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
+    { title: "绿色工厂动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
+  ],
+};
+
+export const navItems: NavItem[] = [
+  ...overviewItems,
+  ...greenItemsByRole.gov,
+  ...greenItemsByRole.ent,
 ];
 
 export function AppSidebar() {
