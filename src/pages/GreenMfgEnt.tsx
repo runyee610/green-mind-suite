@@ -15,6 +15,9 @@ import {
   stageBadgeClass,
 } from "@/components/green-mfg/data";
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
+import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
+import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
+import { MOCK_RISKS } from "@/components/green-mfg/dynamicExtData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
