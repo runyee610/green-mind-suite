@@ -57,6 +57,7 @@ export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
+  const { role } = useRole();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -80,8 +81,8 @@ export function AppSidebar() {
 
       <SidebarContent>
         {(() => {
-          const overview = navItems.filter((i) => !i.url.startsWith("/green-mfg"));
-          const green = navItems.filter((i) => i.url.startsWith("/green-mfg"));
+          const overview = overviewItems;
+          const green = greenItemsByRole[role];
           const renderItem = (item: NavItem) => (
             <SidebarMenuItem key={item.url}>
               <SidebarMenuButton asChild tooltip={item.title} className="h-11 text-[15px] font-medium">
