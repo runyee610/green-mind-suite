@@ -3,7 +3,6 @@ import {
   Sparkles,
   Send,
   Search,
-  Filter,
   Bot,
   User as UserIcon,
   Bookmark,
@@ -11,10 +10,7 @@ import {
   Calendar,
   Coins,
   Building2,
-  Tag as TagIcon,
-  Zap,
   FileText,
-  CheckCircle2,
   ArrowRight,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -25,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
+
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import {
@@ -33,8 +29,6 @@ import {
   PolicyItem,
   PolicyCategory,
   categoryColor,
-  urgencyColor,
-  tagColor,
   INITIAL_CHAT,
   ChatMessage,
   SUGGESTED_QUESTIONS,
@@ -177,18 +171,9 @@ export default function PolicyAgent() {
                 <CardTitle className="text-base flex flex-wrap items-center gap-2">
                   <span className="relative flex h-7 w-7 items-center justify-center rounded-md bg-gradient-primary text-primary-foreground shadow-elevated">
                     <Sparkles className="h-3.5 w-3.5" />
-                    <span className="absolute inset-0 rounded-md ring-1 ring-primary/40 animate-pulse-glow" />
                   </span>
                   <span className="font-semibold">{role === "gov" ? "可定向推送企业的政策" : "为您主动推送的政策"}</span>
-                  <Badge
-                    variant="outline"
-                    className="border-primary/40 bg-primary/5 font-mono text-[10px] uppercase tracking-wider text-primary"
-                  >
-                    <Zap className="mr-1 h-3 w-3" />
-                    PolicyMatch v2.1
-                  </Badge>
-                  <span className="hidden md:inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-600">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                  <span className="text-xs text-muted-foreground font-normal">
                     {role === "gov" ? `已匹配 ${matchedEnt} 家企业` : `今日推送 ${pushedToday} 条`}
                   </span>
                 </CardTitle>
@@ -198,14 +183,10 @@ export default function PolicyAgent() {
                     <Input
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="搜索政策 / 标签"
+                      placeholder="搜索政策"
                       className="h-8 w-56 pl-8 text-xs"
                     />
                   </div>
-                  <Button variant="outline" size="sm" className="h-8 gap-1">
-                    <Filter className="h-3.5 w-3.5" />
-                    筛选
-                  </Button>
                 </div>
               </div>
               <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="mt-2">
@@ -246,38 +227,19 @@ export default function PolicyAgent() {
                               <Badge variant="outline" className={cn("text-[10px]", categoryColor[p.category])}>
                                 {p.category}
                               </Badge>
-                              <Badge variant="outline" className="text-[10px] border-border">
-                                {p.level}
-                              </Badge>
-                              {p.status === "未读" && (
-                                <span className="inline-flex h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
-                              )}
                             </div>
                             <h4 className="mt-1.5 text-sm font-medium leading-snug line-clamp-2">{p.title}</h4>
                             <p className="mt-1 text-[11px] text-muted-foreground truncate">{p.issuer}</p>
                           </div>
                           <div className="shrink-0 text-right">
-                            <div className={cn(
-                              "font-mono text-xl font-bold leading-none tabular-nums",
-                              selected.id === p.id ? "text-primary [text-shadow:0_0_12px_hsl(var(--primary)/0.5)]" : "text-primary",
-                            )}>{p.matchScore}</div>
+                            <div className="font-mono text-xl font-bold leading-none tabular-nums text-primary">{p.matchScore}</div>
                             <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">匹配度</div>
                           </div>
-                        </div>
-                        {/* match score bar */}
-                        <div className="mt-2 h-0.5 w-full overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-400 to-cyan-400"
-                            style={{ width: `${p.matchScore}%` }}
-                          />
                         </div>
                         <div className="mt-2 flex items-center justify-between text-[11px]">
                           <span className="inline-flex items-center gap-1 text-muted-foreground">
                             <Calendar className="h-3 w-3" /> 截止 {p.deadline}
                           </span>
-                          <Badge variant="outline" className={cn("text-[10px]", urgencyColor[p.urgency])}>
-                            {p.urgency === "high" ? "急" : p.urgency === "medium" ? "中" : "低"}
-                          </Badge>
                         </div>
                       </button>
                     </li>
@@ -290,15 +252,6 @@ export default function PolicyAgent() {
 
               {/* 详情 */}
               <div className="rounded-lg border border-border bg-card/40 p-4 overflow-y-auto h-full">
-                <div className="flex items-start gap-2 mb-3">
-                  <Badge variant="outline" className={cn(categoryColor[selected.category])}>
-                    {selected.category}
-                  </Badge>
-                  <Badge variant="outline">{selected.level}</Badge>
-                  <Badge variant="outline" className={cn(urgencyColor[selected.urgency], "ml-auto")}>
-                    匹配度 {selected.matchScore}
-                  </Badge>
-                </div>
                 <h3 className="text-base font-semibold leading-snug">{selected.title}</h3>
                 <p className="mt-1 text-xs text-muted-foreground inline-flex items-center gap-1">
                   <Building2 className="h-3 w-3" /> {selected.issuer}
@@ -314,19 +267,6 @@ export default function PolicyAgent() {
                 <Separator className="my-3" />
 
                 <div className="space-y-3 text-xs">
-                  <div>
-                    <div className="text-muted-foreground mb-1.5 inline-flex items-center gap-1">
-                      <TagIcon className="h-3 w-3" /> 标签匹配
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {selected.tags.map((t) => (
-                        <Badge key={t.label} variant="outline" className={cn("text-[10px]", tagColor[t.type])}>
-                          {t.label}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
                   <div>
                     <div className="text-muted-foreground mb-1.5">政策概要</div>
                     <p className="text-foreground leading-relaxed">{selected.summary}</p>
@@ -388,47 +328,18 @@ export default function PolicyAgent() {
           <div className="pointer-events-none absolute -top-20 -right-20 h-60 w-60 rounded-full bg-cyan-400/15 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-primary/15 blur-3xl" />
 
-          <CardHeader className="relative pb-3 border-b border-border bg-gradient-to-r from-primary/5 via-transparent to-cyan-500/5">
+          <CardHeader className="relative pb-3 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="relative h-11 w-11 shrink-0">
-                <div className="absolute inset-0 rounded-lg bg-gradient-primary flex items-center justify-center shadow-elevated">
-                  <Bot className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="absolute inset-0 rounded-lg ring-1 ring-primary/40 animate-pulse-glow" />
-                <span className="absolute -inset-1 rounded-xl border border-primary/20 animate-ping opacity-40" />
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success border-2 border-card animate-pulse" />
+              <div className="relative h-10 w-10 shrink-0 rounded-lg bg-gradient-primary flex items-center justify-center shadow-elevated">
+                <Bot className="h-5 w-5 text-primary-foreground" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success border-2 border-card" />
               </div>
               <div className="min-w-0 flex-1">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <span className="font-semibold">PolicyGPT</span>
-                  <Badge
-                    variant="outline"
-                    className="border-primary/40 bg-primary/5 font-mono text-[9px] uppercase tracking-wider text-primary"
-                  >
-                    <Sparkles className="mr-0.5 h-2.5 w-2.5" />
-                    Gov-LLM v3.2
-                  </Badge>
-                </CardTitle>
-                <p className="text-[11px] text-muted-foreground mt-0.5 font-mono">
+                <CardTitle className="text-sm font-semibold">PolicyGPT</CardTitle>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   自然语言问答 · 材料梳理 · 申报辅导
                 </p>
               </div>
-              <Badge
-                variant="outline"
-                className="ml-auto text-[10px] border-emerald-500/40 bg-emerald-500/10 text-emerald-600 font-mono uppercase tracking-wider"
-              >
-                <span className="mr-1 h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                在线
-              </Badge>
-            </div>
-            {/* secondary row to match left card tabs height */}
-            <div className="mt-2 flex h-8 items-center gap-2 text-[11px] text-muted-foreground">
-              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1 font-mono">
-                <Sparkles className="h-3 w-3 text-primary" /> 上下文已加载 {role === "gov" ? "辖区企业 23 家" : "企业档案 1 份"}
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1 font-mono">
-                响应 ~0.8s
-              </span>
             </div>
           </CardHeader>
 
@@ -533,25 +444,15 @@ function MessageBubble({
         >
           {message.content}
         </div>
-        {message.citations && message.citations.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {message.citations.map((c) => (
-              <Badge key={c.policyId} variant="outline" className="text-[10px] border-primary/40 bg-primary/5 text-primary">
-                <FileText className="h-2.5 w-2.5 mr-1" />
-                {c.title}
-              </Badge>
-            ))}
-          </div>
-        )}
-        {message.suggestions && message.suggestions.length > 0 && (
+        {!isUser && message.suggestions && message.suggestions.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {message.suggestions.map((s) => (
               <button
                 key={s}
                 onClick={() => onSuggestion(s)}
-                className="text-[11px] rounded-full border border-primary/30 bg-primary/5 text-primary px-2.5 py-1 hover:bg-primary/10 transition"
+                className="text-[11px] rounded-md border border-border bg-transparent text-muted-foreground px-2 py-1 hover:border-primary/40 hover:text-primary transition"
               >
-                {s} →
+                {s}
               </button>
             ))}
           </div>
