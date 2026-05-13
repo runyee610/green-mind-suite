@@ -520,15 +520,7 @@ export default function GreenMfgGovIncubator() {
                     {r.subIndustry && <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "text-[11px]",
-                        r.level === "市级"
-                          ? "border-primary/40 bg-primary/10 text-primary"
-                          : "border-cyan-400/40 bg-cyan-400/10 text-cyan-600 dark:text-cyan-300",
-                      )}
-                    >
+                    <Badge variant="outline" className="text-[11px]">
                       {r.level}
                     </Badge>
                   </TableCell>
