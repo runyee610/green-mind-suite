@@ -36,14 +36,14 @@ const overviewItems: NavItem[] = [
 
 const greenItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
-    { title: "绿色工厂自评价管理", url: "/green-mfg/gov", icon: ShieldCheck },
-    { title: "绿色工厂梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
-    { title: "绿色工厂动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
+    { title: "自评价管理", url: "/green-mfg/gov", icon: ShieldCheck },
+    { title: "梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
+    { title: "动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
   ],
   ent: [
-    { title: "绿色工厂自评价管理", url: "/green-mfg/ent", icon: ShieldCheck },
-    { title: "绿色工厂梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
-    { title: "绿色工厂动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
+    { title: "自评价管理", url: "/green-mfg/ent", icon: ShieldCheck },
+    { title: "梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
+    { title: "动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
   ],
 };
 
