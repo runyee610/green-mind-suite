@@ -13,15 +13,15 @@ import {
   TrendingDown,
   TrendingUp,
   Trophy,
-  Building2,
-  PieChart as PieIcon,
   BarChart3,
+  ListChecks,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -46,8 +46,6 @@ import {
   Line,
   CartesianGrid,
   Legend,
-  AreaChart,
-  Area,
 } from "recharts";
 
 const YEARS = ["2020", "2021", "2022", "2023", "2024", "2025"];
@@ -69,17 +67,14 @@ const VIOLET = "hsl(265 70% 55%)";
 const ROSE = "hsl(340 75% 55%)";
 const LABEL = "hsl(215 30% 22%)";
 
-/* ============== Real data digested from Excel ============== */
-// 上海市 + 国家级累计（截至 2025.11）
+/* ============== Real data ============== */
 const KPI = {
   factory: { city: 523, nation: 196 },
   supply: { city: 75, nation: 17 },
   park: { city: 29, nation: 8 },
   product: { city: 150, nation: 67 },
-  designEnt: { city: 12, nation: 12 },
 };
 
-// 区县分布（绿色工厂 / 供应链 / 园区）
 const DISTRICT_DATA = [
   { d: "浦东新区", 工厂: 118, 供应链: 20, 园区: 6 },
   { d: "金山区", 工厂: 81, 供应链: 10, 园区: 3 },
@@ -95,7 +90,6 @@ const DISTRICT_DATA = [
   { d: "其他", 工厂: 8, 供应链: 2, 园区: 0 },
 ];
 
-// "3+6" 9 大产业（绿色工厂 + 供应链合并）
 const INDUSTRY_36 = [
   { name: "集成电路", group: "三大先导", value: 6 },
   { name: "生物医药", group: "三大先导", value: 37 },
@@ -108,7 +102,6 @@ const INDUSTRY_36 = [
   { name: "时尚消费品", group: "六大重点", value: 34 },
 ];
 
-// 集团排行
 const GROUP_RANK = [
   { name: "上汽集团", value: 17 },
   { name: "上海电气集团", value: 15 },
@@ -122,13 +115,11 @@ const GROUP_RANK = [
   { name: "城投集团", value: 2 },
 ];
 
-// 重点用能单位 vs 非重点
 const KEY_ENERGY = [
   { name: "重点用能单位", value: 169, fill: CYAN },
   { name: "非重点单位", value: 357, fill: GREEN },
 ];
 
-// 行业 TOP 12
 const INDUSTRY_TOP = [
   { name: "通用设备", value: 40 },
   { name: "机械", value: 35 },
@@ -144,33 +135,20 @@ const INDUSTRY_TOP = [
   { name: "集成电路", value: 10 },
 ];
 
-// 国家级绿色工厂 历年新增
-const NATION_YEAR = [
-  { y: "2017", v: 4 },
-  { y: "2018", v: 8 },
-  { y: "2019", v: 16 },
-  { y: "2020", v: 28 },
-  { y: "2021", v: 23 },
-  { y: "2022", v: 29 },
-  { y: "2023", v: 37 },
-  { y: "2024", v: 55 },
-];
-
-// 星级
 const STAR = [
   { name: "五星", value: 48, fill: AMBER },
   { name: "四星", value: 351, fill: CYAN },
   { name: "三星", value: 82, fill: GREEN },
 ];
 
-// 培育梯度漏斗
+// 培育梯度漏斗 — 增加区级
 const FUNNEL = [
   { name: "培育库企业", value: 1280, fill: "hsl(189 85% 60%)" },
+  { name: "区级培育", value: 820, fill: "hsl(180 78% 48%)" },
   { name: "市级绿色工厂", value: 523, fill: "hsl(168 70% 40%)" },
-  { name: "国家级绿色工厂", value: 196, fill: "hsl(155 75% 30%)" },
+  { name: "国家级绿色工厂", value: 196, fill: "hsl(150 78% 28%)" },
 ];
 
-// 能耗 / 碳排
 const ENERGY_CARBON = [
   { y: "2020", energy: 11820, carbon: 1620 },
   { y: "2021", energy: 11420, carbon: 1540 },
@@ -180,7 +158,6 @@ const ENERGY_CARBON = [
   { y: "2025", energy: 9860, carbon: 1240 },
 ];
 
-// AI 预警
 const ALERTS = [
   { site: "宝山-钢铁产线 #3", level: "high", msg: "电耗较基线 +18.6%", time: "12:42" },
   { site: "嘉定-汽车涂装车间", level: "mid", msg: "天然气波动异常", time: "11:08" },
@@ -188,34 +165,51 @@ const ALERTS = [
   { site: "浦东-IDC 数据中心 #2", level: "low", msg: "PUE 趋势上行", time: "08:30" },
 ];
 
-// 跨周期目标追踪
-const PLAN_TRACK = [
-  { phase: "十三五·2018", 工厂: 120, 园区: 8, 供应链: 18, 设计产品: 42 },
-  { phase: "十三五·2020", 工厂: 220, 园区: 14, 供应链: 32, 设计产品: 78 },
-  { phase: "十四五·2022", 工厂: 360, 园区: 21, 供应链: 52, 设计产品: 110 },
-  { phase: "十四五·2024", 工厂: 480, 园区: 27, 供应链: 70, 设计产品: 142 },
-  { phase: "十四五·2025", 工厂: 523, 园区: 29, 供应链: 75, 设计产品: 150 },
-  { phase: "十五五·2027(预)", 工厂: 720, 园区: 42, 供应链: 110, 设计产品: 220 },
-  { phase: "十五五·2030(预)", 工厂: 1000, 园区: 60, 供应链: 160, 设计产品: 320 },
+// 跨周期 — 全国绿色示范企业申报情况（来自附件「全国绿色示范企业申报情况」表）
+const NATION_TRACK = [
+  { y: "2016", 绿色工厂: 201, 绿色园区: 24, 绿色产品: 193, 绿色供应链: 15 },
+  { y: "2017", 绿色工厂: 208, 绿色园区: 22, 绿色产品: 53, 绿色供应链: 4 },
+  { y: "2018", 绿色工厂: 391, 绿色园区: 34, 绿色产品: 480, 绿色供应链: 21 },
+  { y: "2019", 绿色工厂: 602, 绿色园区: 39, 绿色产品: 371, 绿色供应链: 50 },
+  { y: "2020", 绿色工厂: 724, 绿色园区: 53, 绿色产品: 1074, 绿色供应链: 99 },
+  { y: "2021", 绿色工厂: 662, 绿色园区: 52, 绿色产品: 989, 绿色供应链: 107 },
+  { y: "2022", 绿色工厂: 874, 绿色园区: 47, 绿色产品: 643, 绿色供应链: 112 },
+  { y: "2023", 绿色工厂: 1488, 绿色园区: 104, 绿色产品: 0, 绿色供应链: 205 },
+  { y: "2024", 绿色工厂: 1382, 绿色园区: 123, 绿色产品: 0, 绿色供应链: 126 },
 ];
+
+// 最近批次名单（从附件抽取）
+const BATCH_LISTS = {
+  city: {
+    label: "市级 · 2025 年度第一批（75 家）",
+    factories: [
+      "上海电气电站设备有限公司上海发电机厂", "上海超硅半导体股份有限公司", "上海强生制药有限公司",
+      "中微半导体（上海）有限公司", "上海安奕极企业发展股份有限公司", "上海申茂电磁线有限公司",
+      "上海采日能源科技有限公司", "采埃孚汽车系统（上海）有限公司", "上海三菱电梯有限公司",
+      "上海航天精密机械研究所", "上海电气燃气轮机有限公司", "上海凯赛生物技术股份有限公司",
+    ],
+    parks: ["浦东新区张江高科技园区", "金山第二工业区"],
+    supply: ["上海复星医药产业发展有限公司", "上海普利特复合材料股份有限公司", "宝山钢铁股份有限公司"],
+  },
+  nation: {
+    label: "国家级 · 2024 年度第九批（55 家工厂 / 5 家供应链 / 1 个园区）",
+    factories: [
+      "上海华谊新材料有限公司", "上海凯泉泵业（集团）有限公司", "格朗吉斯铝业（上海）有限公司",
+      "上海欣峰制药有限公司", "上海申美饮料食品有限公司", "上海环云再生能源有限公司",
+      "上海市建筑科学研究院科技发展有限公司", "上海晨光文具股份有限公司", "上海日立电器有限公司",
+      "上海强生制药有限公司", "宝钢德盛不锈钢有限公司", "上海中船三井造船柴油机有限公司",
+    ],
+    parks: ["上海闵行经济技术开发区"],
+    supply: ["迅达（中国）电梯有限公司", "上海电气集团上海电机厂有限公司", "正泰电气股份有限公司", "特斯拉（上海）有限公司", "上海思源高压开关有限公司"],
+  },
+};
 
 /* ============== Components ============== */
 function KpiTile({
-  icon: Icon,
-  label,
-  value,
-  unit,
-  sub,
-  delta,
-  variant = "cyan",
+  icon: Icon, label, value, unit, sub, delta, variant = "cyan",
 }: {
-  icon: any;
-  label: string;
-  value: string;
-  unit?: string;
-  sub?: string;
-  delta?: { v: number; label: string };
-  variant?: "cyan" | "green";
+  icon: any; label: string; value: string; unit?: string; sub?: string;
+  delta?: { v: number; label: string }; variant?: "cyan" | "green";
 }) {
   return (
     <div className={`glass-card ${variant === "cyan" ? "glass-card-cyan" : "glass-card-green"} p-4 h-full flex flex-col`}>
@@ -234,13 +228,11 @@ function KpiTile({
         <div className="mt-1.5 flex items-center gap-1 text-[11px]">
           {delta.v < 0 ? (
             <span className="inline-flex items-center gap-0.5 text-success">
-              <TrendingDown className="h-3 w-3" />
-              {Math.abs(delta.v)}%
+              <TrendingDown className="h-3 w-3" />{Math.abs(delta.v)}%
             </span>
           ) : (
             <span className="inline-flex items-center gap-0.5 text-destructive">
-              <TrendingUp className="h-3 w-3" />
-              {delta.v}%
+              <TrendingUp className="h-3 w-3" />{delta.v}%
             </span>
           )}
           <span className="text-slate-600">{delta.label}</span>
@@ -261,29 +253,79 @@ function SectionTitle({ icon: Icon, title, accent, right }: { icon: any; title: 
   );
 }
 
+/* ============== Funnel — custom SVG, full-height, 4 stages, fully labeled ============== */
+function GradientFunnel() {
+  const stages = FUNNEL;
+  const max = stages[0].value;
+  const conv = (i: number) => i === 0 ? null : `${((stages[i].value / stages[i - 1].value) * 100).toFixed(1)}%`;
+  return (
+    <div className="flex-1 flex flex-col gap-1.5 min-h-0">
+      {stages.map((s, i) => {
+        const w = 30 + (s.value / max) * 70; // percent width
+        return (
+          <div key={s.name} className="flex-1 flex items-center gap-2 min-h-0">
+            <div className="w-[88px] text-[11px] text-slate-700 font-medium text-right shrink-0">{s.name}</div>
+            <div className="flex-1 relative h-full flex items-center">
+              <div
+                className="h-full rounded-md flex items-center justify-end pr-3 shadow-sm transition-all hover:brightness-110"
+                style={{
+                  width: `${w}%`,
+                  background: `linear-gradient(90deg, ${s.fill}, ${s.fill} 60%, ${s.fill}cc)`,
+                  boxShadow: `0 0 18px ${s.fill}55`,
+                }}
+              >
+                <span className="text-white font-bold text-[15px] tabular-nums drop-shadow">{s.value.toLocaleString()}</span>
+              </div>
+              {conv(i) && (
+                <span className="ml-2 text-[10px] text-slate-500 whitespace-nowrap">↓ 转化 {conv(i)}</span>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ============== Multi-dim distribution panel ============== */
-function MultiDimPanel() {
+function MultiDimPanel({ district, industry }: { district: string; industry: string }) {
   const [tab, setTab] = useState("district");
+  const [showFactory, setShowFactory] = useState(true);
+  const [showSupply, setShowSupply] = useState(true);
+  const [showPark, setShowPark] = useState(true);
+  const [batchTab, setBatchTab] = useState<"city" | "nation">("city");
+
   const tabsCfg = [
-    { key: "district", label: "按区县", data: DISTRICT_DATA, xKey: "d", multi: true, height: 320 },
-    { key: "industry36", label: "按 3+6 产业", data: INDUSTRY_36, xKey: "name", multi: false, height: 320 },
-    { key: "industry", label: "按行业", data: INDUSTRY_TOP, xKey: "name", multi: false, height: 320 },
-    { key: "group", label: "按集团", data: GROUP_RANK, xKey: "name", multi: false, height: 320 },
-    { key: "energy", label: "按重点用能", data: KEY_ENERGY, xKey: "name", multi: false, height: 320, pie: true },
-  ] as const;
+    { key: "district", label: "按区县" },
+    { key: "industry36", label: "按 3+6 产业" },
+    { key: "industry", label: "按行业" },
+    { key: "group", label: "按集团" },
+    { key: "energy", label: "按重点用能" },
+  ];
+
+  const filterChip = (district !== "全市" || industry !== "全部产业") && (
+    <Badge className="h-5 px-2 text-[10px] bg-emerald-100 text-emerald-700 border-0">
+      已联动：{district !== "全市" ? district : ""}{district !== "全市" && industry !== "全部产业" ? " · " : ""}{industry !== "全部产业" ? industry : ""}
+    </Badge>
+  );
+
+  const batch = BATCH_LISTS[batchTab];
 
   return (
-    <div className="glass-card glass-card-cyan p-4 h-full flex flex-col">
+    <div className="glass-card glass-card-cyan p-4 h-full flex flex-col gap-3">
       <SectionTitle
         icon={BarChart3}
         title="多维度分布分析 · 实时联动"
         accent="cyan"
         right={
-          <Badge className="h-5 px-2 text-[10px] bg-cyan-100 text-cyan-700 border-0">总计 523 家工厂 · 75 家供应链 · 29 个园区</Badge>
+          <div className="flex items-center gap-2">
+            {filterChip}
+            <Badge className="h-5 px-2 text-[10px] bg-cyan-100 text-cyan-700 border-0">523 工厂 · 75 供应链 · 29 园区</Badge>
+          </div>
         }
       />
-      <Tabs value={tab} onValueChange={setTab} className="flex-1 flex flex-col">
-        <TabsList className="bg-white/60 backdrop-blur h-9">
+      <Tabs value={tab} onValueChange={setTab} className="flex flex-col">
+        <TabsList className="bg-white/60 backdrop-blur h-9 self-start">
           {tabsCfg.map((t) => (
             <TabsTrigger key={t.key} value={t.key} className="text-xs data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">
               {t.label}
@@ -291,33 +333,54 @@ function MultiDimPanel() {
           ))}
         </TabsList>
 
-        <TabsContent value="district" className="flex-1 mt-3">
-          <ResponsiveContainer width="100%" height={340}>
+        <TabsContent value="district" className="mt-3">
+          <div className="flex items-center gap-4 mb-1 text-[11px]">
+            <span className="text-slate-600 font-medium">显示：</span>
+            <label className="inline-flex items-center gap-1.5 cursor-pointer">
+              <Checkbox checked={showFactory} onCheckedChange={(v) => setShowFactory(!!v)} className="h-3.5 w-3.5" />
+              <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: CYAN }} />绿色工厂</span>
+            </label>
+            <label className="inline-flex items-center gap-1.5 cursor-pointer">
+              <Checkbox checked={showSupply} onCheckedChange={(v) => setShowSupply(!!v)} className="h-3.5 w-3.5" />
+              <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: GREEN }} />绿色供应链</span>
+            </label>
+            <label className="inline-flex items-center gap-1.5 cursor-pointer">
+              <Checkbox checked={showPark} onCheckedChange={(v) => setShowPark(!!v)} className="h-3.5 w-3.5" />
+              <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: AMBER }} />绿色园区</span>
+            </label>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
             <BarChart data={DISTRICT_DATA} margin={{ top: 16, right: 12, left: -10, bottom: 0 }}>
               <CartesianGrid stroke="hsl(180 30% 80% / 0.3)" vertical={false} />
               <XAxis dataKey="d" tick={{ fontSize: 10, fill: LABEL }} />
               <YAxis tick={{ fontSize: 10, fill: LABEL }} />
               <Tooltip />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="工厂" fill={CYAN} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="工厂" position="top" fontSize={10} fill={LABEL} />
-              </Bar>
-              <Bar dataKey="供应链" fill={GREEN} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="供应链" position="top" fontSize={10} fill={LABEL} />
-              </Bar>
-              <Bar dataKey="园区" fill={AMBER} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="园区" position="top" fontSize={10} fill={LABEL} />
-              </Bar>
+              {showFactory && (
+                <Bar dataKey="工厂" fill={CYAN} radius={[3, 3, 0, 0]}>
+                  <LabelList dataKey="工厂" position="top" fontSize={10} fill={LABEL} />
+                </Bar>
+              )}
+              {showSupply && (
+                <Bar dataKey="供应链" fill={GREEN} radius={[3, 3, 0, 0]}>
+                  <LabelList dataKey="供应链" position="top" fontSize={10} fill={LABEL} />
+                </Bar>
+              )}
+              {showPark && (
+                <Bar dataKey="园区" fill={AMBER} radius={[3, 3, 0, 0]}>
+                  <LabelList dataKey="园区" position="top" fontSize={10} fill={LABEL} />
+                </Bar>
+              )}
             </BarChart>
           </ResponsiveContainer>
         </TabsContent>
 
-        <TabsContent value="industry36" className="flex-1 mt-3">
+        <TabsContent value="industry36" className="mt-3">
           <div className="flex items-center gap-3 mb-1 text-[11px]">
             <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: VIOLET }} />三大先导产业</span>
             <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: GREEN }} />六大重点产业</span>
           </div>
-          <ResponsiveContainer width="100%" height={320}>
+          <ResponsiveContainer width="100%" height={260}>
             <BarChart data={INDUSTRY_36} margin={{ top: 18, right: 12, left: -10, bottom: 0 }}>
               <CartesianGrid stroke="hsl(180 30% 80% / 0.3)" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 10, fill: LABEL }} interval={0} />
@@ -333,8 +396,8 @@ function MultiDimPanel() {
           </ResponsiveContainer>
         </TabsContent>
 
-        <TabsContent value="industry" className="flex-1 mt-3">
-          <ResponsiveContainer width="100%" height={340}>
+        <TabsContent value="industry" className="mt-3">
+          <ResponsiveContainer width="100%" height={260}>
             <BarChart data={INDUSTRY_TOP} layout="vertical" margin={{ top: 6, right: 36, left: 8, bottom: 0 }}>
               <CartesianGrid stroke="hsl(180 30% 80% / 0.3)" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 10, fill: LABEL }} />
@@ -350,8 +413,8 @@ function MultiDimPanel() {
           </ResponsiveContainer>
         </TabsContent>
 
-        <TabsContent value="group" className="flex-1 mt-3">
-          <ResponsiveContainer width="100%" height={340}>
+        <TabsContent value="group" className="mt-3">
+          <ResponsiveContainer width="100%" height={260}>
             <BarChart data={GROUP_RANK} layout="vertical" margin={{ top: 6, right: 36, left: 16, bottom: 0 }}>
               <CartesianGrid stroke="hsl(180 30% 80% / 0.3)" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 10, fill: LABEL }} />
@@ -364,52 +427,64 @@ function MultiDimPanel() {
           </ResponsiveContainer>
         </TabsContent>
 
-        <TabsContent value="energy" className="flex-1 mt-3">
-          <div className="grid grid-cols-2 gap-4 h-[340px]">
+        <TabsContent value="energy" className="mt-3">
+          <div className="grid grid-cols-2 gap-4 h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Tooltip />
-                <Pie
-                  data={KEY_ENERGY}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={50}
-                  outerRadius={100}
-                  paddingAngle={3}
-                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(1)}%)`}
-                  labelLine={{ stroke: SLATE }}
-                >
-                  {KEY_ENERGY.map((d, i) => (
-                    <Cell key={i} fill={d.fill} />
-                  ))}
+                <Pie data={KEY_ENERGY} dataKey="value" nameKey="name" innerRadius={45} outerRadius={90} paddingAngle={3}
+                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(1)}%)`} labelLine={{ stroke: SLATE }}>
+                  {KEY_ENERGY.map((d, i) => (<Cell key={i} fill={d.fill} />))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Tooltip />
-                <Pie
-                  data={STAR}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={50}
-                  outerRadius={100}
-                  paddingAngle={3}
-                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(0)}%)`}
-                  labelLine={{ stroke: SLATE }}
-                >
-                  {STAR.map((d, i) => (
-                    <Cell key={i} fill={d.fill} />
-                  ))}
+                <Pie data={STAR} dataKey="value" nameKey="name" innerRadius={45} outerRadius={90} paddingAngle={3}
+                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(0)}%)`} labelLine={{ stroke: SLATE }}>
+                  {STAR.map((d, i) => (<Cell key={i} fill={d.fill} />))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
-          </div>
-          <div className="text-[11px] text-slate-600 text-center mt-1">
-            左：重点用能单位占比 <span className="neon-text-cyan font-semibold">32.1%</span> · 右：市级绿色工厂星级分布
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Recent batch lists */}
+      <div className="border-t border-cyan-200/60 pt-3 flex-1 flex flex-col min-h-0">
+        <div className="flex items-center gap-2 mb-2">
+          <ListChecks className="h-4 w-4 neon-text-green" />
+          <h4 className="text-[13px] font-semibold text-slate-800">最近批次入选名单</h4>
+          <Tabs value={batchTab} onValueChange={(v) => setBatchTab(v as any)} className="ml-auto">
+            <TabsList className="h-7 bg-white/60">
+              <TabsTrigger value="city" className="text-[11px] h-6 px-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">市级</TabsTrigger>
+              <TabsTrigger value="nation" className="text-[11px] h-6 px-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">国家级</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        <div className="text-[11px] text-slate-600 mb-2">{batch.label}</div>
+        <div className="grid grid-cols-3 gap-2 text-[11px]">
+          {[
+            { title: "绿色工厂", color: CYAN, items: batch.factories },
+            { title: "绿色供应链", color: GREEN, items: batch.supply },
+            { title: "绿色园区", color: AMBER, items: batch.parks },
+          ].map((col) => (
+            <div key={col.title} className="bg-white/50 rounded-md p-2 border border-border/40">
+              <div className="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-border/40">
+                <span className="h-2 w-2 rounded-full" style={{ background: col.color }} />
+                <span className="font-semibold text-slate-700">{col.title}</span>
+                <span className="ml-auto text-slate-500">{col.items.length}</span>
+              </div>
+              <ul className="space-y-1 max-h-[140px] overflow-y-auto">
+                {col.items.map((n, i) => (
+                  <li key={i} className="text-slate-600 truncate" title={n}>· {n}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -420,6 +495,13 @@ const Index = () => {
   const [district, setDistrict] = useState("全市");
   const [industry, setIndustry] = useState("全部产业");
   const [aiInput, setAiInput] = useState("");
+
+  const linkedSummary = useMemo(() => {
+    const parts = [`年度 ${year}`];
+    if (district !== "全市") parts.push(district);
+    if (industry !== "全部产业") parts.push(industry);
+    return parts.join(" · ");
+  }, [year, district, industry]);
 
   return (
     <AppLayout hideHeader>
@@ -440,7 +522,7 @@ const Index = () => {
               <p className="text-xs text-slate-600 mt-1">
                 数据来源：上海市绿色制造体系名单（2025.11） · AI 智能体驱动 · 一屏通览
                 <span className="ml-2 inline-flex items-center gap-1 text-emerald-600">
-                  <span className="glow-dot" /> 数据流实时同步
+                  <span className="glow-dot" /> 实时联动：<span className="font-semibold">{linkedSummary}</span>
                 </span>
               </p>
             </div>
@@ -448,29 +530,22 @@ const Index = () => {
 
           <div className="flex flex-wrap items-center gap-2">
             <Select value={year} onValueChange={setYear}>
-              <SelectTrigger className="h-9 w-[120px] bg-white/70 backdrop-blur border-cyan-200 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {YEARS.map((y) => (<SelectItem key={y} value={y}>年度 {y}</SelectItem>))}
-              </SelectContent>
+              <SelectTrigger className="h-9 w-[120px] bg-white/70 backdrop-blur border-cyan-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>{YEARS.map((y) => (<SelectItem key={y} value={y}>年度 {y}</SelectItem>))}</SelectContent>
             </Select>
             <Select value={district} onValueChange={setDistrict}>
-              <SelectTrigger className="h-9 w-[140px] bg-white/70 backdrop-blur border-cyan-200 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DISTRICTS.map((d) => (<SelectItem key={d} value={d}>{d}</SelectItem>))}
-              </SelectContent>
+              <SelectTrigger className="h-9 w-[140px] bg-white/70 backdrop-blur border-cyan-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>{DISTRICTS.map((d) => (<SelectItem key={d} value={d}>{d}</SelectItem>))}</SelectContent>
             </Select>
             <Select value={industry} onValueChange={setIndustry}>
-              <SelectTrigger className="h-9 w-[160px] bg-white/70 backdrop-blur border-emerald-200 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {INDUSTRIES.map((i) => (<SelectItem key={i} value={i}>{i}</SelectItem>))}
-              </SelectContent>
+              <SelectTrigger className="h-9 w-[160px] bg-white/70 backdrop-blur border-emerald-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>{INDUSTRIES.map((i) => (<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent>
             </Select>
+            {(district !== "全市" || industry !== "全部产业") && (
+              <Button variant="outline" size="sm" className="h-9 text-xs" onClick={() => { setDistrict("全市"); setIndustry("全部产业"); }}>
+                重置
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -488,21 +563,11 @@ const Index = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
         {/* Left col */}
         <div className="lg:col-span-3 flex flex-col gap-4">
-          <div className="glass-card p-4 flex-1">
+          <div className="glass-card p-4 flex flex-col" style={{ minHeight: 360 }}>
             <SectionTitle icon={Layers} title="梯度培育漏斗" accent="cyan" />
-            <div className="h-[210px]">
-              <ResponsiveContainer>
-                <FunnelChart>
-                  <Tooltip />
-                  <Funnel dataKey="value" data={FUNNEL} isAnimationActive>
-                    <LabelList position="right" fill={LABEL} stroke="none" dataKey="name" fontSize={11} fontWeight={600} />
-                    <LabelList position="center" fill="#fff" stroke="none" dataKey="value" fontSize={14} fontWeight={700} />
-                  </Funnel>
-                </FunnelChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="text-[11px] text-slate-600 mt-1">
-              培育→市级转化 <span className="neon-text-cyan font-semibold">40.9%</span> · 市级→国家级 <span className="neon-text-green font-semibold">37.5%</span>
+            <GradientFunnel />
+            <div className="text-[11px] text-slate-600 mt-2 pt-2 border-t border-border/40 leading-relaxed">
+              培育→区级 <span className="neon-text-cyan font-semibold">64.1%</span> · 区级→市级 <span className="neon-text-cyan font-semibold">63.8%</span> · 市级→国家级 <span className="neon-text-green font-semibold">37.5%</span>
             </div>
           </div>
 
@@ -527,7 +592,7 @@ const Index = () => {
 
         {/* Center: multi-dim */}
         <div className="lg:col-span-6">
-          <MultiDimPanel />
+          <MultiDimPanel district={district} industry={industry} />
         </div>
 
         {/* Right col */}
@@ -558,13 +623,16 @@ const Index = () => {
             <SectionTitle icon={Activity} title="国家级绿色工厂 · 历年新增" accent="cyan" />
             <div className="h-[200px]">
               <ResponsiveContainer>
-                <BarChart data={NATION_YEAR} margin={{ top: 18, left: -20, right: 6, bottom: 0 }}>
+                <BarChart data={[
+                  { y: "2017", v: 4 }, { y: "2018", v: 8 }, { y: "2019", v: 16 }, { y: "2020", v: 28 },
+                  { y: "2021", v: 23 }, { y: "2022", v: 29 }, { y: "2023", v: 37 }, { y: "2024", v: 55 },
+                ]} margin={{ top: 18, left: -20, right: 6, bottom: 0 }}>
                   <CartesianGrid stroke="hsl(180 30% 80% / 0.3)" vertical={false} />
                   <XAxis dataKey="y" tick={{ fontSize: 10, fill: LABEL }} />
                   <YAxis tick={{ fontSize: 10, fill: LABEL }} />
                   <Tooltip />
                   <Bar dataKey="v" radius={[4, 4, 0, 0]}>
-                    {NATION_YEAR.map((_, i) => (
+                    {[4,8,16,28,23,29,37,55].map((_, i) => (
                       <Cell key={i} fill={`hsl(${189 - i * 5} 80% ${55 - i * 2}%)`} />
                     ))}
                     <LabelList dataKey="v" position="top" fontSize={11} fontWeight={700} fill={LABEL} />
@@ -598,44 +666,43 @@ const Index = () => {
       {/* Bottom */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 glass-card p-4">
-          <SectionTitle icon={Activity} title="跨周期目标追踪 · 十三五 → 十四五 → 十五五" accent="cyan" />
-          <div className="h-[260px]">
+          <SectionTitle
+            icon={Activity}
+            title="跨周期目标追踪 · 全国绿色示范企业历年申报情况（2016-2024）"
+            accent="cyan"
+            right={
+              <div className="flex items-center gap-3 text-[10px] text-slate-600">
+                <span className="inline-flex items-center gap-1"><span className="h-2 w-3 rounded-sm" style={{ background: CYAN }} />绿色工厂</span>
+                <span className="inline-flex items-center gap-1"><span className="h-2 w-3 rounded-sm" style={{ background: ROSE }} />绿色园区</span>
+                <span className="inline-flex items-center gap-1"><span className="h-2 w-3 rounded-sm" style={{ background: GREEN }} />绿色产品</span>
+                <span className="inline-flex items-center gap-1"><span className="h-2 w-3 rounded-sm" style={{ background: VIOLET }} />绿色供应链</span>
+              </div>
+            }
+          />
+          <div className="h-[280px]">
             <ResponsiveContainer>
-              <AreaChart data={PLAN_TRACK} margin={{ top: 18, left: -10, right: 10, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor={GREEN} stopOpacity={0.7} />
-                    <stop offset="100%" stopColor={GREEN} stopOpacity={0.1} />
-                  </linearGradient>
-                  <linearGradient id="g2" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor={CYAN} stopOpacity={0.7} />
-                    <stop offset="100%" stopColor={CYAN} stopOpacity={0.1} />
-                  </linearGradient>
-                  <linearGradient id="g3" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor={VIOLET} stopOpacity={0.7} />
-                    <stop offset="100%" stopColor={VIOLET} stopOpacity={0.1} />
-                  </linearGradient>
-                  <linearGradient id="g4" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor={AMBER} stopOpacity={0.7} />
-                    <stop offset="100%" stopColor={AMBER} stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid stroke="hsl(180 30% 80% / 0.3)" />
-                <XAxis dataKey="phase" tick={{ fontSize: 10, fill: LABEL }} />
-                <YAxis tick={{ fontSize: 10, fill: LABEL }} />
-                <Tooltip />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Area type="monotone" dataKey="工厂" stackId="1" stroke={GREEN} fill="url(#g1)">
-                  <LabelList dataKey="工厂" position="top" fontSize={9} fill={LABEL} />
-                </Area>
-                <Area type="monotone" dataKey="供应链" stackId="1" stroke={CYAN} fill="url(#g2)" />
-                <Area type="monotone" dataKey="设计产品" stackId="1" stroke={VIOLET} fill="url(#g3)" />
-                <Area type="monotone" dataKey="园区" stackId="1" stroke={AMBER} fill="url(#g4)" />
-              </AreaChart>
+              <LineChart data={NATION_TRACK} margin={{ top: 22, left: -10, right: 16, bottom: 0 }}>
+                <CartesianGrid stroke="hsl(180 30% 80% / 0.35)" strokeDasharray="3 3" />
+                <XAxis dataKey="y" tick={{ fontSize: 11, fill: LABEL, fontWeight: 600 }} />
+                <YAxis tick={{ fontSize: 10, fill: LABEL }} domain={[0, 1600]} />
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                <Line type="monotone" dataKey="绿色工厂" stroke={CYAN} strokeWidth={2.5} dot={{ r: 5, fill: CYAN, stroke: "#fff", strokeWidth: 2 }} activeDot={{ r: 7 }}>
+                  <LabelList dataKey="绿色工厂" position="top" fontSize={10} fontWeight={700} fill={CYAN} />
+                </Line>
+                <Line type="monotone" dataKey="绿色园区" stroke={ROSE} strokeWidth={2.5} dot={{ r: 5, fill: ROSE, stroke: "#fff", strokeWidth: 2 }} activeDot={{ r: 7 }}>
+                  <LabelList dataKey="绿色园区" position="bottom" fontSize={10} fontWeight={600} fill={ROSE} />
+                </Line>
+                <Line type="monotone" dataKey="绿色产品" stroke={GREEN} strokeWidth={2.5} dot={{ r: 5, fill: GREEN, stroke: "#fff", strokeWidth: 2 }} activeDot={{ r: 7 }} connectNulls={false}>
+                  <LabelList dataKey="绿色产品" position="top" fontSize={10} fontWeight={600} fill={GREEN} formatter={(v: number) => v > 0 ? v : ""} />
+                </Line>
+                <Line type="monotone" dataKey="绿色供应链" stroke={VIOLET} strokeWidth={2.5} dot={{ r: 5, fill: VIOLET, stroke: "#fff", strokeWidth: 2 }} activeDot={{ r: 7 }}>
+                  <LabelList dataKey="绿色供应链" position="bottom" fontSize={10} fontWeight={600} fill={VIOLET} />
+                </Line>
+              </LineChart>
             </ResponsiveContainer>
           </div>
           <div className="text-[11px] text-slate-600 mt-1">
-            十五五区段为 AI 预测值（基于 2018–2025 时间序列 + 政策因子建模）
+            数据源：附件「全国绿色示范企业申报情况」表 · 累计：工厂 6,532 / 园区 498 / 产品 3,803 / 供应链 739
           </div>
         </div>
 
@@ -651,9 +718,7 @@ const Index = () => {
               </div>
             </div>
             <div className="flex gap-2 justify-end">
-              <div className="bg-cyan-100/70 rounded-lg p-2 max-w-[80%] text-slate-700">
-                嘉定区培育潜力 TOP10？
-              </div>
+              <div className="bg-cyan-100/70 rounded-lg p-2 max-w-[80%] text-slate-700">嘉定区培育潜力 TOP10？</div>
             </div>
             <div className="flex gap-2">
               <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
@@ -665,12 +730,9 @@ const Index = () => {
             </div>
           </div>
           <div className="flex gap-2 pt-2 border-t border-border/50">
-            <Input
-              value={aiInput}
-              onChange={(e) => setAiInput(e.target.value)}
+            <Input value={aiInput} onChange={(e) => setAiInput(e.target.value)}
               placeholder="问问 AI Agent：如何优化本市绿色供应链协同效率？"
-              className="h-9 text-xs bg-white/70 border-emerald-200"
-            />
+              className="h-9 text-xs bg-white/70 border-emerald-200" />
             <Button size="icon" className="h-9 w-9 bg-gradient-to-br from-cyan-500 to-emerald-500 hover:opacity-90">
               <Send className="h-3.5 w-3.5" />
             </Button>
