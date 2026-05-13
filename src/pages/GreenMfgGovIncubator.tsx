@@ -26,7 +26,7 @@ export default function GreenMfgGovIncubator() {
   });
 
   return (
-    <AppLayout title="绿色工厂培育库 · 政府侧" subtitle="未达标申报企业的培育跟踪与管理">
+    <AppLayout title="绿色工厂梯度培育" subtitle="梯度培育库的跟踪与管理">
       <div className="grid gap-3 md:grid-cols-3 mb-4">
         <Card className="panel">
           <CardContent className="flex items-center gap-3 p-4">
