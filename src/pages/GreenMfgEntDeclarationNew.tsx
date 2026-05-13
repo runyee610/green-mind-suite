@@ -32,7 +32,7 @@ const ANCHORS = [
   { href: "authenticity-commitment", label: "真实性承诺" },
 ];
 
-// 默认企业信息（登录企业），新增申报时自动带入，不可编辑
+// 默认企业信息（登录企业），新增自评价时自动带入，不可编辑
 const DEFAULT_ENTERPRISE = {
   name: "上海华普电缆有限公司",
   creditCode: "91310112132456789X",
@@ -140,21 +140,21 @@ export default function GreenMfgEntDeclarationNew() {
 
   const handleSubmit = () => {
     if (!batch) {
-      toast.warning("请选择申报批次");
+      toast.warning("请选择自评价批次");
       return;
     }
     if (usedBatches.includes(batch)) {
-      toast.error("该批次您已申报，不能重复申报");
+      toast.error("该批次您已自评价，不能重复自评价");
       return;
     }
-    toast.success("申报已提交,等待区级审核");
+    toast.success("自评价已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent"), 600);
   };
 
   return (
     <AppLayout
-      title="新增绿色工厂申报"
+      title="新增绿色工厂自评价"
       subtitle={
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span><span className="text-muted-foreground/60">企业名称</span> · {DEFAULT_ENTERPRISE.name}</span>
@@ -177,27 +177,27 @@ export default function GreenMfgEntDeclarationNew() {
           <Save className="mr-1 h-4 w-4" />保存草稿
         </Button>
         <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-          <Send className="mr-1 h-4 w-4" />提交申报
+          <Send className="mr-1 h-4 w-4" />提交自评价
         </Button>
       </div>
 
-      {/* 申报批次选择 */}
+      {/* 自评价批次选择 */}
       <Card className="panel mb-4">
         <CardContent className="flex flex-wrap items-center gap-4 p-4">
           <div className="space-y-1.5 flex-1 min-w-[240px]">
             <Label className="text-xs text-muted-foreground">
-              申报批次<span className="ml-1 text-destructive">*</span>
+              自评价批次<span className="ml-1 text-destructive">*</span>
             </Label>
             <Select value={batch} onValueChange={setBatch}>
               <SelectTrigger>
-                <SelectValue placeholder="请选择申报批次" />
+                <SelectValue placeholder="请选择自评价批次" />
               </SelectTrigger>
               <SelectContent>
                 {ALL_BATCHES.map((b) => {
                   const used = usedBatches.includes(b);
                   return (
                     <SelectItem key={b} value={b} disabled={used}>
-                      {b}{used ? "（已申报）" : ""}
+                      {b}{used ? "（已自评价）" : ""}
                     </SelectItem>
                   );
                 })}
@@ -250,7 +250,7 @@ export default function GreenMfgEntDeclarationNew() {
           </Button>
           {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
             <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交申报
+              <Send className="mr-1 h-4 w-4" />提交自评价
             </Button>
           ) : (
             <Button

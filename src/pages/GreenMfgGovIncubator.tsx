@@ -223,7 +223,7 @@ const INCUBATE_DATA: IncubateRecord[] = [
     stage: "退库",
     enterDate: "2024-09-10",
     reviewer: "青浦区生态局",
-    nextAction: "改进无成效，已退库下年度重新申报",
+    nextAction: "改进无成效，已退库下年度重新自评价",
     improvement: -2,
   },
   {
@@ -413,7 +413,7 @@ export default function GreenMfgGovIncubator() {
               <span className="inline-flex items-center gap-1.5">
                 <RefreshCcw className="h-3.5 w-3.5 text-destructive" />
                 <strong className="text-destructive">退库回流</strong>
-                ：连续两次复评未达标自动退库 → 次年重新申报入库，形成"培育—评估—整改—晋级/退库—再申报"良性闭环。
+                ：连续两次复评未达标自动退库 → 次年重新自评价入库，形成"培育—评估—整改—晋级/退库—再自评价"良性闭环。
               </span>
               <span className="inline-flex items-center gap-1.5 text-success">
                 <CheckCircle2 className="h-3.5 w-3.5" />

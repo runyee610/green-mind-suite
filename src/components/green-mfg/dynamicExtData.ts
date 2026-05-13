@@ -3,7 +3,7 @@
 
 export interface ArchiveTimelineNode {
   date: string;
-  type: "申报" | "评价" | "动态填报" | "整改" | "证书" | "预警";
+  type: "自评价" | "评价" | "动态填报" | "整改" | "证书" | "预警";
   title: string;
   detail?: string;
   result?: "通过" | "驳回" | "整改中" | "完成" | "提交" | "颁发";
@@ -18,10 +18,10 @@ export interface GreenArchive {
   district: string;
   industry: string;
   // 档案档案核心信息
-  certifyLevel: "市级绿色工厂" | "区级培育" | "申报中" | "未获评";
+  certifyLevel: "市级绿色工厂" | "区级培育" | "自评价中" | "未获评";
   certifyDate?: string; // 首次获评时间
   validUntil?: string;  // 证书有效期
-  declarationCount: number;     // 累计申报次数
+  declarationCount: number;     // 累计自评价次数
   dynamicReportCount: number;   // 累计动态填报次数
   rectificationCount: number;   // 累计整改次数
   riskOpenCount: number;        // 当前未关闭预警数
@@ -86,7 +86,7 @@ export const MOCK_ARCHIVES: GreenArchive[] = [
       { date: "2025-03-22", type: "动态填报", title: "2025 年度动态管理表已审核通过", source: "市生态局", result: "通过", score: 92 },
       { date: "2024-12-20", type: "证书", title: "颁发市级绿色工厂证书", source: "市生态局", result: "颁发" },
       { date: "2024-08-15", type: "评价", title: "市级专家组现场评价", source: "专家组", result: "通过", score: 90 },
-      { date: "2024-06-08", type: "申报", title: "提交 2024 年第一批申报", source: "企业", result: "提交" },
+      { date: "2024-06-08", type: "自评价", title: "提交 2024 年第一批自评价", source: "企业", result: "提交" },
     ],
   },
   {
@@ -94,7 +94,7 @@ export const MOCK_ARCHIVES: GreenArchive[] = [
     enterpriseName: "上海宝武特种合金有限公司",
     district: "宝山区",
     industry: "钢铁行业",
-    certifyLevel: "申报中",
+    certifyLevel: "自评价中",
     declarationCount: 1,
     dynamicReportCount: 0,
     rectificationCount: 0,
@@ -106,7 +106,7 @@ export const MOCK_ARCHIVES: GreenArchive[] = [
     ],
     timeline: [
       { date: "2025-09-15", type: "预警", title: "碳排放强度高于行业基准 8.4%", source: "AI 系统", result: "整改中" },
-      { date: "2025-09-12", type: "申报", title: "提交 2025 年第二批自评价", source: "企业", result: "提交", score: 86 },
+      { date: "2025-09-12", type: "自评价", title: "提交 2025 年第二批自评价", source: "企业", result: "提交", score: 86 },
       { date: "2025-09-15", type: "评价", title: "区级审批通过，建议上报市级", source: "区生态局", result: "通过", score: 88 },
     ],
   },
@@ -164,7 +164,7 @@ export const MOCK_RISKS: RiskWarning[] = [
     source: "标准规则",
     detectedAt: "2025-09-15",
     status: "已通知企业",
-    suggestion: "建议优化电炉用能配比、提高废钢比；同步申报市级绿色低碳改造资金。",
+    suggestion: "建议优化电炉用能配比、提高废钢比；同步自评价市级绿色低碳改造资金。",
   },
   {
     id: "RW-2025-103",
@@ -174,7 +174,7 @@ export const MOCK_RISKS: RiskWarning[] = [
     category: "材料缺失",
     level: "低",
     title: "缺少近三年第三方能源审计报告",
-    detail: "申报材料附件清单缺少 2023 年度能源审计报告 PDF。",
+    detail: "自评价材料附件清单缺少 2023 年度能源审计报告 PDF。",
     trigger: "标准规则：必备材料完整性校验",
     source: "标准规则",
     detectedAt: "2025-09-13",
@@ -251,7 +251,7 @@ export const certifyLevelClass = (l: GreenArchive["certifyLevel"]) => {
   switch (l) {
     case "市级绿色工厂": return "border-success/40 bg-success/10 text-success";
     case "区级培育": return "border-warning/40 bg-warning/10 text-warning";
-    case "申报中": return "border-primary/40 bg-primary/10 text-primary";
+    case "自评价中": return "border-primary/40 bg-primary/10 text-primary";
     default: return "border-muted-foreground/30 bg-muted/40 text-muted-foreground";
   }
 };

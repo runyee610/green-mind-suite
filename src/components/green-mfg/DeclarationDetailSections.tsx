@@ -218,7 +218,7 @@ export function EnterpriseBasicInfoCard({
               </div>
             }
           />
-          <Row label="申报工作联系部门" value={text(data.contactDept, "如：总师办", "contactDept")} />
+          <Row label="自评价工作联系部门" value={text(data.contactDept, "如：总师办", "contactDept")} />
           <Row
             label="联系人"
             value={

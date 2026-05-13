@@ -59,7 +59,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
         )}
 
         <TabsContent value="declaration" className="mt-4 space-y-4">
-          {/* 申报状态卡 */}
+          {/* 自评价状态卡 */}
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -83,7 +83,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
             </CardContent>
           </Card>
 
-          {/* 历年申报记录 */}
+          {/* 历年自评价记录 */}
           <Card className="panel">
             <CardHeader className="pb-3"><CardTitle className="text-base"><ClipboardList className="mr-1 inline h-4 w-4" />历史自评价记录</CardTitle></CardHeader>
             <CardContent>

@@ -225,7 +225,7 @@ export default function GreenMfgGovDeclarationDetail() {
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认上报</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">{detail.stage === "区审批" ? "上报后将自动进入市级审批。" : "上报后将颁发市级绿色工厂证书并锁定本次申报。"}</p>
+          <p className="text-sm text-muted-foreground">{detail.stage === "区审批" ? "上报后将自动进入市级审批。" : "上报后将颁发市级绿色工厂证书并锁定本次自评价。"}</p>
           <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="审批意见（选填）" rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setApproveOpen(false)}>取消</Button>
@@ -238,7 +238,7 @@ export default function GreenMfgGovDeclarationDetail() {
       <Dialog open={cultivateOpen} onOpenChange={setCultivateOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle className="text-warning"><Clock className="mr-2 inline h-5 w-5" />转入培育阶段</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">企业未达本次评定要求，转入区级培育，可在下一周期重新申报。</p>
+          <p className="text-sm text-muted-foreground">企业未达本次评定要求，转入区级培育，可在下一周期重新自评价。</p>
           <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="培育阶段说明 / 整改方向（选填）" rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setCultivateOpen(false)}>取消</Button>

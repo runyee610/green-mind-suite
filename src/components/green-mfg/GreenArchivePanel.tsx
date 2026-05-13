@@ -94,7 +94,7 @@ export function GreenArchivePanel({ mode, creditCode }: Props) {
                 <Archive className="h-4 w-4 text-primary" />企业绿色制造数字化档案
               </CardTitle>
               <p className="mt-1 text-xs text-muted-foreground">
-                自动归集历史申报、年度动态、整改与预警；点击行查看完整档案。
+                自动归集历史自评价、年度动态、整改与预警；点击行查看完整档案。
               </p>
             </div>
             <div className="relative">
@@ -116,7 +116,7 @@ export function GreenArchivePanel({ mode, creditCode }: Props) {
                 <TableHead>所属区 / 行业</TableHead>
                 <TableHead className="text-center">认定等级</TableHead>
                 <TableHead className="text-center">最近得分</TableHead>
-                <TableHead className="text-center">申报次数</TableHead>
+                <TableHead className="text-center">自评价次数</TableHead>
                 <TableHead className="text-center">动态填报</TableHead>
                 <TableHead className="text-center">整改</TableHead>
                 <TableHead className="text-center">未关闭预警</TableHead>
@@ -212,7 +212,7 @@ function ArchiveDetailCard({ archive }: { archive: GreenArchive }) {
           <KpiBlock label="首次获评" value={archive.certifyDate ?? "—"} />
           <KpiBlock label="证书有效期" value={archive.validUntil ?? "—"} />
           <KpiBlock label="最近综合得分" value={String(archive.latestScore ?? "—")} accent="success" />
-          <KpiBlock label="累计申报" value={String(archive.declarationCount)} />
+          <KpiBlock label="累计自评价" value={String(archive.declarationCount)} />
           <KpiBlock label="动态填报" value={String(archive.dynamicReportCount)} />
           <KpiBlock label="整改记录" value={String(archive.rectificationCount)} />
           <KpiBlock label="未关闭预警" value={String(archive.riskOpenCount)} accent={archive.riskOpenCount > 0 ? "destructive" : undefined} />
