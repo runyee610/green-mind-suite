@@ -92,7 +92,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     stage: "市级培育",
     score: 86,
     manualScore: 88,
-    level: "申报中",
+    level: "自评价中",
     reviewer: "李审核",
   },
   {
@@ -108,7 +108,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     submitDate: "2025-09-08",
     stage: "区审批",
     score: 79,
-    level: "申报中",
+    level: "自评价中",
   },
   {
     id: "GF-2025-003",
@@ -159,7 +159,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     submitDate: "2025-09-20",
     stage: "自评价中",
     score: 58,
-    level: "申报中",
+    level: "自评价中",
     reviewer: "区生态局",
     comment: "材料缺失：缺少近三年能源审计报告。",
   },
