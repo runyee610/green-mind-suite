@@ -397,7 +397,8 @@ export default function PolicyAgent() {
         </div>
 
         {/* 右侧：对话面板 */}
-        <Card className="panel flex flex-col h-[760px] sticky top-20 relative overflow-hidden">
+        <div className="flex min-w-0 flex-col gap-4">
+        <Card className="panel flex flex-col h-[760px] relative overflow-hidden">
           {/* tech bg */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.05]"
