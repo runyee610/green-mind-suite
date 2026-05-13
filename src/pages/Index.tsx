@@ -206,9 +206,10 @@ const BATCH_LISTS = {
 
 /* ============== Components ============== */
 function KpiTile({
-  icon: Icon, label, value, unit, sub, delta, variant = "cyan",
+  icon: Icon, label, value, unit, sub, nation, nationUnit, nationExtra, delta, variant = "cyan",
 }: {
-  icon: any; label: string; value: string; unit?: string; sub?: string;
+  icon: any; label: string; value: string; unit?: string; sub?: React.ReactNode;
+  nation?: number; nationUnit?: string; nationExtra?: string;
   delta?: { v: number; label: string }; variant?: "cyan" | "green";
 }) {
   return (
@@ -223,6 +224,15 @@ function KpiTile({
         </span>
         {unit && <span className="text-xs text-slate-600">{unit}</span>}
       </div>
+      {nation !== undefined && (
+        <div className="mt-2 flex items-center gap-1.5 rounded-md px-2 py-1 bg-gradient-to-r from-amber-100/80 via-rose-100/70 to-amber-100/40 border border-amber-300/60 shadow-inner">
+          <Trophy className="h-3.5 w-3.5 text-amber-600" />
+          <span className="text-[10px] font-semibold text-amber-800 tracking-wide">国家级</span>
+          <span className="text-[20px] font-extrabold tabular-nums text-amber-700 leading-none ml-0.5" style={{ textShadow: "0 0 10px hsl(35 95% 55% / 0.35)" }}>{nation}</span>
+          <span className="text-[10px] text-amber-700/90">{nationUnit}</span>
+          {nationExtra && <span className="ml-auto text-[10px] text-amber-700/80 font-medium">{nationExtra}</span>}
+        </div>
+      )}
       {sub && <div className="mt-auto pt-2 text-[11px] text-slate-600 leading-snug">{sub}</div>}
       {delta && (
         <div className="mt-1.5 flex items-center gap-1 text-[11px]">
