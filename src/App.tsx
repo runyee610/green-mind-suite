@@ -35,12 +35,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/report-monthly" element={<ReportMonthly />} />
           <Route path="/report-monthly/filling" element={<ReportMonthlyFilling />} />
-          <Route path="/report-yearly" element={<ReportYearly />} />
           <Route path="/energy-quota" element={<EnergyQuota />} />
           <Route path="/energy-quota/standard" element={<EnergyQuota />} />
           <Route path="/energy-quota/declaration" element={<EnergyQuota />} />
-          <Route path="/archives" element={<Archives />} />
-          <Route path="/dual-control" element={<DualControl />} />
           <Route path="/assets" element={<Assets />} />
           <Route path="/green-mfg" element={<GreenMfg />} />
           <Route path="/green-mfg/gov" element={<GreenMfgGov section="declaration" />} />
@@ -54,9 +51,6 @@ const App = () => (
           <Route path="/green-mfg/ent/declaration/new" element={<GreenMfgEntDeclarationNew />} />
           <Route path="/green-mfg/ent/declaration/:id" element={<GreenMfgEntDeclarationDetail />} />
           <Route path="/green-mfg/ent/dynamic/:id" element={<GreenMfgEntDynamicEdit />} />
-          <Route path="/benchmark" element={<Benchmark />} />
-          <Route path="/enterprise" element={<Enterprise />} />
-          <Route path="/enterprise-detail/:key" element={<EnterpriseDetail />} />
           <Route path="/system" element={<System />} />
           <Route path="/system/users" element={<SystemUsers />} />
           <Route path="/system/permissions" element={<SystemPermissions />} />
