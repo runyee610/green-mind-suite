@@ -450,25 +450,15 @@ function MessageBubble({
         >
           {message.content}
         </div>
-        {message.citations && message.citations.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {message.citations.map((c) => (
-              <Badge key={c.policyId} variant="outline" className="text-[10px] border-primary/40 bg-primary/5 text-primary">
-                <FileText className="h-2.5 w-2.5 mr-1" />
-                {c.title}
-              </Badge>
-            ))}
-          </div>
-        )}
-        {message.suggestions && message.suggestions.length > 0 && (
+        {!isUser && message.suggestions && message.suggestions.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {message.suggestions.map((s) => (
               <button
                 key={s}
                 onClick={() => onSuggestion(s)}
-                className="text-[11px] rounded-full border border-primary/30 bg-primary/5 text-primary px-2.5 py-1 hover:bg-primary/10 transition"
+                className="text-[11px] rounded-md border border-border bg-transparent text-muted-foreground px-2 py-1 hover:border-primary/40 hover:text-primary transition"
               >
-                {s} →
+                {s}
               </button>
             ))}
           </div>
