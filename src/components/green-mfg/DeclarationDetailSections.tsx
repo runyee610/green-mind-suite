@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -784,6 +784,39 @@ export function EvaluationIndicatorCard({
     }));
   const totalCols = showGovRemark ? 13 : 12;
   const [preview, setPreview] = useState<string | null>(null);
+  const [keyword, setKeyword] = useState("");
+  const [activeL1, setActiveL1] = useState<string>("all");
+
+  const l1Sections = useMemo(() => {
+    const seen = new Set<string>();
+    const arr: { l1: string; count: number }[] = [];
+    data.forEach((r) => {
+      if (!seen.has(r.l1)) {
+        seen.add(r.l1);
+        arr.push({ l1: r.l1, count: 1 });
+      } else {
+        const item = arr.find((x) => x.l1 === r.l1);
+        if (item) item.count += 1;
+      }
+    });
+    return arr;
+  }, [data]);
+
+  const scrollToL1 = (l1: string) => {
+    setActiveL1(l1);
+    const el = document.getElementById(`indicator-l1-${l1}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const matchKeyword = (row: IndicatorRow) => {
+    if (!keyword.trim()) return false;
+    const k = keyword.trim().toLowerCase();
+    return (
+      row.l3.toLowerCase().includes(k) ||
+      (row.l2 ?? "").toLowerCase().includes(k) ||
+      (row.l1 ?? "").toLowerCase().includes(k)
+    );
+  };
 
   return (
     <>
@@ -802,6 +835,48 @@ export function EvaluationIndicatorCard({
             </Badge>
           </div>
         </CardTitle>
+        {/* 友好交互工具条：一级指标快速跳转 + 关键字搜索 */}
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-border/60 bg-muted/30 p-2">
+          <span className="text-[11px] font-medium text-muted-foreground">快速跳转：</span>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveL1("all");
+              document.getElementById("evaluation-indicator")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className={cn(
+              "rounded-full border px-2.5 py-0.5 text-[11px] transition",
+              activeL1 === "all"
+                ? "border-primary/40 bg-primary/10 text-primary"
+                : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
+            )}
+          >
+            全部 · {data.length}
+          </button>
+          {l1Sections.map((s) => (
+            <button
+              key={s.l1}
+              type="button"
+              onClick={() => scrollToL1(s.l1)}
+              className={cn(
+                "rounded-full border px-2.5 py-0.5 text-[11px] transition",
+                activeL1 === s.l1
+                  ? "border-primary/40 bg-primary/10 text-primary"
+                  : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {s.l1} · {s.count}
+            </button>
+          ))}
+          <div className="ml-auto">
+            <Input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="搜索指标名称…"
+              className="h-7 w-48 text-[11px]"
+            />
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="overflow-auto rounded-md border border-border/60">
@@ -912,12 +987,15 @@ export function EvaluationIndicatorCard({
                       )}
                     </div>
                   );
+                  const hl = matchKeyword(row);
                   return (
                     <tr
                       key={row.id}
+                      id={row.showL1 ? `indicator-l1-${row.l1}` : undefined}
                       className={cn(
-                        "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
+                        "align-top transition-colors [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
                         !last && "border-b border-border/60",
+                        hl && "bg-primary/5 ring-1 ring-inset ring-primary/30",
                       )}
                     >
                       {row.showL1 && (
@@ -1119,13 +1197,16 @@ export function EvaluationIndicatorCard({
                     </tr>
                   );
                 }
+                const hl = matchKeyword(row);
                 return (
                   <tr
                     key={row.id}
+                    id={row.showL1 ? `indicator-l1-${row.l1}` : undefined}
                     className={cn(
-                      "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2",
+                      "align-top transition-colors [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2",
                       row.isSubRow ? "[&>td]:py-1" : "[&>td]:py-2",
                       !last && "border-b border-border/60",
+                      hl && "bg-primary/5 ring-1 ring-inset ring-primary/30",
                     )}
                   >
                     {row.showL1 && (

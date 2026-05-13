@@ -62,27 +62,14 @@ export default function GreenMfgEntDeclarationDetail() {
         </span>
       }
     >
-      <div className="mb-4 flex items-center justify-end gap-3">
+      {/* 返回按钮：与副标题底部对齐 */}
+      <div className="-mt-16 mb-3 flex items-center justify-end gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
       </div>
 
-      {/* 分页 Tab 导航 */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="sticky top-0 z-10 h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1.5">
-          {TABS.map((t) => (
-            <TabsTrigger
-              key={t.value}
-              value={t.value}
-              className="text-base font-medium px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary"
-            >
-              {t.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-      {/* 状态 + 打分 概览 */}
+      {/* 状态 + 打分 概览：常态化展示，置于选项卡上方 */}
       <div className="mb-4 grid gap-3 md:grid-cols-3">
         <Card className="panel">
           <CardContent className="flex h-full flex-col justify-between gap-2 p-4">
@@ -150,6 +137,20 @@ export default function GreenMfgEntDeclarationDetail() {
           <p className="mt-1 text-sm leading-relaxed">{detail.comment}</p>
         </div>
       )}
+
+      {/* 分页 Tab 导航 */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="sticky top-0 z-10 h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1.5">
+          {TABS.map((t) => (
+            <TabsTrigger
+              key={t.value}
+              value={t.value}
+              className="text-base font-medium px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary"
+            >
+              {t.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
         <TabsContent value="audit-flow" className="mt-0">
           <Card className="panel">
