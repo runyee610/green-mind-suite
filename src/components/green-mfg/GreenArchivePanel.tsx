@@ -72,7 +72,7 @@ export function GreenArchivePanel({ mode, creditCode }: Props) {
   if (mode === "ent") {
     const my = list[0];
     return my ? (
-      <ArchiveDetailCard archive={my} embedded />
+      <ArchiveDetailCard archive={my} />
     ) : (
       <Card className="panel">
         <CardContent className="py-12 text-center text-sm text-muted-foreground">
