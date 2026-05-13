@@ -192,9 +192,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
   const [batchFilter, setBatchFilter] = useState<string>("all");
-  const [expandedIndustries, setExpandedIndustries] = useState<Record<string, boolean>>({});
-  const toggleIndustry = (name: string) =>
-    setExpandedIndustries((p) => ({ ...p, [name]: !p[name] }));
   const [batches, setBatches] = useState<string[]>([...DECLARATION_BATCHES]);
   const [batchDialogOpen, setBatchDialogOpen] = useState(false);
 
