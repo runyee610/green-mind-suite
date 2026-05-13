@@ -88,19 +88,19 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     <AppLayout
       title={
         section === "dynamic"
-          ? "绿色工厂动态管理 · 政府侧"
-          : "绿色工厂自评价管理 · 政府侧"
+          ? "绿色工厂动态管理"
+          : "绿色工厂自评价管理"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表复核"
-          : "申报监管、智能预审、专家审批"
+          : "申报监管、AI 智能预审、专家审批"
       }
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="待审申报" value={declarations.filter((d) => d.stage === "区审批" || d.stage === "市审批").length} accent="primary" />
-        <KpiTile icon={CheckCircle2} label="本年绿色工厂" value={MOCK_DECLARATIONS.filter((d) => d.stage === "绿色工厂").length} accent="success" />
+        <KpiTile icon={ClipboardList} label="待审申报" value={82} accent="primary" />
+        <KpiTile icon={CheckCircle2} label="本年国家级绿色工厂" value={MOCK_DECLARATIONS.filter((d) => d.stage === "绿色工厂").length} accent="success" />
         <KpiTile icon={FileBarChart} label="培育中企业" value={MOCK_DECLARATIONS.filter((d) => d.stage === "培育中").length} accent="warning" />
         <KpiTile icon={ClipboardList} label="动态管理待审" value={MOCK_DYNAMIC.filter((d) => d.status === "已填报").length} accent="primary" />
       </div>
@@ -118,7 +118,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <CardTitle className="text-base">申报列表</CardTitle>
+                <CardTitle className="text-base">自评价列表</CardTitle>
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
