@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   ALL_INDUSTRIES,
@@ -23,6 +25,163 @@ import {
 import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
 import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
 
+/** Cascading industry filter: hover parent → reveals children on the right */
+function IndustryCascadeFilter({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [hoverParent, setHoverParent] = useState<string | null>(null);
+
+  const label = useMemo(() => {
+    if (value === "all") return "全部行业";
+    return value;
+  }, [value]);
+
+  const keyParents = INDUSTRY_TREE.filter((n) => n.type === "重点行业");
+  const otherParents = INDUSTRY_TREE.filter((n) => n.type !== "重点行业");
+  const activeParent =
+    INDUSTRY_TREE.find((p) => p.name === hoverParent) ??
+    INDUSTRY_TREE.find((p) => p.name === value) ??
+    INDUSTRY_TREE.find((p) => p.children.includes(value)) ??
+    keyParents[0];
+
+  const select = (v: string) => {
+    onChange(v);
+    setOpen(false);
+  };
+
+  const ParentRow = ({
+    node,
+  }: {
+    node: (typeof INDUSTRY_TREE)[number];
+  }) => {
+    const isActive = activeParent?.name === node.name;
+    const isSelected = value === node.name;
+    return (
+      <button
+        type="button"
+        onMouseEnter={() => setHoverParent(node.name)}
+        onClick={() => select(node.name)}
+        className={cn(
+          "flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-left text-xs transition",
+          isActive ? "bg-accent text-accent-foreground" : "hover:bg-accent/60",
+          isSelected && "font-semibold text-primary",
+        )}
+      >
+        <span
+          className={cn(
+            "inline-block h-1.5 w-1.5 rounded-full",
+            node.type === "重点行业" ? "bg-warning" : "bg-muted-foreground/50",
+          )}
+        />
+        <span className="flex-1 truncate">{node.name}</span>
+        {node.children.length > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+      </button>
+    );
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 w-52 justify-between text-xs font-normal"
+        >
+          <span className="inline-flex items-center gap-1 truncate">
+            <Filter className="h-3 w-3 shrink-0" />
+            <span className="truncate">{label}</span>
+          </span>
+          <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="w-[440px] p-0"
+        onMouseLeave={() => setHoverParent(null)}
+      >
+        <div className="grid grid-cols-2 divide-x divide-border">
+          {/* Parents */}
+          <div className="max-h-80 overflow-y-auto p-2">
+            <button
+              type="button"
+              onClick={() => select("all")}
+              onMouseEnter={() => setHoverParent(null)}
+              className={cn(
+                "flex w-full items-center rounded-sm px-2 py-1.5 text-left text-xs hover:bg-accent/60",
+                value === "all" && "font-semibold text-primary",
+              )}
+            >
+              全部行业
+            </button>
+            <div className="my-1 h-px bg-border/60" />
+            <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-warning">
+              重点行业
+            </div>
+            {keyParents.map((n) => (
+              <ParentRow key={n.name} node={n} />
+            ))}
+            <div className="my-1 h-px bg-border/60" />
+            <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              非重点行业
+            </div>
+            {otherParents.map((n) => (
+              <ParentRow key={n.name} node={n} />
+            ))}
+          </div>
+          {/* Children */}
+          <div
+            className="max-h-80 overflow-y-auto p-2"
+            onMouseEnter={() => activeParent && setHoverParent(activeParent.name)}
+          >
+            {activeParent ? (
+              <>
+                <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {activeParent.name} · 细分
+                </div>
+                <button
+                  type="button"
+                  onClick={() => select(activeParent.name)}
+                  className={cn(
+                    "flex w-full items-center rounded-sm px-2 py-1.5 text-left text-xs hover:bg-accent/60",
+                    value === activeParent.name && "font-semibold text-primary",
+                  )}
+                >
+                  全部 {activeParent.name}
+                </button>
+                {activeParent.children.length === 0 && (
+                  <div className="px-2 py-3 text-[11px] text-muted-foreground">无细分行业</div>
+                )}
+                {activeParent.children.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => select(c)}
+                    className={cn(
+                      "flex w-full items-center rounded-sm px-2 py-1.5 text-left text-xs hover:bg-accent/60",
+                      value === c && "font-semibold text-primary",
+                    )}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </>
+            ) : (
+              <div className="flex h-full items-center justify-center text-[11px] text-muted-foreground">
+                悬浮左侧行业查看细分
+              </div>
+            )}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<string>(section ?? "declaration");
@@ -33,9 +192,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
   const [batchFilter, setBatchFilter] = useState<string>("all");
-  const [expandedIndustries, setExpandedIndustries] = useState<Record<string, boolean>>({});
-  const toggleIndustry = (name: string) =>
-    setExpandedIndustries((p) => ({ ...p, [name]: !p[name] }));
   const [batches, setBatches] = useState<string[]>([...DECLARATION_BATCHES]);
   const [batchDialogOpen, setBatchDialogOpen] = useState(false);
 
@@ -134,51 +290,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       className="h-8 w-64 pl-8 text-xs"
                     />
                   </div>
-                  <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                    <SelectTrigger className="h-8 w-52 text-xs">
-                      <Filter className="mr-1 h-3 w-3" />
-                      <SelectValue placeholder="行业" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-96">
-                      <SelectItem value="all" className="text-xs font-medium">全部行业</SelectItem>
-                      <div className="my-1 h-px bg-border/60" />
-                      <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-warning">重点行业</div>
-                      {INDUSTRY_TREE.filter((n) => n.type === "重点行业").map((node) => {
-                        const expanded = !!expandedIndustries[node.name];
-                        return (
-                          <SelectGroup key={node.name}>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleIndustry(node.name); }}
-                              onPointerDown={(e) => e.stopPropagation()}
-                              className="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-left text-[11px] font-semibold text-foreground hover:bg-accent"
-                            >
-                              {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning" />
-                              {node.name}
-                            </button>
-                            {expanded && (
-                              <>
-                                <SelectItem value={node.name} className="pl-7 text-xs text-muted-foreground">全部 {node.name}</SelectItem>
-                                {node.children.map((c) => (
-                                  <SelectItem key={c} value={c} className="pl-7 text-xs">{c}</SelectItem>
-                                ))}
-                              </>
-                            )}
-                          </SelectGroup>
-                        );
-                      })}
-                      <div className="my-1 h-px bg-border/60" />
-                      <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">非重点行业</div>
-                      {INDUSTRY_TREE.filter((n) => n.type !== "重点行业").map((node) => (
-                        <SelectGroup key={node.name}>
-                          {node.children.map((c) => (
-                            <SelectItem key={c} value={c} className="pl-7 text-xs">{c}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <IndustryCascadeFilter value={industryFilter} onChange={setIndustryFilter} />
                   <Select value={batchFilter} onValueChange={setBatchFilter}>
                     <SelectTrigger className="h-8 w-36 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
@@ -212,38 +324,39 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
+              <div className="relative overflow-x-auto">
+                <Table className="min-w-[1280px]">
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>企业名称 / 统一社会信用代码</TableHead>
-                    <TableHead>所属区</TableHead>
-                    <TableHead>行业</TableHead>
-                    <TableHead>自评价批次</TableHead>
-                    <TableHead className="text-center px-[3px]">AI 智能打分 / 专家打分</TableHead>
-                    <TableHead className="text-center">综合能耗（吨标煤）</TableHead>
-                    <TableHead className="text-center">产值（万元）</TableHead>
-                    <TableHead className="text-center">流转状态</TableHead>
-                    <TableHead>提交时间</TableHead>
-                    <TableHead className="text-right">操作</TableHead>
+                    <TableHead className="whitespace-nowrap">企业名称 / 统一社会信用代码</TableHead>
+                    <TableHead className="whitespace-nowrap">所属区</TableHead>
+                    <TableHead className="whitespace-nowrap">行业</TableHead>
+                    <TableHead className="whitespace-nowrap">自评价批次</TableHead>
+                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家打分</TableHead>
+                    <TableHead className="text-center whitespace-nowrap">综合能耗（吨标煤）</TableHead>
+                    <TableHead className="text-center whitespace-nowrap">产值（万元）</TableHead>
+                    <TableHead className="text-center whitespace-nowrap">流转状态</TableHead>
+                    <TableHead className="whitespace-nowrap">提交时间</TableHead>
+                    <TableHead className="sticky right-0 z-20 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))]">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {declarations.map((r) => {
                     const dyn = MOCK_DYNAMIC.find((d) => d.enterpriseName === r.enterpriseName);
                     return (
-                    <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell>
+                    <TableRow key={r.id} className="h-12 border-border/40 group">
+                      <TableCell className="whitespace-nowrap">
                         <div className="text-sm">{r.enterpriseName}</div>
                         <div className="text-[11px] text-muted-foreground font-mono">{r.creditCode}</div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.district}</TableCell>
+                      <TableCell className="whitespace-nowrap">
                         <div className="text-xs">{r.industry}</div>
                         {r.subIndustry && (
                           <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>
                         )}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{r.batch}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.batch}</TableCell>
                       <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
@@ -251,11 +364,11 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                         {dyn?.energyConsumption != null ? dyn.energyConsumption.toLocaleString() : <span className="text-muted-foreground">—</span>}
                       </TableCell>
                       <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.outputValue.toLocaleString()}</TableCell>
-                      <TableCell className="text-center">
+                      <TableCell className="text-center whitespace-nowrap">
                         <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">{r.submitDate}</TableCell>
+                      <TableCell className="sticky right-0 z-10 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))] group-hover:bg-muted/40">
                         <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
                           <Eye className="mr-1 h-3 w-3" />详情/审批
                         </Button>
@@ -268,6 +381,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                   )}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
