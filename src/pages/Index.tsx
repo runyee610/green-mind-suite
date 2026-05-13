@@ -162,12 +162,12 @@ const STAR = [
   { name: "三星", value: 82, fill: GREEN },
 ];
 
-// 培育梯度漏斗 — 增加区级
+// 培育梯度漏斗 — 深绿色阶 + 国家级金边
 const FUNNEL = [
-  { name: "培育库企业", value: 1280, fill: "hsl(189 85% 55%)", glow: "hsl(189 95% 65% / 0.55)" },
-  { name: "区级培育", value: 820, fill: "hsl(180 78% 45%)", glow: "hsl(180 85% 55% / 0.55)" },
-  { name: "市级绿色工厂", value: 523, fill: "hsl(168 72% 38%)", glow: "hsl(168 80% 48% / 0.55)" },
-  { name: "国家级绿色工厂", value: 196, fill: "hsl(150 80% 28%)", glow: "hsl(40 95% 55% / 0.6)" },
+  { name: "培育库企业", value: 1280, fill: "hsl(168 35% 60%)", glow: "hsl(168 50% 70% / 0.25)" },
+  { name: "区级培育", value: 820, fill: "hsl(168 45% 45%)", glow: "hsl(168 55% 55% / 0.25)" },
+  { name: "市级绿色工厂", value: 523, fill: "hsl(168 60% 32%)", glow: "hsl(168 65% 40% / 0.3)" },
+  { name: "国家级绿色工厂", value: 196, fill: "hsl(168 75% 22%)", glow: "hsl(38 80% 55% / 0.45)" },
 ];
 
 const ENERGY_CARBON = [
