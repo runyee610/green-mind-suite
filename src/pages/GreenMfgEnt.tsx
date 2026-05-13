@@ -33,6 +33,9 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
   // 假设当前企业 = MOCK_DECLARATIONS[0]
   const myDeclaration = MOCK_DECLARATIONS[0];
   const myDynamics = MOCK_DYNAMIC.filter((_, i) => i < 2);
+  // 动态管理页演示企业 = 申能电力设备股份有限公司
+  const entCreditCode = section === "dynamic" ? "913100007896543210" : myDeclaration.creditCode;
+  const entRiskOpen = MOCK_RISKS.filter((r) => r.creditCode === entCreditCode && r.status !== "已关闭").length;
 
   return (
     <AppLayout
