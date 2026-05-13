@@ -446,21 +446,23 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
         </TabsContent>
 
         <TabsContent value="energy" className="mt-3">
-          <div className="grid grid-cols-2 gap-4 h-[260px]">
+          <div className="grid grid-cols-2 gap-2 h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                 <Tooltip />
-                <Pie data={KEY_ENERGY} dataKey="value" nameKey="name" innerRadius={45} outerRadius={90} paddingAngle={3}
-                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(1)}%)`} labelLine={{ stroke: SLATE }}>
+                <Pie data={KEY_ENERGY} dataKey="value" nameKey="name" innerRadius={38} outerRadius={68} paddingAngle={3}
+                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(1)}%)`}
+                  labelLine={{ stroke: SLATE }} style={{ fontSize: 10 }}>
                   {KEY_ENERGY.map((d, i) => (<Cell key={i} fill={d.fill} />))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                 <Tooltip />
-                <Pie data={STAR} dataKey="value" nameKey="name" innerRadius={45} outerRadius={90} paddingAngle={3}
-                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(0)}%)`} labelLine={{ stroke: SLATE }}>
+                <Pie data={STAR} dataKey="value" nameKey="name" innerRadius={38} outerRadius={68} paddingAngle={3}
+                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(0)}%)`}
+                  labelLine={{ stroke: SLATE }} style={{ fontSize: 10 }}>
                   {STAR.map((d, i) => (<Cell key={i} fill={d.fill} />))}
                 </Pie>
               </PieChart>
@@ -472,31 +474,34 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
       {/* Recent batch lists */}
       <div className="border-t border-cyan-200/60 pt-3 flex-1 flex flex-col min-h-0">
         <div className="flex items-center gap-2 mb-2">
-          <ListChecks className="h-4 w-4 neon-text-green" />
-          <h4 className="text-[13px] font-semibold text-slate-800">最近批次入选名单</h4>
+          <ListChecks className="h-5 w-5 neon-text-green" />
+          <h4 className="text-[16px] font-bold text-slate-800 tracking-wide">最近批次入选名单</h4>
           <Tabs value={batchTab} onValueChange={(v) => setBatchTab(v as any)} className="ml-auto">
-            <TabsList className="h-7 bg-white/60">
-              <TabsTrigger value="city" className="text-[11px] h-6 px-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">市级</TabsTrigger>
-              <TabsTrigger value="nation" className="text-[11px] h-6 px-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">国家级</TabsTrigger>
+            <TabsList className="h-8 bg-white/60">
+              <TabsTrigger value="city" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">市级</TabsTrigger>
+              <TabsTrigger value="nation" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">国家级</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
-        <div className="text-[11px] text-slate-600 mb-2">{batch.label}</div>
-        <div className="grid grid-cols-3 gap-2 text-[11px]">
+        <div className="text-[13px] font-semibold text-slate-700 mb-2 px-2 py-1 rounded-md bg-gradient-to-r from-cyan-50 to-emerald-50 border border-cyan-200/60">{batch.label}</div>
+        <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
           {[
             { title: "绿色工厂", color: CYAN, items: batch.factories },
             { title: "绿色供应链", color: GREEN, items: batch.supply },
             { title: "绿色园区", color: AMBER, items: batch.parks },
           ].map((col) => (
-            <div key={col.title} className="bg-white/50 rounded-md p-2 border border-border/40">
-              <div className="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-border/40">
-                <span className="h-2 w-2 rounded-full" style={{ background: col.color }} />
-                <span className="font-semibold text-slate-700">{col.title}</span>
-                <span className="ml-auto text-slate-500">{col.items.length}</span>
+            <div key={col.title} className="bg-white/60 rounded-md p-2.5 border border-border/40 flex flex-col min-h-0">
+              <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/40">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: col.color, boxShadow: `0 0 6px ${col.color}` }} />
+                <span className="text-[13px] font-bold text-slate-800">{col.title}</span>
+                <span className="ml-auto text-[12px] font-semibold text-slate-600 px-1.5 rounded bg-slate-100">{col.items.length}</span>
               </div>
-              <ul className="space-y-1 max-h-[140px] overflow-y-auto">
+              <ul className="space-y-1.5 flex-1 overflow-y-auto pr-1">
                 {col.items.map((n, i) => (
-                  <li key={i} className="text-slate-600 truncate" title={n}>· {n}</li>
+                  <li key={i} className="text-[12px] text-slate-700 leading-snug flex gap-1.5">
+                    <span className="text-slate-400 shrink-0">{i + 1}.</span>
+                    <span className="break-all">{n}</span>
+                  </li>
                 ))}
               </ul>
             </div>
