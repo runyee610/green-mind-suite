@@ -29,8 +29,6 @@ import {
   PolicyItem,
   PolicyCategory,
   categoryColor,
-  urgencyColor,
-  tagColor,
   INITIAL_CHAT,
   ChatMessage,
   SUGGESTED_QUESTIONS,
