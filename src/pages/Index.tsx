@@ -115,6 +115,20 @@ const GROUP_RANK = [
   { name: "城投集团", value: 2 },
 ];
 
+// 各区县国家级绿色工厂数 TOP10（依据全市 196 家国家级按区分布估算）
+const DISTRICT_NATION_TOP = [
+  { name: "浦东新区", value: 45 },
+  { name: "嘉定区", value: 30 },
+  { name: "金山区", value: 28 },
+  { name: "闵行区", value: 22 },
+  { name: "松江区", value: 18 },
+  { name: "宝山区", value: 16 },
+  { name: "青浦区", value: 12 },
+  { name: "奉贤区", value: 10 },
+  { name: "化工区", value: 6 },
+  { name: "临港新片区", value: 4 },
+];
+
 const KEY_ENERGY = [
   { name: "重点用能单位", value: 169, fill: CYAN },
   { name: "非重点单位", value: 357, fill: GREEN },
@@ -143,10 +157,10 @@ const STAR = [
 
 // 培育梯度漏斗 — 增加区级
 const FUNNEL = [
-  { name: "培育库企业", value: 1280, fill: "hsl(189 85% 60%)" },
-  { name: "区级培育", value: 820, fill: "hsl(180 78% 48%)" },
-  { name: "市级绿色工厂", value: 523, fill: "hsl(168 70% 40%)" },
-  { name: "国家级绿色工厂", value: 196, fill: "hsl(150 78% 28%)" },
+  { name: "培育库企业", value: 1280, fill: "hsl(189 85% 55%)", glow: "hsl(189 95% 65% / 0.55)" },
+  { name: "区级培育", value: 820, fill: "hsl(180 78% 45%)", glow: "hsl(180 85% 55% / 0.55)" },
+  { name: "市级绿色工厂", value: 523, fill: "hsl(168 72% 38%)", glow: "hsl(168 80% 48% / 0.55)" },
+  { name: "国家级绿色工厂", value: 196, fill: "hsl(150 80% 28%)", glow: "hsl(40 95% 55% / 0.6)" },
 ];
 
 const ENERGY_CARBON = [
@@ -206,9 +220,10 @@ const BATCH_LISTS = {
 
 /* ============== Components ============== */
 function KpiTile({
-  icon: Icon, label, value, unit, sub, delta, variant = "cyan",
+  icon: Icon, label, value, unit, sub, nation, nationUnit, nationExtra, delta, variant = "cyan",
 }: {
-  icon: any; label: string; value: string; unit?: string; sub?: string;
+  icon: any; label: string; value: string; unit?: string; sub?: React.ReactNode;
+  nation?: number; nationUnit?: string; nationExtra?: string;
   delta?: { v: number; label: string }; variant?: "cyan" | "green";
 }) {
   return (
@@ -223,6 +238,15 @@ function KpiTile({
         </span>
         {unit && <span className="text-xs text-slate-600">{unit}</span>}
       </div>
+      {nation !== undefined && (
+        <div className="mt-2 flex items-center gap-1.5 rounded-md px-2 py-1 bg-gradient-to-r from-amber-100/80 via-rose-100/70 to-amber-100/40 border border-amber-300/60 shadow-inner">
+          <Trophy className="h-3.5 w-3.5 text-amber-600" />
+          <span className="text-[10px] font-semibold text-amber-800 tracking-wide">国家级</span>
+          <span className="text-[20px] font-extrabold tabular-nums text-amber-700 leading-none ml-0.5" style={{ textShadow: "0 0 10px hsl(35 95% 55% / 0.35)" }}>{nation}</span>
+          <span className="text-[10px] text-amber-700/90">{nationUnit}</span>
+          {nationExtra && <span className="ml-auto text-[10px] text-amber-700/80 font-medium">{nationExtra}</span>}
+        </div>
+      )}
       {sub && <div className="mt-auto pt-2 text-[11px] text-slate-600 leading-snug">{sub}</div>}
       {delta && (
         <div className="mt-1.5 flex items-center gap-1 text-[11px]">
@@ -259,25 +283,33 @@ function GradientFunnel() {
   const max = stages[0].value;
   const conv = (i: number) => i === 0 ? null : `${((stages[i].value / stages[i - 1].value) * 100).toFixed(1)}%`;
   return (
-    <div className="flex-1 flex flex-col gap-1.5 min-h-0">
+    <div className="flex-1 flex flex-col gap-2 min-h-0">
       {stages.map((s, i) => {
-        const w = 30 + (s.value / max) * 70; // percent width
+        const w = 30 + (s.value / max) * 70;
+        const isNation = i === stages.length - 1;
         return (
           <div key={s.name} className="flex-1 flex items-center gap-2 min-h-0">
-            <div className="w-[88px] text-[11px] text-slate-700 font-medium text-right shrink-0">{s.name}</div>
+            <div className="w-[78px] flex items-center gap-1.5 shrink-0">
+              <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: s.fill, boxShadow: `0 0 8px ${s.fill}` }} />
+              <span className="text-[11px] text-slate-700 font-medium leading-tight">{s.name}</span>
+            </div>
             <div className="flex-1 relative h-full flex items-center">
               <div
-                className="h-full rounded-md flex items-center justify-end pr-3 shadow-sm transition-all hover:brightness-110"
+                className="h-full rounded-md flex items-center justify-end pr-3 transition-all hover:brightness-110"
                 style={{
                   width: `${w}%`,
-                  background: `linear-gradient(90deg, ${s.fill}, ${s.fill} 60%, ${s.fill}cc)`,
-                  boxShadow: `0 0 18px ${s.fill}55`,
+                  backgroundColor: s.fill,
+                  backgroundImage: `linear-gradient(90deg, hsl(0 0% 100% / 0.25), hsl(0 0% 100% / 0) 60%)`,
+                  boxShadow: `0 0 16px ${s.glow}, inset 0 1px 0 hsl(0 0% 100% / 0.4)`,
+                  border: isNation ? "1.5px solid hsl(40 95% 55% / 0.8)" : "none",
                 }}
               >
-                <span className="text-white font-bold text-[15px] tabular-nums drop-shadow">{s.value.toLocaleString()}</span>
+                <span className="text-white font-bold text-[15px] tabular-nums" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.35)" }}>
+                  {s.value.toLocaleString()}
+                </span>
               </div>
-              {conv(i) && (
-                <span className="ml-2 text-[10px] text-slate-500 whitespace-nowrap">↓ 转化 {conv(i)}</span>
+              {i > 0 && (
+                <span className="ml-2 text-[10px] text-slate-500 whitespace-nowrap">↓ {((stages[i].value / stages[i - 1].value) * 100).toFixed(1)}%</span>
               )}
             </div>
           </div>
@@ -428,21 +460,23 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
         </TabsContent>
 
         <TabsContent value="energy" className="mt-3">
-          <div className="grid grid-cols-2 gap-4 h-[260px]">
+          <div className="grid grid-cols-2 gap-2 h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                 <Tooltip />
-                <Pie data={KEY_ENERGY} dataKey="value" nameKey="name" innerRadius={45} outerRadius={90} paddingAngle={3}
-                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(1)}%)`} labelLine={{ stroke: SLATE }}>
+                <Pie data={KEY_ENERGY} dataKey="value" nameKey="name" innerRadius={38} outerRadius={68} paddingAngle={3}
+                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(1)}%)`}
+                  labelLine={{ stroke: SLATE }} style={{ fontSize: 10 }}>
                   {KEY_ENERGY.map((d, i) => (<Cell key={i} fill={d.fill} />))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                 <Tooltip />
-                <Pie data={STAR} dataKey="value" nameKey="name" innerRadius={45} outerRadius={90} paddingAngle={3}
-                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(0)}%)`} labelLine={{ stroke: SLATE }}>
+                <Pie data={STAR} dataKey="value" nameKey="name" innerRadius={38} outerRadius={68} paddingAngle={3}
+                  label={({ name, value, percent }) => `${name} ${value} (${(percent * 100).toFixed(0)}%)`}
+                  labelLine={{ stroke: SLATE }} style={{ fontSize: 10 }}>
                   {STAR.map((d, i) => (<Cell key={i} fill={d.fill} />))}
                 </Pie>
               </PieChart>
@@ -454,31 +488,34 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
       {/* Recent batch lists */}
       <div className="border-t border-cyan-200/60 pt-3 flex-1 flex flex-col min-h-0">
         <div className="flex items-center gap-2 mb-2">
-          <ListChecks className="h-4 w-4 neon-text-green" />
-          <h4 className="text-[13px] font-semibold text-slate-800">最近批次入选名单</h4>
+          <ListChecks className="h-5 w-5 neon-text-green" />
+          <h4 className="text-[16px] font-bold text-slate-800 tracking-wide">最近批次入选名单</h4>
           <Tabs value={batchTab} onValueChange={(v) => setBatchTab(v as any)} className="ml-auto">
-            <TabsList className="h-7 bg-white/60">
-              <TabsTrigger value="city" className="text-[11px] h-6 px-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">市级</TabsTrigger>
-              <TabsTrigger value="nation" className="text-[11px] h-6 px-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">国家级</TabsTrigger>
+            <TabsList className="h-8 bg-white/60">
+              <TabsTrigger value="city" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">市级</TabsTrigger>
+              <TabsTrigger value="nation" className="text-[13px] h-7 px-3 font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">国家级</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
-        <div className="text-[11px] text-slate-600 mb-2">{batch.label}</div>
-        <div className="grid grid-cols-3 gap-2 text-[11px]">
+        <div className="text-[13px] font-semibold text-slate-700 mb-2 px-2 py-1 rounded-md bg-gradient-to-r from-cyan-50 to-emerald-50 border border-cyan-200/60">{batch.label}</div>
+        <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
           {[
             { title: "绿色工厂", color: CYAN, items: batch.factories },
             { title: "绿色供应链", color: GREEN, items: batch.supply },
             { title: "绿色园区", color: AMBER, items: batch.parks },
           ].map((col) => (
-            <div key={col.title} className="bg-white/50 rounded-md p-2 border border-border/40">
-              <div className="flex items-center gap-1.5 mb-1.5 pb-1 border-b border-border/40">
-                <span className="h-2 w-2 rounded-full" style={{ background: col.color }} />
-                <span className="font-semibold text-slate-700">{col.title}</span>
-                <span className="ml-auto text-slate-500">{col.items.length}</span>
+            <div key={col.title} className="bg-white/60 rounded-md p-2.5 border border-border/40 flex flex-col min-h-0">
+              <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/40">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: col.color, boxShadow: `0 0 6px ${col.color}` }} />
+                <span className="text-[13px] font-bold text-slate-800">{col.title}</span>
+                <span className="ml-auto text-[12px] font-semibold text-slate-600 px-1.5 rounded bg-slate-100">{col.items.length}</span>
               </div>
-              <ul className="space-y-1 max-h-[140px] overflow-y-auto">
+              <ul className="space-y-1.5 flex-1 overflow-y-auto pr-1">
                 {col.items.map((n, i) => (
-                  <li key={i} className="text-slate-600 truncate" title={n}>· {n}</li>
+                  <li key={i} className="text-[12px] text-slate-700 leading-snug flex gap-1.5">
+                    <span className="text-slate-400 shrink-0">{i + 1}.</span>
+                    <span className="break-all">{n}</span>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -552,10 +589,10 @@ const Index = () => {
 
       {/* Top KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
-        <KpiTile icon={Factory} label="绿色工厂" value="523" unit="家" sub={`国家级 ${KPI.factory.nation} 家 · 十四五完成率 104.6%`} variant="green" />
-        <KpiTile icon={Layers} label="绿色供应链管理企业" value="75" unit="家" sub={`国家级 ${KPI.supply.nation} 家 · 较上年 +12`} variant="cyan" />
-        <KpiTile icon={Boxes} label="绿色园区" value="29" unit="个" sub={`国家级 ${KPI.park.nation} 个 · 完成率 96.7%`} variant="green" />
-        <KpiTile icon={Leaf} label="绿色设计产品" value="150" unit="项" sub={`国家级 ${KPI.product.nation} 项 · 12 家示范企业`} variant="cyan" />
+        <KpiTile icon={Factory} label="绿色工厂" value="523" unit="家" nation={KPI.factory.nation} nationUnit="家" nationExtra="十四五完成率 104.6%" variant="green" />
+        <KpiTile icon={Layers} label="绿色供应链管理企业" value="75" unit="家" nation={KPI.supply.nation} nationUnit="家" nationExtra="较上年 +12" variant="cyan" />
+        <KpiTile icon={Boxes} label="绿色园区" value="29" unit="个" nation={KPI.park.nation} nationUnit="个" nationExtra="完成率 96.7%" variant="green" />
+        <KpiTile icon={Leaf} label="绿色设计产品" value="150" unit="项" nation={KPI.product.nation} nationUnit="项" nationExtra="12 家示范企业" variant="cyan" />
         <KpiTile icon={Zap} label="单位 GDP 能耗" value="0.232" unit="tce/万元" delta={{ v: -4.2, label: "同比" }} sub="脱钩指数 0.83 · 持续强脱钩" variant="green" />
       </div>
 
@@ -584,6 +621,24 @@ const Index = () => {
                     <div className="h-full bg-gradient-to-r from-cyan-400 to-emerald-500" style={{ width: `${(g.value / 17) * 100}%` }} />
                   </div>
                   <span className="w-6 text-right font-mono font-semibold neon-text-cyan">{g.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass-card glass-card-green p-4 flex-1">
+            <SectionTitle icon={Trophy} title="各区县国家级绿色工厂数 TOP10" accent="green" />
+            <div className="space-y-1.5">
+              {DISTRICT_NATION_TOP.map((g, i) => (
+                <div key={g.name} className="flex items-center gap-2 text-xs">
+                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${i < 3 ? "bg-gradient-to-br from-amber-500 to-orange-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                    {i + 1}
+                  </span>
+                  <span className="flex-1 truncate text-slate-700">{g.name}</span>
+                  <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-emerald-400 to-amber-500" style={{ width: `${(g.value / 45) * 100}%` }} />
+                  </div>
+                  <span className="w-6 text-right font-mono font-semibold text-amber-700">{g.value}</span>
                 </div>
               ))}
             </div>
