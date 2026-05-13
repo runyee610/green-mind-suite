@@ -89,7 +89,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理 · 政府侧"
-          : "绿色工厂梯度培育 · 企业侧"
+          : "绿色工厂自评价管理 · 政府侧"
       }
       subtitle={
         section === "dynamic"
