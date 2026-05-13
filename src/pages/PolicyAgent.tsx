@@ -228,13 +228,14 @@ export default function PolicyAgent() {
                       ) : (
                         <ul className="max-h-72 overflow-y-auto py-1">
                           {bookmarkedPolicies.map((p) => (
-                            <li key={p.id}>
+                            <li key={p.id} className="flex items-start gap-2 px-3 py-2 hover:bg-muted/60 transition">
                               <button
+                                type="button"
                                 onClick={() => {
                                   setSelectedId(p.id);
                                   setShowBookmarks(false);
                                 }}
-                                className="flex w-full items-start gap-2 px-3 py-2 text-left hover:bg-muted/60 transition"
+                                className="flex flex-1 min-w-0 items-start gap-2 text-left"
                               >
                                 <Badge variant="outline" className={cn("text-[10px] shrink-0 mt-0.5", categoryColor[p.category])}>
                                   {p.category}
@@ -245,16 +246,14 @@ export default function PolicyAgent() {
                                     <Calendar className="h-2.5 w-2.5" />截止 {p.deadline}
                                   </div>
                                 </div>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleBookmark(p.id);
-                                  }}
-                                  className="text-muted-foreground hover:text-destructive shrink-0"
-                                  aria-label="移除收藏"
-                                >
-                                  <Bookmark className="h-3.5 w-3.5 fill-primary text-primary" />
-                                </button>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => toggleBookmark(p.id)}
+                                className="text-muted-foreground hover:text-destructive shrink-0 mt-0.5"
+                                aria-label="移除收藏"
+                              >
+                                <Bookmark className="h-3.5 w-3.5 fill-primary text-primary" />
                               </button>
                             </li>
                           ))}
