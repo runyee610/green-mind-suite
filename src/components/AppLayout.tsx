@@ -1,10 +1,13 @@
-import { Bell, Search, Sun, User } from "lucide-react";
+import { Bell, Search, Sun, User, Building2, Briefcase } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useRole, type Role } from "@/contexts/RoleContext";
+import { cn } from "@/lib/utils";
 
 interface AppLayoutProps {
   title?: string;
@@ -15,6 +18,21 @@ interface AppLayoutProps {
 
 export function AppLayout({ title, subtitle, hideHeader = false, children }: AppLayoutProps) {
   const [now, setNow] = useState(new Date());
+  const { role, setRole } = useRole();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const switchRole = (next: Role) => {
+    if (next === role) return;
+    setRole(next);
+    // 同步切换 green-mfg 路由的政府/企业前缀
+    const m = pathname.match(/^\/green-mfg\/(gov|ent)(\/.*)?$/);
+    if (m) {
+      const rest = m[2] ?? "";
+      navigate(`/green-mfg/${next}${rest}`);
+    }
+  };
+
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
@@ -64,6 +82,32 @@ export function AppLayout({ title, subtitle, hideHeader = false, children }: App
                 <Sun className="h-4 w-4" />
               </Button>
               <div className="flex items-center gap-2 pl-2 border-l border-border">
+                <div className="inline-flex items-center rounded-md border border-border bg-muted/40 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => switchRole("gov")}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded px-2 py-1 text-xs transition",
+                      role === "gov"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Building2 className="h-3 w-3" />政府侧
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => switchRole("ent")}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded px-2 py-1 text-xs transition",
+                      role === "ent"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Briefcase className="h-3 w-3" />企业侧
+                  </button>
+                </div>
                 <div className="h-7 w-7 rounded-full bg-gradient-primary flex items-center justify-center">
                   <User className="h-3.5 w-3.5 text-primary-foreground" />
                 </div>
