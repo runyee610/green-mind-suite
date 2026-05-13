@@ -29,12 +29,11 @@ import {
 import { cn } from "@/lib/utils";
 
 const TABS = [
-  { value: "audit-record", label: "审批记录" },
-  { value: "smart-score", label: "智能打分" },
-  { value: "basic-info", label: "企业基本信息表" },
-  { value: "basic-requirements", label: "基本要求" },
   { value: "evaluation-indicator", label: "评价指标表（通则）" },
-  { value: "authenticity-commitment", label: "真实性承诺" },
+  { value: "basic-info", label: "企业基本信息表" },
+  { value: "smart-score", label: "智能打分" },
+  { value: "audit-record", label: "审批记录" },
+  { value: "basic-requirements", label: "基本要求" },
 ];
 
 export default function GreenMfgGovDeclarationDetail() {
@@ -83,22 +82,26 @@ export default function GreenMfgGovDeclarationDetail() {
       <div className="mb-4 flex items-center justify-between gap-3">
         <Badge variant="outline" className={stageBadgeClass(detail.stage)}>{detail.stage}</Badge>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCultivateOpen(true)}
-            className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-          >
-            <Clock className="mr-1 h-4 w-4" />进入培育
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => setApproveOpen(true)}
-            className="bg-success text-success-foreground hover:bg-success/90"
-          >
-            <ShieldCheck className="mr-1 h-4 w-4" />上报
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/gov")}>
+          {!isIncubator && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCultivateOpen(true)}
+                className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+              >
+                <Clock className="mr-1 h-4 w-4" />进入培育
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setApproveOpen(true)}
+                className="bg-success text-success-foreground hover:bg-success/90"
+              >
+                <ShieldCheck className="mr-1 h-4 w-4" />上报
+              </Button>
+            </>
+          )}
+          <Button variant="ghost" size="sm" onClick={() => navigate(isIncubator ? "/green-mfg/gov/incubator" : "/green-mfg/gov")}>
             <ArrowLeft className="mr-1 h-4 w-4" />返回列表
           </Button>
         </div>
@@ -106,12 +109,12 @@ export default function GreenMfgGovDeclarationDetail() {
 
       {/* 分页 Tab 导航 */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="sticky top-0 z-10 h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1">
+        <TabsList className="sticky top-0 z-10 h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1.5">
           {TABS.map((t) => (
             <TabsTrigger
               key={t.value}
               value={t.value}
-              className="text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              className="text-base font-medium px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary"
             >
               {t.label}
             </TabsTrigger>
