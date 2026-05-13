@@ -24,6 +24,9 @@ import {
 export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<string>(section ?? "declaration");
+  useEffect(() => {
+    if (section) setTab(section);
+  }, [section]);
   const [keyword, setKeyword] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
