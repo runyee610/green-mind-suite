@@ -16,7 +16,7 @@ export default function GreenMfgEntIncubator() {
   const gap = Math.max(0, target - me.score);
 
   return (
-    <AppLayout title="绿色工厂培育库 · 企业侧" subtitle="本企业培育进展与改进建议">
+    <AppLayout title="绿色工厂梯度培育 · 上海石化化工新材料分公司" subtitle="本企业培育进展与改进建议">
       {/* 企业基础信息 */}
       <Card className="panel mb-4">
         <CardHeader className="pb-3">
@@ -31,7 +31,7 @@ export default function GreenMfgEntIncubator() {
               </div>
             </div>
             <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning">
-              培育中
+              区培育中
             </Badge>
           </div>
         </CardHeader>
@@ -103,7 +103,7 @@ export default function GreenMfgEntIncubator() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2 text-xs text-muted-foreground">
+          <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex gap-2">
               <FileText className="mt-0.5 h-3.5 w-3.5 text-primary shrink-0" />
               <span>补充近三年能源审计报告及节能技改项目清单。</span>
@@ -138,7 +138,7 @@ function InfoTile({
 }) {
   return (
     <div className="rounded-md border border-border/60 bg-background/40 px-3 py-2">
-      <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+      <div className="flex items-center gap-1 text-sm text-muted-foreground">
         {Icon ? <Icon className="h-3 w-3" /> : null}
         {label}
       </div>
