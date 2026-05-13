@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Check, CheckCheck } from "lucide-react";
 import {
   Activity,
   Brain,
@@ -533,6 +534,72 @@ const Index = () => {
   const [industry, setIndustry] = useState("全部产业");
   const [aiInput, setAiInput] = useState("");
 
+  type ChatMsg = { id: number; role: "ai" | "user"; text: string; read: boolean; ts: string };
+  const fmtTime = () => new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+  const [messages, setMessages] = useState<ChatMsg[]>([
+    { id: 1, role: "ai", text: '您好，我是绿色制造数字智能体。当前覆盖 16 区 · 523 家市级绿色工厂 · 196 家国家级。试试问："汽车产业绿色化率？"', read: true, ts: "09:00" },
+    { id: 2, role: "user", text: "嘉定区培育潜力 TOP10？", read: true, ts: "09:01" },
+    { id: 3, role: "ai", text: "嘉定区已有 72 家市级绿色工厂（汽车占比 38%）。AI 识别 10 家高潜：上汽乘用车、采埃孚、舍弗勒、博世汽车…评分 ≥ 78，建议优先纳入 2026 年市级培育库。", read: true, ts: "09:01" },
+  ]);
+  const [aiTyping, setAiTyping] = useState(false);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const msgRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
+  // Auto-scroll to bottom on new messages / typing
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages.length, aiTyping]);
+
+  // Mark visible AI messages as read using IntersectionObserver
+  useEffect(() => {
+    const root = chatScrollRef.current;
+    if (!root) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const seen = new Set<number>();
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            const id = Number((e.target as HTMLElement).dataset.mid);
+            if (!Number.isNaN(id)) seen.add(id);
+          }
+        });
+        if (seen.size > 0) {
+          setMessages((prev) => prev.map((m) => (seen.has(m.id) && !m.read ? { ...m, read: true } : m)));
+        }
+      },
+      { root, threshold: 0.6 }
+    );
+    msgRefs.current.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [messages.length]);
+
+  const sendMessage = () => {
+    const text = aiInput.trim();
+    if (!text) return;
+    const uid = Date.now();
+    setMessages((prev) => [...prev, { id: uid, role: "user", text, read: false, ts: fmtTime() }]);
+    setAiInput("");
+    setAiTyping(true);
+    // Mock AI ack + reply
+    setTimeout(() => {
+      setMessages((prev) => prev.map((m) => (m.id === uid ? { ...m, read: true } : m)));
+    }, 600);
+    setTimeout(() => {
+      setAiTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          role: "ai",
+          text: "已收到您的问题，正在基于全市绿色制造体系数据进行分析…（示例回复）",
+          read: false,
+          ts: fmtTime(),
+        },
+      ]);
+    }, 1400);
+  };
+
   const linkedSummary = useMemo(() => {
     const parts = [`年度 ${year}`];
     if (district !== "全市") parts.push(district);
@@ -762,33 +829,85 @@ const Index = () => {
         </div>
 
         <div className="glass-card glass-card-green p-4 flex flex-col">
-          <SectionTitle icon={Brain} title="AI Agent 对话" accent="green" />
-          <div className="flex-1 space-y-2 overflow-y-auto text-xs mb-2 min-h-[180px]">
-            <div className="flex gap-2">
-              <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
-                <Brain className="h-3.5 w-3.5 text-white" />
+          <SectionTitle
+            icon={Brain}
+            title="AI Agent 对话"
+            accent="green"
+            right={
+              <Badge className="h-5 px-2 text-[10px] bg-emerald-100 text-emerald-700 border-0">
+                {messages.filter((m) => m.role === "ai" && !m.read).length > 0
+                  ? `${messages.filter((m) => m.role === "ai" && !m.read).length} 条未读`
+                  : "全部已读"}
+              </Badge>
+            }
+          />
+          <div ref={chatScrollRef} className="flex-1 space-y-2 overflow-y-auto text-xs mb-2 min-h-[180px] max-h-[260px] pr-1 scroll-smooth">
+            {messages.map((m) => (
+              <div
+                key={m.id}
+                data-mid={m.id}
+                ref={(el) => {
+                  if (el) msgRefs.current.set(m.id, el);
+                  else msgRefs.current.delete(m.id);
+                }}
+                className={`flex gap-2 ${m.role === "user" ? "justify-end" : ""}`}
+              >
+                {m.role === "ai" && (
+                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
+                    <Brain className="h-3.5 w-3.5 text-white" />
+                  </div>
+                )}
+                <div className={`max-w-[80%] flex flex-col gap-0.5 ${m.role === "user" ? "items-end" : "items-start"}`}>
+                  <div
+                    className={`rounded-lg p-2 leading-relaxed text-slate-700 ${
+                      m.role === "user" ? "bg-cyan-100/70" : "bg-white/60"
+                    } ${m.role === "ai" && !m.read ? "ring-2 ring-emerald-400/60 shadow-sm" : ""}`}
+                  >
+                    {m.text}
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px] text-slate-500 px-1">
+                    <span>{m.ts}</span>
+                    {m.role === "user" &&
+                      (m.read ? (
+                        <CheckCheck className="h-3 w-3 text-emerald-600" />
+                      ) : (
+                        <Check className="h-3 w-3 text-slate-400" />
+                      ))}
+                    {m.role === "ai" && !m.read && (
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="bg-white/60 rounded-lg p-2 leading-relaxed text-slate-700">
-                您好，我是 <span className="font-semibold neon-text-green">绿色制造数字智能体</span>。当前覆盖 16 区 · 523 家市级绿色工厂 · 196 家国家级。试试问："汽车产业绿色化率？"
+            ))}
+            {aiTyping && (
+              <div className="flex gap-2">
+                <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
+                  <Sparkles className="h-3.5 w-3.5 text-white" />
+                </div>
+                <div className="bg-white/60 rounded-lg p-2 text-slate-500 inline-flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "120ms" }} />
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "240ms" }} />
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <div className="bg-cyan-100/70 rounded-lg p-2 max-w-[80%] text-slate-700">嘉定区培育潜力 TOP10？</div>
-            </div>
-            <div className="flex gap-2">
-              <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
-                <Sparkles className="h-3.5 w-3.5 text-white" />
-              </div>
-              <div className="bg-white/60 rounded-lg p-2 leading-relaxed text-slate-700">
-                嘉定区已有 72 家市级绿色工厂（汽车占比 38%）。AI 识别 10 家高潜：上汽乘用车、采埃孚、舍弗勒、博世汽车…评分 ≥ 78，建议优先纳入 2026 年市级培育库。
-              </div>
-            </div>
+            )}
+            <div ref={bottomRef} />
           </div>
           <div className="flex gap-2 pt-2 border-t border-border/50">
-            <Input value={aiInput} onChange={(e) => setAiInput(e.target.value)}
+            <Input
+              value={aiInput}
+              onChange={(e) => setAiInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
               placeholder="问问 AI Agent：如何优化本市绿色供应链协同效率？"
-              className="h-9 text-xs bg-white/70 border-emerald-200" />
-            <Button size="icon" className="h-9 w-9 bg-gradient-to-br from-cyan-500 to-emerald-500 hover:opacity-90">
+              className="h-9 text-xs bg-white/70 border-emerald-200"
+            />
+            <Button size="icon" onClick={sendMessage} className="h-9 w-9 bg-gradient-to-br from-cyan-500 to-emerald-500 hover:opacity-90">
               <Send className="h-3.5 w-3.5" />
             </Button>
           </div>
