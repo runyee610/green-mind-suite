@@ -166,7 +166,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     <TableBody>
                       {myDynamics.map((r) => (
                         <TableRow key={r.id} className="h-12 border-border/40">
-                          <TableCell className="font-mono text-xs">{r.id}</TableCell>
+                          
                           <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
                           <TableCell className="text-right font-mono text-xs">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
                           <TableCell className="text-right font-mono text-xs">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
