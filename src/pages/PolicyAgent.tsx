@@ -233,59 +233,20 @@ export default function PolicyAgent() {
                               <Badge variant="outline" className={cn("text-[10px]", categoryColor[p.category])}>
                                 {p.category}
                               </Badge>
-                              <Badge variant="outline" className="text-[10px] border-border">
-                                {p.level}
-                              </Badge>
-                              {p.status === "未读" && (
-                                <span className="inline-flex h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
-                              )}
                             </div>
                             <h4 className="mt-1.5 text-sm font-medium leading-snug line-clamp-2">{p.title}</h4>
                             <p className="mt-1 text-[11px] text-muted-foreground truncate">{p.issuer}</p>
                           </div>
                           <div className="shrink-0 text-right">
-                            <div className={cn(
-                              "font-mono text-xl font-bold leading-none tabular-nums",
-                              selected.id === p.id ? "text-primary [text-shadow:0_0_12px_hsl(var(--primary)/0.5)]" : "text-primary",
-                            )}>{p.matchScore}</div>
+                            <div className="font-mono text-xl font-bold leading-none tabular-nums text-primary">{p.matchScore}</div>
                             <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">匹配度</div>
                           </div>
-                        </div>
-                        {/* match score bar */}
-                        <div className="mt-2 h-0.5 w-full overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-400 to-cyan-400"
-                            style={{ width: `${p.matchScore}%` }}
-                          />
                         </div>
                         <div className="mt-2 flex items-center justify-between text-[11px]">
                           <span className="inline-flex items-center gap-1 text-muted-foreground">
                             <Calendar className="h-3 w-3" /> 截止 {p.deadline}
                           </span>
-                          <Badge variant="outline" className={cn("text-[10px]", urgencyColor[p.urgency])}>
-                            {p.urgency === "high" ? "急" : p.urgency === "medium" ? "中" : "低"}
-                          </Badge>
                         </div>
-                      </button>
-                    </li>
-                  ))}
-                  {filtered.length === 0 && (
-                    <div className="text-center text-xs text-muted-foreground py-12">暂无匹配政策</div>
-                  )}
-                </ul>
-              </ScrollArea>
-
-              {/* 详情 */}
-              <div className="rounded-lg border border-border bg-card/40 p-4 overflow-y-auto h-full">
-                <div className="flex items-start gap-2 mb-3">
-                  <Badge variant="outline" className={cn(categoryColor[selected.category])}>
-                    {selected.category}
-                  </Badge>
-                  <Badge variant="outline">{selected.level}</Badge>
-                  <Badge variant="outline" className={cn(urgencyColor[selected.urgency], "ml-auto")}>
-                    匹配度 {selected.matchScore}
-                  </Badge>
-                </div>
                 <h3 className="text-base font-semibold leading-snug">{selected.title}</h3>
                 <p className="mt-1 text-xs text-muted-foreground inline-flex items-center gap-1">
                   <Building2 className="h-3 w-3" /> {selected.issuer}
