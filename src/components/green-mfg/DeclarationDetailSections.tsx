@@ -987,12 +987,15 @@ export function EvaluationIndicatorCard({
                       )}
                     </div>
                   );
+                  const hl = matchKeyword(row);
                   return (
                     <tr
                       key={row.id}
+                      id={row.showL1 ? `indicator-l1-${row.l1}` : undefined}
                       className={cn(
-                        "align-top [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
+                        "align-top transition-colors [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
                         !last && "border-b border-border/60",
+                        hl && "bg-primary/5 ring-1 ring-inset ring-primary/30",
                       )}
                     >
                       {row.showL1 && (
