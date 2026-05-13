@@ -392,7 +392,7 @@ export default function PolicyAgent() {
                     sendMessage(input);
                   }
                 }}
-                placeholder="向 PolicyGPT 提问，例如：余热回收项目可申请哪些补贴？"
+                placeholder={role === "gov" ? "向 PolicyGPT 提问，例如：本月有哪些政策需要定向推送？" : "向 PolicyGPT 提问，例如：余热回收项目可申请哪些补贴？"}
                 className="min-h-[68px] resize-none pr-12 text-sm"
               />
               <Button
