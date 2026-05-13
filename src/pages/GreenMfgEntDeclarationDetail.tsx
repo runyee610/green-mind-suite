@@ -24,11 +24,11 @@ import { cn } from "@/lib/utils";
 
 const TABS = [
   { value: "audit-flow", label: "审批流转" },
-  { value: "smart-score", label: "智能打分明细" },
   { value: "basic-info", label: "企业基本信息表" },
-  { value: "basic-requirements", label: "基本要求" },
   { value: "evaluation-indicator", label: "评价指标表（通则）" },
+  { value: "basic-requirements", label: "基本要求" },
   { value: "authenticity-commitment", label: "真实性承诺" },
+  { value: "smart-score", label: "智能打分明细" },
 ];
 
 export default function GreenMfgEntDeclarationDetail() {
@@ -70,12 +70,12 @@ export default function GreenMfgEntDeclarationDetail() {
 
       {/* 分页 Tab 导航 */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="sticky top-0 z-10 h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1">
+        <TabsList className="sticky top-0 z-10 h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1.5">
           {TABS.map((t) => (
             <TabsTrigger
               key={t.value}
               value={t.value}
-              className="text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              className="text-base font-medium px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary"
             >
               {t.label}
             </TabsTrigger>
