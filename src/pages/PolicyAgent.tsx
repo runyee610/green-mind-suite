@@ -97,6 +97,11 @@ export default function PolicyAgent() {
     filtered.find((p) => p.id === selectedId) ?? filtered[0] ?? MOCK_POLICIES[0];
 
   useEffect(() => {
+    setMessages(role === "gov" ? GOV_INITIAL : INITIAL_CHAT);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role]);
+
+  useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
