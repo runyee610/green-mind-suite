@@ -23,6 +23,7 @@ import GreenMfgEntIncubator from "./pages/GreenMfgEntIncubator.tsx";
 import System from "./pages/System.tsx";
 import SystemUsers from "./pages/SystemUsers.tsx";
 import SystemPermissions from "./pages/SystemPermissions.tsx";
+import PolicyAgent from "./pages/PolicyAgent.tsx";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/system" element={<System />} />
           <Route path="/system/users" element={<SystemUsers />} />
           <Route path="/system/permissions" element={<SystemPermissions />} />
+          <Route path="/policy-agent" element={<PolicyAgent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>

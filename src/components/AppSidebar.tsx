@@ -125,6 +125,16 @@ export function AppSidebar() {
                   <SidebarMenu>{green.map(renderItem)}</SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
+              <SidebarGroup>
+                {!collapsed && (
+                  <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-sidebar-foreground/80">
+                    政策智能体
+                  </SidebarGroupLabel>
+                )}
+                <SidebarGroupContent>
+                  <SidebarMenu>{policyItems.map(renderItem)}</SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
             </>
           );
         })()}
