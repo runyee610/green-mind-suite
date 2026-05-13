@@ -62,14 +62,16 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-2 py-3">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-md bg-gradient-primary">
-            <Activity className="h-5 w-5 text-primary-foreground" />
+          <div className="relative flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-primary shadow-md">
+            <BrainCircuit className="h-6 w-6 text-primary-foreground" />
           </div>
           {!collapsed && (
             <div className="flex flex-col leading-tight">
-              <span className="text-sm font-semibold text-sidebar-foreground">节能降碳</span>
-              <span className="text-[10px] tracking-wider text-sidebar-foreground/60">
-                数智管理平台
+              <span className="text-lg font-bold text-sidebar-foreground tracking-wide bg-gradient-primary bg-clip-text text-transparent">
+                AI 能碳数智空间
+              </span>
+              <span className="text-[10px] tracking-widest text-sidebar-foreground/60 mt-0.5">
+                AI · CARBON · INTELLIGENCE
               </span>
             </div>
           )}
