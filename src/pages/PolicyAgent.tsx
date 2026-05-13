@@ -156,7 +156,7 @@ export default function PolicyAgent() {
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-primary" />
-                  为您主动推送的政策
+                  {role === "gov" ? "可定向推送企业的政策" : "为您主动推送的政策"}
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <div className="relative">
