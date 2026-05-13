@@ -757,12 +757,12 @@ const Index = () => {
             </ResponsiveContainer>
           </div>
           <div className="text-[11px] text-slate-600 mt-1">
-            数据源：附件「全国绿色示范企业申报情况」表 · 累计：工厂 6,532 / 园区 498 / 产品 3,803 / 供应链 739
+            数据源：附件「全国绿色示范企业申报情况」表 · 累计：工厂 6,532，园区 498，产品 3,803，供应链 739
           </div>
         </div>
 
         <div className="glass-card glass-card-green p-4 flex flex-col">
-          <SectionTitle icon={Brain} title="AI Agent 对话交互" accent="green" />
+          <SectionTitle icon={Brain} title="AI Agent 对话" accent="green" />
           <div className="flex-1 space-y-2 overflow-y-auto text-xs mb-2 min-h-[180px]">
             <div className="flex gap-2">
               <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex-shrink-0 flex items-center justify-center">
