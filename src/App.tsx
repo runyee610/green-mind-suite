@@ -34,6 +34,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <RoleProvider>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/report-monthly" element={<ReportMonthly />} />
