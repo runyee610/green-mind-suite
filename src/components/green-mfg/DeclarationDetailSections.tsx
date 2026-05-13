@@ -988,7 +988,7 @@ export function EvaluationIndicatorCard({
                 <th className="w-[90px] text-center">单位</th>
                 <th className="w-[72px] text-center">引领值</th>
                 <th className="w-[72px] text-center">基准值</th>
-                <th className="w-[80px] text-center">加权参数</th>
+                <th className="w-[80px] text-center">权重分值</th>
                 <th className="w-[160px]">本年度指标值</th>
                 <th className="w-[160px]">证明材料（PDF/图片）</th>
                 {showGovRemark && <th className="w-[180px]">审核备注（选填）</th>}
