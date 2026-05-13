@@ -1069,19 +1069,16 @@ export function EvaluationIndicatorCard({
                       {has === "有" ? cfg.hasOptionLabel : cfg.noOptionLabel}
                     </Badge>
                   );
-                  const formulaText = has === "有" ? (row.formulaHasStandard ?? row.formula) : row.formula;
                   const l3Cell = (
                     <div className="space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-[11px] font-medium text-muted-foreground">{cfg.selectorLabel}</span>
                         {standardSelector}
                       </div>
-                      <p className="leading-relaxed">
-                        {has === "有" ? cfg.l3HasText : cfg.l3NoText}
-                      </p>
-                      {formulaText && (
-                        <div className="font-mono text-[11px] text-primary/80">公式：{formulaText}</div>
-                      )}
+                      <div className="flex items-start gap-1.5 leading-relaxed">
+                        <p className="flex-1">{has === "有" ? cfg.l3HasText : cfg.l3NoText}</p>
+                        <IndicatorGuidePopover row={row} />
+                      </div>
                     </div>
                   );
                   const hl = matchKeyword(row);
