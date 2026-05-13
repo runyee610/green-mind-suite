@@ -768,25 +768,23 @@ const Index = () => {
         <button
           type="button"
           onClick={() => navigate("/green-mfg-agent")}
-          className="group relative overflow-hidden rounded-xl p-5 text-left flex flex-col justify-between bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 text-white shadow-xl ring-1 ring-cyan-400/20 hover:ring-cyan-400/60 transition"
+          className="group relative overflow-hidden rounded-lg p-5 text-left flex flex-col justify-between bg-[hsl(168_55%_12%)] text-white shadow-md ring-1 ring-[hsl(168_50%_25%)] hover:ring-[hsl(168_60%_40%)] transition"
         >
-          <div className="absolute -top-12 -right-10 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-12 -left-10 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[hsl(168_60%_18%)] via-transparent to-transparent pointer-events-none" />
 
           <div className="relative">
             <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center">
-                <Brain className="h-5 w-5 text-cyan-300" />
+              <div className="h-9 w-9 rounded-md bg-white/10 ring-1 ring-white/15 flex items-center justify-center">
+                <Brain className="h-5 w-5 text-white/90" />
               </div>
-              <span className="text-[11px] tracking-widest uppercase text-cyan-300/80">AI Agent</span>
+              <span className="text-[11px] tracking-widest uppercase text-white/60">AI Agent</span>
             </div>
-            <h3 className="mt-3 text-xl font-bold leading-tight flex items-center gap-2">
+            <h3 className="mt-3 text-lg font-semibold leading-tight flex items-center gap-2">
               绿色制造数字智能体
-              <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
             </h3>
-            <p className="mt-2 text-[12px] text-slate-300 leading-relaxed">
-              基于全市绿色制造体系数据，提供 <span className="text-cyan-300">企业潜力识别</span>、
-              <span className="text-emerald-300">晋级路径分析</span> 与 <span className="text-amber-300">政策匹配</span>。
+            <p className="mt-2 text-[12px] text-white/70 leading-relaxed">
+              基于全市绿色制造体系数据，提供企业潜力识别、晋级路径分析与政策匹配。
             </p>
           </div>
 
@@ -796,14 +794,14 @@ const Index = () => {
               "汽车产业绿色化率？",
               "对比浦东与金山的体系完成度",
             ].map((q) => (
-              <div key={q} className="flex items-center gap-2 text-[12px] text-slate-200/90 px-2.5 py-1.5 rounded-md bg-white/5 ring-1 ring-white/10">
-                <MessageSquare className="h-3 w-3 text-cyan-300/80 shrink-0" />
+              <div key={q} className="flex items-center gap-2 text-[12px] text-white/85 px-2.5 py-1.5 rounded-md bg-white/5 ring-1 ring-white/10">
+                <MessageSquare className="h-3 w-3 text-white/60 shrink-0" />
                 <span className="truncate">{q}</span>
               </div>
             ))}
           </div>
 
-          <div className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-300 group-hover:gap-2.5 transition-all">
+          <div className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white group-hover:gap-2.5 transition-all">
             进入 AI 对话
             <ArrowRight className="h-4 w-4" />
           </div>
