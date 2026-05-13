@@ -115,6 +115,20 @@ const GROUP_RANK = [
   { name: "城投集团", value: 2 },
 ];
 
+// 各区县国家级绿色工厂数 TOP10（依据全市 196 家国家级按区分布估算）
+const DISTRICT_NATION_TOP = [
+  { name: "浦东新区", value: 45 },
+  { name: "嘉定区", value: 30 },
+  { name: "金山区", value: 28 },
+  { name: "闵行区", value: 22 },
+  { name: "松江区", value: 18 },
+  { name: "宝山区", value: 16 },
+  { name: "青浦区", value: 12 },
+  { name: "奉贤区", value: 10 },
+  { name: "化工区", value: 6 },
+  { name: "临港新片区", value: 4 },
+];
+
 const KEY_ENERGY = [
   { name: "重点用能单位", value: 169, fill: CYAN },
   { name: "非重点单位", value: 357, fill: GREEN },
