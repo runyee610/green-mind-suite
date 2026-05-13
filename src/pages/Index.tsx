@@ -245,7 +245,7 @@ function KpiTile({
           <span className="text-[10px] font-semibold text-amber-800 tracking-wide border-0 whitespace-nowrap">国家级</span>
           <span className="text-[20px] font-extrabold tabular-nums text-amber-700 leading-none ml-0.5" style={{ textShadow: "0 0 10px hsl(35 95% 55% / 0.35)" }}>{nation}</span>
           <span className="text-[10px] text-amber-700/90">{nationUnit}</span>
-          {nationExtra && <span className="ml-auto text-[10px] text-amber-700/80 font-medium whitespace-nowrap text-right">{nationExtra}</span>}
+          {nationExtra && <span className="ml-auto text-[10px] text-amber-700/80 font-medium text-right leading-tight break-words min-w-0">{nationExtra}</span>}
         </div>
       )}
       {sub && <div className="mt-auto pt-2 text-[11px] text-slate-600 leading-snug">{sub}</div>}
