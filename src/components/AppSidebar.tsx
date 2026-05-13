@@ -1,22 +1,18 @@
 import {
   LayoutDashboard,
-  FileBarChart,
-  CalendarRange,
-  Gauge,
-  FolderArchive,
-  ClipboardCheck,
-  Boxes,
   Leaf,
-  Crosshair,
-  Building2,
-  Settings,
-  Activity,
   PanelLeftClose,
   PanelLeftOpen,
   BookOpen,
   ClipboardList,
   ChevronDown,
   ShieldCheck,
+  BrainCircuit,
+  Factory,
+  Sprout,
+  Recycle,
+  BadgeCheck,
+  Building,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
