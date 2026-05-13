@@ -334,47 +334,18 @@ export default function PolicyAgent() {
           <div className="pointer-events-none absolute -top-20 -right-20 h-60 w-60 rounded-full bg-cyan-400/15 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-primary/15 blur-3xl" />
 
-          <CardHeader className="relative pb-3 border-b border-border bg-gradient-to-r from-primary/5 via-transparent to-cyan-500/5">
+          <CardHeader className="relative pb-3 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="relative h-11 w-11 shrink-0">
-                <div className="absolute inset-0 rounded-lg bg-gradient-primary flex items-center justify-center shadow-elevated">
-                  <Bot className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="absolute inset-0 rounded-lg ring-1 ring-primary/40 animate-pulse-glow" />
-                <span className="absolute -inset-1 rounded-xl border border-primary/20 animate-ping opacity-40" />
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success border-2 border-card animate-pulse" />
+              <div className="relative h-10 w-10 shrink-0 rounded-lg bg-gradient-primary flex items-center justify-center shadow-elevated">
+                <Bot className="h-5 w-5 text-primary-foreground" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success border-2 border-card" />
               </div>
               <div className="min-w-0 flex-1">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <span className="font-semibold">PolicyGPT</span>
-                  <Badge
-                    variant="outline"
-                    className="border-primary/40 bg-primary/5 font-mono text-[9px] uppercase tracking-wider text-primary"
-                  >
-                    <Sparkles className="mr-0.5 h-2.5 w-2.5" />
-                    Gov-LLM v3.2
-                  </Badge>
-                </CardTitle>
-                <p className="text-[11px] text-muted-foreground mt-0.5 font-mono">
+                <CardTitle className="text-sm font-semibold">PolicyGPT</CardTitle>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   自然语言问答 · 材料梳理 · 申报辅导
                 </p>
               </div>
-              <Badge
-                variant="outline"
-                className="ml-auto text-[10px] border-emerald-500/40 bg-emerald-500/10 text-emerald-600 font-mono uppercase tracking-wider"
-              >
-                <span className="mr-1 h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                在线
-              </Badge>
-            </div>
-            {/* secondary row to match left card tabs height */}
-            <div className="mt-2 flex h-8 items-center gap-2 text-[11px] text-muted-foreground">
-              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1 font-mono">
-                <Sparkles className="h-3 w-3 text-primary" /> 上下文已加载 {role === "gov" ? "辖区企业 23 家" : "企业档案 1 份"}
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1 font-mono">
-                响应 ~0.8s
-              </span>
             </div>
           </CardHeader>
 
