@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -24,6 +24,9 @@ import {
 export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<string>(section ?? "declaration");
+  useEffect(() => {
+    if (section) setTab(section);
+  }, [section]);
   const [keyword, setKeyword] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, ChevronRight, ClipboardList, Eye, FileEdit, Plus, Sparkles } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -21,6 +21,11 @@ import { toast } from "sonner";
 export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<string>(section ?? "declaration");
+  // Sync internal tab state when route-driven section prop changes
+  // (component instance is reused across /green-mfg/ent and /green-mfg/ent/dynamic)
+  useEffect(() => {
+    if (section) setTab(section);
+  }, [section]);
 
   // 假设当前企业 = MOCK_DECLARATIONS[0]
   const myDeclaration = MOCK_DECLARATIONS[0];
