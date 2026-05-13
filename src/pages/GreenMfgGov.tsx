@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   ALL_INDUSTRIES,
@@ -22,6 +24,163 @@ import {
 } from "@/components/green-mfg/data";
 import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
 import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
+
+/** Cascading industry filter: hover parent → reveals children on the right */
+function IndustryCascadeFilter({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [hoverParent, setHoverParent] = useState<string | null>(null);
+
+  const label = useMemo(() => {
+    if (value === "all") return "全部行业";
+    return value;
+  }, [value]);
+
+  const keyParents = INDUSTRY_TREE.filter((n) => n.type === "重点行业");
+  const otherParents = INDUSTRY_TREE.filter((n) => n.type !== "重点行业");
+  const activeParent =
+    INDUSTRY_TREE.find((p) => p.name === hoverParent) ??
+    INDUSTRY_TREE.find((p) => p.name === value) ??
+    INDUSTRY_TREE.find((p) => p.children.includes(value)) ??
+    keyParents[0];
+
+  const select = (v: string) => {
+    onChange(v);
+    setOpen(false);
+  };
+
+  const ParentRow = ({
+    node,
+  }: {
+    node: (typeof INDUSTRY_TREE)[number];
+  }) => {
+    const isActive = activeParent?.name === node.name;
+    const isSelected = value === node.name;
+    return (
+      <button
+        type="button"
+        onMouseEnter={() => setHoverParent(node.name)}
+        onClick={() => select(node.name)}
+        className={cn(
+          "flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-left text-xs transition",
+          isActive ? "bg-accent text-accent-foreground" : "hover:bg-accent/60",
+          isSelected && "font-semibold text-primary",
+        )}
+      >
+        <span
+          className={cn(
+            "inline-block h-1.5 w-1.5 rounded-full",
+            node.type === "重点行业" ? "bg-warning" : "bg-muted-foreground/50",
+          )}
+        />
+        <span className="flex-1 truncate">{node.name}</span>
+        {node.children.length > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+      </button>
+    );
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 w-52 justify-between text-xs font-normal"
+        >
+          <span className="inline-flex items-center gap-1 truncate">
+            <Filter className="h-3 w-3 shrink-0" />
+            <span className="truncate">{label}</span>
+          </span>
+          <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="w-[440px] p-0"
+        onMouseLeave={() => setHoverParent(null)}
+      >
+        <div className="grid grid-cols-2 divide-x divide-border">
+          {/* Parents */}
+          <div className="max-h-80 overflow-y-auto p-2">
+            <button
+              type="button"
+              onClick={() => select("all")}
+              onMouseEnter={() => setHoverParent(null)}
+              className={cn(
+                "flex w-full items-center rounded-sm px-2 py-1.5 text-left text-xs hover:bg-accent/60",
+                value === "all" && "font-semibold text-primary",
+              )}
+            >
+              全部行业
+            </button>
+            <div className="my-1 h-px bg-border/60" />
+            <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-warning">
+              重点行业
+            </div>
+            {keyParents.map((n) => (
+              <ParentRow key={n.name} node={n} />
+            ))}
+            <div className="my-1 h-px bg-border/60" />
+            <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              非重点行业
+            </div>
+            {otherParents.map((n) => (
+              <ParentRow key={n.name} node={n} />
+            ))}
+          </div>
+          {/* Children */}
+          <div
+            className="max-h-80 overflow-y-auto p-2"
+            onMouseEnter={() => activeParent && setHoverParent(activeParent.name)}
+          >
+            {activeParent ? (
+              <>
+                <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {activeParent.name} · 细分
+                </div>
+                <button
+                  type="button"
+                  onClick={() => select(activeParent.name)}
+                  className={cn(
+                    "flex w-full items-center rounded-sm px-2 py-1.5 text-left text-xs hover:bg-accent/60",
+                    value === activeParent.name && "font-semibold text-primary",
+                  )}
+                >
+                  全部 {activeParent.name}
+                </button>
+                {activeParent.children.length === 0 && (
+                  <div className="px-2 py-3 text-[11px] text-muted-foreground">无细分行业</div>
+                )}
+                {activeParent.children.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => select(c)}
+                    className={cn(
+                      "flex w-full items-center rounded-sm px-2 py-1.5 text-left text-xs hover:bg-accent/60",
+                      value === c && "font-semibold text-primary",
+                    )}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </>
+            ) : (
+              <div className="flex h-full items-center justify-center text-[11px] text-muted-foreground">
+                悬浮左侧行业查看细分
+              </div>
+            )}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
