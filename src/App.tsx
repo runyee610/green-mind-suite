@@ -5,7 +5,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RoleProvider } from "@/contexts/RoleContext";
 import ScrollToTop from "@/components/ScrollToTop";
+import { Navigate } from "react-router-dom";
+import { useRole } from "@/contexts/RoleContext";
 import Index from "./pages/Index.tsx";
+
+const HomeRoute = () => {
+  const { role } = useRole();
+  if (role === "ent") return <Navigate to="/green-mfg/ent" replace />;
+  return <Index />;
+};
 import NotFound from "./pages/NotFound.tsx";
 import ReportMonthly from "./pages/ReportMonthly.tsx";
 import ReportMonthlyFilling from "./pages/ReportMonthlyFilling.tsx";
@@ -38,7 +46,7 @@ const App = () => (
         <RoleProvider>
         <ScrollToTop />
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<HomeRoute />} />
           <Route path="/report-monthly" element={<ReportMonthly />} />
           <Route path="/report-monthly/filling" element={<ReportMonthlyFilling />} />
           <Route path="/energy-quota" element={<EnergyQuota />} />
