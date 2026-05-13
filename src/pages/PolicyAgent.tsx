@@ -416,6 +416,15 @@ export default function PolicyAgent() {
                 在线
               </Badge>
             </div>
+            {/* secondary row to match left card tabs height */}
+            <div className="mt-2 flex h-8 items-center gap-2 text-[11px] text-muted-foreground">
+              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1 font-mono">
+                <Sparkles className="h-3 w-3 text-primary" /> 上下文已加载 {role === "gov" ? "辖区企业 23 家" : "企业档案 1 份"}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1 font-mono">
+                响应 ~0.8s
+              </span>
+            </div>
           </CardHeader>
 
           {/* 消息区 */}
