@@ -214,9 +214,9 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead>所属区</TableHead>
                     <TableHead>行业</TableHead>
                     <TableHead>自评价批次</TableHead>
-                    <TableHead className="text-right">智能打分 / 专家打分</TableHead>
-                    <TableHead className="text-right">综合能耗（吨标煤）</TableHead>
-                    <TableHead className="text-right">产值（万元）</TableHead>
+                    <TableHead className="text-center px-[3px]">AI 智能打分 / 专家打分</TableHead>
+                    <TableHead className="text-center">综合能耗（吨标煤）</TableHead>
+                    <TableHead className="text-center">产值（万元）</TableHead>
                     <TableHead className="text-center">流转状态</TableHead>
                     <TableHead>提交时间</TableHead>
                     <TableHead className="text-right">操作</TableHead>
@@ -239,13 +239,13 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                         )}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.batch}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
-                      <TableCell className="text-right font-mono text-xs">
+                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs px-[9px] text-center">
                         {dyn?.energyConsumption != null ? dyn.energyConsumption.toLocaleString() : <span className="text-muted-foreground">—</span>}
                       </TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.outputValue.toLocaleString()}</TableCell>
+                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.outputValue.toLocaleString()}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
                       </TableCell>
@@ -290,9 +290,9 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead>企业名称</TableHead>
                     <TableHead>所属区</TableHead>
                     <TableHead className="text-center">年度</TableHead>
-                    <TableHead className="text-right">综合能耗</TableHead>
-                    <TableHead className="text-right">碳排放</TableHead>
-                    <TableHead className="text-right">固废利用率</TableHead>
+                    <TableHead className="text-center">综合能耗</TableHead>
+                    <TableHead className="text-center">碳排放</TableHead>
+                    <TableHead className="text-center">固废利用率</TableHead>
                     <TableHead className="text-center">状态</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                   </TableRow>
@@ -304,9 +304,9 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       <TableCell className="text-sm">{r.enterpriseName}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                       <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.wasteRecycleRate != null ? `${r.wasteRecycleRate}%` : "—"}</TableCell>
+                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
+                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
+                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.wasteRecycleRate != null ? `${r.wasteRecycleRate}%` : "—"}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant="outline" className={dynamicStatusClass(r.status)}>{r.status}</Badge>
                       </TableCell>

@@ -31,18 +31,18 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理 · 企业侧"
-          : "绿色工厂申报 · 企业侧"
+          : "绿色工厂自评价-上海"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表填报"
-          : "申报、审核进度查看"
+          : "自评价、审核进度查看"
       }
     >
       <Tabs value={tab} onValueChange={setTab}>
         {!section && (
           <TabsList>
-            <TabsTrigger value="declaration">绿色工厂申报</TabsTrigger>
+            <TabsTrigger value="declaration">绿色工厂自评价</TabsTrigger>
             <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
           </TabsList>
         )}
@@ -53,19 +53,19 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <CardTitle className="text-base">本年度申报</CardTitle>
-                  <p className="mt-1 text-xs text-muted-foreground">{myDeclaration.id} · 提交于 {myDeclaration.submitDate}</p>
+                  <CardTitle className="text-base">本年度自评价</CardTitle>
+                  <p className="mt-1 text-xs text-muted-foreground">2025第二批 · 提交于 {myDeclaration.submitDate}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new")}>
-                    <Plus className="mr-1 h-4 w-4" />新增申报
+                    <Plus className="mr-1 h-4 w-4" />新增自评价
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-              <Field label="智能预审得分" value={`${myDeclaration.score}`} accent="primary" />
+              <Field label="AI 智能预审得分" value={`${myDeclaration.score}`} accent="primary" />
               <Field label="专家打分" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
               <Field label="所属区" value={myDeclaration.district} />
               <Field label="当前等级" value={myDeclaration.level} />
@@ -74,14 +74,14 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
 
           {/* 历年申报记录 */}
           <Card className="panel">
-            <CardHeader className="pb-3"><CardTitle className="text-base"><ClipboardList className="mr-1 inline h-4 w-4" />历史申报记录</CardTitle></CardHeader>
+            <CardHeader className="pb-3"><CardTitle className="text-base"><ClipboardList className="mr-1 inline h-4 w-4" />历史自评价记录</CardTitle></CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>申报批次</TableHead>
-                    <TableHead className="text-right">智能打分</TableHead>
-                    <TableHead className="text-right">专家打分</TableHead>
+                    <TableHead>自评价批次</TableHead>
+                    <TableHead className="text-center px-[3px]">AI 智能打分</TableHead>
+                    <TableHead className="text-center">专家打分</TableHead>
                     <TableHead className="text-center">状态</TableHead>
                     <TableHead className="text-center">结果</TableHead>
                     <TableHead>提交日期</TableHead>
@@ -92,8 +92,8 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   {MOCK_DECLARATIONS.slice(0, 3).map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
                       <TableCell className="font-mono text-xs">{r.batch}</TableCell>
-                      <TableCell className="text-right font-mono text-xs"><Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.score}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.manualScore ?? "—"}</TableCell>
+                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0"><Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.score}</TableCell>
+                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs px-[9px] text-center">{r.manualScore ?? "—"}</TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge></TableCell>
                       <TableCell className="text-center text-xs">{r.level}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate}</TableCell>
