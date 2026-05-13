@@ -90,6 +90,23 @@ export default function PolicyAgent() {
   const selected =
     filtered.find((p) => p.id === selectedId) ?? filtered[0] ?? MOCK_POLICIES[0];
 
+  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+  const [showBookmarks, setShowBookmarks] = useState(false);
+  const toggleBookmark = (id: string) => {
+    setBookmarks((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        toast({ title: "已取消收藏" });
+      } else {
+        next.add(id);
+        toast({ title: "已加入收藏" });
+      }
+      return next;
+    });
+  };
+  const bookmarkedPolicies = MOCK_POLICIES.filter((p) => bookmarks.has(p.id));
+
   useEffect(() => {
     setMessages(role === "gov" ? GOV_INITIAL : INITIAL_CHAT);
     // eslint-disable-next-line react-hooks/exhaustive-deps
