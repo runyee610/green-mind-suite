@@ -153,7 +153,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   <Table>
                     <TableHeader>
                       <TableRow className="border-border/60 hover:bg-transparent">
-                        <TableHead>编号</TableHead>
+                        
                         <TableHead className="text-center">年度</TableHead>
                         <TableHead className="text-right">综合能耗</TableHead>
                         <TableHead className="text-right">碳排放</TableHead>
