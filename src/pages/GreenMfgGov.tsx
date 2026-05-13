@@ -99,7 +99,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="待审申报" value={82} accent="primary" />
+        <KpiTile icon={ClipboardList} label="待审批自评价" value={82} accent="primary" />
         <KpiTile icon={CheckCircle2} label="本年国家级绿色工厂" value={MOCK_DECLARATIONS.filter((d) => d.stage === "绿色工厂").length} accent="success" />
         <KpiTile icon={FileBarChart} label="培育中企业" value={MOCK_DECLARATIONS.filter((d) => d.stage === "培育中").length} accent="warning" />
         <KpiTile icon={ClipboardList} label="动态管理待审" value={MOCK_DYNAMIC.filter((d) => d.status === "已填报").length} accent="primary" />
