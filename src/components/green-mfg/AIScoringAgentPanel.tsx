@@ -390,20 +390,46 @@ export function AIScoringAgentPanel() {
                           ))}
                         </div>
                       )}
-                      <ul className="space-y-1 rounded-md border border-border/40 bg-[hsl(215_30%_10%)] p-3 font-mono text-[11px] leading-relaxed text-emerald-300/90">
-                        {step.logs.map((l, i) => (
-                          <li key={i} className="flex gap-2">
-                            <span className="text-cyan-400/70">$</span>
-                            <span>{l}</span>
-                          </li>
-                        ))}
-                        {status === "running" && (
-                          <li className="flex gap-2 text-cyan-300">
-                            <span className="text-cyan-400/70">$</span>
-                            <span className="inline-block animate-pulse">_ 正在生成下一条推理记录...</span>
-                          </li>
-                        )}
-                      </ul>
+                      <div className="overflow-hidden rounded-lg border border-[hsl(215_30%_18%)] bg-[hsl(215_32%_8%)] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.6)]">
+                        {/* terminal title bar */}
+                        <div className="flex items-center justify-between border-b border-[hsl(215_30%_16%)] bg-[hsl(215_32%_11%)] px-3 py-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="h-2.5 w-2.5 rounded-full bg-[hsl(0_70%_60%)]/80" />
+                            <span className="h-2.5 w-2.5 rounded-full bg-[hsl(40_85%_55%)]/80" />
+                            <span className="h-2.5 w-2.5 rounded-full bg-[hsl(140_60%_50%)]/80" />
+                            <span className="ml-2 font-mono text-[10px] text-white/40">
+                              agent.log · step_{String(idx + 1).padStart(2, "0")}_{step.id}
+                            </span>
+                          </div>
+                          <span className="font-mono text-[10px] text-white/30">
+                            {status === "running" ? "STREAMING" : "READY"}
+                          </span>
+                        </div>
+                        {/* logs with line numbers */}
+                        <ul className="divide-y divide-white/[0.04] font-mono text-[11px] leading-relaxed">
+                          {step.logs.map((l, i) => (
+                            <li key={i} className="flex items-start gap-3 px-3 py-1.5 hover:bg-white/[0.02] transition-colors">
+                              <span className="select-none text-right text-white/25 tabular-nums w-5 shrink-0">
+                                {String(i + 1).padStart(2, "0")}
+                              </span>
+                              <span className="select-none text-[hsl(190_80%_60%)]/70">$</span>
+                              <span className="text-[hsl(150_70%_75%)] break-all">{l}</span>
+                            </li>
+                          ))}
+                          {status === "running" && (
+                            <li className="flex items-start gap-3 px-3 py-1.5">
+                              <span className="select-none text-right text-white/25 tabular-nums w-5 shrink-0">
+                                {String(step.logs.length + 1).padStart(2, "0")}
+                              </span>
+                              <span className="select-none text-[hsl(190_80%_60%)]/70">$</span>
+                              <span className="text-[hsl(190_80%_75%)] inline-flex items-center gap-1">
+                                正在生成下一条推理记录
+                                <span className="inline-block h-3 w-1.5 bg-[hsl(190_80%_70%)] animate-pulse" />
+                              </span>
+                            </li>
+                          )}
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </div>
