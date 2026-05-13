@@ -23,6 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Separator } from "@/components/ui/separator";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import {
   MOCK_POLICIES,
@@ -89,6 +90,23 @@ export default function PolicyAgent() {
 
   const selected =
     filtered.find((p) => p.id === selectedId) ?? filtered[0] ?? MOCK_POLICIES[0];
+
+  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+  const [showBookmarks, setShowBookmarks] = useState(false);
+  const toggleBookmark = (id: string) => {
+    setBookmarks((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        toast({ title: "已取消收藏" });
+      } else {
+        next.add(id);
+        toast({ title: "已加入收藏" });
+      }
+      return next;
+    });
+  };
+  const bookmarkedPolicies = MOCK_POLICIES.filter((p) => bookmarks.has(p.id));
 
   useEffect(() => {
     setMessages(role === "gov" ? GOV_INITIAL : INITIAL_CHAT);
@@ -187,6 +205,62 @@ export default function PolicyAgent() {
                       className="h-8 w-56 pl-8 text-xs"
                     />
                   </div>
+                  <Popover open={showBookmarks} onOpenChange={setShowBookmarks}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 gap-1.5 relative">
+                        <Bookmark className={cn("h-3.5 w-3.5", bookmarks.size > 0 && "fill-primary text-primary")} />
+                        我的收藏
+                        {bookmarks.size > 0 && (
+                          <span className="ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground">
+                            {bookmarks.size}
+                          </span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-80 p-0">
+                      <div className="border-b border-border px-3 py-2 text-xs font-medium">
+                        收藏的政策 · {bookmarkedPolicies.length}
+                      </div>
+                      {bookmarkedPolicies.length === 0 ? (
+                        <div className="px-3 py-8 text-center text-xs text-muted-foreground">
+                          暂无收藏，可在政策详情中点击收藏
+                        </div>
+                      ) : (
+                        <ul className="max-h-72 overflow-y-auto py-1">
+                          {bookmarkedPolicies.map((p) => (
+                            <li key={p.id} className="flex items-start gap-2 px-3 py-2 hover:bg-muted/60 transition">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedId(p.id);
+                                  setShowBookmarks(false);
+                                }}
+                                className="flex flex-1 min-w-0 items-start gap-2 text-left"
+                              >
+                                <Badge variant="outline" className={cn("text-[10px] shrink-0 mt-0.5", categoryColor[p.category])}>
+                                  {p.category}
+                                </Badge>
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-xs font-medium leading-snug line-clamp-2">{p.title}</div>
+                                  <div className="text-[10px] text-muted-foreground mt-0.5 inline-flex items-center gap-1">
+                                    <Calendar className="h-2.5 w-2.5" />截止 {p.deadline}
+                                  </div>
+                                </div>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => toggleBookmark(p.id)}
+                                className="text-muted-foreground hover:text-destructive shrink-0 mt-0.5"
+                                aria-label="移除收藏"
+                              >
+                                <Bookmark className="h-3.5 w-3.5 fill-primary text-primary" />
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
               <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="mt-2">
@@ -266,19 +340,23 @@ export default function PolicyAgent() {
 
                 <Separator className="my-3" />
 
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <div className="text-muted-foreground mb-1.5">政策概要</div>
-                    <p className="text-foreground leading-relaxed">{selected.summary}</p>
+                {/* AI 政策解读 */}
+                <div className="rounded-lg border border-primary/30 bg-gradient-to-br from-primary/[0.06] to-transparent overflow-hidden">
+                  <div className="flex items-center gap-1.5 border-b border-primary/20 bg-primary/5 px-3 py-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-[12px] font-semibold text-primary">AI 政策解读</span>
                   </div>
-
-                  <div className="rounded-md border border-primary/30 bg-primary/5 p-2.5">
-                    <div className="text-primary mb-1 text-[11px] inline-flex items-center gap-1 font-medium">
-                      <Sparkles className="h-3 w-3" /> AI 匹配理由
+                  <div className="space-y-3 p-3 text-xs">
+                    <div>
+                      <div className="text-muted-foreground mb-1 text-[11px]">政策概要</div>
+                      <p className="text-foreground leading-relaxed">{selected.summary}</p>
                     </div>
-                    <p className="text-foreground text-xs leading-relaxed">{selected.matchReason}</p>
+                    <div>
+                      <div className="text-muted-foreground mb-1 text-[11px]">匹配理由</div>
+                      <p className="text-foreground leading-relaxed">{selected.matchReason}</p>
+                    </div>
                     {selected.bindProject && (
-                      <div className="mt-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                      <div className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
                         <FileText className="h-3 w-3" />
                         绑定项目：<span className="text-foreground">{selected.bindProject}</span>
                       </div>
@@ -286,24 +364,30 @@ export default function PolicyAgent() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button size="sm" className="gap-1" onClick={() => handleApply(selected)}>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Button size="sm" className="h-9 gap-1.5" onClick={() => handleApply(selected)}>
                     <ArrowRight className="h-3.5 w-3.5" /> 一键申报
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    className="gap-1"
+                    className="h-9 gap-1.5"
                     onClick={() =>
                       sendMessage(`请帮我分析《${selected.title}》的申报材料清单和填写要点`)
                     }
                   >
-                    <Bot className="h-3.5 w-3.5" /> 让 AI 辅导填报
+                    <Bot className="h-3.5 w-3.5" /> AI 辅导填报
                   </Button>
-                  <Button size="sm" variant="ghost" className="gap-1">
-                    <Bookmark className="h-3.5 w-3.5" /> 收藏
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-9 gap-1.5"
+                    onClick={() => toggleBookmark(selected.id)}
+                  >
+                    <Bookmark className={cn("h-3.5 w-3.5", bookmarks.has(selected.id) && "fill-primary text-primary")} />
+                    {bookmarks.has(selected.id) ? "已收藏" : "收藏"}
                   </Button>
-                  <Button size="sm" variant="ghost" className="gap-1 ml-auto">
+                  <Button size="sm" variant="outline" className="h-9 gap-1.5">
                     <ExternalLink className="h-3.5 w-3.5" /> 政策原文
                   </Button>
                 </div>
