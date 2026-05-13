@@ -117,7 +117,7 @@ export function AppSidebar() {
               )}
               <SidebarGroup>
                 {!collapsed && (
-                  <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-sidebar-foreground/80">
+                  <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-[#0f5c4d]">
                     绿色制造
                   </SidebarGroupLabel>
                 )}
@@ -127,7 +127,7 @@ export function AppSidebar() {
               </SidebarGroup>
               <SidebarGroup>
                 {!collapsed && (
-                  <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-sidebar-foreground/80">
+                  <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-[#0f5c4d]">
                     绿色智能体
                   </SidebarGroupLabel>
                 )}
