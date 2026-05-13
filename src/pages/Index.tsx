@@ -229,13 +229,13 @@ function KpiTile({
   delta?: { v: number; label: string }; variant?: "cyan" | "green";
 }) {
   return (
-    <div className={`glass-card ${variant === "cyan" ? "glass-card-cyan" : "glass-card-green"} p-4 h-full flex flex-col`}>
+    <div className={`panel ${variant === "cyan" ? "panel-cyan" : "panel-green"} p-4 h-full flex flex-col`}>
       <div className="flex items-start justify-between">
         <div className="text-[13px] font-semibold text-slate-800 tracking-wide">{label}</div>
-        <Icon className={`h-4 w-4 ${variant === "cyan" ? "neon-text-cyan" : "neon-text-green"}`} />
+        <Icon className={`h-4 w-4 ${variant === "cyan" ? "text-primary" : "text-primary"}`} />
       </div>
       <div className="mt-2 flex items-baseline gap-1">
-        <span className={`text-[32px] leading-none font-bold tabular-nums tracking-tight ${variant === "cyan" ? "neon-text-cyan" : "neon-text-green"}`}>
+        <span className={`text-[32px] leading-none font-bold tabular-nums tracking-tight ${variant === "cyan" ? "text-primary" : "text-primary"}`}>
           {value}
         </span>
         {unit && <span className="text-xs text-slate-600">{unit}</span>}
@@ -271,7 +271,7 @@ function KpiTile({
 function SectionTitle({ icon: Icon, title, accent, right }: { icon: any; title: string; accent: "cyan" | "green"; right?: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 mb-3">
-      <Icon className={`h-4 w-4 ${accent === "cyan" ? "neon-text-cyan" : "neon-text-green"}`} />
+      <Icon className={`h-4 w-4 ${accent === "cyan" ? "text-primary" : "text-primary"}`} />
       <h3 className="text-sm font-semibold tracking-wide text-foreground">{title}</h3>
       <div className={`flex-1 h-px ${accent === "cyan" ? "bg-gradient-to-r from-cyan-400/50 to-transparent" : "bg-gradient-to-r from-emerald-400/50 to-transparent"}`} />
       {right}
@@ -346,7 +346,7 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
   const batch = BATCH_LISTS[batchTab];
 
   return (
-    <div className="glass-card glass-card-cyan p-4 h-full flex flex-col gap-3">
+    <div className="panel p-4 h-full flex flex-col gap-3">
       <SectionTitle
         icon={BarChart3}
         title="多维度分布分析 · 实时联动"
@@ -490,7 +490,7 @@ function MultiDimPanel({ district, industry }: { district: string; industry: str
       {/* Recent batch lists */}
       <div className="border-t border-cyan-200/60 pt-3 flex-1 flex flex-col min-h-0">
         <div className="flex items-center gap-2 mb-2">
-          <ListChecks className="h-5 w-5 neon-text-green" />
+          <ListChecks className="h-5 w-5 text-primary" />
           <h4 className="text-[16px] font-bold text-slate-800 tracking-wide">最近批次入选名单</h4>
           <Tabs value={batchTab} onValueChange={(v) => setBatchTab(v as any)} className="ml-auto">
             <TabsList className="h-8 bg-white/60">
@@ -602,15 +602,15 @@ const Index = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
         {/* Left col */}
         <div className="lg:col-span-3 flex flex-col gap-4">
-          <div className="glass-card p-4 flex flex-col" style={{ minHeight: 360 }}>
+          <div className="panel p-4 flex flex-col" style={{ minHeight: 360 }}>
             <SectionTitle icon={Layers} title="梯度培育漏斗" accent="cyan" />
             <GradientFunnel />
             <div className="text-[11px] text-slate-600 mt-2 pt-2 border-t border-border/40 leading-relaxed">
-              培育→区级 <span className="neon-text-cyan font-semibold">64.1%</span> · 区级→市级 <span className="neon-text-cyan font-semibold">63.8%</span> · 市级→国家级 <span className="neon-text-green font-semibold">37.5%</span>
+              培育→区级 <span className="text-primary font-semibold">64.1%</span> · 区级→市级 <span className="text-primary font-semibold">63.8%</span> · 市级→国家级 <span className="text-primary font-semibold">37.5%</span>
             </div>
           </div>
 
-          <div className="glass-card p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={Trophy} title="重点集团绿色工厂数 TOP10" accent="green" />
             <div className="space-y-1.5">
               {GROUP_RANK.map((g, i) => (
@@ -622,13 +622,13 @@ const Index = () => {
                   <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-cyan-400 to-emerald-500" style={{ width: `${(g.value / 17) * 100}%` }} />
                   </div>
-                  <span className="w-6 text-right font-mono font-semibold neon-text-cyan">{g.value}</span>
+                  <span className="w-6 text-right font-mono font-semibold text-primary">{g.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="glass-card glass-card-green p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={Trophy} title="各区县国家级绿色工厂数 TOP10" accent="green" />
             <div className="space-y-1.5">
               {DISTRICT_NATION_TOP.map((g, i) => (
@@ -654,7 +654,7 @@ const Index = () => {
 
         {/* Right col */}
         <div className="lg:col-span-3 flex flex-col gap-4">
-          <div className="glass-card p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={Zap} title="能耗与碳排双控趋势" accent="green" />
             <div className="h-[200px]">
               <ResponsiveContainer>
@@ -676,7 +676,7 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="glass-card p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={Activity} title="国家级绿色工厂 · 历年新增" accent="cyan" />
             <div className="h-[200px]">
               <ResponsiveContainer>
@@ -698,11 +698,11 @@ const Index = () => {
               </ResponsiveContainer>
             </div>
             <div className="text-[11px] text-slate-600 mt-1">
-              累计 <span className="neon-text-cyan font-semibold">196 家</span> · 2024 年单年新增 <span className="neon-text-green font-semibold">55 家</span> 创历史新高
+              累计 <span className="text-primary font-semibold">196 家</span> · 2024 年单年新增 <span className="text-primary font-semibold">55 家</span> 创历史新高
             </div>
           </div>
 
-          <div className="glass-card p-4 flex-1">
+          <div className="panel p-4 flex-1">
             <SectionTitle icon={AlertTriangle} title="AI 异常预警" accent="green" />
             <div className="space-y-2">
               {ALERTS.map((a, i) => (
@@ -722,7 +722,7 @@ const Index = () => {
 
       {/* Bottom */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 glass-card p-4">
+        <div className="lg:col-span-2 panel p-4">
           <SectionTitle
             icon={Activity}
             title="跨周期目标追踪 · 全国绿色示范企业历年自评价情况（2016-2024）"
