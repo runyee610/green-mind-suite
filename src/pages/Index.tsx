@@ -829,18 +829,7 @@ const Index = () => {
         </div>
 
         <div className="glass-card glass-card-green p-4 flex flex-col">
-          <SectionTitle
-            icon={Brain}
-            title="AI Agent 对话"
-            accent="green"
-            right={
-              <Badge className="h-5 px-2 text-[10px] bg-emerald-100 text-emerald-700 border-0">
-                {messages.filter((m) => m.role === "ai" && !m.read).length > 0
-                  ? `${messages.filter((m) => m.role === "ai" && !m.read).length} 条未读`
-                  : "全部已读"}
-              </Badge>
-            }
-          />
+          <SectionTitle icon={Brain} title="AI Agent 对话" accent="green" />
           <div ref={chatScrollRef} className="flex-1 space-y-2 overflow-y-auto text-xs mb-2 min-h-[180px] max-h-[260px] pr-1 scroll-smooth">
             {messages.map((m) => (
               <div
