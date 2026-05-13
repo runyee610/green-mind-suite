@@ -6,10 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Building2, ClipboardCheck, Download, Eye, FileSignature, FileText, Image as ImageIcon, ListChecks, Upload } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs as GuideTabs, TabsList as GuideTabsList, TabsTrigger as GuideTabsTrigger, TabsContent as GuideTabsContent } from "@/components/ui/tabs";
+import { Building2, Calculator, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, NotebookPen, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, PLATFORM_FUNCTION_OPTIONS, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
+import { INDICATOR_GUIDES } from "./indicatorGuide";
 import { Checkbox } from "@/components/ui/checkbox";
 import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
 
@@ -749,6 +752,100 @@ const TYPE_TONE: Record<IndicatorRow["type"], string> = {
   正向定性: "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
 };
 
+/** 指标引导：名词解释 / 计算公式 / 填报示例 / 智能引导 */
+function IndicatorGuidePopover({ row }: { row: IndicatorRow }) {
+  const guide = INDICATOR_GUIDES[row.id];
+  if (!guide) return null;
+  const hasFormula = !!guide.formula;
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex h-5 items-center gap-0.5 rounded-full border border-primary/30 bg-primary/5 px-1.5 text-[10px] font-medium text-primary transition hover:bg-primary/10"
+          title="查看指标说明、公式、示例与引导"
+        >
+          <HelpCircle className="h-3 w-3" />
+          <span>说明</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        side="right"
+        align="start"
+        sideOffset={8}
+        className="w-[420px] p-0"
+        onWheel={(e) => e.stopPropagation()}
+      >
+        <div className="border-b border-border/60 bg-muted/30 px-3 py-2">
+          <p className="text-[11px] text-muted-foreground">序号 {row.no} · {row.l2}</p>
+          <p className="text-sm font-medium leading-snug">{guide.term}</p>
+        </div>
+        <GuideTabs defaultValue="term" className="w-full">
+          <GuideTabsList className="grid h-9 w-full grid-cols-4 rounded-none border-b border-border/60 bg-transparent p-0">
+            <GuideTabsTrigger value="term" className="rounded-none text-[11px] data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none">
+              <NotebookPen className="mr-1 h-3 w-3" />名词解释
+            </GuideTabsTrigger>
+            <GuideTabsTrigger value="formula" className="rounded-none text-[11px] data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none">
+              <Calculator className="mr-1 h-3 w-3" />计算公式
+            </GuideTabsTrigger>
+            <GuideTabsTrigger value="example" className="rounded-none text-[11px] data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none">
+              <FileText className="mr-1 h-3 w-3" />填报示例
+            </GuideTabsTrigger>
+            <GuideTabsTrigger value="tips" className="rounded-none text-[11px] data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none">
+              <Lightbulb className="mr-1 h-3 w-3" />智能引导
+            </GuideTabsTrigger>
+          </GuideTabsList>
+
+          <div className="max-h-[320px] overflow-auto p-3 text-[12px] leading-relaxed">
+            <GuideTabsContent value="term" className="mt-0 space-y-1">
+              <p className="text-muted-foreground">{guide.termDesc}</p>
+            </GuideTabsContent>
+
+            <GuideTabsContent value="formula" className="mt-0 space-y-2">
+              {hasFormula ? (
+                <>
+                  <div className="rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-center font-mono text-[13px] text-primary">
+                    {guide.formula}
+                  </div>
+                  {guide.vars && guide.vars.length > 0 && (
+                    <ul className="space-y-1">
+                      {guide.vars.map((v) => (
+                        <li key={v.symbol} className="flex gap-2">
+                          <span className="shrink-0 font-mono text-primary">{v.symbol}</span>
+                          <span className="text-muted-foreground">— {v.desc}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <p className="text-muted-foreground">该指标为定性 / 计数指标，无计算公式。</p>
+              )}
+            </GuideTabsContent>
+
+            <GuideTabsContent value="example" className="mt-0">
+              <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-emerald-700 dark:text-emerald-300">
+                {guide.example}
+              </div>
+            </GuideTabsContent>
+
+            <GuideTabsContent value="tips" className="mt-0">
+              <ul className="space-y-1.5">
+                {guide.tips.map((t, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full bg-primary" />
+                    <span className="text-muted-foreground">{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </GuideTabsContent>
+          </div>
+        </GuideTabs>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function EvaluationIndicatorCard({
   data = EVALUATION_INDICATORS,
   totalScore = EVALUATION_TOTAL_SCORE,
@@ -972,19 +1069,16 @@ export function EvaluationIndicatorCard({
                       {has === "有" ? cfg.hasOptionLabel : cfg.noOptionLabel}
                     </Badge>
                   );
-                  const formulaText = has === "有" ? (row.formulaHasStandard ?? row.formula) : row.formula;
                   const l3Cell = (
                     <div className="space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-[11px] font-medium text-muted-foreground">{cfg.selectorLabel}</span>
                         {standardSelector}
                       </div>
-                      <p className="leading-relaxed">
-                        {has === "有" ? cfg.l3HasText : cfg.l3NoText}
-                      </p>
-                      {formulaText && (
-                        <div className="font-mono text-[11px] text-primary/80">公式：{formulaText}</div>
-                      )}
+                      <div className="flex items-start gap-1.5 leading-relaxed">
+                        <p className="flex-1">{has === "有" ? cfg.l3HasText : cfg.l3NoText}</p>
+                        <IndicatorGuidePopover row={row} />
+                      </div>
                     </div>
                   );
                   const hl = matchKeyword(row);
@@ -1224,10 +1318,10 @@ export function EvaluationIndicatorCard({
                     )}
                     {row.mergeL2L3 ? (
                       <td colSpan={2} className="bg-muted/10 leading-relaxed">
-                        <div>{row.l3}</div>
-                        {row.formula && (
-                          <div className="mt-1 font-mono text-[11px] text-primary/80">公式：{row.formula}</div>
-                        )}
+                        <div className="flex items-start gap-1.5">
+                          <span className="flex-1">{row.l3}</span>
+                          <IndicatorGuidePopover row={row} />
+                        </div>
                       </td>
                     ) : (
                       <>
@@ -1237,10 +1331,10 @@ export function EvaluationIndicatorCard({
                           </td>
                         )}
                         <td className="leading-relaxed">
-                          <div>{row.l3}</div>
-                          {row.formula && (
-                            <div className="mt-1 font-mono text-[11px] text-primary/80">公式：{row.formula}</div>
-                          )}
+                          <div className="flex items-start gap-1.5">
+                            <span className="flex-1">{row.l3}</span>
+                            <IndicatorGuidePopover row={row} />
+                          </div>
                         </td>
                       </>
                     )}
