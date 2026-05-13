@@ -49,8 +49,8 @@ const greenItemsByRole: Record<"gov" | "ent", NavItem[]> = {
 };
 
 const policyItems: NavItem[] = [
-  { title: "AI 数字咨询", url: "/green-mfg-agent", icon: Megaphone },
-  { title: "AI 政策智能推送", url: "/policy-agent", icon: Megaphone },
+  { title: "数据智能", url: "/green-mfg-agent", icon: Megaphone },
+  { title: "政策推送", url: "/policy-agent", icon: Megaphone },
 ];
 
 export const navItems: NavItem[] = [
