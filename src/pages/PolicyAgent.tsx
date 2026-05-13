@@ -152,7 +152,7 @@ export default function PolicyAgent() {
         {/* 左侧：政策推送 */}
         <div className="flex min-w-0 flex-col gap-4">
           {/* 列表 + 详情 */}
-          <Card className="panel relative overflow-hidden">
+          <Card className="panel relative overflow-hidden flex flex-col h-[760px]">
             {/* tech background */}
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.06]"
