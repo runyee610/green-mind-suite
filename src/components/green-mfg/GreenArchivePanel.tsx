@@ -197,7 +197,7 @@ export function GreenArchivePanel({ mode, creditCode }: Props) {
   );
 }
 
-function ArchiveDetailCard({ archive, embedded = false }: { archive: GreenArchive; embedded?: boolean }) {
+function ArchiveDetailCard({ archive }: { archive: GreenArchive }) {
   return (
     <div className="space-y-4">
       {/* 认定信息 + KPI */}
