@@ -534,6 +534,72 @@ const Index = () => {
   const [industry, setIndustry] = useState("全部产业");
   const [aiInput, setAiInput] = useState("");
 
+  type ChatMsg = { id: number; role: "ai" | "user"; text: string; read: boolean; ts: string };
+  const fmtTime = () => new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+  const [messages, setMessages] = useState<ChatMsg[]>([
+    { id: 1, role: "ai", text: '您好，我是绿色制造数字智能体。当前覆盖 16 区 · 523 家市级绿色工厂 · 196 家国家级。试试问："汽车产业绿色化率？"', read: true, ts: "09:00" },
+    { id: 2, role: "user", text: "嘉定区培育潜力 TOP10？", read: true, ts: "09:01" },
+    { id: 3, role: "ai", text: "嘉定区已有 72 家市级绿色工厂（汽车占比 38%）。AI 识别 10 家高潜：上汽乘用车、采埃孚、舍弗勒、博世汽车…评分 ≥ 78，建议优先纳入 2026 年市级培育库。", read: true, ts: "09:01" },
+  ]);
+  const [aiTyping, setAiTyping] = useState(false);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const msgRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
+  // Auto-scroll to bottom on new messages / typing
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages.length, aiTyping]);
+
+  // Mark visible AI messages as read using IntersectionObserver
+  useEffect(() => {
+    const root = chatScrollRef.current;
+    if (!root) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const seen = new Set<number>();
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            const id = Number((e.target as HTMLElement).dataset.mid);
+            if (!Number.isNaN(id)) seen.add(id);
+          }
+        });
+        if (seen.size > 0) {
+          setMessages((prev) => prev.map((m) => (seen.has(m.id) && !m.read ? { ...m, read: true } : m)));
+        }
+      },
+      { root, threshold: 0.6 }
+    );
+    msgRefs.current.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [messages.length]);
+
+  const sendMessage = () => {
+    const text = aiInput.trim();
+    if (!text) return;
+    const uid = Date.now();
+    setMessages((prev) => [...prev, { id: uid, role: "user", text, read: false, ts: fmtTime() }]);
+    setAiInput("");
+    setAiTyping(true);
+    // Mock AI ack + reply
+    setTimeout(() => {
+      setMessages((prev) => prev.map((m) => (m.id === uid ? { ...m, read: true } : m)));
+    }, 600);
+    setTimeout(() => {
+      setAiTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          role: "ai",
+          text: "已收到您的问题，正在基于全市绿色制造体系数据进行分析…（示例回复）",
+          read: false,
+          ts: fmtTime(),
+        },
+      ]);
+    }, 1400);
+  };
+
   const linkedSummary = useMemo(() => {
     const parts = [`年度 ${year}`];
     if (district !== "全市") parts.push(district);
