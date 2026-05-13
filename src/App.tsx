@@ -46,7 +46,7 @@ const App = () => (
         <RoleProvider>
         <ScrollToTop />
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<HomeRoute />} />
           <Route path="/report-monthly" element={<ReportMonthly />} />
           <Route path="/report-monthly/filling" element={<ReportMonthlyFilling />} />
           <Route path="/energy-quota" element={<EnergyQuota />} />
