@@ -261,42 +261,6 @@ export function AIScoringAgentPanel() {
       </CardHeader>
 
       <CardContent className="relative space-y-4">
-        {/* HUD 实时指标 */}
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          {[
-            { icon: Activity, label: "推理吞吐", value: `${tps}`, unit: "tok/s", color: "text-cyan-600", ring: "ring-cyan-400/30" },
-            { icon: Zap, label: "已处理 Token", value: tokens.toLocaleString(), unit: "", color: "text-primary", ring: "ring-primary/30" },
-            { icon: Radar, label: "GPU 负载", value: `${gpuLoad}`, unit: "%", color: "text-amber-600", ring: "ring-amber-400/30" },
-            { icon: ShieldCheck, label: "置信度", value: finished ? "97.4" : running ? "—" : "·", unit: "%", color: "text-emerald-600", ring: "ring-emerald-400/30" },
-          ].map((m) => {
-            const Icon = m.icon;
-            return (
-              <div
-                key={m.label}
-                className={cn(
-                  "relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-2.5 backdrop-blur-sm ring-1",
-                  m.ring,
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{m.label}</span>
-                  <Icon className={cn("h-3.5 w-3.5", m.color)} />
-                </div>
-                <div className={cn("mt-1 font-mono text-base font-semibold tabular-nums", m.color)}>
-                  {m.value}
-                  <span className="ml-0.5 text-[10px] text-muted-foreground">{m.unit}</span>
-                </div>
-                <div className="mt-1 h-0.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    className={cn("h-full bg-gradient-to-r from-transparent via-current to-transparent opacity-60", m.color)}
-                    style={{ width: `${30 + ((tick * 7) % 60)}%`, transition: "width .3s linear" }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
         {/* 总体进度 */}
         <div className="relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-cyan-500/5 p-3">
           <div className="mb-2 flex items-center justify-between text-xs">

@@ -130,6 +130,15 @@ export default function PolicyAgent() {
     });
   };
 
+  // 实时指标(仅装饰)
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const i = setInterval(() => setTick((t) => t + 1), 1500);
+    return () => clearInterval(i);
+  }, []);
+  const matchedEnt = 23 + (tick % 3);
+  const pushedToday = 47 + (tick % 5);
+
   return (
     <AppLayout
       title="政策智能推送智能体"
@@ -151,12 +160,40 @@ export default function PolicyAgent() {
           )}
 
           {/* 列表 + 详情 */}
-          <Card className="panel">
-            <CardHeader className="pb-3">
+          <Card className="panel relative overflow-hidden">
+            {/* tech background */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.06]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
+                maskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+                WebkitMaskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+              }}
+            />
+            <div className="pointer-events-none absolute -top-32 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -left-20 h-60 w-60 rounded-full bg-cyan-400/10 blur-3xl" />
+
+            <CardHeader className="relative pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  {role === "gov" ? "可定向推送企业的政策" : "为您主动推送的政策"}
+                <CardTitle className="text-base flex flex-wrap items-center gap-2">
+                  <span className="relative flex h-7 w-7 items-center justify-center rounded-md bg-gradient-primary text-primary-foreground shadow-elevated">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span className="absolute inset-0 rounded-md ring-1 ring-primary/40 animate-pulse-glow" />
+                  </span>
+                  <span className="font-semibold">{role === "gov" ? "可定向推送企业的政策" : "为您主动推送的政策"}</span>
+                  <Badge
+                    variant="outline"
+                    className="border-primary/40 bg-primary/5 font-mono text-[10px] uppercase tracking-wider text-primary"
+                  >
+                    <Zap className="mr-1 h-3 w-3" />
+                    PolicyMatch v2.1
+                  </Badge>
+                  <span className="hidden md:inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-600">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                    {role === "gov" ? `已匹配 ${matchedEnt} 家企业` : `今日推送 ${pushedToday} 条`}
+                  </span>
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <div className="relative">
@@ -185,21 +222,27 @@ export default function PolicyAgent() {
               </Tabs>
             </CardHeader>
 
-            <CardContent className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+            <CardContent className="relative grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               {/* 列表 */}
               <ScrollArea className="h-[560px] pr-2">
                 <ul className="space-y-2">
                   {filtered.map((p) => (
-                    <li key={p.id}>
+                    <li key={p.id} className="animate-fade-in">
                       <button
                         onClick={() => setSelectedId(p.id)}
                         className={cn(
-                          "w-full text-left rounded-lg border p-3 transition hover:border-primary/50 hover:bg-primary/5",
+                          "group relative w-full overflow-hidden text-left rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-0.5",
                           selected.id === p.id
-                            ? "border-primary bg-primary/5 shadow-sm"
+                            ? "border-primary/60 bg-gradient-to-br from-primary/10 via-card to-cyan-500/5 shadow-[0_0_0_1px_hsl(var(--primary)/0.2),0_8px_24px_-12px_hsl(var(--primary)/0.4)]"
                             : "border-border bg-card"
                         )}
                       >
+                        {selected.id === p.id && (
+                          <span
+                            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"
+                            style={{ animation: "scan 2.4s linear infinite" }}
+                          />
+                        )}
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
@@ -217,9 +260,19 @@ export default function PolicyAgent() {
                             <p className="mt-1 text-[11px] text-muted-foreground truncate">{p.issuer}</p>
                           </div>
                           <div className="shrink-0 text-right">
-                            <div className="text-lg font-semibold text-primary leading-none">{p.matchScore}</div>
-                            <div className="text-[10px] text-muted-foreground mt-0.5">匹配度</div>
+                            <div className={cn(
+                              "font-mono text-xl font-bold leading-none tabular-nums",
+                              selected.id === p.id ? "text-primary [text-shadow:0_0_12px_hsl(var(--primary)/0.5)]" : "text-primary",
+                            )}>{p.matchScore}</div>
+                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">匹配度</div>
                           </div>
+                        </div>
+                        {/* match score bar */}
+                        <div className="mt-2 h-0.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-400 to-cyan-400"
+                            style={{ width: `${p.matchScore}%` }}
+                          />
                         </div>
                         <div className="mt-2 flex items-center justify-between text-[11px]">
                           <span className="inline-flex items-center gap-1 text-muted-foreground">
@@ -323,27 +376,58 @@ export default function PolicyAgent() {
         </div>
 
         {/* 右侧：对话面板 */}
-        <Card className="panel flex flex-col h-[760px] sticky top-20">
-          <CardHeader className="pb-3 border-b border-border">
+        <Card className="panel flex flex-col h-[760px] sticky top-20 relative overflow-hidden">
+          {/* tech bg */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.05]"
+            style={{
+              backgroundImage:
+                "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+              maskImage: "radial-gradient(ellipse at 50% 0%, #000 30%, transparent 80%)",
+              WebkitMaskImage: "radial-gradient(ellipse at 50% 0%, #000 30%, transparent 80%)",
+            }}
+          />
+          <div className="pointer-events-none absolute -top-20 -right-20 h-60 w-60 rounded-full bg-cyan-400/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-primary/15 blur-3xl" />
+
+          <CardHeader className="relative pb-3 border-b border-border bg-gradient-to-r from-primary/5 via-transparent to-cyan-500/5">
             <div className="flex items-center gap-3">
-              <div className="relative h-10 w-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-md">
-                <Bot className="h-5 w-5 text-primary-foreground" />
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success border-2 border-card" />
+              <div className="relative h-11 w-11 shrink-0">
+                <div className="absolute inset-0 rounded-lg bg-gradient-primary flex items-center justify-center shadow-elevated">
+                  <Bot className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <span className="absolute inset-0 rounded-lg ring-1 ring-primary/40 animate-pulse-glow" />
+                <span className="absolute -inset-1 rounded-xl border border-primary/20 animate-ping opacity-40" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success border-2 border-card animate-pulse" />
               </div>
-              <div className="min-w-0">
-                <CardTitle className="text-sm">PolicyGPT · 政策智能助手</CardTitle>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <span className="font-semibold">PolicyGPT</span>
+                  <Badge
+                    variant="outline"
+                    className="border-primary/40 bg-primary/5 font-mono text-[9px] uppercase tracking-wider text-primary"
+                  >
+                    <Sparkles className="mr-0.5 h-2.5 w-2.5" />
+                    Gov-LLM v3.2
+                  </Badge>
+                </CardTitle>
+                <p className="text-[11px] text-muted-foreground mt-0.5 font-mono">
                   自然语言问答 · 材料梳理 · 申报辅导
                 </p>
               </div>
-              <Badge variant="outline" className="ml-auto text-[10px] border-success/40 bg-success/10 text-success">
+              <Badge
+                variant="outline"
+                className="ml-auto text-[10px] border-emerald-500/40 bg-emerald-500/10 text-emerald-600 font-mono uppercase tracking-wider"
+              >
+                <span className="mr-1 h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 在线
               </Badge>
             </div>
           </CardHeader>
 
           {/* 消息区 */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          <div ref={scrollRef} className="relative flex-1 overflow-y-auto px-4 py-4 space-y-4">
             {messages.map((m) => (
               <MessageBubble key={m.id} message={m} onSuggestion={sendMessage} />
             ))}
@@ -363,7 +447,7 @@ export default function PolicyAgent() {
           </div>
 
           {/* 推荐问题 */}
-          <div className="px-4 pb-2 border-t border-border pt-3">
+          <div className="relative px-4 pb-2 border-t border-border pt-3">
             <div className="text-[10px] text-muted-foreground mb-1.5 uppercase tracking-wider">
               试试这些问题
             </div>
@@ -381,7 +465,7 @@ export default function PolicyAgent() {
           </div>
 
           {/* 输入框 */}
-          <div className="p-3 border-t border-border">
+          <div className="relative p-3 border-t border-border">
             <div className="relative">
               <Textarea
                 value={input}
