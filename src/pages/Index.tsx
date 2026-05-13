@@ -246,10 +246,10 @@ function KpiTile({
         {unit && <span className="text-xs text-slate-600">{unit}</span>}
       </div>
       {nation !== undefined && (
-        <div className="mt-2 flex items-center gap-1.5 rounded-md px-2 py-1 bg-gradient-to-r from-amber-100/80 via-rose-100/70 to-amber-100/40 border border-amber-300/60 shadow-inner">
-          <Trophy className="h-3.5 w-3.5 text-amber-600" />
-          <span className="text-[10px] font-semibold text-amber-800 tracking-wide border-0 whitespace-nowrap">国家级</span>
-          <span className="text-[20px] font-extrabold tabular-nums text-amber-700 leading-none ml-0.5" style={{ textShadow: "0 0 10px hsl(35 95% 55% / 0.35)" }}>{nation}</span>
+        <div className="mt-2 flex items-center gap-1.5 rounded-md px-2 py-1 bg-amber-50 border border-amber-200">
+          <Trophy className="h-3.5 w-3.5 text-amber-700" />
+          <span className="text-[10px] font-semibold text-amber-800 tracking-wide whitespace-nowrap">国家级</span>
+          <span className="text-[20px] font-extrabold tabular-nums text-amber-700 leading-none ml-0.5">{nation}</span>
           <span className="text-[10px] text-amber-700/90">{nationUnit}</span>
           {nationExtra && <span className="ml-auto text-[10px] text-amber-700/80 font-medium text-right leading-tight break-words min-w-0">{nationExtra}</span>}
         </div>
