@@ -20,6 +20,8 @@ import {
   dynamicStatusClass,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
+import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
+import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
 
 export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
