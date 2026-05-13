@@ -205,6 +205,63 @@ export default function PolicyAgent() {
                       className="h-8 w-56 pl-8 text-xs"
                     />
                   </div>
+                  <Popover open={showBookmarks} onOpenChange={setShowBookmarks}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 gap-1.5 relative">
+                        <Bookmark className={cn("h-3.5 w-3.5", bookmarks.size > 0 && "fill-primary text-primary")} />
+                        我的收藏
+                        {bookmarks.size > 0 && (
+                          <span className="ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground">
+                            {bookmarks.size}
+                          </span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-80 p-0">
+                      <div className="border-b border-border px-3 py-2 text-xs font-medium">
+                        收藏的政策 · {bookmarkedPolicies.length}
+                      </div>
+                      {bookmarkedPolicies.length === 0 ? (
+                        <div className="px-3 py-8 text-center text-xs text-muted-foreground">
+                          暂无收藏，可在政策详情中点击收藏
+                        </div>
+                      ) : (
+                        <ul className="max-h-72 overflow-y-auto py-1">
+                          {bookmarkedPolicies.map((p) => (
+                            <li key={p.id}>
+                              <button
+                                onClick={() => {
+                                  setSelectedId(p.id);
+                                  setShowBookmarks(false);
+                                }}
+                                className="flex w-full items-start gap-2 px-3 py-2 text-left hover:bg-muted/60 transition"
+                              >
+                                <Badge variant="outline" className={cn("text-[10px] shrink-0 mt-0.5", categoryColor[p.category])}>
+                                  {p.category}
+                                </Badge>
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-xs font-medium leading-snug line-clamp-2">{p.title}</div>
+                                  <div className="text-[10px] text-muted-foreground mt-0.5 inline-flex items-center gap-1">
+                                    <Calendar className="h-2.5 w-2.5" />截止 {p.deadline}
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleBookmark(p.id);
+                                  }}
+                                  className="text-muted-foreground hover:text-destructive shrink-0"
+                                  aria-label="移除收藏"
+                                >
+                                  <Bookmark className="h-3.5 w-3.5 fill-primary text-primary" />
+                                </button>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
               <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="mt-2">
