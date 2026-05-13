@@ -39,6 +39,7 @@ const TABS = [
 export default function GreenMfgGovDeclarationDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const isIncubator = (id ?? "").startsWith("INC-");
   const detail = useMemo(
     () => MOCK_DECLARATIONS.find((d) => d.id === id) ?? MOCK_DECLARATIONS[0],
     [id],
@@ -217,9 +218,6 @@ export default function GreenMfgGovDeclarationDetail() {
         </TabsContent>
         <TabsContent value="evaluation-indicator" className="mt-0">
           <EvaluationIndicatorCard mode="gov" data={indicators} onChange={setIndicators} />
-        </TabsContent>
-        <TabsContent value="authenticity-commitment" className="mt-0">
-          <AuthenticityCommitmentCard defaultSignedFileName="真实性承诺函-签章扫描件.pdf" />
         </TabsContent>
       </Tabs>
 
