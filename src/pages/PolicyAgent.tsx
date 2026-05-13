@@ -247,6 +247,17 @@ export default function PolicyAgent() {
                             <Calendar className="h-3 w-3" /> 截止 {p.deadline}
                           </span>
                         </div>
+                      </button>
+                    </li>
+                  ))}
+                  {filtered.length === 0 && (
+                    <div className="text-center text-xs text-muted-foreground py-12">暂无匹配政策</div>
+                  )}
+                </ul>
+              </ScrollArea>
+
+              {/* 详情 */}
+              <div className="rounded-lg border border-border bg-card/40 p-4 overflow-y-auto h-full">
                 <h3 className="text-base font-semibold leading-snug">{selected.title}</h3>
                 <p className="mt-1 text-xs text-muted-foreground inline-flex items-center gap-1">
                   <Building2 className="h-3 w-3" /> {selected.issuer}
