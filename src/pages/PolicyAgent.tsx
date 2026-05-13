@@ -427,7 +427,7 @@ export default function PolicyAgent() {
           </CardHeader>
 
           {/* 消息区 */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          <div ref={scrollRef} className="relative flex-1 overflow-y-auto px-4 py-4 space-y-4">
             {messages.map((m) => (
               <MessageBubble key={m.id} message={m} onSuggestion={sendMessage} />
             ))}
@@ -447,7 +447,7 @@ export default function PolicyAgent() {
           </div>
 
           {/* 推荐问题 */}
-          <div className="px-4 pb-2 border-t border-border pt-3">
+          <div className="relative px-4 pb-2 border-t border-border pt-3">
             <div className="text-[10px] text-muted-foreground mb-1.5 uppercase tracking-wider">
               试试这些问题
             </div>
@@ -465,7 +465,7 @@ export default function PolicyAgent() {
           </div>
 
           {/* 输入框 */}
-          <div className="p-3 border-t border-border">
+          <div className="relative p-3 border-t border-border">
             <div className="relative">
               <Textarea
                 value={input}
