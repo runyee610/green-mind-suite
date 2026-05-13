@@ -97,15 +97,15 @@ export function AppSidebar() {
                   />
                 ) : (
                   <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
+                    <SidebarMenuButton asChild tooltip={item.title} className="h-11 text-[15px] font-medium">
                       <NavLink
                         to={item.url}
                         end
                         className="hover:bg-sidebar-accent/60"
-                        activeClassName="!bg-sidebar-accent !text-sidebar-accent-foreground font-medium border-l-2 border-sidebar-primary"
+                        activeClassName="!bg-sidebar-accent !text-sidebar-accent-foreground font-semibold border-l-2 border-sidebar-primary"
                       >
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="truncate">{item.title}</span>}
+                        <item.icon className="h-5 w-5 shrink-0" />
+                        {!collapsed && <span className="whitespace-nowrap">{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
