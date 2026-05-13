@@ -269,25 +269,33 @@ function GradientFunnel() {
   const max = stages[0].value;
   const conv = (i: number) => i === 0 ? null : `${((stages[i].value / stages[i - 1].value) * 100).toFixed(1)}%`;
   return (
-    <div className="flex-1 flex flex-col gap-1.5 min-h-0">
+    <div className="flex-1 flex flex-col gap-2 min-h-0">
       {stages.map((s, i) => {
-        const w = 30 + (s.value / max) * 70; // percent width
+        const w = 30 + (s.value / max) * 70;
+        const isNation = i === stages.length - 1;
         return (
           <div key={s.name} className="flex-1 flex items-center gap-2 min-h-0">
-            <div className="w-[88px] text-[11px] text-slate-700 font-medium text-right shrink-0">{s.name}</div>
+            <div className="w-[78px] flex items-center gap-1.5 shrink-0">
+              <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: s.fill, boxShadow: `0 0 8px ${s.fill}` }} />
+              <span className="text-[11px] text-slate-700 font-medium leading-tight">{s.name}</span>
+            </div>
             <div className="flex-1 relative h-full flex items-center">
               <div
-                className="h-full rounded-md flex items-center justify-end pr-3 shadow-sm transition-all hover:brightness-110"
+                className="h-full rounded-md flex items-center justify-end pr-3 transition-all hover:brightness-110"
                 style={{
                   width: `${w}%`,
-                  background: `linear-gradient(90deg, ${s.fill}, ${s.fill} 60%, ${s.fill}cc)`,
-                  boxShadow: `0 0 18px ${s.fill}55`,
+                  backgroundColor: s.fill,
+                  backgroundImage: `linear-gradient(90deg, hsl(0 0% 100% / 0.25), hsl(0 0% 100% / 0) 60%)`,
+                  boxShadow: `0 0 16px ${s.glow}, inset 0 1px 0 hsl(0 0% 100% / 0.4)`,
+                  border: isNation ? "1.5px solid hsl(40 95% 55% / 0.8)" : "none",
                 }}
               >
-                <span className="text-white font-bold text-[15px] tabular-nums drop-shadow">{s.value.toLocaleString()}</span>
+                <span className="text-white font-bold text-[15px] tabular-nums" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.35)" }}>
+                  {s.value.toLocaleString()}
+                </span>
               </div>
-              {conv(i) && (
-                <span className="ml-2 text-[10px] text-slate-500 whitespace-nowrap">↓ 转化 {conv(i)}</span>
+              {i > 0 && (
+                <span className="ml-2 text-[10px] text-slate-500 whitespace-nowrap">↓ {((stages[i].value / stages[i - 1].value) * 100).toFixed(1)}%</span>
               )}
             </div>
           </div>
