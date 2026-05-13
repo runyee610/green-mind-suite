@@ -284,7 +284,7 @@ export default function PolicyAgent() {
               </ScrollArea>
 
               {/* 详情 */}
-              <div className="rounded-lg border border-border bg-card/40 p-4">
+              <div className="rounded-lg border border-border bg-card/40 p-4 overflow-y-auto h-full">
                 <div className="flex items-start gap-2 mb-3">
                   <Badge variant="outline" className={cn(categoryColor[selected.category])}>
                     {selected.category}
