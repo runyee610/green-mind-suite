@@ -324,38 +324,39 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
+              <div className="relative overflow-x-auto">
+                <Table className="min-w-[1280px]">
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>企业名称 / 统一社会信用代码</TableHead>
-                    <TableHead>所属区</TableHead>
-                    <TableHead>行业</TableHead>
-                    <TableHead>自评价批次</TableHead>
-                    <TableHead className="text-center px-[3px]">AI 智能打分 / 专家打分</TableHead>
-                    <TableHead className="text-center">综合能耗（吨标煤）</TableHead>
-                    <TableHead className="text-center">产值（万元）</TableHead>
-                    <TableHead className="text-center">流转状态</TableHead>
-                    <TableHead>提交时间</TableHead>
-                    <TableHead className="text-right">操作</TableHead>
+                    <TableHead className="whitespace-nowrap">企业名称 / 统一社会信用代码</TableHead>
+                    <TableHead className="whitespace-nowrap">所属区</TableHead>
+                    <TableHead className="whitespace-nowrap">行业</TableHead>
+                    <TableHead className="whitespace-nowrap">自评价批次</TableHead>
+                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家打分</TableHead>
+                    <TableHead className="text-center whitespace-nowrap">综合能耗（吨标煤）</TableHead>
+                    <TableHead className="text-center whitespace-nowrap">产值（万元）</TableHead>
+                    <TableHead className="text-center whitespace-nowrap">流转状态</TableHead>
+                    <TableHead className="whitespace-nowrap">提交时间</TableHead>
+                    <TableHead className="sticky right-0 z-20 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))]">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {declarations.map((r) => {
                     const dyn = MOCK_DYNAMIC.find((d) => d.enterpriseName === r.enterpriseName);
                     return (
-                    <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell>
+                    <TableRow key={r.id} className="h-12 border-border/40 group">
+                      <TableCell className="whitespace-nowrap">
                         <div className="text-sm">{r.enterpriseName}</div>
                         <div className="text-[11px] text-muted-foreground font-mono">{r.creditCode}</div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.district}</TableCell>
+                      <TableCell className="whitespace-nowrap">
                         <div className="text-xs">{r.industry}</div>
                         {r.subIndustry && (
                           <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>
                         )}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{r.batch}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.batch}</TableCell>
                       <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
@@ -363,11 +364,11 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                         {dyn?.energyConsumption != null ? dyn.energyConsumption.toLocaleString() : <span className="text-muted-foreground">—</span>}
                       </TableCell>
                       <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.outputValue.toLocaleString()}</TableCell>
-                      <TableCell className="text-center">
+                      <TableCell className="text-center whitespace-nowrap">
                         <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">{r.submitDate}</TableCell>
+                      <TableCell className="sticky right-0 z-10 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))] group-hover:bg-muted/40">
                         <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
                           <Eye className="mr-1 h-3 w-3" />详情/审批
                         </Button>
@@ -380,6 +381,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                   )}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
