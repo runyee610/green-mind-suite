@@ -1,6 +1,6 @@
 // 绿色工厂（梯度培育）模块共享数据 / 类型
 
-export type DeclarationStage = "填报中" | "区审批" | "市审批" | "培育中" | "绿色工厂";
+export type DeclarationStage = "自评价中" | "区审批" | "市审批" | "培育中" | "绿色工厂";
 export type DeclarationLevel = "市级绿色工厂" | "区级培育" | "申报中";
 
 export interface DeclarationRecord {
@@ -157,7 +157,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 67000,
     batch: "2025年第二批",
     submitDate: "2025-09-20",
-    stage: "填报中",
+    stage: "自评价中",
     score: 58,
     level: "申报中",
     reviewer: "区生态局",
@@ -298,7 +298,7 @@ export const stageBadgeClass = (stage: DeclarationStage) => {
     case "培育中": return "border-warning/40 bg-warning/10 text-warning";
     case "市审批":
     case "区审批": return "border-primary/40 bg-primary/10 text-primary";
-    case "填报中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
+    case "自评价中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
     default: return "border-border";
   }
 };
