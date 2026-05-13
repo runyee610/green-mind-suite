@@ -368,7 +368,7 @@ export default function PolicyAgent() {
               试试这些问题
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {SUGGESTED_QUESTIONS.map((q) => (
+              {(role === "gov" ? GOV_SUGGESTIONS : SUGGESTED_QUESTIONS).map((q) => (
                 <button
                   key={q}
                   onClick={() => sendMessage(q)}
