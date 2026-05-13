@@ -143,10 +143,10 @@ const STAR = [
 
 // 培育梯度漏斗 — 增加区级
 const FUNNEL = [
-  { name: "培育库企业", value: 1280, fill: "hsl(189 85% 60%)" },
-  { name: "区级培育", value: 820, fill: "hsl(180 78% 48%)" },
-  { name: "市级绿色工厂", value: 523, fill: "hsl(168 70% 40%)" },
-  { name: "国家级绿色工厂", value: 196, fill: "hsl(150 78% 28%)" },
+  { name: "培育库企业", value: 1280, fill: "hsl(189 85% 55%)", glow: "hsl(189 95% 65% / 0.55)" },
+  { name: "区级培育", value: 820, fill: "hsl(180 78% 45%)", glow: "hsl(180 85% 55% / 0.55)" },
+  { name: "市级绿色工厂", value: 523, fill: "hsl(168 72% 38%)", glow: "hsl(168 80% 48% / 0.55)" },
+  { name: "国家级绿色工厂", value: 196, fill: "hsl(150 80% 28%)", glow: "hsl(40 95% 55% / 0.6)" },
 ];
 
 const ENERGY_CARBON = [
