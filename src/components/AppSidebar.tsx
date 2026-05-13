@@ -114,7 +114,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
-        <div className={cn("flex items-center px-1 py-1", collapsed ? "justify-center" : "justify-end")}>
+        <div className={`flex items-center px-1 py-1 ${collapsed ? "justify-center" : "justify-end"}`}>
           <button
             type="button"
             onClick={toggleSidebar}
