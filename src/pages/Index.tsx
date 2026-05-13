@@ -553,17 +553,14 @@ const Index = () => {
       <div className="mb-4">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="relative">
-              <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center shadow-lg">
-                <Brain className="h-6 w-6 text-white" />
-              </div>
-              <Sparkles className="absolute -top-1 -right-1 h-3.5 w-3.5 text-primary animate-pulse" />
+            <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+              <Brain className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-[26px] font-bold tracking-tight bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent leading-tight">
+              <h1 className="text-[24px] font-semibold tracking-tight text-foreground leading-tight">
                 上海市绿色制造体系能碳数智全景看板
               </h1>
-              <p className="text-xs text-slate-600 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 数据来源：上海市绿色制造体系名单（2025.11） · AI 智能体驱动 · 一屏通览
                 <span className="ml-2 inline-flex items-center gap-1 text-primary">
                   <span className="glow-dot" /> 实时联动：<span className="font-semibold">{linkedSummary}</span>
