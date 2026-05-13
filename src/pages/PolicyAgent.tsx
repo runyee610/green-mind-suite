@@ -227,16 +227,22 @@ export default function PolicyAgent() {
               <ScrollArea className="h-[560px] pr-2">
                 <ul className="space-y-2">
                   {filtered.map((p) => (
-                    <li key={p.id}>
+                    <li key={p.id} className="animate-fade-in">
                       <button
                         onClick={() => setSelectedId(p.id)}
                         className={cn(
-                          "w-full text-left rounded-lg border p-3 transition hover:border-primary/50 hover:bg-primary/5",
+                          "group relative w-full overflow-hidden text-left rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-0.5",
                           selected.id === p.id
-                            ? "border-primary bg-primary/5 shadow-sm"
+                            ? "border-primary/60 bg-gradient-to-br from-primary/10 via-card to-cyan-500/5 shadow-[0_0_0_1px_hsl(var(--primary)/0.2),0_8px_24px_-12px_hsl(var(--primary)/0.4)]"
                             : "border-border bg-card"
                         )}
                       >
+                        {selected.id === p.id && (
+                          <span
+                            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"
+                            style={{ animation: "scan 2.4s linear infinite" }}
+                          />
+                        )}
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
@@ -254,9 +260,19 @@ export default function PolicyAgent() {
                             <p className="mt-1 text-[11px] text-muted-foreground truncate">{p.issuer}</p>
                           </div>
                           <div className="shrink-0 text-right">
-                            <div className="text-lg font-semibold text-primary leading-none">{p.matchScore}</div>
-                            <div className="text-[10px] text-muted-foreground mt-0.5">匹配度</div>
+                            <div className={cn(
+                              "font-mono text-xl font-bold leading-none tabular-nums",
+                              selected.id === p.id ? "text-primary [text-shadow:0_0_12px_hsl(var(--primary)/0.5)]" : "text-primary",
+                            )}>{p.matchScore}</div>
+                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">匹配度</div>
                           </div>
+                        </div>
+                        {/* match score bar */}
+                        <div className="mt-2 h-0.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-400 to-cyan-400"
+                            style={{ width: `${p.matchScore}%` }}
+                          />
                         </div>
                         <div className="mt-2 flex items-center justify-between text-[11px]">
                           <span className="inline-flex items-center gap-1 text-muted-foreground">
