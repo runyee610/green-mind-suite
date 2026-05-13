@@ -1,9 +1,7 @@
-import { Bell, Search, Sun, User, Building2, Briefcase } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Bell, Sun, User, Building2, Briefcase, ChevronRight } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRole, type Role } from "@/contexts/RoleContext";
