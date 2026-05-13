@@ -177,18 +177,9 @@ export default function PolicyAgent() {
                 <CardTitle className="text-base flex flex-wrap items-center gap-2">
                   <span className="relative flex h-7 w-7 items-center justify-center rounded-md bg-gradient-primary text-primary-foreground shadow-elevated">
                     <Sparkles className="h-3.5 w-3.5" />
-                    <span className="absolute inset-0 rounded-md ring-1 ring-primary/40 animate-pulse-glow" />
                   </span>
                   <span className="font-semibold">{role === "gov" ? "可定向推送企业的政策" : "为您主动推送的政策"}</span>
-                  <Badge
-                    variant="outline"
-                    className="border-primary/40 bg-primary/5 font-mono text-[10px] uppercase tracking-wider text-primary"
-                  >
-                    <Zap className="mr-1 h-3 w-3" />
-                    PolicyMatch v2.1
-                  </Badge>
-                  <span className="hidden md:inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-600">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                  <span className="text-xs text-muted-foreground font-normal">
                     {role === "gov" ? `已匹配 ${matchedEnt} 家企业` : `今日推送 ${pushedToday} 条`}
                   </span>
                 </CardTitle>
@@ -198,14 +189,10 @@ export default function PolicyAgent() {
                     <Input
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="搜索政策 / 标签"
+                      placeholder="搜索政策"
                       className="h-8 w-56 pl-8 text-xs"
                     />
                   </div>
-                  <Button variant="outline" size="sm" className="h-8 gap-1">
-                    <Filter className="h-3.5 w-3.5" />
-                    筛选
-                  </Button>
                 </div>
               </div>
               <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="mt-2">
