@@ -151,16 +151,8 @@ export default function PolicyAgent() {
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_440px] xl:grid-cols-[minmax(0,1fr)_520px]">
         {/* 左侧：政策推送 */}
         <div className="flex min-w-0 flex-col gap-4">
-          {/* 概览 KPI（仅企业侧展示） */}
-          {role === "ent" && (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <KpiTile icon={<Coins className="h-4 w-4" />} label="可申报金额" value="≈ 1380 万" hint="估算" tone="success" />
-              <KpiTile icon={<CheckCircle2 className="h-4 w-4" />} label="本月已申报" value="1" hint="申报中" tone="warning" />
-            </div>
-          )}
-
           {/* 列表 + 详情 */}
-          <Card className="panel relative overflow-hidden">
+          <Card className="panel relative overflow-hidden flex flex-col h-[760px]">
             {/* tech background */}
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.06]"
@@ -222,9 +214,9 @@ export default function PolicyAgent() {
               </Tabs>
             </CardHeader>
 
-            <CardContent className="relative grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+            <CardContent className="relative grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] flex-1 min-h-0 overflow-hidden">
               {/* 列表 */}
-              <ScrollArea className="h-[560px] pr-2">
+              <ScrollArea className="h-full pr-2">
                 <ul className="space-y-2">
                   {filtered.map((p) => (
                     <li key={p.id} className="animate-fade-in">
@@ -292,7 +284,7 @@ export default function PolicyAgent() {
               </ScrollArea>
 
               {/* 详情 */}
-              <div className="rounded-lg border border-border bg-card/40 p-4">
+              <div className="rounded-lg border border-border bg-card/40 p-4 overflow-y-auto h-full">
                 <div className="flex items-start gap-2 mb-3">
                   <Badge variant="outline" className={cn(categoryColor[selected.category])}>
                     {selected.category}
