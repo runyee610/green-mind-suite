@@ -272,35 +272,33 @@ function ArchiveDetailCard({ archive, embedded = false }: { archive: GreenArchiv
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className={embedded ? "h-[360px] pr-3" : "h-[280px] pr-3"}>
-            <ol className="relative space-y-4 border-l border-border/60 pl-5">
-              {archive.timeline.map((n, i) => (
-                <li key={i} className="relative">
-                  <span className={cn(
-                    "absolute -left-[26px] top-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background",
-                    typeBadgeBg(n.type),
-                  )}>
-                    <span className="h-1.5 w-1.5 rounded-full bg-background" />
-                  </span>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="outline" className="text-[10px]">{n.type}</Badge>
-                    <span className="text-sm font-medium">{n.title}</span>
-                    {n.score != null && (
-                      <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-                        <Sparkles className="mr-0.5 h-3 w-3" />{n.score} 分
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3" />{n.date}
-                    {n.source && <><span>·</span><span>{n.source}</span></>}
-                    {n.result && <><span>·</span><span>{n.result}</span></>}
-                  </p>
-                  {n.detail && <p className="mt-1 text-xs text-muted-foreground">{n.detail}</p>}
-                </li>
-              ))}
-            </ol>
-          </ScrollArea>
+          <ol className="relative space-y-4 border-l border-border/60 pl-5">
+            {archive.timeline.map((n, i) => (
+              <li key={i} className="relative">
+                <span className={cn(
+                  "absolute -left-[26px] top-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background",
+                  typeBadgeBg(n.type),
+                )}>
+                  <span className="h-1.5 w-1.5 rounded-full bg-background" />
+                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="outline" className="text-[10px]">{n.type}</Badge>
+                  <span className="text-sm font-medium">{n.title}</span>
+                  {n.score != null && (
+                    <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
+                      <Sparkles className="mr-0.5 h-3 w-3" />{n.score} 分
+                    </Badge>
+                  )}
+                </div>
+                <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3" />{n.date}
+                  {n.source && <><span>·</span><span>{n.source}</span></>}
+                  {n.result && <><span>·</span><span>{n.result}</span></>}
+                </p>
+                {n.detail && <p className="mt-1 text-xs text-muted-foreground">{n.detail}</p>}
+              </li>
+            ))}
+          </ol>
         </CardContent>
       </Card>
 
