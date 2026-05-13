@@ -160,12 +160,40 @@ export default function PolicyAgent() {
           )}
 
           {/* 列表 + 详情 */}
-          <Card className="panel">
-            <CardHeader className="pb-3">
+          <Card className="panel relative overflow-hidden">
+            {/* tech background */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.06]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
+                maskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+                WebkitMaskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+              }}
+            />
+            <div className="pointer-events-none absolute -top-32 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -left-20 h-60 w-60 rounded-full bg-cyan-400/10 blur-3xl" />
+
+            <CardHeader className="relative pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  {role === "gov" ? "可定向推送企业的政策" : "为您主动推送的政策"}
+                <CardTitle className="text-base flex flex-wrap items-center gap-2">
+                  <span className="relative flex h-7 w-7 items-center justify-center rounded-md bg-gradient-primary text-primary-foreground shadow-elevated">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span className="absolute inset-0 rounded-md ring-1 ring-primary/40 animate-pulse-glow" />
+                  </span>
+                  <span className="font-semibold">{role === "gov" ? "可定向推送企业的政策" : "为您主动推送的政策"}</span>
+                  <Badge
+                    variant="outline"
+                    className="border-primary/40 bg-primary/5 font-mono text-[10px] uppercase tracking-wider text-primary"
+                  >
+                    <Zap className="mr-1 h-3 w-3" />
+                    PolicyMatch v2.1
+                  </Badge>
+                  <span className="hidden md:inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-600">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                    {role === "gov" ? `已匹配 ${matchedEnt} 家企业` : `今日推送 ${pushedToday} 条`}
+                  </span>
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <div className="relative">
@@ -194,7 +222,7 @@ export default function PolicyAgent() {
               </Tabs>
             </CardHeader>
 
-            <CardContent className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+            <CardContent className="relative grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               {/* 列表 */}
               <ScrollArea className="h-[560px] pr-2">
                 <ul className="space-y-2">
