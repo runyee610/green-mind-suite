@@ -214,9 +214,9 @@ export default function PolicyAgent() {
               </Tabs>
             </CardHeader>
 
-            <CardContent className="relative grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+            <CardContent className="relative grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] flex-1 min-h-0 overflow-hidden">
               {/* 列表 */}
-              <ScrollArea className="h-[560px] pr-2">
+              <ScrollArea className="h-full pr-2">
                 <ul className="space-y-2">
                   {filtered.map((p) => (
                     <li key={p.id} className="animate-fade-in">
