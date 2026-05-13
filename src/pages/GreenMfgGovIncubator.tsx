@@ -332,7 +332,7 @@ export default function GreenMfgGovIncubator() {
         <KpiCard
           title="重点用能单位"
           value={keyEnergy.length}
-          subtitle="强制纳入培育"
+          subtitle="10 家企业"
           icon={Flame}
           accent="warning"
           extra={`占比 ${Math.round((keyEnergy.length / totalCount) * 100)}%`}
@@ -340,7 +340,7 @@ export default function GreenMfgGovIncubator() {
         <KpiCard
           title="10亿+非重点规上"
           value={bigOutput.length}
-          subtitle="高产值优先培育"
+          subtitle="10 家企业"
           icon={TrendingUp}
           accent="success"
           extra={`占比 ${Math.round((bigOutput.length / totalCount) * 100)}%`}
