@@ -293,51 +293,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       className="h-8 w-64 pl-8 text-xs"
                     />
                   </div>
-                  <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                    <SelectTrigger className="h-8 w-52 text-xs">
-                      <Filter className="mr-1 h-3 w-3" />
-                      <SelectValue placeholder="行业" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-96">
-                      <SelectItem value="all" className="text-xs font-medium">全部行业</SelectItem>
-                      <div className="my-1 h-px bg-border/60" />
-                      <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-warning">重点行业</div>
-                      {INDUSTRY_TREE.filter((n) => n.type === "重点行业").map((node) => {
-                        const expanded = !!expandedIndustries[node.name];
-                        return (
-                          <SelectGroup key={node.name}>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleIndustry(node.name); }}
-                              onPointerDown={(e) => e.stopPropagation()}
-                              className="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-left text-[11px] font-semibold text-foreground hover:bg-accent"
-                            >
-                              {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning" />
-                              {node.name}
-                            </button>
-                            {expanded && (
-                              <>
-                                <SelectItem value={node.name} className="pl-7 text-xs text-muted-foreground">全部 {node.name}</SelectItem>
-                                {node.children.map((c) => (
-                                  <SelectItem key={c} value={c} className="pl-7 text-xs">{c}</SelectItem>
-                                ))}
-                              </>
-                            )}
-                          </SelectGroup>
-                        );
-                      })}
-                      <div className="my-1 h-px bg-border/60" />
-                      <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">非重点行业</div>
-                      {INDUSTRY_TREE.filter((n) => n.type !== "重点行业").map((node) => (
-                        <SelectGroup key={node.name}>
-                          {node.children.map((c) => (
-                            <SelectItem key={c} value={c} className="pl-7 text-xs">{c}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <IndustryCascadeFilter value={industryFilter} onChange={setIndustryFilter} />
                   <Select value={batchFilter} onValueChange={setBatchFilter}>
                     <SelectTrigger className="h-8 w-36 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
