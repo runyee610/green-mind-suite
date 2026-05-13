@@ -135,20 +135,20 @@ export default function PolicyAgent() {
       title="政策智能推送智能体"
       subtitle={
         role === "gov"
-          ? "政府侧 · 标签化政策推送 + 智能问答触达"
-          : "企业侧 · 主动政策匹配 + 申报材料 AI 辅导"
+          ? "政府侧 · 绿色制造政策标签化定向推送 + 企业匹配触达"
+          : "企业侧 · 绿色制造主动政策匹配 + 申报材料 AI 辅导"
       }
     >
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_440px] xl:grid-cols-[minmax(0,1fr)_520px]">
         {/* 左侧：政策推送 */}
         <div className="flex min-w-0 flex-col gap-4">
-          {/* 概览 KPI */}
-          <div className="grid gap-3 sm:grid-cols-4">
-            <KpiTile icon={<Sparkles className="h-4 w-4" />} label="智能匹配" value="5" hint="待查看 3" tone="primary" />
-            <KpiTile icon={<Zap className="h-4 w-4" />} label="高优先级" value="2" hint="临近截止" tone="destructive" />
-            <KpiTile icon={<Coins className="h-4 w-4" />} label="可申报金额" value="≈ 1380 万" hint="估算" tone="success" />
-            <KpiTile icon={<CheckCircle2 className="h-4 w-4" />} label="本月已申报" value="1" hint="申报中" tone="warning" />
-          </div>
+          {/* 概览 KPI（仅企业侧展示） */}
+          {role === "ent" && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <KpiTile icon={<Coins className="h-4 w-4" />} label="可申报金额" value="≈ 1380 万" hint="估算" tone="success" />
+              <KpiTile icon={<CheckCircle2 className="h-4 w-4" />} label="本月已申报" value="1" hint="申报中" tone="warning" />
+            </div>
+          )}
 
           {/* 列表 + 详情 */}
           <Card className="panel">
