@@ -56,7 +56,26 @@ export default function PolicyAgent() {
   const [tab, setTab] = useState<"全部" | PolicyCategory>("全部");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string>(MOCK_POLICIES[0].id);
-  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_CHAT);
+  const GOV_SUGGESTIONS = [
+    "本月有哪些政策需要重点定向推送？",
+    "辖区内哪些企业最适合申报绿色信贷？",
+    "帮我梳理待发布的绿色制造政策清单",
+    "当前政策与企业整改项目的匹配覆盖率？",
+    "哪些绿色技改项目缺乏政策资金支持？",
+  ];
+  const GOV_INITIAL: ChatMessage[] = [
+    {
+      id: "gov-m-0",
+      role: "assistant",
+      content:
+        "您好，我是政策智能推送助手 PolicyGPT（政府版）。我已基于辖区绿色制造企业的整改项目、自评价数据与动态档案，整理出 5 项可定向推送的政策（覆盖 23 家企业，其中 2 项临近截止）。您可以在左侧查看政策池、调整推送策略，或直接向我提问。",
+      timestamp: "刚刚",
+      suggestions: GOV_SUGGESTIONS.slice(0, 3),
+    },
+  ];
+  const [messages, setMessages] = useState<ChatMessage[]>(
+    role === "gov" ? GOV_INITIAL : INITIAL_CHAT
+  );
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
