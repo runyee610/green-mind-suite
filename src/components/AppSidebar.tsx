@@ -40,18 +40,17 @@ const greenItemsByRole: Record<"gov" | "ent", NavItem[]> = {
     { title: "自评价管理", url: "/green-mfg/gov", icon: ShieldCheck },
     { title: "梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
-    { title: "AI 对话", url: "/green-mfg-agent", icon: Megaphone },
   ],
   ent: [
     { title: "自评价管理", url: "/green-mfg/ent", icon: ShieldCheck },
     { title: "梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
-    { title: "AI 对话", url: "/green-mfg-agent", icon: Megaphone },
   ],
 };
 
 const policyItems: NavItem[] = [
-  { title: "政策智能推送", url: "/policy-agent", icon: Megaphone },
+  { title: "AI 数字咨询", url: "/green-mfg-agent", icon: Megaphone },
+  { title: "AI 政策智能推送", url: "/policy-agent", icon: Megaphone },
 ];
 
 export const navItems: NavItem[] = [
