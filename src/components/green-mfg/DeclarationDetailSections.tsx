@@ -1032,7 +1032,7 @@ export function EvaluationIndicatorCard({
                         basePlaceholder: "2级水平",
                         weightHeader: (
                           <>
-                            加权参数
+                            权重分值
                             <br />
                             （吨标煤）
                           </>
