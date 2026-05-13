@@ -130,6 +130,15 @@ export default function PolicyAgent() {
     });
   };
 
+  // 实时指标(仅装饰)
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const i = setInterval(() => setTick((t) => t + 1), 1500);
+    return () => clearInterval(i);
+  }, []);
+  const matchedEnt = 23 + (tick % 3);
+  const pushedToday = 47 + (tick % 5);
+
   return (
     <AppLayout
       title="政策智能推送智能体"
