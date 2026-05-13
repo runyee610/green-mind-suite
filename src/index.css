@@ -140,3 +140,52 @@
   50% { opacity: 1; }
   100% { transform: translateY(100%); opacity: 0; }
 }
+
+/* ============ 全景看板 - 玻璃拟态 / 霓虹呼吸 ============ */
+@layer components {
+  .glass-card {
+    position: relative;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, hsl(200 60% 98% / 0.85), hsl(168 40% 96% / 0.7));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid hsl(180 40% 70% / 0.3);
+    box-shadow:
+      0 1px 0 hsl(0 0% 100% / 0.6) inset,
+      0 8px 32px hsl(195 50% 30% / 0.08),
+      0 0 0 1px hsl(180 50% 60% / 0.08);
+  }
+  .glass-card-cyan {
+    border-color: hsl(189 85% 55% / 0.35);
+    box-shadow:
+      0 1px 0 hsl(0 0% 100% / 0.7) inset,
+      0 0 24px hsl(189 90% 55% / 0.18),
+      0 8px 32px hsl(195 50% 30% / 0.1);
+    animation: breathe-cyan 4s ease-in-out infinite;
+  }
+  .glass-card-green {
+    border-color: hsl(150 65% 45% / 0.35);
+    box-shadow:
+      0 1px 0 hsl(0 0% 100% / 0.7) inset,
+      0 0 24px hsl(150 80% 50% / 0.18),
+      0 8px 32px hsl(155 50% 30% / 0.1);
+    animation: breathe-green 4.5s ease-in-out infinite;
+  }
+  .neon-text-cyan {
+    color: hsl(189 90% 38%);
+    text-shadow: 0 0 12px hsl(189 90% 55% / 0.5);
+  }
+  .neon-text-green {
+    color: hsl(155 75% 32%);
+    text-shadow: 0 0 12px hsl(150 80% 45% / 0.4);
+  }
+}
+
+@keyframes breathe-cyan {
+  0%, 100% { box-shadow: 0 1px 0 hsl(0 0% 100% / 0.7) inset, 0 0 18px hsl(189 90% 55% / 0.15), 0 8px 32px hsl(195 50% 30% / 0.1); }
+  50% { box-shadow: 0 1px 0 hsl(0 0% 100% / 0.7) inset, 0 0 36px hsl(189 90% 55% / 0.35), 0 8px 32px hsl(195 50% 30% / 0.12); }
+}
+@keyframes breathe-green {
+  0%, 100% { box-shadow: 0 1px 0 hsl(0 0% 100% / 0.7) inset, 0 0 18px hsl(150 80% 50% / 0.15), 0 8px 32px hsl(155 50% 30% / 0.1); }
+  50% { box-shadow: 0 1px 0 hsl(0 0% 100% / 0.7) inset, 0 0 36px hsl(150 80% 50% / 0.35), 0 8px 32px hsl(155 50% 30% / 0.12); }
+}
