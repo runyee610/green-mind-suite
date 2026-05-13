@@ -20,6 +20,7 @@ import {
   type AuthenticityCommitmentValue,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
+import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
 import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import { toast } from "sonner";
 
@@ -30,6 +31,7 @@ const ANCHORS = [
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
   { href: "authenticity-commitment", label: "真实性承诺" },
+  { href: "ai-scoring", label: "AI 打分智能体" },
 ];
 
 // 默认企业信息（登录企业），新增自评价时自动带入，不可编辑
