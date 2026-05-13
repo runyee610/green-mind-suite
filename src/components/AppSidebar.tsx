@@ -120,7 +120,7 @@ export function AppSidebar() {
               <SidebarGroup>
                 {!collapsed && (
                   <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-sidebar-foreground/80">
-                    绿色制造智能体
+                    绿色制造
                   </SidebarGroupLabel>
                 )}
                 <SidebarGroupContent>
@@ -130,7 +130,7 @@ export function AppSidebar() {
               <SidebarGroup>
                 {!collapsed && (
                   <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-sidebar-foreground/80">
-                    政策智能体
+                    绿色智能体
                   </SidebarGroupLabel>
                 )}
                 <SidebarGroupContent>
