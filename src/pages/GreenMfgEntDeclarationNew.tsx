@@ -20,6 +20,7 @@ import {
   type AuthenticityCommitmentValue,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
+import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
 import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import { toast } from "sonner";
 
@@ -30,6 +31,7 @@ const ANCHORS = [
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
   { href: "authenticity-commitment", label: "真实性承诺" },
+  { href: "ai-scoring", label: "AI 打分智能体" },
 ];
 
 // 默认企业信息（登录企业），新增自评价时自动带入，不可编辑
@@ -163,33 +165,15 @@ export default function GreenMfgEntDeclarationNew() {
         </div>
       }
     >
-      {/* 顶部操作栏 */}
-      <div className="mb-4 flex items-center justify-end gap-3">
-        {draftSavedAt && (
-          <span className="text-[11px] text-muted-foreground">
-            草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
-          </span>
-        )}
-        <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
-          <ArrowLeft className="mr-1 h-4 w-4" />返回
-        </Button>
-        <Button size="sm" variant="outline" onClick={handleSave}>
-          <Save className="mr-1 h-4 w-4" />保存草稿
-        </Button>
-        <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-          <Send className="mr-1 h-4 w-4" />提交自评价
-        </Button>
-      </div>
-
-      {/* 自评价批次选择 */}
+      {/* 顶部操作栏：批次 + 操作按钮一行 */}
       <Card className="panel mb-4">
-        <CardContent className="flex flex-wrap items-center gap-4 p-4">
-          <div className="space-y-1.5 flex-1 min-w-[240px]">
+        <CardContent className="flex flex-wrap items-end gap-3 p-3">
+          <div className="flex-1 min-w-[240px] space-y-1.5">
             <Label className="text-xs text-muted-foreground">
               自评价批次<span className="ml-1 text-destructive">*</span>
             </Label>
             <Select value={batch} onValueChange={setBatch}>
-              <SelectTrigger>
+              <SelectTrigger className="h-9">
                 <SelectValue placeholder="请选择自评价批次" />
               </SelectTrigger>
               <SelectContent>
@@ -203,6 +187,22 @@ export default function GreenMfgEntDeclarationNew() {
                 })}
               </SelectContent>
             </Select>
+          </div>
+          {draftSavedAt && (
+            <span className="pb-2 text-[11px] text-muted-foreground">
+              草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
+            </span>
+          )}
+          <div className="flex items-center gap-2 pb-0.5">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
+              <ArrowLeft className="mr-1 h-4 w-4" />返回
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              <Save className="mr-1 h-4 w-4" />保存草稿
+            </Button>
+            <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
+              <Send className="mr-1 h-4 w-4" />提交自评价
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -231,6 +231,7 @@ export default function GreenMfgEntDeclarationNew() {
         {currentStep === ANCHORS[3].href && (
           <AuthenticityCommitmentCard editable value={commitment} onChange={setCommitment} />
         )}
+        {currentStep === ANCHORS[4].href && <AIScoringAgentPanel />}
       </StepTabs>
 
       <div className="mt-6 flex items-center justify-between gap-2">
