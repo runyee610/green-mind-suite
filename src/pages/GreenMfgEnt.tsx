@@ -35,7 +35,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
     <AppLayout
       title={
         section === "dynamic"
-          ? "绿色工厂动态管理 · 企业侧"
+          ? "绿色工厂动态管理 · 申能电力设备股份有限公司"
           : "绿色工厂自评价-上海宝武特种合金有限公司"
       }
       subtitle={
