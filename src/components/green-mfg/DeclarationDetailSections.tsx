@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs as GuideTabs, TabsList as GuideTabsList, TabsTrigger as GuideTabsTrigger, TabsContent as GuideTabsContent } from "@/components/ui/tabs";
-import { Building2, Calculator, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, NotebookPen, Sparkles, Upload } from "lucide-react";
+import { Building2, Calculator, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, NotebookPen, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, PLATFORM_FUNCTION_OPTIONS, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
