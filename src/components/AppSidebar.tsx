@@ -34,7 +34,7 @@ type NavItem = {
 
 export const navItems: NavItem[] = [
   { title: "全景视图看板", url: "/", icon: LayoutDashboard },
-  { title: "绿色工厂申报 · 政府侧", url: "/green-mfg/gov", icon: ShieldCheck },
+  { title: "绿色工厂梯度培育 · 企业侧", url: "/green-mfg/gov", icon: ShieldCheck },
   { title: "绿色工厂申报 · 企业侧", url: "/green-mfg/ent", icon: ClipboardList },
   { title: "绿色工厂培育库 · 政府侧", url: "/green-mfg/gov/incubator", icon: Sprout },
   { title: "绿色工厂培育库 · 企业侧", url: "/green-mfg/ent/incubator", icon: Leaf },
