@@ -241,7 +241,7 @@ function KpiTile({
       {nation !== undefined && (
         <div className="mt-2 flex items-center gap-1.5 rounded-md px-2 py-1 bg-gradient-to-r from-amber-100/80 via-rose-100/70 to-amber-100/40 border border-amber-300/60 shadow-inner">
           <Trophy className="h-3.5 w-3.5 text-amber-600" />
-          <span className="text-[10px] font-semibold text-amber-800 tracking-wide">国家级</span>
+          <span className="text-[10px] font-semibold text-amber-800 tracking-wide border-0">国家级</span>
           <span className="text-[20px] font-extrabold tabular-nums text-amber-700 leading-none ml-0.5" style={{ textShadow: "0 0 10px hsl(35 95% 55% / 0.35)" }}>{nation}</span>
           <span className="text-[10px] text-amber-700/90">{nationUnit}</span>
           {nationExtra && <span className="ml-auto text-[10px] text-amber-700/80 font-medium">{nationExtra}</span>}
@@ -769,7 +769,7 @@ const Index = () => {
                 <Brain className="h-3.5 w-3.5 text-white" />
               </div>
               <div className="bg-white/60 rounded-lg p-2 leading-relaxed text-slate-700">
-                您好，我是 <span className="font-semibold neon-text-green">能碳智能体</span>。当前覆盖 16 区 · 523 家市级绿色工厂 · 196 家国家级。试试问："汽车产业绿色化率？"
+                您好，我是 <span className="font-semibold neon-text-green">绿色制造数字智能体</span>。当前覆盖 16 区 · 523 家市级绿色工厂 · 196 家国家级。试试问："汽车产业绿色化率？"
               </div>
             </div>
             <div className="flex gap-2 justify-end">
