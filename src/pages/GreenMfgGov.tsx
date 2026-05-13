@@ -299,7 +299,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                   <Table>
                     <TableHeader>
                       <TableRow className="border-border/60 hover:bg-transparent">
-                        <TableHead>编号</TableHead>
+                        
                         <TableHead>企业名称</TableHead>
                         <TableHead>所属区</TableHead>
                         <TableHead className="text-center">年度</TableHead>
