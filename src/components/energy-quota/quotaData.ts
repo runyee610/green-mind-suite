@@ -189,7 +189,7 @@ export const sampleDetail: QuotaDetail = {
   enterpriseId: "e2",
   enterpriseName: "上海宝山钢铁股份有限公司",
   creditCode: "913100007050125XXY",
-  industry: "黑色金属冶炼",
+  industry: "水的生产和供应",
   cyclePeriod: "202601-202612",
   standardCode: "DB31/T 555-2022",
   standardName: "上海市钢铁行业能耗限额",
