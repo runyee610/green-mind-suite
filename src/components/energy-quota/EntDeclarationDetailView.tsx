@@ -124,6 +124,17 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
   const [plants, setPlants] = useState<PlantData[]>([seedPlant]);
   const [activePlantIdx, setActivePlantIdx] = useState(0);
 
+  // 限额报告字段（复用历史填报）
+  const [reportBasicDesc, setReportBasicDesc] = useState(
+    "本企业为中外合资经营企业，主要产品为自来水制水，包含取水、混凝、沉淀、过滤、消毒、清水池、二级泵房等工艺工序。能源计量器具按照 GB 17167 配备至三级，电能、水量计量数据接入 SCADA 系统。",
+  );
+  const [reportEnergyDesc, setReportEnergyDesc] = useState("");
+  const [reportProcessDesc, setReportProcessDesc] = useState("");
+  const [reportProcessImages, setReportProcessImages] = useState<UploadedFile[]>([]);
+  const [reportCalcDesc, setReportCalcDesc] = useState("");
+  const [reportMeterConfirmed, setReportMeterConfirmed] = useState(false);
+  const [reportFinalConfirmed, setReportFinalConfirmed] = useState(false);
+
   const updatePlant = (idx: number, patch: Partial<PlantData>) => {
     setPlants((prev) => prev.map((p, i) => (i === idx ? { ...p, ...patch } : p)));
   };
