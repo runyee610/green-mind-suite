@@ -29,6 +29,11 @@ import {
 } from "@/components/report-monthly/EnterpriseTypeSwitcher";
 
 export default function ReportMonthly() {
+  const { role } = useRole();
+  const isEnt = role === "ent";
+  // 企业侧锁定到当前企业（演示：第一家）
+  const entCode = reports[0]?.code;
+
   const [detailReport, setDetailReport] = useState<MonthlyReport | null>(null);
   const [enterpriseType, setEnterpriseType] = useState<EnterpriseTypeId>(TYPE_HAS_STEAM);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
@@ -46,6 +51,7 @@ export default function ReportMonthly() {
   const filteredReports = useMemo(
     () =>
       reports.filter((report) => {
+        if (isEnt) return report.code === entCode;
         const keywordHit =
           !filters.keyword ||
           report.name.includes(filters.keyword) ||
@@ -58,7 +64,7 @@ export default function ReportMonthly() {
           report.month === filters.month
         );
       }),
-    [filters],
+    [filters, isEnt, entCode],
   );
 
   // KPI 跟随筛选结果联动
