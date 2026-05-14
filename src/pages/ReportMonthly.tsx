@@ -30,6 +30,7 @@ import {
 } from "@/components/report-monthly/EnterpriseTypeSwitcher";
 
 export default function ReportMonthly() {
+  const navigate = useNavigate();
   const { role } = useRole();
   const isEnt = role === "ent";
   // 企业侧锁定到当前企业（演示：第一家）
