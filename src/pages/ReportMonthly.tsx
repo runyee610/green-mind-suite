@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Building2, Download, Eye, FileDown, FileSpreadsheet, Search } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { useRole } from "@/contexts/RoleContext";
 import { ReportDetailView } from "@/components/report-monthly/ReportDetailView";
 import {
   exportFields,
@@ -28,6 +29,11 @@ import {
 } from "@/components/report-monthly/EnterpriseTypeSwitcher";
 
 export default function ReportMonthly() {
+  const { role } = useRole();
+  const isEnt = role === "ent";
+  // 企业侧锁定到当前企业（演示：第一家）
+  const entCode = reports[0]?.code;
+
   const [detailReport, setDetailReport] = useState<MonthlyReport | null>(null);
   const [enterpriseType, setEnterpriseType] = useState<EnterpriseTypeId>(TYPE_HAS_STEAM);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
@@ -45,6 +51,7 @@ export default function ReportMonthly() {
   const filteredReports = useMemo(
     () =>
       reports.filter((report) => {
+        if (isEnt) return report.code === entCode && report.month === filters.month;
         const keywordHit =
           !filters.keyword ||
           report.name.includes(filters.keyword) ||
@@ -57,7 +64,7 @@ export default function ReportMonthly() {
           report.month === filters.month
         );
       }),
-    [filters],
+    [filters, isEnt, entCode],
   );
 
   // KPI 跟随筛选结果联动
@@ -164,56 +171,62 @@ export default function ReportMonthly() {
                   上海市重点用能单位温报与节能指标月报填报情况
                 </p>
               </div>
-              <Button
-                size="sm"
-                className="gap-2"
-                onClick={() => setExportOpen(true)}
-                disabled={selectedCodes.length === 0}
-              >
-                <Download className="h-4 w-4" />
-                一键导出 Excel
-              </Button>
+              {!isEnt && (
+                <Button
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setExportOpen(true)}
+                  disabled={selectedCodes.length === 0}
+                >
+                  <Download className="h-4 w-4" />
+                  一键导出 Excel
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-              <div className="relative xl:col-span-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  className="bg-background pl-9"
-                  placeholder="企业名称 / 信用代码 / 行业"
-                  value={filters.keyword}
-                  onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
-                />
-              </div>
-              <Select value={filters.industry} onValueChange={(industry) => setFilters({ ...filters, industry })}>
-                <SelectTrigger className="bg-background">
-                  <SelectValue placeholder="所属行业" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="全部">全部行业</SelectItem>
-                  <SelectItem value="黑色金属冶炼">黑色金属冶炼</SelectItem>
-                  <SelectItem value="石油化工">石油化工</SelectItem>
-                  <SelectItem value="电子信息">电子信息</SelectItem>
-                  <SelectItem value="装备制造">装备制造</SelectItem>
-                  <SelectItem value="日化轻工">日化轻工</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={filters.district} onValueChange={(district) => setFilters({ ...filters, district })}>
-                <SelectTrigger className="bg-background">
-                  <SelectValue placeholder="行政区划" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="全部">全部区划</SelectItem>
-                  <SelectItem value="宝山区">宝山区</SelectItem>
-                  <SelectItem value="金山区">金山区</SelectItem>
-                  <SelectItem value="浦东新区">浦东新区</SelectItem>
-                  <SelectItem value="嘉定区">嘉定区</SelectItem>
-                  <SelectItem value="闵行区">闵行区</SelectItem>
-                  <SelectItem value="青浦区">青浦区</SelectItem>
-                  <SelectItem value="长兴岛">长兴岛</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className={cn("grid grid-cols-1 gap-3", isEnt ? "" : "md:grid-cols-2 xl:grid-cols-4")}>
+              {!isEnt && (
+                <>
+                  <div className="relative xl:col-span-1">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      className="bg-background pl-9"
+                      placeholder="企业名称 / 信用代码 / 行业"
+                      value={filters.keyword}
+                      onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
+                    />
+                  </div>
+                  <Select value={filters.industry} onValueChange={(industry) => setFilters({ ...filters, industry })}>
+                    <SelectTrigger className="bg-background">
+                      <SelectValue placeholder="所属行业" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="全部">全部行业</SelectItem>
+                      <SelectItem value="黑色金属冶炼">黑色金属冶炼</SelectItem>
+                      <SelectItem value="石油化工">石油化工</SelectItem>
+                      <SelectItem value="电子信息">电子信息</SelectItem>
+                      <SelectItem value="装备制造">装备制造</SelectItem>
+                      <SelectItem value="日化轻工">日化轻工</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={filters.district} onValueChange={(district) => setFilters({ ...filters, district })}>
+                    <SelectTrigger className="bg-background">
+                      <SelectValue placeholder="行政区划" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="全部">全部区划</SelectItem>
+                      <SelectItem value="宝山区">宝山区</SelectItem>
+                      <SelectItem value="金山区">金山区</SelectItem>
+                      <SelectItem value="浦东新区">浦东新区</SelectItem>
+                      <SelectItem value="嘉定区">嘉定区</SelectItem>
+                      <SelectItem value="闵行区">闵行区</SelectItem>
+                      <SelectItem value="青浦区">青浦区</SelectItem>
+                      <SelectItem value="长兴岛">长兴岛</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
               <Input
                 type="month"
                 value={filters.month}
