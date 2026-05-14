@@ -528,23 +528,33 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                   <TableRow>
                     <TableHead className="w-12">序号</TableHead>
                     <TableHead>水厂</TableHead>
-                    <TableHead className="text-right">计算值</TableHead>
-                    <TableHead className="text-right">限定值</TableHead>
-                    <TableHead className="text-right">准入值</TableHead>
-                    <TableHead className="text-right">先进值</TableHead>
+                    <TableHead>指标</TableHead>
+                    <TableHead className="text-right w-28">数值</TableHead>
+                    <TableHead className="text-xs">计算公式</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {summary.map((s) => (
-                    <TableRow key={s.idx}>
-                      <TableCell className="font-mono text-xs">{s.idx}</TableCell>
-                      <TableCell className="font-medium">{s.name}</TableCell>
-                      <TableCell className="text-right font-mono text-xs text-primary font-semibold">{fmt(s.calc)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{fmt(s.limit)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{fmt(s.access)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{fmt(s.advance)}</TableCell>
-                    </TableRow>
-                  ))}
+                  {summary.map((s) => {
+                    const rows = [
+                      { label: "计算值", value: s.calc, formula: "制水总耗电量 / 自来水总制水量", highlight: true },
+                      { label: "限定值", value: s.limit, formula: "168×(1+0.35·深度/总+0.066·污泥/总)+400×(压力-0.3)" },
+                      { label: "准入值", value: s.access, formula: "144×(1+0.4·深度/总+0.077·污泥/总)+380×(压力-0.3)" },
+                      { label: "先进值", value: s.advance, formula: "138×(1+0.43·深度/总+0.08·污泥/总)+350×(压力-0.3)" },
+                    ];
+                    return rows.map((r, i) => (
+                      <TableRow key={`${s.idx}-${r.label}`}>
+                        {i === 0 ? (
+                          <>
+                            <TableCell rowSpan={4} className="font-mono text-xs align-top">{s.idx}</TableCell>
+                            <TableCell rowSpan={4} className="font-medium align-top">{s.name}</TableCell>
+                          </>
+                        ) : null}
+                        <TableCell className="text-sm">{r.label}</TableCell>
+                        <TableCell className={cn("text-right font-mono text-xs", r.highlight && "text-primary font-semibold")}>{fmt(r.value)}</TableCell>
+                        <TableCell className="font-mono text-[11px] text-muted-foreground">{r.formula}</TableCell>
+                      </TableRow>
+                    ));
+                  })}
                 </TableBody>
               </Table>
               <p className="mt-2 text-xs text-muted-foreground">单位：kWh/km³</p>
@@ -572,21 +582,35 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                         <span className="font-mono text-xs text-muted-foreground">#{s.idx}</span>
                         <h4 className="font-semibold text-foreground">{s.name}</h4>
                       </div>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "font-medium",
-                          passAdvance
-                            ? "border-success/40 bg-success/10 text-success"
-                            : passAccess
-                            ? "border-info/40 bg-info/10 text-info"
-                            : passLimit
-                            ? "border-warning/40 bg-warning/10 text-warning"
-                            : "border-destructive/40 bg-destructive/10 text-destructive",
-                        )}
-                      >
-                        {passAdvance ? "达到先进值" : passAccess ? "达到准入值" : passLimit ? "达到限定值" : "未达标"}
-                      </Badge>
+                      {(() => {
+                        const reached = [
+                          passLimit && "限定值",
+                          passAccess && "准入值",
+                          passAdvance && "先进值",
+                        ].filter(Boolean) as string[];
+                        if (reached.length === 0) {
+                          return (
+                            <Badge variant="outline" className="font-medium border-destructive/40 bg-destructive/10 text-destructive">
+                              未达标
+                            </Badge>
+                          );
+                        }
+                        return (
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "font-medium",
+                              passAdvance
+                                ? "border-success/40 bg-success/10 text-success"
+                                : passAccess
+                                ? "border-info/40 bg-info/10 text-info"
+                                : "border-warning/40 bg-warning/10 text-warning",
+                            )}
+                          >
+                            达到{reached.join("、")}
+                          </Badge>
+                        );
+                      })()}
                     </div>
                     <Table>
                       <TableHeader>
@@ -594,8 +618,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                           <TableHead>指标名称</TableHead>
                           <TableHead>单位</TableHead>
                           <TableHead className="text-right">数值</TableHead>
-                          <TableHead className="text-xs">计算公式</TableHead>
-                          <TableHead className="w-24 text-center">评判</TableHead>
+                          <TableHead className="w-32 text-center">评判</TableHead>
                           <TableHead className="w-20 text-center">结论</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -604,13 +627,12 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                           <TableCell className="text-sm">可比自来水制水单位产品电耗</TableCell>
                           <TableCell className="font-mono text-xs">kWh/km³</TableCell>
                           <TableCell className="text-right font-mono text-xs font-semibold text-primary">{fmt(s.calc)}</TableCell>
-                          <TableCell className="font-mono text-[11px] text-muted-foreground">计算值=制水总耗电量/自来水总制水量</TableCell>
                           <TableCell className="text-center text-xs text-muted-foreground">—</TableCell>
                           <TableCell className="text-center text-xs text-muted-foreground">—</TableCell>
                         </TableRow>
-                        <ResultRow label="限定值" value={s.limit} formula="168×(1+0.35·深度/总+0.066·污泥/总)+400×(压力-0.3)" pass={passLimit} calc={s.calc} />
-                        <ResultRow label="准入值" value={s.access} formula="144×(1+0.4·深度/总+0.077·污泥/总)+380×(压力-0.3)" pass={passAccess} calc={s.calc} />
-                        <ResultRow label="先进值" value={s.advance} formula="138×(1+0.43·深度/总+0.08·污泥/总)+350×(压力-0.3)" pass={passAdvance} calc={s.calc} />
+                        <ResultRow label="限定值" value={s.limit} pass={passLimit} calc={s.calc} />
+                        <ResultRow label="准入值" value={s.access} pass={passAccess} calc={s.calc} />
+                        <ResultRow label="先进值" value={s.advance} pass={passAdvance} calc={s.calc} />
                       </TableBody>
                     </Table>
                   </div>
@@ -822,13 +844,12 @@ function FileUploader({
   );
 }
 
-function ResultRow({ label, value, formula, pass, calc }: { label: string; value: number; formula: string; pass: boolean; calc: number }) {
+function ResultRow({ label, value, pass, calc }: { label: string; value: number; pass: boolean; calc: number }) {
   return (
     <TableRow>
       <TableCell className="text-sm">{label}</TableCell>
       <TableCell className="font-mono text-xs">kWh/km³</TableCell>
       <TableCell className="text-right font-mono text-xs">{fmt(value)}</TableCell>
-      <TableCell className="font-mono text-[11px] text-muted-foreground">{formula}</TableCell>
       <TableCell className="text-center text-xs">
         <span className="font-mono">{fmt(calc)} ≤ {fmt(value)}</span>
       </TableCell>
