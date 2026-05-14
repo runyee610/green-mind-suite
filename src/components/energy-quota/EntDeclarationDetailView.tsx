@@ -297,7 +297,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
 
           {/* 多水厂卡片 */}
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">水厂明细（企业填报）</h3>
+            <h3 className="text-sm font-semibold text-foreground mx-[11px]">水厂明细</h3>
             <Button size="sm" variant="outline" onClick={addPlant}>
               <Plus className="mr-1 h-4 w-4" />新增水厂
             </Button>
