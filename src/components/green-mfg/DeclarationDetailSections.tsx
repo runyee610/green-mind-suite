@@ -1433,6 +1433,179 @@ function IndicatorItem({
   );
 }
 
+/** 同一序号 (no) 多子行：合并为一个卡片，共享父级元数据，子项以分段切换/堆叠展示 */
+function IndicatorGroupCard({
+  rows,
+  mode,
+  entEditable,
+  govEditable,
+  valueEditable,
+  showGovRemark,
+  updateRow,
+  onPreview,
+}: {
+  rows: IndicatorRow[];
+  mode: DetailMode;
+  entEditable: boolean;
+  govEditable: boolean;
+  valueEditable: boolean;
+  showGovRemark: boolean;
+  updateRow: (id: string, patch: Partial<IndicatorRow>) => void;
+  onPreview: (n: string) => void;
+}) {
+  const parent = rows.find((r) => r.showNo) ?? rows[0];
+  const filledCount = rows.filter(isRowFilled).length;
+  const revisedCount = rows.filter(isRowRevised).length;
+  const initialActive = rows.find(isRowFilled)?.id ?? rows[0].id;
+  const [active, setActive] = useState<string>(initialActive);
+  const [reqOpen, setReqOpen] = useState(false);
+  const proofReq = rows.find((r) => r.proofRequirement)?.proofRequirement ?? "";
+
+  // 子项短标签：去掉与 l2 重复的前缀
+  const shortLabel = (r: IndicatorRow) => {
+    const idx = r.l3.indexOf("-");
+    if (idx > 0 && r.l3.slice(0, idx) === parent.l2) return r.l3.slice(idx + 1);
+    return r.l3;
+  };
+
+  return (
+    <div className="px-4 py-4">
+      {/* 父级头部：共享元数据 */}
+      <div className="flex flex-wrap items-start gap-3">
+        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 font-mono text-sm font-medium text-primary">
+          {parent.no}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span
+              className={cn(
+                "inline-block whitespace-nowrap rounded-full border px-2 py-0.5 text-xs leading-tight",
+                TYPE_TONE[parent.type],
+              )}
+            >
+              {parent.type}
+            </span>
+            <Badge variant="outline" className="border-primary/30 bg-primary/5 text-[10px] text-primary">
+              {rows.length} 个分项
+            </Badge>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-base leading-snug">
+            <span className="font-semibold">{parent.l2}</span>
+            <span className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm font-normal">
+              <span><span className="text-muted-foreground">单位</span> <span className="font-mono">{parent.unit || "/"}</span></span>
+              <span><span className="text-muted-foreground">引领值</span> <span className="font-mono text-emerald-600 dark:text-emerald-400">{parent.leadValue ?? "/"}</span></span>
+              <span><span className="text-muted-foreground">基准值</span> <span className="font-mono text-amber-600 dark:text-amber-400">{parent.baseValue ?? "/"}</span></span>
+              {parent.weight && (
+                <span><span className="text-muted-foreground">权重</span> <span className="font-mono text-primary">{parent.weight}</span></span>
+              )}
+            </span>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {revisedCount > 0 && (
+            <Badge variant="outline" className="border-warning/40 bg-warning/10 text-xs text-warning">
+              已修订 {revisedCount}
+            </Badge>
+          )}
+          <Badge
+            variant="outline"
+            className={cn(
+              "text-xs",
+              filledCount === rows.length
+                ? "border-success/40 bg-success/10 text-success"
+                : filledCount > 0
+                  ? "border-warning/40 bg-warning/10 text-warning"
+                  : "border-muted-foreground/30 bg-muted/40 text-muted-foreground",
+            )}
+          >
+            {filledCount}/{rows.length} 已填
+          </Badge>
+          <Badge variant="outline" className="border-primary/40 bg-primary/5 text-xs text-primary">
+            分值 {parent.weight ?? "/"}
+          </Badge>
+        </div>
+      </div>
+
+      {/* 共享证明材料要求（折叠） */}
+      {proofReq && (
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => setReqOpen((v) => !v)}
+            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+          >
+            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", !reqOpen && "-rotate-90")} />
+            {reqOpen ? "收起证明材料要求" : "查看证明材料要求（共享）"}
+          </button>
+          {reqOpen && (
+            <div className="mt-2 rounded border border-dashed border-border/60 bg-muted/20 px-2.5 py-2 text-sm leading-relaxed text-muted-foreground">
+              {proofReq}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 分项切换器（chips） */}
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-md border border-border/50 bg-muted/30 p-1.5">
+        <span className="px-1.5 text-xs text-muted-foreground">分项：</span>
+        {rows.map((r, i) => {
+          const isActive = r.id === active;
+          const f = isRowFilled(r);
+          const rv = isRowRevised(r);
+          return (
+            <button
+              key={r.id}
+              type="button"
+              onClick={() => setActive(r.id)}
+              className={cn(
+                "inline-flex max-w-[280px] items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition",
+                isActive
+                  ? "border-primary/50 bg-primary text-primary-foreground shadow-sm"
+                  : "border-border/60 bg-background text-foreground hover:border-primary/40 hover:text-primary",
+              )}
+              title={shortLabel(r)}
+            >
+              <span className="font-mono opacity-70">#{i + 1}</span>
+              <span className="truncate">{shortLabel(r)}</span>
+              <span
+                className={cn(
+                  "ml-0.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full",
+                  rv
+                    ? "bg-warning"
+                    : f
+                      ? isActive ? "bg-primary-foreground" : "bg-success"
+                      : isActive ? "bg-primary-foreground/40" : "bg-muted-foreground/40",
+                )}
+              />
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 激活的子项填报区 */}
+      <div className="mt-3 rounded-md border border-border/50 bg-background/40 p-3">
+        {(() => {
+          const r = rows.find((x) => x.id === active) ?? rows[0];
+          return (
+            <IndicatorItem
+              row={r}
+              mode={mode}
+              entEditable={entEditable}
+              govEditable={govEditable}
+              valueEditable={valueEditable}
+              showGovRemark={showGovRemark}
+              updateRow={updateRow}
+              onPreview={onPreview}
+              compact
+              subLabel={shortLabel(r)}
+            />
+          );
+        })()}
+      </div>
+    </div>
+  );
+}
+
 const COMMITMENT_TEMPLATE_URL = "/templates/真实性承诺-自我声明模板.docx";
 const COMMITMENT_TEMPLATE_NAME = "真实性承诺-自我声明模板.docx";
 
