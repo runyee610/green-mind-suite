@@ -81,7 +81,7 @@ const BASE_STEPS = [
   { id: "energy", label: "能源消费", icon: Flame, desc: "按品种填写消费量" },
   { id: "output", label: "工业产值", icon: Factory, desc: "填写产值与产量" },
   { id: "carbon", label: "碳排与蒸汽", icon: Sparkles, desc: "选填项" },
-  { id: "measure", label: "节能措施", icon: Leaf, desc: "本月节能动作" },
+  
   { id: "review", label: "预览提交", icon: FileCheck2, desc: "核对后提交审核" },
 ] as const;
 
