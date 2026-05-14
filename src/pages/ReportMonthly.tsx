@@ -176,7 +176,12 @@ export default function ReportMonthly() {
                   上海市重点用能单位温报与节能指标月报填报情况
                 </p>
               </div>
-              {!isEnt && (
+              {isEnt ? (
+                <Button size="sm" className="gap-2" onClick={() => navigate("/report-monthly/filling")}>
+                  <FileEdit className="h-4 w-4" />
+                  月度填报
+                </Button>
+              ) : (
                 <Button
                   size="sm"
                   className="gap-2"
