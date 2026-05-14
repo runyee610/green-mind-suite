@@ -136,6 +136,7 @@ export default function ReportMonthly() {
           <ReportDetailView
             report={detailReport}
             onBack={() => setDetailReport(null)}
+            onFill={isEnt ? () => navigate("/report-monthly/filling") : undefined}
             enterpriseType={enterpriseType}
           />
         </div>
