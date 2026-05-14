@@ -187,7 +187,7 @@ export function sortStandardCodes(codes: string[]): string[] {
 
 export const sampleDetail: QuotaDetail = {
   enterpriseId: "e2",
-  enterpriseName: "上海宝山钢铁股份有限公司",
+  enterpriseName: "上海浦东威立雅自来水有限公司",
   creditCode: "913100007050125XXY",
   industry: "水的生产和供应",
   cyclePeriod: "202601-202612",
