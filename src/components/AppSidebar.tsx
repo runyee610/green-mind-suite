@@ -73,7 +73,7 @@ const assetsItems: NavItem[] = [
 
 const systemItems: NavItem[] = [
   { title: "用户管理", url: "/system/users", icon: Users },
-  { title: "权限管理", url: "/system/permissions", icon: KeyRound },
+  { title: "权限配置中心", url: "/system/permissions", icon: KeyRound },
 ];
 
 export const navItems: NavItem[] = [
