@@ -1058,3 +1058,28 @@ function ResultRow({ label, value, pass, calc }: { label: string; value: number;
     </TableRow>
   );
 }
+
+function ReportSection({
+  index,
+  title,
+  required,
+  note,
+  children,
+}: {
+  index: string;
+  title: string;
+  required?: boolean;
+  note?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-baseline gap-2">
+        <span className="text-sm font-semibold text-foreground">{index}、{title}</span>
+        {required && <span className="text-xs text-destructive">必填</span>}
+        {note && <span className="text-xs text-muted-foreground">{note}</span>}
+      </div>
+      <div className="space-y-2">{children}</div>
+    </div>
+  );
+}
