@@ -1315,7 +1315,7 @@ function IndicatorItem({
               <Textarea
                 value={row.reportValue ?? ""}
                 rows={2}
-                className="min-h-[44px] resize-none text-xs"
+                className="min-h-[52px] resize-none text-sm"
                 placeholder="请填写"
                 onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
               />
