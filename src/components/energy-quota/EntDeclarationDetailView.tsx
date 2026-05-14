@@ -844,13 +844,12 @@ function FileUploader({
   );
 }
 
-function ResultRow({ label, value, formula, pass, calc }: { label: string; value: number; formula: string; pass: boolean; calc: number }) {
+function ResultRow({ label, value, pass, calc }: { label: string; value: number; pass: boolean; calc: number }) {
   return (
     <TableRow>
       <TableCell className="text-sm">{label}</TableCell>
       <TableCell className="font-mono text-xs">kWh/km³</TableCell>
       <TableCell className="text-right font-mono text-xs">{fmt(value)}</TableCell>
-      <TableCell className="font-mono text-[11px] text-muted-foreground">{formula}</TableCell>
       <TableCell className="text-center text-xs">
         <span className="font-mono">{fmt(calc)} ≤ {fmt(value)}</span>
       </TableCell>
