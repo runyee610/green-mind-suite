@@ -24,7 +24,7 @@ import { NonEnergyDetailSection } from "./NonEnergyFields";
 import { TelecomDetailSection } from "./TelecomFields";
 import { DataCenterDetailSection } from "./DataCenterFields";
 
-export function ReportDetailView({ report, onBack, enterpriseType = TYPE_HAS_STEAM }: { report: MonthlyReport; onBack?: () => void; enterpriseType?: EnterpriseTypeId }) {
+export function ReportDetailView({ report, onBack, onFill, enterpriseType = TYPE_HAS_STEAM }: { report: MonthlyReport; onBack?: () => void; onFill?: () => void; enterpriseType?: EnterpriseTypeId }) {
   const showSteam = enterpriseType === TYPE_HAS_STEAM;
   const showPowerGen = enterpriseType === "power_gen";
   const showPowerSupply = enterpriseType === "power_supply";
