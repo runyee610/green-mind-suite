@@ -485,7 +485,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
           <Card className="panel">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <ClipboardList className="h-4 w-4 text-primary" />情况汇总（按水厂维度）
+                <ClipboardList className="h-4 w-4 text-primary" />情况汇总
               </CardTitle>
             </CardHeader>
             <CardContent>
