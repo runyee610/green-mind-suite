@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, Building2, Download, Eye, FileDown, FileSpreadsheet, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Building2, Download, Eye, FileDown, FileEdit, FileSpreadsheet, Search } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { useRole } from "@/contexts/RoleContext";
 import { ReportDetailView } from "@/components/report-monthly/ReportDetailView";
@@ -29,6 +30,7 @@ import {
 } from "@/components/report-monthly/EnterpriseTypeSwitcher";
 
 export default function ReportMonthly() {
+  const navigate = useNavigate();
   const { role } = useRole();
   const isEnt = role === "ent";
   // 企业侧锁定到当前企业（演示：第一家）
@@ -134,6 +136,7 @@ export default function ReportMonthly() {
           <ReportDetailView
             report={detailReport}
             onBack={() => setDetailReport(null)}
+            onFill={isEnt ? () => navigate("/report-monthly/filling") : undefined}
             enterpriseType={enterpriseType}
           />
         </div>
@@ -173,7 +176,12 @@ export default function ReportMonthly() {
                   上海市重点用能单位温报与节能指标月报填报情况
                 </p>
               </div>
-              {!isEnt && (
+              {isEnt ? (
+                <Button size="sm" className="gap-2" onClick={() => navigate("/report-monthly/filling")}>
+                  <FileEdit className="h-4 w-4" />
+                  月度填报
+                </Button>
+              ) : (
                 <Button
                   size="sm"
                   className="gap-2"
