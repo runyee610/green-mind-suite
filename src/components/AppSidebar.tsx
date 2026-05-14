@@ -63,7 +63,7 @@ const reportItems: NavItem[] = [
 ];
 
 const quotaItems: NavItem[] = [
-  { title: "节能月度报告", url: "/energy-quota/standard", icon: ListChecks },
+  { title: "限额周期与申报", url: "/energy-quota/standard", icon: ListChecks },
   { title: "周期与申报", url: "/energy-quota/declaration", icon: CalendarRange },
 ];
 
