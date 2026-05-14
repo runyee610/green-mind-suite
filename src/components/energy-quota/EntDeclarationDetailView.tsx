@@ -326,7 +326,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                     <Input
                       value={p.productName}
                       onChange={(e) => updatePlant(i, { productName: e.target.value })}
-                      placeholder="如：自来水"
+                      placeholder="如：水的生产和供应业"
                     />
                   </FormField>
                   <FormField label="自来水厂名称" required>
