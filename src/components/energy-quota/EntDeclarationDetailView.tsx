@@ -283,7 +283,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
         <TabsContent value="basic" className="space-y-4">
           <Card className="panel">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">默认信息（来自企业管理 / 限额标准配置，不可修改）</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">默认信息</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
               <ReadField label="企业名称" value={detail.enterpriseName} />
