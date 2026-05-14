@@ -117,6 +117,10 @@ export const enterprises: QuotaEnterprise[] = [
   { id: "e6", cycleId: "c1", creditCode: "91310000132198354K", name: "上海石化股份有限公司", industry: "石油加工", standardCodes: ["GB 17167-2022"], status: "待审核", hasData: true },
   { id: "e7", cycleId: "c1", creditCode: "913100001321987XX2", name: "上海华谊集团", industry: "化学原料制造", standardCodes: ["GB 17167-2022"], status: "未填报", hasData: false },
   { id: "e8", cycleId: "c2", creditCode: "913100007050125XXX", name: "上汽集团", industry: "汽车制造业", standardCodes: ["GB 17167-2022"], status: "已完成", hasData: true },
+  // 当前登录企业（e2）的历史申报记录，便于企业侧查看历史
+  { id: "e2-c2", cycleId: "c2", creditCode: "913100007050125XXY", name: "上海浦东威立雅自来水有限公司", industry: "水的生产和供应", standardCodes: ["DB31/T 555-2022"], status: "已完成", hasData: true },
+  { id: "e2-c3", cycleId: "c3", creditCode: "913100007050125XXY", name: "上海浦东威立雅自来水有限公司", industry: "水的生产和供应", standardCodes: ["DB31/T 555-2022"], status: "已完成", hasData: true },
+  { id: "e2-c4", cycleId: "c4", creditCode: "913100007050125XXY", name: "上海浦东威立雅自来水有限公司", industry: "水的生产和供应", standardCodes: ["DB31/T 555-2022"], status: "已完成", hasData: true },
 ];
 
 // 生成约 250 家企业的批量 mock 数据，用于演示分页与大列表
