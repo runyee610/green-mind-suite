@@ -319,6 +319,11 @@ export function CycleAndDeclaration() {
                         ))}
                       </div>
                     </TableCell>
+                    {isEnt && (
+                      <TableCell className="font-mono text-xs text-foreground">
+                        {cycles.find((c) => c.id === e.cycleId)?.period ?? "—"}
+                      </TableCell>
+                    )}
                     <TableCell>
                       <span className={cn(
                         "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
