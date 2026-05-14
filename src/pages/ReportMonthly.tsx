@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, Building2, Download, Eye, FileDown, FileSpreadsheet, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Building2, Download, Eye, FileDown, FileEdit, FileSpreadsheet, Search } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { useRole } from "@/contexts/RoleContext";
 import { ReportDetailView } from "@/components/report-monthly/ReportDetailView";
