@@ -550,13 +550,6 @@ export default function ReportMonthlyFilling() {
                     <ReviewRow label="综合能耗（当量值）" curr={`${round(calc.totalStCurr)} tce`} last={`${round(calc.totalStLast)} tce`} rate={rateOf(calc.totalStCurr, calc.totalStLast)} computed />
                     <ReviewRow label="扣除绿电后综合能耗（等价值）" curr={`${round(calc.totalEqExGreenCurr)} tce`} last={`${round(calc.totalEqExGreenLast)} tce`} rate={rateOf(calc.totalEqExGreenCurr, calc.totalEqExGreenLast)} computed />
                     <ReviewRow label="万元产值能耗（等价值）" curr={`${round(calc.unitEq, 4)} 吨标煤/万元`} last="—" computed />
-                    <Separator />
-                    <div>
-                      <div className="text-xs font-medium text-muted-foreground">本月节能措施</div>
-                      <div className="mt-1 whitespace-pre-wrap rounded border border-border bg-muted/30 p-2 text-sm">
-                        {measure || <span className="text-muted-foreground">（未填写）</span>}
-                      </div>
-                    </div>
                     <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-xs text-foreground">
                       <Info className="mr-1 inline h-3 w-3 text-primary" />
                       提交后数据将进入区主管部门审核流程，审核期间不可修改；如被驳回可基于反馈重新填写。
