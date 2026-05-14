@@ -88,7 +88,7 @@ const newPlant = (idx: number): PlantData => ({
 
 const seedPlant: PlantData = {
   id: "p_demo_1",
-  productName: "自来水",
+  productName: "水的生产和供应业",
   plantName: "宝山月浦水厂",
   startYear: "1998",
   designCapacity: "60",
