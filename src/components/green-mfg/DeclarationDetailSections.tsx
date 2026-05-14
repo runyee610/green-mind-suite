@@ -1100,6 +1100,8 @@ function IndicatorItem({
   showGovRemark,
   updateRow,
   onPreview,
+  compact = false,
+  subLabel,
 }: {
   row: IndicatorRow;
   mode: DetailMode;
@@ -1109,6 +1111,8 @@ function IndicatorItem({
   showGovRemark: boolean;
   updateRow: (id: string, patch: Partial<IndicatorRow>) => void;
   onPreview: (n: string) => void;
+  compact?: boolean;
+  subLabel?: string;
 }) {
   const [reqOpen, setReqOpen] = useState(false);
   const filled = isRowFilled(row);
