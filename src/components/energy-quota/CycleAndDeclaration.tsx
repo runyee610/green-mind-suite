@@ -26,7 +26,6 @@ export function CycleAndDeclaration() {
   const isEnt = role === "ent";
   // 企业侧：以 sampleDetail 中的企业作为当前登录企业
   const currentEntId = sampleDetail.enterpriseId;
-  const currentEnt = initialEnterprises.find((e) => e.id === currentEntId);
 
   // 企业侧只能看到自己申报过（已有数据）的周期
   const visibleCycles = useMemo(() => {
