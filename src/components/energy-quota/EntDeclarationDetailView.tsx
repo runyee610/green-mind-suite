@@ -341,7 +341,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                       placeholder="如：1998"
                     />
                   </FormField>
-                  <FormField label="设计产能（万m³/日）">
+                  <FormField label="设计产能">
                     <Input
                       type="number"
                       value={p.designCapacity}
