@@ -81,7 +81,7 @@ const BASE_STEPS = [
   { id: "energy", label: "能源消费", icon: Flame, desc: "按品种填写消费量" },
   { id: "output", label: "工业产值", icon: Factory, desc: "填写产值与产量" },
   { id: "carbon", label: "碳排与蒸汽", icon: Sparkles, desc: "选填项" },
-  { id: "measure", label: "节能措施", icon: Leaf, desc: "本月节能动作" },
+  
   { id: "review", label: "预览提交", icon: FileCheck2, desc: "核对后提交审核" },
 ] as const;
 
@@ -152,12 +152,11 @@ export default function ReportMonthlyFilling() {
       energy: energy.filter((e) => e.consumptionYTD > 0).length / energy.length,
       output: output.curr > 0 ? 1 : 0,
       carbon: 1,
-      measure: measure.trim().length > 0 ? 1 : 0,
       review: 0,
     } as Record<StepId, number>;
-    const avg = (totals.basic + totals.energy + totals.output + totals.measure) / 4;
+    const avg = (totals.basic + totals.energy + totals.output + totals.carbon) / 4;
     return Math.round(avg * 100);
-  }, [energy, output, measure]);
+  }, [energy, output]);
 
   // 异常预警
   const warnings = useMemo(() => {
@@ -538,27 +537,6 @@ export default function ReportMonthlyFilling() {
                 </div>
               )}
 
-              {step === "measure" && (
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Leaf className="h-4 w-4 text-primary" /> 本月节能措施
-                      <HelpHint text="请描述本月已实施的节能技改、管理优化措施及节约标煤量等。" />
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Label className="text-xs text-muted-foreground">节能措施描述</Label>
-                    <Textarea
-                      className="mt-2 min-h-[140px]"
-                      placeholder="例如：完成 4 号高炉余热回收升级与电机变频改造，本月节约标煤约 380 tce。"
-                      value={measure}
-                      onChange={(e) => setMeasure(e.target.value)}
-                    />
-                    <div className="mt-2 text-[11px] text-muted-foreground">建议字数 50–500 字，可附上节能量、改造范围、投资额等信息。</div>
-                  </CardContent>
-                </Card>
-              )}
-
               {step === "review" && (
                 <Card>
                   <CardHeader className="pb-3">
@@ -572,13 +550,6 @@ export default function ReportMonthlyFilling() {
                     <ReviewRow label="综合能耗（当量值）" curr={`${round(calc.totalStCurr)} tce`} last={`${round(calc.totalStLast)} tce`} rate={rateOf(calc.totalStCurr, calc.totalStLast)} computed />
                     <ReviewRow label="扣除绿电后综合能耗（等价值）" curr={`${round(calc.totalEqExGreenCurr)} tce`} last={`${round(calc.totalEqExGreenLast)} tce`} rate={rateOf(calc.totalEqExGreenCurr, calc.totalEqExGreenLast)} computed />
                     <ReviewRow label="万元产值能耗（等价值）" curr={`${round(calc.unitEq, 4)} 吨标煤/万元`} last="—" computed />
-                    <Separator />
-                    <div>
-                      <div className="text-xs font-medium text-muted-foreground">本月节能措施</div>
-                      <div className="mt-1 whitespace-pre-wrap rounded border border-border bg-muted/30 p-2 text-sm">
-                        {measure || <span className="text-muted-foreground">（未填写）</span>}
-                      </div>
-                    </div>
                     <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-xs text-foreground">
                       <Info className="mr-1 inline h-3 w-3 text-primary" />
                       提交后数据将进入区主管部门审核流程，审核期间不可修改；如被驳回可基于反馈重新填写。
