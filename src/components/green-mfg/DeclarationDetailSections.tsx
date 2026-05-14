@@ -1027,19 +1027,42 @@ export function EvaluationIndicatorCard({
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <div className="divide-y divide-border/50">
-                  {visibleRows.map((row) => (
-                    <IndicatorItem
-                      key={row.id}
-                      row={row}
-                      mode={mode}
-                      entEditable={entEditable}
-                      govEditable={govEditable}
-                      valueEditable={valueEditable}
-                      showGovRemark={showGovRemark}
-                      updateRow={updateRow}
-                      onPreview={setPreview}
-                    />
-                  ))}
+                  {(() => {
+                    // 按"序号 no"再分组：同 no 的多子行合并成一个卡片
+                    const subGroups: { no: number; rows: IndicatorRow[] }[] = [];
+                    visibleRows.forEach((r) => {
+                      const last = subGroups[subGroups.length - 1];
+                      if (last && last.no === r.no) last.rows.push(r);
+                      else subGroups.push({ no: r.no, rows: [r] });
+                    });
+                    return subGroups.map((sg) =>
+                      sg.rows.length > 1 ? (
+                        <IndicatorGroupCard
+                          key={`g-${sg.no}`}
+                          rows={sg.rows}
+                          mode={mode}
+                          entEditable={entEditable}
+                          govEditable={govEditable}
+                          valueEditable={valueEditable}
+                          showGovRemark={showGovRemark}
+                          updateRow={updateRow}
+                          onPreview={setPreview}
+                        />
+                      ) : (
+                        <IndicatorItem
+                          key={sg.rows[0].id}
+                          row={sg.rows[0]}
+                          mode={mode}
+                          entEditable={entEditable}
+                          govEditable={govEditable}
+                          valueEditable={valueEditable}
+                          showGovRemark={showGovRemark}
+                          updateRow={updateRow}
+                          onPreview={setPreview}
+                        />
+                      ),
+                    );
+                  })()}
                   {visibleRows.length === 0 && (
                     <div className="px-4 py-6 text-center text-xs text-muted-foreground">
                       该一级指标下无匹配项
