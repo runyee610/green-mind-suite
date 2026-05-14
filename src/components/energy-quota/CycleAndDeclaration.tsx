@@ -23,7 +23,21 @@ export function CycleAndDeclaration() {
   const { role } = useRole();
   const [cycles, setCycles] = useState<QuotaCycle[]>(initialCycles);
   const [enterprises, setEnterprises] = useState<QuotaEnterprise[]>(initialEnterprises);
-  const [cycleId, setCycleId] = useState<string>(cycles[0].id);
+  const isEnt = role === "ent";
+  // 企业侧：以 sampleDetail 中的企业作为当前登录企业
+  const currentEntId = sampleDetail.enterpriseId;
+  const currentEnt = initialEnterprises.find((e) => e.id === currentEntId);
+
+  // 企业侧只能看到自己申报过（已有数据）的周期
+  const visibleCycles = useMemo(() => {
+    if (!isEnt) return cycles;
+    const declaredCycleIds = new Set(
+      enterprises.filter((e) => e.id === currentEntId && e.hasData).map((e) => e.cycleId),
+    );
+    return cycles.filter((c) => declaredCycleIds.has(c.id));
+  }, [isEnt, cycles, enterprises, currentEntId]);
+
+  const [cycleId, setCycleId] = useState<string>(visibleCycles[0]?.id ?? cycles[0].id);
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("全部");
   const [expanded, setExpanded] = useState(false);
@@ -36,20 +50,29 @@ export function CycleAndDeclaration() {
   const [page, setPage] = useState(1);
   const pageSize = 15;
 
-  const activeCycle = cycles.find((c) => c.id === cycleId) ?? cycles[0];
-  const sortedCycles = useMemo(() => [...cycles].sort((a, b) => {
+  // 当可见周期变化（角色切换）时，确保当前选中的周期合法
+  useEffect(() => {
+    if (visibleCycles.length > 0 && !visibleCycles.some((c) => c.id === cycleId)) {
+      setCycleId(visibleCycles[0].id);
+    }
+  }, [visibleCycles, cycleId]);
+
+  const activeCycle = visibleCycles.find((c) => c.id === cycleId) ?? visibleCycles[0] ?? cycles[0];
+  const sortedCycles = useMemo(() => [...visibleCycles].sort((a, b) => {
     if (a.status !== b.status) return a.status === "进行中" ? -1 : 1;
     return b.startMonth.localeCompare(a.startMonth);
-  }), [cycles]);
+  }), [visibleCycles]);
 
   const filteredEnterprises = useMemo(
     () => enterprises.filter((e) => {
       if (e.cycleId !== cycleId) return false;
+      // 企业侧仅显示自己
+      if (isEnt && e.id !== currentEntId) return false;
       const k = !keyword || e.name.includes(keyword) || e.creditCode.includes(keyword) || e.standardCodes.some((s) => s.includes(keyword));
       const s = statusFilter === "全部" || e.status === statusFilter;
       return k && s;
     }),
-    [enterprises, cycleId, keyword, statusFilter],
+    [enterprises, cycleId, keyword, statusFilter, isEnt, currentEntId],
   );
 
   // 过滤条件变化时重置页码
