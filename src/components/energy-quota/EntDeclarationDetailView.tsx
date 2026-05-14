@@ -528,23 +528,33 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                   <TableRow>
                     <TableHead className="w-12">序号</TableHead>
                     <TableHead>水厂</TableHead>
-                    <TableHead className="text-right">计算值</TableHead>
-                    <TableHead className="text-right">限定值</TableHead>
-                    <TableHead className="text-right">准入值</TableHead>
-                    <TableHead className="text-right">先进值</TableHead>
+                    <TableHead>指标</TableHead>
+                    <TableHead className="text-right w-28">数值</TableHead>
+                    <TableHead className="text-xs">计算公式</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {summary.map((s) => (
-                    <TableRow key={s.idx}>
-                      <TableCell className="font-mono text-xs">{s.idx}</TableCell>
-                      <TableCell className="font-medium">{s.name}</TableCell>
-                      <TableCell className="text-right font-mono text-xs text-primary font-semibold">{fmt(s.calc)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{fmt(s.limit)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{fmt(s.access)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{fmt(s.advance)}</TableCell>
-                    </TableRow>
-                  ))}
+                  {summary.map((s) => {
+                    const rows = [
+                      { label: "计算值", value: s.calc, formula: "制水总耗电量 / 自来水总制水量", highlight: true },
+                      { label: "限定值", value: s.limit, formula: "168×(1+0.35·深度/总+0.066·污泥/总)+400×(压力-0.3)" },
+                      { label: "准入值", value: s.access, formula: "144×(1+0.4·深度/总+0.077·污泥/总)+380×(压力-0.3)" },
+                      { label: "先进值", value: s.advance, formula: "138×(1+0.43·深度/总+0.08·污泥/总)+350×(压力-0.3)" },
+                    ];
+                    return rows.map((r, i) => (
+                      <TableRow key={`${s.idx}-${r.label}`}>
+                        {i === 0 ? (
+                          <>
+                            <TableCell rowSpan={4} className="font-mono text-xs align-top">{s.idx}</TableCell>
+                            <TableCell rowSpan={4} className="font-medium align-top">{s.name}</TableCell>
+                          </>
+                        ) : null}
+                        <TableCell className="text-sm">{r.label}</TableCell>
+                        <TableCell className={cn("text-right font-mono text-xs", r.highlight && "text-primary font-semibold")}>{fmt(r.value)}</TableCell>
+                        <TableCell className="font-mono text-[11px] text-muted-foreground">{r.formula}</TableCell>
+                      </TableRow>
+                    ));
+                  })}
                 </TableBody>
               </Table>
               <p className="mt-2 text-xs text-muted-foreground">单位：kWh/km³</p>
