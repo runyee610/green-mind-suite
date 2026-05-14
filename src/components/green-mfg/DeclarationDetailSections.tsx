@@ -950,93 +950,49 @@ export function EvaluationIndicatorCard({
     <>
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
-        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
+        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-lg">
           <span className="flex items-center gap-2">
-            <ListChecks className="h-4 w-4" />三、评价指标表（通则）
-            <Badge variant="outline" className="border-border/60 bg-muted/40 text-[11px] font-normal text-muted-foreground">
+            <ListChecks className="h-5 w-5" />三、评价指标表（通则）
+            <Badge variant="outline" className="border-border/60 bg-muted/40 text-sm font-normal text-muted-foreground">
               共 {data.length} 项
             </Badge>
           </span>
-          <div className="flex items-center gap-2 text-xs font-normal">
+          <div className="flex items-center gap-2 text-sm font-normal">
             <span className="text-muted-foreground">
               已填 <span className="font-mono text-foreground">{filledCount}</span> / {data.length}
               {govEditable || revisedCount > 0 ? <> · 已修订 <span className="font-mono text-warning">{revisedCount}</span></> : null}
             </span>
-            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
+            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-sm text-primary">
               得分 {totalScore.toFixed(2)}
             </Badge>
           </div>
         </CardTitle>
-        <p className="mt-1 text-[11px] text-muted-foreground">
+        <p className="mt-1 text-xs text-muted-foreground">
           得分计算：未达基准值 0 分，达到/优于引领值满分，介于二者之间按线性比例
         </p>
-        {/* 工具条：状态筛选 + 搜索 + L1 跳转 */}
-        <div className="mt-3 space-y-2 rounded-md border border-border/60 bg-muted/30 p-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-medium text-muted-foreground">状态：</span>
-            {([
-              { k: "all", label: `全部 ${data.length}` },
-              { k: "unfilled", label: `未填 ${data.length - filledCount}` },
-              { k: "filled", label: `已填 ${filledCount}` },
-              ...(govEditable || revisedCount > 0 ? [{ k: "revised" as const, label: `已修订 ${revisedCount}` }] : []),
-            ] as const).map((s) => (
-              <button
-                key={s.k}
-                type="button"
-                onClick={() => setStatusFilter(s.k as typeof statusFilter)}
-                className={cn(
-                  "rounded-full border px-2.5 py-0.5 text-[11px] transition",
-                  statusFilter === s.k
-                    ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {s.label}
-              </button>
-            ))}
-            <div className="relative ml-auto">
-              <Search className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="搜索指标名称 / 序号…"
-                className="h-7 w-56 pl-6 text-[11px]"
-              />
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-medium text-muted-foreground">快速跳转：</span>
+        {/* 工具条：仅状态筛选 */}
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-border/60 bg-muted/30 p-2">
+          <span className="text-sm font-medium text-muted-foreground">状态：</span>
+          {([
+            { k: "all", label: `全部 ${data.length}` },
+            { k: "unfilled", label: `未填 ${data.length - filledCount}` },
+            { k: "filled", label: `已填 ${filledCount}` },
+            ...(govEditable || revisedCount > 0 ? [{ k: "revised" as const, label: `已修订 ${revisedCount}` }] : []),
+          ] as const).map((s) => (
             <button
+              key={s.k}
               type="button"
-              onClick={() => {
-                setActiveL1("all");
-                document.getElementById("evaluation-indicator")?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
+              onClick={() => setStatusFilter(s.k as typeof statusFilter)}
               className={cn(
-                "rounded-full border px-2.5 py-0.5 text-[11px] transition",
-                activeL1 === "all"
+                "rounded-full border px-3 py-1 text-sm transition",
+                statusFilter === s.k
                   ? "border-primary/40 bg-primary/10 text-primary"
                   : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
               )}
             >
-              顶部
+              {s.label}
             </button>
-            {groupedByL1.map((g) => (
-              <button
-                key={g.l1}
-                type="button"
-                onClick={() => scrollToL1(g.l1)}
-                className={cn(
-                  "rounded-full border px-2.5 py-0.5 text-[11px] transition",
-                  activeL1 === g.l1
-                    ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {g.l1} · {g.rows.length}
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
       </CardHeader>
 
