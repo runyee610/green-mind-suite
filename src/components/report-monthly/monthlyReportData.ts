@@ -339,7 +339,18 @@ const baseReports: MonthlyReport[] = [
   },
 ];
 
-export const reports: MonthlyReport[] = baseReports;
+// 为首家企业（宝山钢铁）补充更多月份的历史填报记录
+const baoBase = baseReports[0];
+const baoHistory: MonthlyReport[] = ([
+  { month: "2026-02", status: "已通过", warmStatus: "已填报", quotaStatus: "已填报", updatedAt: "2026-03-10 14:20", deadline: "2026-03-15", totalYoy: 8.4, totalMom: -2.1 },
+  { month: "2026-01", status: "已通过", warmStatus: "已填报", quotaStatus: "已填报", updatedAt: "2026-02-09 11:05", deadline: "2026-02-15", totalYoy: 6.1, totalMom: 1.3 },
+  { month: "2025-12", status: "已通过", warmStatus: "已填报", quotaStatus: "已填报", updatedAt: "2026-01-12 09:48", deadline: "2026-01-15", totalYoy: 5.5, totalMom: 3.6 },
+  { month: "2025-11", status: "已驳回", warmStatus: "已填报", quotaStatus: "填报中", updatedAt: "2025-12-13 17:22", deadline: "2025-12-15", totalYoy: 4.2, totalMom: -1.8 },
+  { month: "2025-10", status: "已通过", warmStatus: "已填报", quotaStatus: "已填报", updatedAt: "2025-11-11 10:33", deadline: "2025-11-15", totalYoy: 3.7, totalMom: 0.9 },
+  { month: "2025-09", status: "未填报", warmStatus: "未填报", quotaStatus: "未填报", updatedAt: "—", deadline: "2025-10-15", totalYoy: 0, totalMom: 0 },
+] as Partial<MonthlyReport>[]).map((p) => ({ ...baoBase, ...p }));
+
+export const reports: MonthlyReport[] = [...baseReports, ...baoHistory];
 
 export const statusStyle: Record<ReportStatus, string> = {
   未填报: "bg-muted text-muted-foreground border-border",

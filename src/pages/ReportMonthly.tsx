@@ -51,7 +51,7 @@ export default function ReportMonthly() {
   const filteredReports = useMemo(
     () =>
       reports.filter((report) => {
-        if (isEnt) return report.code === entCode && report.month === filters.month;
+        if (isEnt) return report.code === entCode;
         const keywordHit =
           !filters.keyword ||
           report.name.includes(filters.keyword) ||
@@ -144,20 +144,22 @@ export default function ReportMonthly() {
   return (
     <AppLayout title="节能月度报告">
       <section className="space-y-4">
-        {/* KPI 卡片 */}
-        <div className="grid gap-3 md:grid-cols-3">
-          {stats.map((item) => (
-            <Card key={item.label} className="panel">
-              <CardContent className="p-4">
-                <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
-                <div className={cn("mt-2 font-mono text-2xl font-semibold tracking-tight", item.accent)}>
-                  {item.value}
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{item.hint}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* KPI 卡片（仅政府侧） */}
+        {!isEnt && (
+          <div className="grid gap-3 md:grid-cols-3">
+            {stats.map((item) => (
+              <Card key={item.label} className="panel">
+                <CardContent className="p-4">
+                  <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
+                  <div className={cn("mt-2 font-mono text-2xl font-semibold tracking-tight", item.accent)}>
+                    {item.value}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{item.hint}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         <Card className="panel">
           <CardHeader className="pb-3">
@@ -185,55 +187,53 @@ export default function ReportMonthly() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className={cn("grid grid-cols-1 gap-3", isEnt ? "" : "md:grid-cols-2 xl:grid-cols-4")}>
-              {!isEnt && (
-                <>
-                  <div className="relative xl:col-span-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      className="bg-background pl-9"
-                      placeholder="企业名称 / 信用代码 / 行业"
-                      value={filters.keyword}
-                      onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
-                    />
-                  </div>
-                  <Select value={filters.industry} onValueChange={(industry) => setFilters({ ...filters, industry })}>
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="所属行业" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="全部">全部行业</SelectItem>
-                      <SelectItem value="黑色金属冶炼">黑色金属冶炼</SelectItem>
-                      <SelectItem value="石油化工">石油化工</SelectItem>
-                      <SelectItem value="电子信息">电子信息</SelectItem>
-                      <SelectItem value="装备制造">装备制造</SelectItem>
-                      <SelectItem value="日化轻工">日化轻工</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={filters.district} onValueChange={(district) => setFilters({ ...filters, district })}>
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="行政区划" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="全部">全部区划</SelectItem>
-                      <SelectItem value="宝山区">宝山区</SelectItem>
-                      <SelectItem value="金山区">金山区</SelectItem>
-                      <SelectItem value="浦东新区">浦东新区</SelectItem>
-                      <SelectItem value="嘉定区">嘉定区</SelectItem>
-                      <SelectItem value="闵行区">闵行区</SelectItem>
-                      <SelectItem value="青浦区">青浦区</SelectItem>
-                      <SelectItem value="长兴岛">长兴岛</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </>
-              )}
-              <Input
-                type="month"
-                value={filters.month}
-                onChange={(e) => setFilters({ ...filters, month: e.target.value })}
-                className="bg-background"
-              />
-            </div>
+            {!isEnt && (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <div className="relative xl:col-span-1">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    className="bg-background pl-9"
+                    placeholder="企业名称 / 信用代码 / 行业"
+                    value={filters.keyword}
+                    onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
+                  />
+                </div>
+                <Select value={filters.industry} onValueChange={(industry) => setFilters({ ...filters, industry })}>
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder="所属行业" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="全部">全部行业</SelectItem>
+                    <SelectItem value="黑色金属冶炼">黑色金属冶炼</SelectItem>
+                    <SelectItem value="石油化工">石油化工</SelectItem>
+                    <SelectItem value="电子信息">电子信息</SelectItem>
+                    <SelectItem value="装备制造">装备制造</SelectItem>
+                    <SelectItem value="日化轻工">日化轻工</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filters.district} onValueChange={(district) => setFilters({ ...filters, district })}>
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder="行政区划" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="全部">全部区划</SelectItem>
+                    <SelectItem value="宝山区">宝山区</SelectItem>
+                    <SelectItem value="金山区">金山区</SelectItem>
+                    <SelectItem value="浦东新区">浦东新区</SelectItem>
+                    <SelectItem value="嘉定区">嘉定区</SelectItem>
+                    <SelectItem value="闵行区">闵行区</SelectItem>
+                    <SelectItem value="青浦区">青浦区</SelectItem>
+                    <SelectItem value="长兴岛">长兴岛</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="month"
+                  value={filters.month}
+                  onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+                  className="bg-background"
+                />
+              </div>
+            )}
 
             <div className="overflow-x-auto rounded-md border border-border">
               <Table>
