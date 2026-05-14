@@ -1390,18 +1390,22 @@ function IndicatorItem({
             onChange={(next) => updateRow(row.id, { proofs: next })}
             onPreview={onPreview}
           />
-          <button
-            type="button"
-            onClick={() => setReqOpen((v) => !v)}
-            className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline"
-          >
-            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", !reqOpen && "-rotate-90")} />
-            {reqOpen ? "收起证明材料要求" : "查看证明材料要求"}
-          </button>
-          {reqOpen && (
-            <div className="mt-2 rounded border border-dashed border-border/60 bg-muted/20 px-2.5 py-2 text-sm leading-relaxed text-muted-foreground">
-              {row.proofRequirement}
-            </div>
+          {row.proofRequirement && (
+            <>
+              <button
+                type="button"
+                onClick={() => setReqOpen((v) => !v)}
+                className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline"
+              >
+                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", !reqOpen && "-rotate-90")} />
+                {reqOpen ? "收起证明材料要求" : "查看证明材料要求"}
+              </button>
+              {reqOpen && (
+                <div className="mt-2 rounded border border-dashed border-border/60 bg-muted/20 px-2.5 py-2 text-sm leading-relaxed text-muted-foreground">
+                  {row.proofRequirement}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
