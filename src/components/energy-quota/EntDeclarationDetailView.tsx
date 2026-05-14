@@ -205,10 +205,17 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
       if (sum12(p.external) <= 0) return toast.error(`${p.plantName} 外供数据必填`);
       if (!p.avgPressure) return toast.error(`${p.plantName} 出厂水平均压力必填`);
     }
+    if (!reportBasicDesc.trim()) return toast.error("限额报告：企业基本情况说明必填");
+    if (!reportEnergyDesc.trim()) return toast.error("限额报告：全厂能源消耗情况说明必填");
+    if (!reportProcessDesc.trim() && reportProcessImages.length === 0)
+      return toast.error("限额报告：工艺说明必填（文字或图片）");
+    if (!reportCalcDesc.trim()) return toast.error("限额报告：单位产品能耗计算结果说明必填");
+    if (!reportMeterConfirmed) return toast.error("请阅读并确认能源计量器具配备情况");
+    if (!reportFinalConfirmed) return toast.error("请阅读并确认报告真实性声明");
     toast.success("已提交至政府侧审核");
   };
 
-  const TAB_ORDER = ["basic", "production", "energy", "pressure", "summary", "result"];
+  const TAB_ORDER = ["basic", "production", "energy", "pressure", "summary", "result", "report"];
   const goNext = () => {
     const i = TAB_ORDER.indexOf(tab);
     if (i < TAB_ORDER.length - 1) setTab(TAB_ORDER[i + 1]);
