@@ -144,20 +144,22 @@ export default function ReportMonthly() {
   return (
     <AppLayout title="节能月度报告">
       <section className="space-y-4">
-        {/* KPI 卡片 */}
-        <div className="grid gap-3 md:grid-cols-3">
-          {stats.map((item) => (
-            <Card key={item.label} className="panel">
-              <CardContent className="p-4">
-                <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
-                <div className={cn("mt-2 font-mono text-2xl font-semibold tracking-tight", item.accent)}>
-                  {item.value}
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{item.hint}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* KPI 卡片（仅政府侧） */}
+        {!isEnt && (
+          <div className="grid gap-3 md:grid-cols-3">
+            {stats.map((item) => (
+              <Card key={item.label} className="panel">
+                <CardContent className="p-4">
+                  <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
+                  <div className={cn("mt-2 font-mono text-2xl font-semibold tracking-tight", item.accent)}>
+                    {item.value}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{item.hint}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         <Card className="panel">
           <CardHeader className="pb-3">
