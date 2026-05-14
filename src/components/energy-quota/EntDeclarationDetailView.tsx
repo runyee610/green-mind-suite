@@ -71,7 +71,7 @@ const emptyMonth = (): MonthArr => Array(12).fill(0);
 
 const newPlant = (idx: number): PlantData => ({
   id: `p${Date.now()}_${idx}`,
-  productName: "水的生产和供应业",
+  productName: "自来水制水",
   plantName: "",
   startYear: "",
   designCapacity: "",
@@ -88,7 +88,7 @@ const newPlant = (idx: number): PlantData => ({
 
 const seedPlant: PlantData = {
   id: "p_demo_1",
-  productName: "水的生产和供应业",
+  productName: "自来水制水",
   plantName: "宝山月浦水厂",
   startYear: "1998",
   designCapacity: "60",
@@ -246,19 +246,14 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
       {/* 顶部操作栏 */}
       <Card className="panel">
         <CardContent className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <ArrowLeft className="mr-1 h-4 w-4" />返回列表
-            </Button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold">{detail.enterpriseName}</h2>
-                <Badge variant="outline" className="border-info/40 bg-info/10 text-info">填报中</Badge>
-              </div>
-              <p className="mt-0.5 font-mono text-xs text-muted-foreground">
-                {detail.creditCode} · {detail.industry} · 限额周期 {detail.cyclePeriod}
-              </p>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold">{detail.enterpriseName}</h2>
+              <Badge variant="outline" className="border-info/40 bg-info/10 text-info">填报中</Badge>
             </div>
+            <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+              {detail.creditCode} · {detail.industry} · 限额周期 {detail.cyclePeriod}
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={handleSave}>
@@ -266,6 +261,9 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
             </Button>
             <Button size="sm" onClick={handleSubmit}>
               <Send className="mr-1 h-4 w-4" />提交审核
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onBack}>
+              <ArrowLeft className="mr-1 h-4 w-4" />返回列表
             </Button>
           </div>
         </CardContent>
@@ -292,7 +290,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               <ReadField label="单位类型" value="重点用能单位" />
               <ReadField label="统一社会信用代码" value={detail.creditCode} mono />
               <ReadField label="所属行业分类" value="水的生产和供应业" />
-              <ReadField label="主要产品类型" value="水的生产和供应业" />
+              <ReadField label="主要产品类型" value="自来水制水" />
               <ReadField label="主要消耗能源品种" value="电力" />
             </CardContent>
           </Card>
@@ -326,7 +324,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                     <Input
                       value={p.productName}
                       onChange={(e) => updatePlant(i, { productName: e.target.value })}
-                      placeholder="如：水的生产和供应业"
+                      placeholder="如：自来水制水"
                     />
                   </FormField>
                   <FormField label="自来水厂名称" required>
