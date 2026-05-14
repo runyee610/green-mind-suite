@@ -171,15 +171,17 @@ export default function ReportMonthly() {
                   上海市重点用能单位温报与节能指标月报填报情况
                 </p>
               </div>
-              <Button
-                size="sm"
-                className="gap-2"
-                onClick={() => setExportOpen(true)}
-                disabled={selectedCodes.length === 0}
-              >
-                <Download className="h-4 w-4" />
-                一键导出 Excel
-              </Button>
+              {!isEnt && (
+                <Button
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setExportOpen(true)}
+                  disabled={selectedCodes.length === 0}
+                >
+                  <Download className="h-4 w-4" />
+                  一键导出 Excel
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
