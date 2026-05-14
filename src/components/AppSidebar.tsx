@@ -64,7 +64,7 @@ const reportItems: NavItem[] = [
 
 const quotaItems: NavItem[] = [
   { title: "限额标准管理", url: "/energy-quota/standard", icon: ListChecks },
-  { title: "周期与申报", url: "/energy-quota/declaration", icon: CalendarRange },
+  { title: "限额周期与申报", url: "/energy-quota/declaration", icon: CalendarRange },
 ];
 
 const assetsItems: NavItem[] = [
