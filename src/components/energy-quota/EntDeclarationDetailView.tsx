@@ -287,7 +287,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
               <ReadField label="企业名称" value={detail.enterpriseName} />
-              <ReadField label="单位类型" value="重点用能单位" />
+              <ReadField label="单位类型" value="中外合资经营企业" />
               <ReadField label="统一社会信用代码" value={detail.creditCode} mono />
               <ReadField label="所属行业分类" value="水的生产和供应业" />
               <ReadField label="主要产品类型" value="自来水制水" />
