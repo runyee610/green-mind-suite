@@ -62,19 +62,33 @@ const reportItems: NavItem[] = [
   { title: "节能月度报告", url: "/report-monthly", icon: FileSpreadsheet },
 ];
 
-const quotaItems: NavItem[] = [
-  { title: "限额标准管理", url: "/energy-quota/standard", icon: ListChecks },
-  { title: "限额周期与申报", url: "/energy-quota/declaration", icon: CalendarRange },
-];
+const quotaItemsByRole: Record<"gov" | "ent", NavItem[]> = {
+  gov: [
+    { title: "限额标准管理", url: "/energy-quota/standard", icon: ListChecks },
+    { title: "限额周期与申报", url: "/energy-quota/declaration", icon: CalendarRange },
+  ],
+  ent: [
+    { title: "限额周期与申报", url: "/energy-quota/declaration", icon: CalendarRange },
+  ],
+};
+const quotaItems: NavItem[] = quotaItemsByRole.gov;
 
-const assetsItems: NavItem[] = [
-  { title: "固定资产投资项目管理", url: "/assets", icon: Boxes },
-];
+const assetsItemsByRole: Record<"gov" | "ent", NavItem[]> = {
+  gov: [{ title: "固定资产投资项目管理", url: "/assets", icon: Boxes }],
+  ent: [],
+};
+const assetsItems: NavItem[] = assetsItemsByRole.gov;
 
-const systemItems: NavItem[] = [
-  { title: "用户管理", url: "/system/users", icon: Users },
-  { title: "权限配置中心", url: "/system/permissions", icon: KeyRound },
-];
+const systemItemsByRole: Record<"gov" | "ent", NavItem[]> = {
+  gov: [
+    { title: "用户管理", url: "/system/users", icon: Users },
+    { title: "权限配置中心", url: "/system/permissions", icon: KeyRound },
+  ],
+  ent: [
+    { title: "用户管理", url: "/system/users", icon: Users },
+  ],
+};
+const systemItems: NavItem[] = systemItemsByRole.gov;
 
 export const navItems: NavItem[] = [
   ...greenMfgItemsByRole.gov,
