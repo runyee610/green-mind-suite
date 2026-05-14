@@ -284,6 +284,7 @@ export function CycleAndDeclaration() {
                 <TableHead className="pr-2">企业名称</TableHead>
                 <TableHead className="w-40 pl-2">行业</TableHead>
                 <TableHead className="w-44">适用标准</TableHead>
+                {isEnt && <TableHead className="w-36">申报周期</TableHead>}
                 <TableHead className="w-28">填报状态</TableHead>
                 <TableHead className="w-56 text-right">操作</TableHead>
               </TableRow>
