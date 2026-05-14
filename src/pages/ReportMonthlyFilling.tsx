@@ -537,27 +537,6 @@ export default function ReportMonthlyFilling() {
                 </div>
               )}
 
-              {step === "measure" && (
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Leaf className="h-4 w-4 text-primary" /> 本月节能措施
-                      <HelpHint text="请描述本月已实施的节能技改、管理优化措施及节约标煤量等。" />
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Label className="text-xs text-muted-foreground">节能措施描述</Label>
-                    <Textarea
-                      className="mt-2 min-h-[140px]"
-                      placeholder="例如：完成 4 号高炉余热回收升级与电机变频改造，本月节约标煤约 380 tce。"
-                      value={measure}
-                      onChange={(e) => setMeasure(e.target.value)}
-                    />
-                    <div className="mt-2 text-[11px] text-muted-foreground">建议字数 50–500 字，可附上节能量、改造范围、投资额等信息。</div>
-                  </CardContent>
-                </Card>
-              )}
-
               {step === "review" && (
                 <Card>
                   <CardHeader className="pb-3">
