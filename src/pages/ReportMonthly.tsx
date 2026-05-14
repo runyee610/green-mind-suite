@@ -135,7 +135,7 @@ export default function ReportMonthly() {
   }
 
   return (
-    <AppLayout title="节能月度报告" subtitle="政府侧重点用能单位月报监管与全量字段导出">
+    <AppLayout title="节能月度报告">
       <section className="space-y-4">
         {/* KPI 卡片 */}
         <div className="grid gap-3 md:grid-cols-3">
