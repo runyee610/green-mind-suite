@@ -11,13 +11,16 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AuditDetailView } from "@/components/energy-quota/AuditDetailView";
+import { EntDeclarationDetailView } from "@/components/energy-quota/EntDeclarationDetailView";
 import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHistoryDialog";
+import { useRole } from "@/contexts/RoleContext";
 import { EditEnterpriseStandardDialog } from "@/components/energy-quota/EditEnterpriseStandardDialog";
 import { NewCycleDialog } from "@/components/energy-quota/NewCycleDialog";
 import { cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
 export function CycleAndDeclaration() {
+  const { role } = useRole();
   const [cycles, setCycles] = useState<QuotaCycle[]>(initialCycles);
   const [enterprises, setEnterprises] = useState<QuotaEnterprise[]>(initialEnterprises);
   const [cycleId, setCycleId] = useState<string>(cycles[0].id);
@@ -111,7 +114,11 @@ export function CycleAndDeclaration() {
     setEditStandardTarget(null);
   };
 
-  if (detailOpen) return <AuditDetailView detail={sampleDetail} onBack={() => setDetailOpen(false)} />;
+  if (detailOpen) {
+    return role === "ent"
+      ? <EntDeclarationDetailView detail={sampleDetail} onBack={() => setDetailOpen(false)} />
+      : <AuditDetailView detail={sampleDetail} onBack={() => setDetailOpen(false)} />;
+  }
 
   const pendingPct = activeCycle.total > 0 ? Math.round((activeCycle.audited / activeCycle.total) * 100) : 0;
 
