@@ -51,7 +51,7 @@ export default function ReportMonthly() {
   const filteredReports = useMemo(
     () =>
       reports.filter((report) => {
-        if (isEnt) return report.code === entCode && report.month === filters.month;
+        if (isEnt) return report.code === entCode;
         const keywordHit =
           !filters.keyword ||
           report.name.includes(filters.keyword) ||
