@@ -20,6 +20,9 @@ import {
   XCircle,
   ChevronRight,
   ChevronLeft,
+  FileSignature,
+  Image as ImageIcon,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +30,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { QuotaDetail } from "@/components/energy-quota/quotaData";
@@ -119,6 +124,17 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
   const [plants, setPlants] = useState<PlantData[]>([seedPlant]);
   const [activePlantIdx, setActivePlantIdx] = useState(0);
 
+  // 限额报告字段（复用历史填报）
+  const [reportBasicDesc, setReportBasicDesc] = useState(
+    "本企业为中外合资经营企业，主要产品为自来水制水，包含取水、混凝、沉淀、过滤、消毒、清水池、二级泵房等工艺工序。能源计量器具按照 GB 17167 配备至三级，电能、水量计量数据接入 SCADA 系统。",
+  );
+  const [reportEnergyDesc, setReportEnergyDesc] = useState("");
+  const [reportProcessDesc, setReportProcessDesc] = useState("");
+  const [reportProcessImages, setReportProcessImages] = useState<UploadedFile[]>([]);
+  const [reportCalcDesc, setReportCalcDesc] = useState("");
+  const [reportMeterConfirmed, setReportMeterConfirmed] = useState(false);
+  const [reportFinalConfirmed, setReportFinalConfirmed] = useState(false);
+
   const updatePlant = (idx: number, patch: Partial<PlantData>) => {
     setPlants((prev) => prev.map((p, i) => (i === idx ? { ...p, ...patch } : p)));
   };
@@ -189,10 +205,17 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
       if (sum12(p.external) <= 0) return toast.error(`${p.plantName} 外供数据必填`);
       if (!p.avgPressure) return toast.error(`${p.plantName} 出厂水平均压力必填`);
     }
+    if (!reportBasicDesc.trim()) return toast.error("限额报告：企业基本情况说明必填");
+    if (!reportEnergyDesc.trim()) return toast.error("限额报告：全厂能源消耗情况说明必填");
+    if (!reportProcessDesc.trim() && reportProcessImages.length === 0)
+      return toast.error("限额报告：工艺说明必填（文字或图片）");
+    if (!reportCalcDesc.trim()) return toast.error("限额报告：单位产品能耗计算结果说明必填");
+    if (!reportMeterConfirmed) return toast.error("请阅读并确认能源计量器具配备情况");
+    if (!reportFinalConfirmed) return toast.error("请阅读并确认报告真实性声明");
     toast.success("已提交至政府侧审核");
   };
 
-  const TAB_ORDER = ["basic", "production", "energy", "pressure", "summary", "result"];
+  const TAB_ORDER = ["basic", "production", "energy", "pressure", "summary", "result", "report"];
   const goNext = () => {
     const i = TAB_ORDER.indexOf(tab);
     if (i < TAB_ORDER.length - 1) setTab(TAB_ORDER[i + 1]);
@@ -277,6 +300,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
           <TabsTrigger value="pressure" className="text-sm"><Gauge className="mr-1 h-4 w-4" />出厂水压力</TabsTrigger>
           <TabsTrigger value="summary" className="text-sm"><ClipboardList className="mr-1 h-4 w-4" />情况汇总</TabsTrigger>
           <TabsTrigger value="result" className="text-sm"><Target className="mr-1 h-4 w-4" />结果对标</TabsTrigger>
+          <TabsTrigger value="report" className="text-sm"><FileSignature className="mr-1 h-4 w-4" />限额报告</TabsTrigger>
         </TabsList>
 
         {/* === 一、企业基本情况 === */}
@@ -642,7 +666,174 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
           </Card>
         </TabsContent>
 
-        {/* 步骤导航 */}
+        {/* === 七、限额报告 === */}
+        <TabsContent value="report" className="space-y-4">
+          <Card className="panel">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <FileSignature className="h-4 w-4 text-primary" />限额报告
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">
+                请逐项填写或确认以下内容，提交后将与填报数据一并送审。
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* 一、企业基本情况 */}
+              <ReportSection index="一" title="企业基本情况" required note="若企业有过往填写记录，已自动复用，可在此基础上修改。">
+                <Textarea
+                  value={reportBasicDesc}
+                  onChange={(e) => setReportBasicDesc(e.target.value)}
+                  placeholder="文字说明：企业的主要产品；生产工艺和工序；能源计量情况。以及其他希望说明的情况"
+                  className="min-h-[120px]"
+                />
+              </ReportSection>
+
+              {/* 二、全厂能源消耗情况 */}
+              <ReportSection index="二" title="全厂能源消耗情况" required>
+                <Textarea
+                  value={reportEnergyDesc}
+                  onChange={(e) => setReportEnergyDesc(e.target.value)}
+                  placeholder="请说明全厂能源消耗情况，包括各品种能源消耗量、构成、同比变化及主要原因等"
+                  className="min-h-[100px]"
+                />
+              </ReportSection>
+
+              {/* 三、工艺说明 */}
+              <ReportSection index="三" title="工艺说明" required note="支持图片或文字（至少其一）。">
+                <Textarea
+                  value={reportProcessDesc}
+                  onChange={(e) => setReportProcessDesc(e.target.value)}
+                  placeholder="贴上从原料进厂到成品入库全过程的用能单元及工序工艺流程示意图以及工艺说明"
+                  className="min-h-[100px]"
+                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const input = document.createElement("input");
+                      input.type = "file";
+                      input.accept = "image/*";
+                      input.onchange = () => {
+                        const f = input.files?.[0];
+                        if (!f) return;
+                        setReportProcessImages((prev) => [
+                          ...prev,
+                          { name: f.name, type: "image", size: `${(f.size / 1024).toFixed(0)} KB` },
+                        ]);
+                        toast.success(`已上传 ${f.name}`);
+                      };
+                      input.click();
+                    }}
+                  >
+                    <ImageIcon className="mr-1 h-4 w-4" />上传工艺流程图
+                  </Button>
+                  <span className="text-xs text-muted-foreground">已上传 {reportProcessImages.length} 张</span>
+                </div>
+                {reportProcessImages.length > 0 && (
+                  <div className="space-y-1.5">
+                    {reportProcessImages.map((f) => (
+                      <div key={f.name} className="flex items-center justify-between rounded border border-border/40 bg-muted/20 px-3 py-1.5 text-xs">
+                        <span className="flex items-center gap-2">
+                          <FileImage className="h-3.5 w-3.5 text-muted-foreground" />
+                          {f.name}
+                          <span className="text-muted-foreground">· {f.size}</span>
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() =>
+                            setReportProcessImages((prev) => prev.filter((x) => x.name !== f.name))
+                          }
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ReportSection>
+
+              {/* 四、单位产品能耗情况 */}
+              <ReportSection index="四" title="单位产品能耗情况" required>
+                <div className="space-y-3">
+                  <div>
+                    <p className="mb-2 text-xs font-medium text-muted-foreground">1. 计算过程（根据填报数据自动生成）</p>
+                    <div className="overflow-hidden rounded-md border border-border/60">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-12">#</TableHead>
+                            <TableHead>水厂</TableHead>
+                            <TableHead className="text-right">净电耗(万kWh)</TableHead>
+                            <TableHead className="text-right">总制水量(km³)</TableHead>
+                            <TableHead className="text-right">单位产品电耗(kWh/km³)</TableHead>
+                            <TableHead>计算公式</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {summary.map((s) => (
+                            <TableRow key={s.idx}>
+                              <TableCell className="font-mono text-xs">{s.idx}</TableCell>
+                              <TableCell className="text-sm">{s.name}</TableCell>
+                              <TableCell className="text-right font-mono text-xs">{fmt(s.netElec)}</TableCell>
+                              <TableCell className="text-right font-mono text-xs">{fmt(s.water)}</TableCell>
+                              <TableCell className="text-right font-mono text-xs font-semibold text-primary">{fmt(s.calc)}</TableCell>
+                              <TableCell className="font-mono text-[11px] text-muted-foreground">
+                                (净电耗 × 10000) ÷ 总制水量 = ({fmt(s.netElec)} × 10000) ÷ {fmt(s.water)}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="mb-2 text-xs font-medium text-muted-foreground">2. 计算结果说明 <span className="text-destructive">*</span></p>
+                    <Textarea
+                      value={reportCalcDesc}
+                      onChange={(e) => setReportCalcDesc(e.target.value)}
+                      placeholder="请结合上述计算过程，说明单位产品能耗水平、与限定值/准入值/先进值的对比情况及结论"
+                      className="min-h-[100px]"
+                    />
+                  </div>
+                </div>
+              </ReportSection>
+
+              {/* 五、企业能源计量器具配备情况 */}
+              <ReportSection index="五" title="企业能源计量器具配备情况">
+                <div className="rounded-md border border-border/60 bg-muted/20 p-3 text-sm leading-relaxed text-foreground">
+                  企业对照《用能单位能源计量器具配备和管理通则》（GB 17167），自查了进出用能单位、进出主要次级用能单位、主要用能设备三级能源计量器具配备和管理情况，基本符合规定要求。
+                </div>
+                <label className="flex items-start gap-2 pt-1 text-sm">
+                  <Checkbox
+                    checked={reportMeterConfirmed}
+                    onCheckedChange={(v) => setReportMeterConfirmed(v === true)}
+                    className="mt-0.5"
+                  />
+                  <span>本企业已阅读并确认上述能源计量器具配备情况描述属实。</span>
+                </label>
+              </ReportSection>
+
+              {/* 结尾声明 */}
+              <div className="rounded-md border border-warning/40 bg-warning/5 p-3">
+                <p className="text-sm text-foreground">
+                  本报告真实、可靠，如报告中的信息与实际情况不符，本企业将承担相应的法律责任。
+                </p>
+                <label className="mt-2 flex items-start gap-2 text-sm">
+                  <Checkbox
+                    checked={reportFinalConfirmed}
+                    onCheckedChange={(v) => setReportFinalConfirmed(v === true)}
+                    className="mt-0.5"
+                  />
+                  <span>本企业已阅读并确认上述声明，同意提交本报告。</span>
+                </label>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <div className="flex items-center justify-between border-t border-border/40 pt-3">
           <Button variant="outline" size="sm" onClick={goPrev} disabled={tab === TAB_ORDER[0]}>
             <ChevronLeft className="mr-1 h-4 w-4" />上一步
@@ -865,5 +1056,30 @@ function ResultRow({ label, value, pass, calc }: { label: string; value: number;
         )}
       </TableCell>
     </TableRow>
+  );
+}
+
+function ReportSection({
+  index,
+  title,
+  required,
+  note,
+  children,
+}: {
+  index: string;
+  title: string;
+  required?: boolean;
+  note?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-baseline gap-2">
+        <span className="text-sm font-semibold text-foreground">{index}、{title}</span>
+        {required && <span className="text-xs text-destructive">必填</span>}
+        {note && <span className="text-xs text-muted-foreground">{note}</span>}
+      </div>
+      <div className="space-y-2">{children}</div>
+    </div>
   );
 }
