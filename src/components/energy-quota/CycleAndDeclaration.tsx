@@ -24,17 +24,17 @@ export function CycleAndDeclaration() {
   const [cycles, setCycles] = useState<QuotaCycle[]>(initialCycles);
   const [enterprises, setEnterprises] = useState<QuotaEnterprise[]>(initialEnterprises);
   const isEnt = role === "ent";
-  // 企业侧：以 sampleDetail 中的企业作为当前登录企业
-  const currentEntId = sampleDetail.enterpriseId;
+  // 企业侧：以 sampleDetail 中的企业作为当前登录企业（按统一社会信用代码识别）
+  const currentEntCreditCode = sampleDetail.creditCode;
 
   // 企业侧只能看到自己申报过（已有数据）的周期
   const visibleCycles = useMemo(() => {
     if (!isEnt) return cycles;
     const declaredCycleIds = new Set(
-      enterprises.filter((e) => e.id === currentEntId && e.hasData).map((e) => e.cycleId),
+      enterprises.filter((e) => e.creditCode === currentEntCreditCode && e.hasData).map((e) => e.cycleId),
     );
     return cycles.filter((c) => declaredCycleIds.has(c.id));
-  }, [isEnt, cycles, enterprises, currentEntId]);
+  }, [isEnt, cycles, enterprises, currentEntCreditCode]);
 
   const [cycleId, setCycleId] = useState<string>(visibleCycles[0]?.id ?? cycles[0].id);
   const [keyword, setKeyword] = useState("");
@@ -66,12 +66,12 @@ export function CycleAndDeclaration() {
     () => enterprises.filter((e) => {
       if (e.cycleId !== cycleId) return false;
       // 企业侧仅显示自己
-      if (isEnt && e.id !== currentEntId) return false;
+      if (isEnt && e.creditCode !== currentEntCreditCode) return false;
       const k = !keyword || e.name.includes(keyword) || e.creditCode.includes(keyword) || e.standardCodes.some((s) => s.includes(keyword));
       const s = statusFilter === "全部" || e.status === statusFilter;
       return k && s;
     }),
-    [enterprises, cycleId, keyword, statusFilter, isEnt, currentEntId],
+    [enterprises, cycleId, keyword, statusFilter, isEnt, currentEntCreditCode],
   );
 
   // 过滤条件变化时重置页码
