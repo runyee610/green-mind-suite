@@ -152,12 +152,11 @@ export default function ReportMonthlyFilling() {
       energy: energy.filter((e) => e.consumptionYTD > 0).length / energy.length,
       output: output.curr > 0 ? 1 : 0,
       carbon: 1,
-      measure: measure.trim().length > 0 ? 1 : 0,
       review: 0,
     } as Record<StepId, number>;
-    const avg = (totals.basic + totals.energy + totals.output + totals.measure) / 4;
+    const avg = (totals.basic + totals.energy + totals.output + totals.carbon) / 4;
     return Math.round(avg * 100);
-  }, [energy, output, measure]);
+  }, [energy, output]);
 
   // 异常预警
   const warnings = useMemo(() => {
