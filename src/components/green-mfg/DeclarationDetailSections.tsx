@@ -1163,50 +1163,76 @@ function IndicatorItem({
     : row.l3;
 
   return (
-    <div className="px-4 py-4">
+    <div className={cn("px-4 py-4", compact && "px-0 py-0")}>
       {/* 头部：序号 + 路径 + 类型 + 名称 + 单位/引领/基准/权重 + 状态 */}
-      <div className="flex flex-wrap items-start gap-3">
-        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-sm font-medium">
-          {row.no}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="mb-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <span>{row.l2}</span>
-            <span
+      {!compact ? (
+        <div className="flex flex-wrap items-start gap-3">
+          <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-sm font-medium">
+            {row.no}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <span>{row.l2}</span>
+              <span
+                className={cn(
+                  "inline-block whitespace-nowrap rounded-full border px-2 py-0.5 text-xs leading-tight",
+                  TYPE_TONE[row.type],
+                )}
+              >
+                {row.type}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-base leading-snug">
+              <span className="font-semibold">{l3Text}</span>
+              {!(isProductRow && has === "有") && (
+                <span className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm font-normal">
+                  <span><span className="text-muted-foreground">单位</span> <span className="font-mono">{row.unit || "/"}</span></span>
+                  <span><span className="text-muted-foreground">引领值</span> <span className="font-mono text-emerald-600 dark:text-emerald-400">{row.leadValue ?? "/"}</span></span>
+                  <span><span className="text-muted-foreground">基准值</span> <span className="font-mono text-amber-600 dark:text-amber-400">{row.baseValue ?? "/"}</span></span>
+                  {row.weight && (
+                    <span><span className="text-muted-foreground">权重</span> <span className="font-mono text-primary">{row.weight}</span></span>
+                  )}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {revised && (
+              <Badge variant="outline" className="border-warning/40 bg-warning/10 text-xs text-warning">
+                已修订
+              </Badge>
+            )}
+            <Badge variant="outline" className="border-primary/40 bg-primary/5 text-xs text-primary">
+              分值 {row.weight ?? "/"}
+            </Badge>
+          </div>
+        </div>
+      ) : (
+        // 紧凑模式：仅显示子项名称 + 状态徽标（外层组卡片已展示父级元数据）
+        <div className="flex items-start gap-2">
+          <div className="min-w-0 flex-1 text-sm font-medium leading-snug">
+            {subLabel ?? l3Text}
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {revised && (
+              <Badge variant="outline" className="border-warning/40 bg-warning/10 text-[10px] text-warning">
+                已修订
+              </Badge>
+            )}
+            <Badge
+              variant="outline"
               className={cn(
-                "inline-block whitespace-nowrap rounded-full border px-2 py-0.5 text-xs leading-tight",
-                TYPE_TONE[row.type],
+                "text-[10px]",
+                filled
+                  ? "border-success/40 bg-success/10 text-success"
+                  : "border-muted-foreground/30 bg-muted/40 text-muted-foreground",
               )}
             >
-              {row.type}
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-base leading-snug">
-            <span className="font-semibold">{l3Text}</span>
-            {/* 参考值就近展示在指标名称旁 */}
-            {!(isProductRow && has === "有") && (
-              <span className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm font-normal">
-                <span><span className="text-muted-foreground">单位</span> <span className="font-mono">{row.unit || "/"}</span></span>
-                <span><span className="text-muted-foreground">引领值</span> <span className="font-mono text-emerald-600 dark:text-emerald-400">{row.leadValue ?? "/"}</span></span>
-                <span><span className="text-muted-foreground">基准值</span> <span className="font-mono text-amber-600 dark:text-amber-400">{row.baseValue ?? "/"}</span></span>
-                {row.weight && (
-                  <span><span className="text-muted-foreground">权重</span> <span className="font-mono text-primary">{row.weight}</span></span>
-                )}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          {revised && (
-            <Badge variant="outline" className="border-warning/40 bg-warning/10 text-xs text-warning">
-              已修订
+              {filled ? "已填" : "未填"}
             </Badge>
-          )}
-          <Badge variant="outline" className="border-primary/40 bg-primary/5 text-xs text-primary">
-            分值 {row.weight ?? "/"}
-          </Badge>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 序号 1/6 的标准选择条 */}
       {isProductRow && (
