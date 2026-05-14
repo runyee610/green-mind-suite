@@ -950,93 +950,49 @@ export function EvaluationIndicatorCard({
     <>
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
-        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
+        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-lg">
           <span className="flex items-center gap-2">
-            <ListChecks className="h-4 w-4" />三、评价指标表（通则）
-            <Badge variant="outline" className="border-border/60 bg-muted/40 text-[11px] font-normal text-muted-foreground">
+            <ListChecks className="h-5 w-5" />三、评价指标表（通则）
+            <Badge variant="outline" className="border-border/60 bg-muted/40 text-sm font-normal text-muted-foreground">
               共 {data.length} 项
             </Badge>
           </span>
-          <div className="flex items-center gap-2 text-xs font-normal">
+          <div className="flex items-center gap-2 text-sm font-normal">
             <span className="text-muted-foreground">
               已填 <span className="font-mono text-foreground">{filledCount}</span> / {data.length}
               {govEditable || revisedCount > 0 ? <> · 已修订 <span className="font-mono text-warning">{revisedCount}</span></> : null}
             </span>
-            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
+            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-sm text-primary">
               得分 {totalScore.toFixed(2)}
             </Badge>
           </div>
         </CardTitle>
-        <p className="mt-1 text-[11px] text-muted-foreground">
+        <p className="mt-1 text-xs text-muted-foreground">
           得分计算：未达基准值 0 分，达到/优于引领值满分，介于二者之间按线性比例
         </p>
-        {/* 工具条：状态筛选 + 搜索 + L1 跳转 */}
-        <div className="mt-3 space-y-2 rounded-md border border-border/60 bg-muted/30 p-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-medium text-muted-foreground">状态：</span>
-            {([
-              { k: "all", label: `全部 ${data.length}` },
-              { k: "unfilled", label: `未填 ${data.length - filledCount}` },
-              { k: "filled", label: `已填 ${filledCount}` },
-              ...(govEditable || revisedCount > 0 ? [{ k: "revised" as const, label: `已修订 ${revisedCount}` }] : []),
-            ] as const).map((s) => (
-              <button
-                key={s.k}
-                type="button"
-                onClick={() => setStatusFilter(s.k as typeof statusFilter)}
-                className={cn(
-                  "rounded-full border px-2.5 py-0.5 text-[11px] transition",
-                  statusFilter === s.k
-                    ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {s.label}
-              </button>
-            ))}
-            <div className="relative ml-auto">
-              <Search className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="搜索指标名称 / 序号…"
-                className="h-7 w-56 pl-6 text-[11px]"
-              />
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-medium text-muted-foreground">快速跳转：</span>
+        {/* 工具条：仅状态筛选 */}
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-border/60 bg-muted/30 p-2">
+          <span className="text-sm font-medium text-muted-foreground">状态：</span>
+          {([
+            { k: "all", label: `全部 ${data.length}` },
+            { k: "unfilled", label: `未填 ${data.length - filledCount}` },
+            { k: "filled", label: `已填 ${filledCount}` },
+            ...(govEditable || revisedCount > 0 ? [{ k: "revised" as const, label: `已修订 ${revisedCount}` }] : []),
+          ] as const).map((s) => (
             <button
+              key={s.k}
               type="button"
-              onClick={() => {
-                setActiveL1("all");
-                document.getElementById("evaluation-indicator")?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
+              onClick={() => setStatusFilter(s.k as typeof statusFilter)}
               className={cn(
-                "rounded-full border px-2.5 py-0.5 text-[11px] transition",
-                activeL1 === "all"
+                "rounded-full border px-3 py-1 text-sm transition",
+                statusFilter === s.k
                   ? "border-primary/40 bg-primary/10 text-primary"
                   : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
               )}
             >
-              顶部
+              {s.label}
             </button>
-            {groupedByL1.map((g) => (
-              <button
-                key={g.l1}
-                type="button"
-                onClick={() => scrollToL1(g.l1)}
-                className={cn(
-                  "rounded-full border px-2.5 py-0.5 text-[11px] transition",
-                  activeL1 === g.l1
-                    ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {g.l1} · {g.rows.length}
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
       </CardHeader>
 
@@ -1054,18 +1010,18 @@ export function EvaluationIndicatorCard({
               id={`indicator-l1-${g.l1}`}
               className="overflow-hidden rounded-lg border border-border/60 bg-card"
             >
-              <CollapsibleTrigger className="flex w-full items-center gap-3 border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent px-4 py-2.5 text-left transition hover:bg-primary/15">
+              <CollapsibleTrigger className="flex w-full items-center gap-3 border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 text-left transition hover:bg-primary/15">
                 <ChevronDown
                   className={cn(
-                    "h-4 w-4 shrink-0 text-primary transition-transform",
+                    "h-5 w-5 shrink-0 text-primary transition-transform",
                     isCollapsed && "-rotate-90",
                   )}
                 />
-                <span className="text-sm font-semibold">{g.l1}</span>
-                <Badge variant="outline" className="border-border/60 bg-background text-[10px] font-normal text-muted-foreground">
+                <span className="text-base font-semibold">{g.l1}</span>
+                <Badge variant="outline" className="border-border/60 bg-background text-xs font-normal text-muted-foreground">
                   {g.rows.length} 项
                 </Badge>
-                <span className="ml-auto text-[11px] text-muted-foreground">
+                <span className="ml-auto text-sm text-muted-foreground">
                   已填 <span className="font-mono text-foreground">{groupFilled}</span> / {g.rows.length}
                 </span>
               </CollapsibleTrigger>
@@ -1180,45 +1136,46 @@ function IndicatorItem({
     : row.l3;
 
   return (
-    <div className="px-4 py-3">
-      {/* 头部：序号 + 路径 + 类型 + 状态 + 权重 */}
-      <div className="flex flex-wrap items-start gap-2">
-        <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-[11px] font-medium">
+    <div className="px-4 py-4">
+      {/* 头部：序号 + 路径 + 类型 + 名称 + 单位/引领/基准/权重 + 状态 */}
+      <div className="flex flex-wrap items-start gap-3">
+        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-sm font-medium">
           {row.no}
         </span>
         <div className="min-w-0 flex-1">
-          <div className="mb-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="mb-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <span>{row.l2}</span>
             <span
               className={cn(
-                "inline-block whitespace-nowrap rounded-full border px-1.5 py-0 text-[10px] leading-tight",
+                "inline-block whitespace-nowrap rounded-full border px-2 py-0.5 text-xs leading-tight",
                 TYPE_TONE[row.type],
               )}
             >
               {row.type}
             </span>
           </div>
-          <div className="flex items-start gap-1.5 text-sm leading-snug">
-            <span className="flex-1 font-medium">{l3Text}</span>
-            <IndicatorGuidePopover row={row} />
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-base leading-snug">
+            <span className="font-semibold">{l3Text}</span>
+            {/* 参考值就近展示在指标名称旁 */}
+            {!(isProductRow && has === "有") && (
+              <span className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm font-normal">
+                <span><span className="text-muted-foreground">单位</span> <span className="font-mono">{row.unit || "/"}</span></span>
+                <span><span className="text-muted-foreground">引领值</span> <span className="font-mono text-emerald-600 dark:text-emerald-400">{row.leadValue ?? "/"}</span></span>
+                <span><span className="text-muted-foreground">基准值</span> <span className="font-mono text-amber-600 dark:text-amber-400">{row.baseValue ?? "/"}</span></span>
+                {row.weight && (
+                  <span><span className="text-muted-foreground">权重</span> <span className="font-mono text-primary">{row.weight}</span></span>
+                )}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          {filled ? (
-            <Badge variant="outline" className="border-success/40 bg-success/10 text-[10px] text-success">
-              已填
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="border-muted-foreground/30 bg-muted text-[10px] text-muted-foreground">
-              未填
-            </Badge>
-          )}
           {revised && (
-            <Badge variant="outline" className="border-warning/40 bg-warning/10 text-[10px] text-warning">
+            <Badge variant="outline" className="border-warning/40 bg-warning/10 text-xs text-warning">
               已修订
             </Badge>
           )}
-          <Badge variant="outline" className="border-primary/40 bg-primary/5 text-[10px] text-primary">
+          <Badge variant="outline" className="border-primary/40 bg-primary/5 text-xs text-primary">
             分值 {row.weight ?? "/"}
           </Badge>
         </div>
@@ -1226,8 +1183,8 @@ function IndicatorItem({
 
       {/* 序号 1/6 的标准选择条 */}
       {isProductRow && (
-        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-md border border-border/50 bg-muted/30 px-2.5 py-1.5">
-          <span className="text-[11px] font-medium text-muted-foreground">{productCfg.selectorLabel}：</span>
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-border/50 bg-muted/30 px-3 py-2">
+          <span className="text-sm font-medium text-muted-foreground">{productCfg.selectorLabel}：</span>
           {entEditable ? (
             <Select
               value={has}
@@ -1238,37 +1195,29 @@ function IndicatorItem({
                 })
               }
             >
-              <SelectTrigger className="h-7 w-44 text-[11px]"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-8 w-56 text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="有">{productCfg.hasOptionLabel}</SelectItem>
                 <SelectItem value="无">{productCfg.noOptionLabel}</SelectItem>
               </SelectContent>
             </Select>
           ) : (
-            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] text-primary">
+            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-xs text-primary">
               {has === "有" ? productCfg.hasOptionLabel : productCfg.noOptionLabel}
             </Badge>
           )}
         </div>
       )}
 
-      {/* 参考值条：单位 / 引领值 / 基准值（产品行 hasStandard='有' 时不显示，由产品表自带） */}
-      {!(isProductRow && has === "有") && (
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 rounded-md border border-border/50 bg-muted/20 px-2.5 py-1.5 text-[11px]">
-          <span><span className="text-muted-foreground">单位</span> <span className="font-mono">{row.unit || "/"}</span></span>
-          <span><span className="text-muted-foreground">引领值</span> <span className="font-mono text-emerald-600 dark:text-emerald-400">{row.leadValue ?? "/"}</span></span>
-          <span><span className="text-muted-foreground">基准值</span> <span className="font-mono text-amber-600 dark:text-amber-400">{row.baseValue ?? "/"}</span></span>
-        </div>
-      )}
-
       {/* 主体：填报值 + 证明材料（响应式两栏） */}
       <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
         {/* 左：填报值 */}
-        <div className="rounded-md border border-border/60 bg-background/40 p-2.5">
-          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-            <PencilLine className="h-3 w-3" />本年度指标值
-            {entEditable && <span className="text-[10px] text-muted-foreground/70">（企业填报）</span>}
-            {govEditable && <span className="text-[10px] text-warning">（政府可修订）</span>}
+        <div className="rounded-md border border-border/60 bg-background/40 p-3">
+          <div className="mb-2 flex flex-wrap items-center gap-2 text-sm font-medium text-muted-foreground">
+            <PencilLine className="h-3.5 w-3.5" />本年度指标值
+            {entEditable && <span className="text-xs text-muted-foreground/70">（企业填报）</span>}
+            {govEditable && <span className="text-xs text-warning">（政府可修订）</span>}
+            <IndicatorGuidePopover row={row} />
           </div>
           {isProductRow && has === "有" ? (
             <div className="overflow-auto rounded border border-border/50">
@@ -1366,7 +1315,7 @@ function IndicatorItem({
               <Textarea
                 value={row.reportValue ?? ""}
                 rows={2}
-                className="min-h-[44px] resize-none text-xs"
+                className="min-h-[52px] resize-none text-sm"
                 placeholder="请填写"
                 onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
               />
@@ -1378,9 +1327,9 @@ function IndicatorItem({
         </div>
 
         {/* 右：证明材料 */}
-        <div className="rounded-md border border-border/60 bg-background/40 p-2.5">
-          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-            <FileText className="h-3 w-3" />证明材料（PDF / 图片）
+        <div className="rounded-md border border-border/60 bg-background/40 p-3">
+          <div className="mb-2 flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+            <FileText className="h-3.5 w-3.5" />证明材料（PDF / 图片）
           </div>
           <ProofList
             proofs={row.proofs}
@@ -1391,13 +1340,13 @@ function IndicatorItem({
           <button
             type="button"
             onClick={() => setReqOpen((v) => !v)}
-            className="mt-2 inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+            className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline"
           >
-            <ChevronDown className={cn("h-3 w-3 transition-transform", !reqOpen && "-rotate-90")} />
+            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", !reqOpen && "-rotate-90")} />
             {reqOpen ? "收起证明材料要求" : "查看证明材料要求"}
           </button>
           {reqOpen && (
-            <div className="mt-1.5 rounded border border-dashed border-border/60 bg-muted/20 px-2 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            <div className="mt-2 rounded border border-dashed border-border/60 bg-muted/20 px-2.5 py-2 text-sm leading-relaxed text-muted-foreground">
               {row.proofRequirement}
             </div>
           )}
@@ -1406,20 +1355,20 @@ function IndicatorItem({
 
       {/* 政府审核备注 */}
       {showGovRemark && (govEditable || row.govRemark) && (
-        <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-2.5">
-          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
-            <ClipboardCheck className="h-3 w-3" />审核备注（政府侧 · 选填）
+        <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-3">
+          <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-amber-700 dark:text-amber-300">
+            <ClipboardCheck className="h-3.5 w-3.5" />审核备注（政府侧 · 选填）
           </div>
           {govEditable ? (
             <Textarea
               value={row.govRemark ?? ""}
               rows={2}
-              className="min-h-[44px] resize-none text-xs"
+              className="min-h-[48px] resize-none text-sm"
               placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
               onChange={(e) => updateRow(row.id, { govRemark: e.target.value })}
             />
           ) : (
-            <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
+            <span className="text-sm leading-relaxed">{row.govRemark}</span>
           )}
         </div>
       )}
