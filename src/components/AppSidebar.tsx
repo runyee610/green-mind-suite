@@ -59,16 +59,16 @@ const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
 };
 
 const reportItems: NavItem[] = [
-  { title: "月度报告管理", url: "/report-monthly", icon: FileSpreadsheet },
+  { title: "节能月度报告", url: "/report-monthly", icon: FileSpreadsheet },
 ];
 
 const quotaItems: NavItem[] = [
-  { title: "限额周期与申报", url: "/energy-quota/standard", icon: ListChecks },
+  { title: "限额标准管理", url: "/energy-quota/standard", icon: ListChecks },
   { title: "周期与申报", url: "/energy-quota/declaration", icon: CalendarRange },
 ];
 
 const assetsItems: NavItem[] = [
-  { title: "投资项目管理", url: "/assets", icon: Boxes },
+  { title: "固定资产投资项目管理", url: "/assets", icon: Boxes },
 ];
 
 const systemItems: NavItem[] = [
