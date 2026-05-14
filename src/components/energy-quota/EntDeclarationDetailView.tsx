@@ -300,6 +300,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
           <TabsTrigger value="pressure" className="text-sm"><Gauge className="mr-1 h-4 w-4" />出厂水压力</TabsTrigger>
           <TabsTrigger value="summary" className="text-sm"><ClipboardList className="mr-1 h-4 w-4" />情况汇总</TabsTrigger>
           <TabsTrigger value="result" className="text-sm"><Target className="mr-1 h-4 w-4" />结果对标</TabsTrigger>
+          <TabsTrigger value="report" className="text-sm"><FileSignature className="mr-1 h-4 w-4" />限额报告</TabsTrigger>
         </TabsList>
 
         {/* === 一、企业基本情况 === */}
