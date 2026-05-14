@@ -146,7 +146,8 @@ export function CycleAndDeclaration() {
 
   return (
     <div className="space-y-4">
-      {/* 周期统计条（可折叠） */}
+      {/* 周期统计条（可折叠） - 仅政府侧 */}
+      {!isEnt && (
       <Card className="panel">
         <Collapsible open={expanded} onOpenChange={setExpanded}>
           <CollapsibleTrigger asChild>
@@ -229,6 +230,7 @@ export function CycleAndDeclaration() {
           </CollapsibleContent>
         </Collapsible>
       </Card>
+      )}
 
       {/* 申报企业列表 */}
       <Card className="panel">
