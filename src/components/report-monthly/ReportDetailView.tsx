@@ -104,6 +104,12 @@ export function ReportDetailView({ report, onBack, onFill, enterpriseType = TYPE
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
+            {onFill ? (
+              <Button size="sm" className="gap-2" onClick={onFill}>
+                <FileEdit className="h-4 w-4" />
+                填报
+              </Button>
+            ) : null}
             <Button size="sm" variant="outline" className="gap-2">
               <Printer className="h-4 w-4" />
               导出报告
