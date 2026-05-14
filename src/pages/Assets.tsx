@@ -112,7 +112,7 @@ export default function Assets() {
 
   // ============ 列表页 ============
   return (
-    <AppLayout title="固定资产管理" subtitle="政府侧普通固定资产投资项目统一视图、检索与企业关联">
+    <AppLayout title="固定资产投资项目管理" subtitle="政府侧普通固定资产投资项目统一视图、检索与企业关联">
       <div className="space-y-4">
         {/* KPI */}
         <div className="grid gap-3 md:grid-cols-3">
