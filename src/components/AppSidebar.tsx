@@ -6,6 +6,15 @@ import {
   Sprout,
   BadgeCheck,
   Megaphone,
+  FileSpreadsheet,
+  Gauge,
+  Boxes,
+  Settings,
+  Users,
+  KeyRound,
+  ListChecks,
+  CalendarRange,
+  Brain,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
@@ -31,32 +40,48 @@ type NavItem = {
   icon: typeof LayoutDashboard;
 };
 
-const overviewItems: NavItem[] = [
-  { title: "全景视图看板", url: "/", icon: LayoutDashboard },
-];
-
-const greenItemsByRole: Record<"gov" | "ent", NavItem[]> = {
+const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
+    { title: "全景视图看板", url: "/", icon: LayoutDashboard },
     { title: "自评价管理", url: "/green-mfg/gov", icon: ShieldCheck },
     { title: "梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
+    { title: "数据智能", url: "/green-mfg-agent", icon: Brain },
+    { title: "政策推送", url: "/policy-agent", icon: Megaphone },
   ],
   ent: [
     { title: "自评价管理", url: "/green-mfg/ent", icon: ShieldCheck },
     { title: "梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
+    { title: "数据智能", url: "/green-mfg-agent", icon: Brain },
+    { title: "政策推送", url: "/policy-agent", icon: Megaphone },
   ],
 };
 
-const policyItems: NavItem[] = [
-  { title: "数据智能", url: "/green-mfg-agent", icon: Megaphone },
-  { title: "政策推送", url: "/policy-agent", icon: Megaphone },
+const reportItems: NavItem[] = [
+  { title: "月度报告管理", url: "/report-monthly", icon: FileSpreadsheet },
+];
+
+const quotaItems: NavItem[] = [
+  { title: "标准管理", url: "/energy-quota/standard", icon: ListChecks },
+  { title: "周期与申报", url: "/energy-quota/declaration", icon: CalendarRange },
+];
+
+const assetsItems: NavItem[] = [
+  { title: "投资项目管理", url: "/assets", icon: Boxes },
+];
+
+const systemItems: NavItem[] = [
+  { title: "用户管理", url: "/system/users", icon: Users },
+  { title: "权限管理", url: "/system/permissions", icon: KeyRound },
 ];
 
 export const navItems: NavItem[] = [
-  ...overviewItems,
-  ...greenItemsByRole.gov,
-  ...greenItemsByRole.ent,
+  ...greenMfgItemsByRole.gov,
+  ...reportItems,
+  ...quotaItems,
+  ...assetsItems,
+  ...systemItems,
 ];
 
 export function AppSidebar() {
@@ -64,6 +89,35 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const { role } = useRole();
+
+  const renderItem = (item: NavItem) => (
+    <SidebarMenuItem key={item.url}>
+      <SidebarMenuButton asChild tooltip={item.title} className="h-11 text-[15px] font-medium">
+        <NavLink
+          to={item.url}
+          end
+          className="hover:bg-sidebar-accent/60"
+          activeClassName="!bg-sidebar-accent !text-sidebar-accent-foreground font-semibold border-l-2 border-sidebar-primary"
+        >
+          <item.icon className="h-5 w-5 shrink-0" />
+          {!collapsed && <span className="whitespace-nowrap">{item.title}</span>}
+        </NavLink>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+
+  const renderGroup = (label: string, items: NavItem[]) => (
+    <SidebarGroup key={label}>
+      {!collapsed && (
+        <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-[#0f5c4d]">
+          {label}
+        </SidebarGroupLabel>
+      )}
+      <SidebarGroupContent>
+        <SidebarMenu>{items.map(renderItem)}</SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -83,61 +137,11 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {(() => {
-          const overview = role === "ent" ? [] : overviewItems;
-          const green = greenItemsByRole[role];
-          const renderItem = (item: NavItem) => (
-            <SidebarMenuItem key={item.url}>
-              <SidebarMenuButton asChild tooltip={item.title} className="h-11 text-[15px] font-medium">
-                <NavLink
-                  to={item.url}
-                  end
-                  className="hover:bg-sidebar-accent/60"
-                  activeClassName="!bg-sidebar-accent !text-sidebar-accent-foreground font-semibold border-l-2 border-sidebar-primary"
-                >
-                  <item.icon className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span className="whitespace-nowrap">{item.title}</span>}
-                </NavLink>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          );
-          return (
-            <>
-              {overview.length > 0 && (
-                <SidebarGroup>
-                  {!collapsed && (
-                    <SidebarGroupLabel className="text-[11px] uppercase tracking-widest text-sidebar-foreground/60">
-                      总览
-                    </SidebarGroupLabel>
-                  )}
-                  <SidebarGroupContent>
-                    <SidebarMenu>{overview.map(renderItem)}</SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-              )}
-              <SidebarGroup>
-                {!collapsed && (
-                  <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-[#0f5c4d]">
-                    绿色制造
-                  </SidebarGroupLabel>
-                )}
-                <SidebarGroupContent>
-                  <SidebarMenu>{green.map(renderItem)}</SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-              <SidebarGroup>
-                {!collapsed && (
-                  <SidebarGroupLabel className="text-[12px] font-semibold tracking-wide text-[#0f5c4d]">
-                    绿色智能体
-                  </SidebarGroupLabel>
-                )}
-                <SidebarGroupContent>
-                  <SidebarMenu>{policyItems.map(renderItem)}</SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            </>
-          );
-        })()}
+        {renderGroup("绿色制造", greenMfgItemsByRole[role])}
+        {renderGroup("节能月度报告", reportItems)}
+        {renderGroup("能耗限额管理", quotaItems)}
+        {renderGroup("固定资产投资项目", assetsItems)}
+        {renderGroup("系统管理", systemItems)}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
@@ -156,4 +160,3 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
-
