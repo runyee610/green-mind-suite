@@ -146,7 +146,8 @@ export function CycleAndDeclaration() {
 
   return (
     <div className="space-y-4">
-      {/* 周期统计条（可折叠） */}
+      {/* 周期统计条（可折叠） - 仅政府侧 */}
+      {!isEnt && (
       <Card className="panel">
         <Collapsible open={expanded} onOpenChange={setExpanded}>
           <CollapsibleTrigger asChild>
@@ -229,6 +230,7 @@ export function CycleAndDeclaration() {
           </CollapsibleContent>
         </Collapsible>
       </Card>
+      )}
 
       {/* 申报企业列表 */}
       <Card className="panel">
@@ -253,19 +255,23 @@ export function CycleAndDeclaration() {
                   {(["未填报", "填报中", "待审核", "已驳回", "已完成"] as const).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="企业名称 / 信用代码 / 标准" className="h-9 w-64 pl-8" />
-              </div>
-              <Button size="sm" variant="outline" onClick={() => toast.info("从平台企业库批量导入")}><Plus className="mr-1 h-4 w-4" />导入企业</Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild><Button size="sm" variant="outline"><FileDown className="mr-1 h-4 w-4" />导出汇总表</Button></DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {[2026, 2025, 2024, 2023, 2022, 2021].map((y) => (
-                    <DropdownMenuItem key={y} onClick={() => toast.success(`正在生成 ${y} 年汇总表（异步任务）`)}>{y} 年汇总表</DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {!isEnt && (
+                <>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="企业名称 / 信用代码 / 标准" className="h-9 w-64 pl-8" />
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => toast.info("从平台企业库批量导入")}><Plus className="mr-1 h-4 w-4" />导入企业</Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild><Button size="sm" variant="outline"><FileDown className="mr-1 h-4 w-4" />导出汇总表</Button></DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {[2026, 2025, 2024, 2023, 2022, 2021].map((y) => (
+                        <DropdownMenuItem key={y} onClick={() => toast.success(`正在生成 ${y} 年汇总表（异步任务）`)}>{y} 年汇总表</DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -278,6 +284,7 @@ export function CycleAndDeclaration() {
                 <TableHead className="pr-2">企业名称</TableHead>
                 <TableHead className="w-40 pl-2">行业</TableHead>
                 <TableHead className="w-44">适用标准</TableHead>
+                {isEnt && <TableHead className="w-36">申报周期</TableHead>}
                 <TableHead className="w-28">填报状态</TableHead>
                 <TableHead className="w-56 text-right">操作</TableHead>
               </TableRow>
@@ -312,6 +319,11 @@ export function CycleAndDeclaration() {
                         ))}
                       </div>
                     </TableCell>
+                    {isEnt && (
+                      <TableCell className="font-mono text-xs text-foreground">
+                        {cycles.find((c) => c.id === e.cycleId)?.period ?? "—"}
+                      </TableCell>
+                    )}
                     <TableCell>
                       <span className={cn(
                         "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
