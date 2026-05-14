@@ -243,9 +243,6 @@ export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialog
                   {enabledStandards.map((s) => <SelectItem key={s.id} value={s.code}>{s.code}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Button size="sm" variant="outline" className="h-9" onClick={selectAllPool}>
-                选择全部企业
-              </Button>
             </div>
 
             {/* 企业列表 */}
