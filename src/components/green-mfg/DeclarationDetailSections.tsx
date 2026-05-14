@@ -1010,18 +1010,18 @@ export function EvaluationIndicatorCard({
               id={`indicator-l1-${g.l1}`}
               className="overflow-hidden rounded-lg border border-border/60 bg-card"
             >
-              <CollapsibleTrigger className="flex w-full items-center gap-3 border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent px-4 py-2.5 text-left transition hover:bg-primary/15">
+              <CollapsibleTrigger className="flex w-full items-center gap-3 border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 text-left transition hover:bg-primary/15">
                 <ChevronDown
                   className={cn(
-                    "h-4 w-4 shrink-0 text-primary transition-transform",
+                    "h-5 w-5 shrink-0 text-primary transition-transform",
                     isCollapsed && "-rotate-90",
                   )}
                 />
-                <span className="text-sm font-semibold">{g.l1}</span>
-                <Badge variant="outline" className="border-border/60 bg-background text-[10px] font-normal text-muted-foreground">
+                <span className="text-base font-semibold">{g.l1}</span>
+                <Badge variant="outline" className="border-border/60 bg-background text-xs font-normal text-muted-foreground">
                   {g.rows.length} 项
                 </Badge>
-                <span className="ml-auto text-[11px] text-muted-foreground">
+                <span className="ml-auto text-sm text-muted-foreground">
                   已填 <span className="font-mono text-foreground">{groupFilled}</span> / {g.rows.length}
                 </span>
               </CollapsibleTrigger>
