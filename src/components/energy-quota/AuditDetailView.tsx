@@ -59,7 +59,7 @@ export function AuditDetailView({ detail, onBack }: { detail: QuotaDetail; onBac
                 <h2 className="text-lg font-semibold">{detail.enterpriseName}</h2>
                 <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning">待审核</Badge>
               </div>
-              <p className="mt-0.5 font-mono text-xs text-muted-foreground">{detail.creditCode} · {detail.industry}</p>
+              <p className="mt-0.5 font-mono text-xs text-muted-foreground">{detail.creditCode} · {detail.industry} · 限额周期 {detail.cyclePeriod}</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

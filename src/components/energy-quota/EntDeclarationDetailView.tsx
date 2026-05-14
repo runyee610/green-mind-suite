@@ -71,7 +71,7 @@ const emptyMonth = (): MonthArr => Array(12).fill(0);
 
 const newPlant = (idx: number): PlantData => ({
   id: `p${Date.now()}_${idx}`,
-  productName: "自来水",
+  productName: "水的生产和供应业",
   plantName: "",
   startYear: "",
   designCapacity: "",
@@ -88,7 +88,7 @@ const newPlant = (idx: number): PlantData => ({
 
 const seedPlant: PlantData = {
   id: "p_demo_1",
-  productName: "自来水",
+  productName: "水的生产和供应业",
   plantName: "宝山月浦水厂",
   startYear: "1998",
   designCapacity: "60",
@@ -291,8 +291,8 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               <ReadField label="企业名称" value={detail.enterpriseName} />
               <ReadField label="单位类型" value="重点用能单位" />
               <ReadField label="统一社会信用代码" value={detail.creditCode} mono />
-              <ReadField label="所属行业分类" value="水的生产和供应业 / 自来水生产和供应" />
-              <ReadField label="主要产品类型" value="自来水" />
+              <ReadField label="所属行业分类" value="水的生产和供应业" />
+              <ReadField label="主要产品类型" value="水的生产和供应业" />
               <ReadField label="主要消耗能源品种" value="电力" />
             </CardContent>
           </Card>
@@ -326,7 +326,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                     <Input
                       value={p.productName}
                       onChange={(e) => updatePlant(i, { productName: e.target.value })}
-                      placeholder="如：自来水"
+                      placeholder="如：水的生产和供应业"
                     />
                   </FormField>
                   <FormField label="自来水厂名称" required>

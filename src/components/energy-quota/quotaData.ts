@@ -110,7 +110,7 @@ export const cycles: QuotaCycle[] = [
 
 export const enterprises: QuotaEnterprise[] = [
   { id: "e1", cycleId: "c1", creditCode: "900023893459294E", name: "国网上海分公司", industry: "电力、热力生产和供应业", standardCodes: ["GB 21258-2024"], status: "已完成", hasData: true },
-  { id: "e2", cycleId: "c1", creditCode: "913100007050125XXY", name: "上海宝山钢铁股份有限公司", industry: "黑色金属冶炼", standardCodes: ["DB31/T 555-2022"], status: "待审核", hasData: true },
+  { id: "e2", cycleId: "c1", creditCode: "913100007050125XXY", name: "上海宝山钢铁股份有限公司", industry: "水的生产和供应", standardCodes: ["DB31/T 555-2022"], status: "待审核", hasData: true },
   { id: "e3", cycleId: "c1", creditCode: "91310000132201347P", name: "上海耀皮玻璃集团", industry: "非金属矿物制品业", standardCodes: ["GB 21340-2019"], status: "已驳回", hasData: true },
   { id: "e4", cycleId: "c1", creditCode: "91310000631696302L", name: "上海数据港股份有限公司", industry: "互联网与数据服务", standardCodes: ["DB31/T 638-2024"], status: "填报中", hasData: true },
   { id: "e5", cycleId: "c1", creditCode: "91310115607284430Y", name: "中芯国际集成电路", industry: "计算机、通信和其他电子设备", standardCodes: ["DB31/T 638-2024", "GB 17167-2022"], status: "未填报", hasData: false },
@@ -121,7 +121,7 @@ export const enterprises: QuotaEnterprise[] = [
 
 // 生成约 250 家企业的批量 mock 数据，用于演示分页与大列表
 const _industries = [
-  "电力、热力生产和供应业", "黑色金属冶炼", "非金属矿物制品业", "互联网与数据服务",
+  "电力、热力生产和供应业", "水的生产和供应", "非金属矿物制品业", "互联网与数据服务",
   "计算机、通信和其他电子设备", "石油加工", "化学原料制造", "汽车制造业",
   "纺织业", "食品制造业", "医药制造业", "通用设备制造", "专用设备制造",
   "金属制品业", "造纸及纸制品业", "印染业",
@@ -189,7 +189,7 @@ export const sampleDetail: QuotaDetail = {
   enterpriseId: "e2",
   enterpriseName: "上海宝山钢铁股份有限公司",
   creditCode: "913100007050125XXY",
-  industry: "黑色金属冶炼",
+  industry: "水的生产和供应",
   cyclePeriod: "202601-202612",
   standardCode: "DB31/T 555-2022",
   standardName: "上海市钢铁行业能耗限额",
