@@ -246,19 +246,14 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
       {/* 顶部操作栏 */}
       <Card className="panel">
         <CardContent className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <ArrowLeft className="mr-1 h-4 w-4" />返回列表
-            </Button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold">{detail.enterpriseName}</h2>
-                <Badge variant="outline" className="border-info/40 bg-info/10 text-info">填报中</Badge>
-              </div>
-              <p className="mt-0.5 font-mono text-xs text-muted-foreground">
-                {detail.creditCode} · {detail.industry} · 限额周期 {detail.cyclePeriod}
-              </p>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold">{detail.enterpriseName}</h2>
+              <Badge variant="outline" className="border-info/40 bg-info/10 text-info">填报中</Badge>
             </div>
+            <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+              {detail.creditCode} · {detail.industry} · 限额周期 {detail.cyclePeriod}
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={handleSave}>
@@ -266,6 +261,9 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
             </Button>
             <Button size="sm" onClick={handleSubmit}>
               <Send className="mr-1 h-4 w-4" />提交审核
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onBack}>
+              <ArrowLeft className="mr-1 h-4 w-4" />返回列表
             </Button>
           </div>
         </CardContent>
