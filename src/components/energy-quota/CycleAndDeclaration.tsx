@@ -337,21 +337,9 @@ export function CycleAndDeclaration() {
                       <Button size="sm" variant="ghost" className="px-2" onClick={() => setDetailOpen(true)}>
                         <Eye className="mr-1 h-3 w-3" />查看
                       </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="ghost" className="px-2">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setEditStandardTarget(e)}>
-                            <Edit className="mr-2 h-3.5 w-3.5" />编辑标准
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setHistoryTarget(e)}>
-                            <History className="mr-2 h-3.5 w-3.5" />历史
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Button size="sm" variant="ghost" className="px-2" onClick={() => setHistoryTarget(e)}>
+                        <History className="mr-1 h-3 w-3" />历史
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
