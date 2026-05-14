@@ -71,7 +71,7 @@ const emptyMonth = (): MonthArr => Array(12).fill(0);
 
 const newPlant = (idx: number): PlantData => ({
   id: `p${Date.now()}_${idx}`,
-  productName: "自来水",
+  productName: "水的生产和供应业",
   plantName: "",
   startYear: "",
   designCapacity: "",
