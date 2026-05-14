@@ -27,7 +27,7 @@ const ROUTE_TITLES: Array<{ match: RegExp; crumbs: string[] }> = [
   { match: /^\/report-monthly\/filling/, crumbs: ["节能月度报告", "填报"] },
   { match: /^\/report-monthly/, crumbs: ["节能月度报告"] },
   { match: /^\/energy-quota\/standard/, crumbs: ["能耗限额管理", "限额标准管理"] },
-  { match: /^\/energy-quota\/declaration/, crumbs: ["能耗限额管理", "周期与申报"] },
+  { match: /^\/energy-quota\/declaration/, crumbs: ["能耗限额管理", "限额周期与申报"] },
   { match: /^\/energy-quota/, crumbs: ["能耗限额管理"] },
   { match: /^\/assets/, crumbs: ["固定资产投资项目", "固定资产投资项目管理"] },
   { match: /^\/system\/users/, crumbs: ["系统管理", "用户管理"] },
