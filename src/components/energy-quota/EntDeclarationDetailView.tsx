@@ -290,7 +290,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               <ReadField label="单位类型" value="重点用能单位" />
               <ReadField label="统一社会信用代码" value={detail.creditCode} mono />
               <ReadField label="所属行业分类" value="水的生产和供应业" />
-              <ReadField label="主要产品类型" value="水的生产和供应业" />
+              <ReadField label="主要产品类型" value="自来水制水" />
               <ReadField label="主要消耗能源品种" value="电力" />
             </CardContent>
           </Card>
