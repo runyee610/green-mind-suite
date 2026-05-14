@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs as GuideTabs, TabsList as GuideTabsList, TabsTrigger as GuideTabsTrigger, TabsContent as GuideTabsContent } from "@/components/ui/tabs";
-import { Building2, Calculator, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, NotebookPen, Upload } from "lucide-react";
+import { Building2, Calculator, ChevronDown, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, NotebookPen, PencilLine, Search, Upload } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, PLATFORM_FUNCTION_OPTIONS, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
@@ -846,6 +847,24 @@ function IndicatorGuidePopover({ row }: { row: IndicatorRow }) {
   );
 }
 
+/** 判定一行是否“已填” */
+function isRowFilled(row: IndicatorRow): boolean {
+  if ((row.no === 1 || row.no === 6) && row.hasStandard === "有") {
+    return (row.products ?? []).some((p) => p.name || p.reportValue);
+  }
+  if (row.id === "4") {
+    return (row.platformFunctions ?? []).length > 0;
+  }
+  return !!(row.reportValue && row.reportValue.trim().length > 0);
+}
+function isRowRevised(row: IndicatorRow): boolean {
+  return (
+    row.originalReportValue !== undefined ||
+    row.originalProducts !== undefined ||
+    row.originalPlatformFunctions !== undefined
+  );
+}
+
 export function EvaluationIndicatorCard({
   data = EVALUATION_INDICATORS,
   totalScore = EVALUATION_TOTAL_SCORE,
@@ -879,40 +898,52 @@ export function EvaluationIndicatorCard({
       }
       return next;
     }));
-  const totalCols = showGovRemark ? 13 : 12;
+
   const [preview, setPreview] = useState<string | null>(null);
   const [keyword, setKeyword] = useState("");
   const [activeL1, setActiveL1] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "filled" | "unfilled" | "revised">("all");
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
-  const l1Sections = useMemo(() => {
-    const seen = new Set<string>();
-    const arr: { l1: string; count: number }[] = [];
+  // 进度统计
+  const filledCount = useMemo(() => data.filter(isRowFilled).length, [data]);
+  const revisedCount = useMemo(() => data.filter(isRowRevised).length, [data]);
+
+  // L1 分组（保持原顺序）
+  const groupedByL1 = useMemo(() => {
+    const map = new Map<string, IndicatorRow[]>();
     data.forEach((r) => {
-      if (!seen.has(r.l1)) {
-        seen.add(r.l1);
-        arr.push({ l1: r.l1, count: 1 });
-      } else {
-        const item = arr.find((x) => x.l1 === r.l1);
-        if (item) item.count += 1;
-      }
+      if (!map.has(r.l1)) map.set(r.l1, []);
+      map.get(r.l1)!.push(r);
     });
-    return arr;
+    return Array.from(map.entries()).map(([l1, rows]) => ({ l1, rows }));
   }, [data]);
 
-  const scrollToL1 = (l1: string) => {
-    setActiveL1(l1);
-    const el = document.getElementById(`indicator-l1-${l1}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-
   const matchKeyword = (row: IndicatorRow) => {
-    if (!keyword.trim()) return false;
+    if (!keyword.trim()) return true;
     const k = keyword.trim().toLowerCase();
     return (
       row.l3.toLowerCase().includes(k) ||
       (row.l2 ?? "").toLowerCase().includes(k) ||
-      (row.l1 ?? "").toLowerCase().includes(k)
+      (row.l1 ?? "").toLowerCase().includes(k) ||
+      String(row.no).includes(k)
     );
+  };
+  const matchStatus = (row: IndicatorRow) => {
+    if (statusFilter === "all") return true;
+    if (statusFilter === "filled") return isRowFilled(row);
+    if (statusFilter === "unfilled") return !isRowFilled(row);
+    if (statusFilter === "revised") return isRowRevised(row);
+    return true;
+  };
+  const matchAll = (row: IndicatorRow) => matchKeyword(row) && matchStatus(row);
+
+  const scrollToL1 = (l1: string) => {
+    setActiveL1(l1);
+    setCollapsed((c) => ({ ...c, [l1]: false }));
+    setTimeout(() => {
+      document.getElementById(`indicator-l1-${l1}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
   };
 
   return (
@@ -920,527 +951,154 @@ export function EvaluationIndicatorCard({
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
-          <span>
-            <ListChecks className="mr-1 inline h-4 w-4" />三、评价指标表（通则）
+          <span className="flex items-center gap-2">
+            <ListChecks className="h-4 w-4" />三、评价指标表（通则）
+            <Badge variant="outline" className="border-border/60 bg-muted/40 text-[11px] font-normal text-muted-foreground">
+              共 {data.length} 项
+            </Badge>
           </span>
           <div className="flex items-center gap-2 text-xs font-normal">
             <span className="text-muted-foreground">
-              得分计算：未达基准值 0 分，达到/优于引领值满分，介于二者之间按线性比例
+              已填 <span className="font-mono text-foreground">{filledCount}</span> / {data.length}
+              {govEditable || revisedCount > 0 ? <> · 已修订 <span className="font-mono text-warning">{revisedCount}</span></> : null}
             </span>
             <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
               得分 {totalScore.toFixed(2)}
             </Badge>
           </div>
         </CardTitle>
-        {/* 友好交互工具条：一级指标快速跳转 + 关键字搜索 */}
-        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-border/60 bg-muted/30 p-2">
-          <span className="text-[11px] font-medium text-muted-foreground">快速跳转：</span>
-          <button
-            type="button"
-            onClick={() => {
-              setActiveL1("all");
-              document.getElementById("evaluation-indicator")?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-            className={cn(
-              "rounded-full border px-2.5 py-0.5 text-[11px] transition",
-              activeL1 === "all"
-                ? "border-primary/40 bg-primary/10 text-primary"
-                : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
-            )}
-          >
-            全部 · {data.length}
-          </button>
-          {l1Sections.map((s) => (
+        <p className="mt-1 text-[11px] text-muted-foreground">
+          得分计算：未达基准值 0 分，达到/优于引领值满分，介于二者之间按线性比例
+        </p>
+        {/* 工具条：状态筛选 + 搜索 + L1 跳转 */}
+        <div className="mt-3 space-y-2 rounded-md border border-border/60 bg-muted/30 p-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] font-medium text-muted-foreground">状态：</span>
+            {([
+              { k: "all", label: `全部 ${data.length}` },
+              { k: "unfilled", label: `未填 ${data.length - filledCount}` },
+              { k: "filled", label: `已填 ${filledCount}` },
+              ...(govEditable || revisedCount > 0 ? [{ k: "revised" as const, label: `已修订 ${revisedCount}` }] : []),
+            ] as const).map((s) => (
+              <button
+                key={s.k}
+                type="button"
+                onClick={() => setStatusFilter(s.k as typeof statusFilter)}
+                className={cn(
+                  "rounded-full border px-2.5 py-0.5 text-[11px] transition",
+                  statusFilter === s.k
+                    ? "border-primary/40 bg-primary/10 text-primary"
+                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {s.label}
+              </button>
+            ))}
+            <div className="relative ml-auto">
+              <Search className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="搜索指标名称 / 序号…"
+                className="h-7 w-56 pl-6 text-[11px]"
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] font-medium text-muted-foreground">快速跳转：</span>
             <button
-              key={s.l1}
               type="button"
-              onClick={() => scrollToL1(s.l1)}
+              onClick={() => {
+                setActiveL1("all");
+                document.getElementById("evaluation-indicator")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
               className={cn(
                 "rounded-full border px-2.5 py-0.5 text-[11px] transition",
-                activeL1 === s.l1
+                activeL1 === "all"
                   ? "border-primary/40 bg-primary/10 text-primary"
                   : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
               )}
             >
-              {s.l1} · {s.count}
+              顶部
             </button>
-          ))}
-          <div className="ml-auto">
-            <Input
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              placeholder="搜索指标名称…"
-              className="h-7 w-48 text-[11px]"
-            />
+            {groupedByL1.map((g) => (
+              <button
+                key={g.l1}
+                type="button"
+                onClick={() => scrollToL1(g.l1)}
+                className={cn(
+                  "rounded-full border px-2.5 py-0.5 text-[11px] transition",
+                  activeL1 === g.l1
+                    ? "border-primary/40 bg-primary/10 text-primary"
+                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {g.l1} · {g.rows.length}
+              </button>
+            ))}
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="overflow-auto rounded-md border border-border/60">
-          <table className={cn("w-full border-collapse text-xs", showGovRemark ? "min-w-[1400px]" : "min-w-[1240px]")}>
-            <thead className="bg-muted/40 text-[11px] text-muted-foreground">
-              <tr className="[&>th]:border-r [&>th]:border-border/60 [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium">
-                <th className="w-[80px]">一级指标</th>
-                <th className="w-[44px] text-center">序号</th>
-                <th className="w-[120px]">二级指标</th>
-                <th className="min-w-[260px]">三级指标</th>
-                <th className="w-[64px] text-center">指标类型</th>
-                <th className="w-[90px] text-center">单位</th>
-                <th className="w-[72px] text-center">引领值</th>
-                <th className="w-[72px] text-center">基准值</th>
-                <th className="w-[80px] text-center">权重分值</th>
-                <th className="w-[160px]">本年度指标值</th>
-                <th className="w-[160px]">证明材料（PDF/图片）</th>
-                {showGovRemark && <th className="w-[180px]">审核备注（选填）</th>}
-                <th className="min-w-[220px]">证明材料要求</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, idx) => {
-                const last = idx === data.length - 1;
-                // ============= 序号 1 / 6 特殊处理：根据 hasStandard 切换填报形态 =============
-                if (row.no === 1 || row.no === 6) {
-                  const isWater = row.no === 6;
-                  const cfg = isWater
-                    ? {
-                        selectorLabel: "是否有适用工业用水定额国家标准：",
-                        hasOptionLabel: "有适用工业用水定额国家标准",
-                        noOptionLabel: "无适用工业用水定额国家标准",
-                        l3HasText:
-                          "单位产品取水量（有适用工业用水定额国家标准时必选，涉及多种产品适用标准时，仅填写取水量排序前三以内的产品）",
-                        l3NoText: "单位产值取水量（无适用工业用水定额国家标准时选用）",
-                        unitOptions: ["m3/产品单位"],
-                        leadPlaceholder: "先进值水平",
-                        basePlaceholder: "通用值水平",
-                        weightHeader: (
-                          <>
-                            权重分值
-                            <br />
-                            （产品取水量 m3）
-                          </>
-                        ),
-                      }
-                    : {
-                        selectorLabel: "是否有适用国家强制性能源消耗限额标准：",
-                        hasOptionLabel: "有适用国家强制性能源消耗限额标准",
-                        noOptionLabel: "无适用国家强制性能源消耗限额标准",
-                        l3HasText:
-                          "单位产品综合能耗（有适用国家强制性能源消耗限额标准时必选，涉及多种产品适用标准时，仅填写综合能耗排序前三以内的产品）",
-                        l3NoText: "单位产值综合能耗（无适用国家强制性能源消耗限额标准时选用）",
-                        unitOptions: ["tce/产品单位", "kgce/产品单位"],
-                        leadPlaceholder: "1级水平",
-                        basePlaceholder: "2级水平",
-                        weightHeader: (
-                          <>
-                            权重分值
-                            <br />
-                            （吨标煤）
-                          </>
-                        ),
-                      };
-                  const has = row.hasStandard ?? "无";
-                  const products: ProductEnergyEntry[] = row.products?.length === 3
-                    ? row.products
-                    : [EMPTY_PRODUCT_ENERGY_ENTRY, EMPTY_PRODUCT_ENERGY_ENTRY, EMPTY_PRODUCT_ENERGY_ENTRY];
-                  const updateProduct = (i: number, patch: Partial<ProductEnergyEntry>) => {
-                    const next = products.map((p, pi) => (pi === i ? { ...p, ...patch } : p));
-                    updateRow(row.id, { products: next });
-                  };
-                  const standardSelector = entEditable ? (
-                    <Select
-                      value={has}
-                      onValueChange={(v) =>
-                        updateRow(row.id, {
-                          hasStandard: v as "有" | "无",
-                          weight: v === "无" ? "8" : row.weight,
-                        })
-                      }
-                    >
-                      <SelectTrigger className="h-7 w-40 text-[11px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="有">{cfg.hasOptionLabel}</SelectItem>
-                        <SelectItem value="无">{cfg.noOptionLabel}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] text-primary">
-                      {has === "有" ? cfg.hasOptionLabel : cfg.noOptionLabel}
-                    </Badge>
-                  );
-                  const l3Cell = (
-                    <div className="space-y-1.5">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] font-medium text-muted-foreground">{cfg.selectorLabel}</span>
-                        {standardSelector}
-                      </div>
-                      <div className="flex items-start gap-1.5 leading-relaxed">
-                        <p className="flex-1">{has === "有" ? cfg.l3HasText : cfg.l3NoText}</p>
-                        <IndicatorGuidePopover row={row} />
-                      </div>
-                    </div>
-                  );
-                  const hl = matchKeyword(row);
-                  return (
-                    <tr
+
+      <CardContent className="space-y-4">
+        {groupedByL1.map((g) => {
+          const visibleRows = g.rows.filter(matchAll);
+          if (visibleRows.length === 0 && (keyword || statusFilter !== "all")) return null;
+          const isCollapsed = !!collapsed[g.l1];
+          const groupFilled = g.rows.filter(isRowFilled).length;
+          return (
+            <Collapsible
+              key={g.l1}
+              open={!isCollapsed}
+              onOpenChange={(o) => setCollapsed((c) => ({ ...c, [g.l1]: !o }))}
+              id={`indicator-l1-${g.l1}`}
+              className="overflow-hidden rounded-lg border border-border/60 bg-card"
+            >
+              <CollapsibleTrigger className="flex w-full items-center gap-3 border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent px-4 py-2.5 text-left transition hover:bg-primary/15">
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 shrink-0 text-primary transition-transform",
+                    isCollapsed && "-rotate-90",
+                  )}
+                />
+                <span className="text-sm font-semibold">{g.l1}</span>
+                <Badge variant="outline" className="border-border/60 bg-background text-[10px] font-normal text-muted-foreground">
+                  {g.rows.length} 项
+                </Badge>
+                <span className="ml-auto text-[11px] text-muted-foreground">
+                  已填 <span className="font-mono text-foreground">{groupFilled}</span> / {g.rows.length}
+                </span>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="divide-y divide-border/50">
+                  {visibleRows.map((row) => (
+                    <IndicatorItem
                       key={row.id}
-                      id={row.showL1 ? `indicator-l1-${row.l1}` : undefined}
-                      className={cn(
-                        "align-top transition-colors [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2 [&>td]:py-2",
-                        !last && "border-b border-border/60",
-                        hl && "bg-primary/5 ring-1 ring-inset ring-primary/30",
-                      )}
-                    >
-                      {row.showL1 && (
-                        <td rowSpan={row.l1RowSpan ?? 1} className="bg-muted/20 text-center font-medium">
-                          {row.l1}
-                        </td>
-                      )}
-                      <td className="text-center font-mono">{row.no}</td>
-                      {row.showL2 && (
-                        <td rowSpan={row.l2RowSpan ?? 1} className="bg-muted/10">
-                          {row.l2}
-                        </td>
-                      )}
-                      <td className="leading-relaxed">{l3Cell}</td>
-                      <td className="text-center">
-                        <span
-                          className={cn(
-                            "inline-block whitespace-normal break-words rounded-full border px-1.5 py-0.5 text-center text-[10px] leading-tight",
-                            TYPE_TONE[row.type],
-                          )}
-                        >
-                          {row.type}
-                        </span>
-                      </td>
-                      {has === "无" ? (
-                        <>
-                          <td className="text-center">{row.unit}</td>
-                          <td className="text-center font-mono">{row.leadValue ?? "/"}</td>
-                          <td className="text-center font-mono">{row.baseValue ?? "/"}</td>
-                          <td className="text-center font-mono">{row.weight ?? "8"}</td>
-                          <td>
-                            {valueEditable ? (
-                              <div className="space-y-1">
-                                <Textarea
-                                  value={row.reportValue ?? ""}
-                                  rows={2}
-                                  className="min-h-[44px] resize-none text-xs"
-                                  placeholder="请填写"
-                                  onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
-                                />
-                                <OriginalHint original={row.originalReportValue} />
-                              </div>
-                            ) : (
-                              <DiffValue current={row.reportValue} original={row.originalReportValue} />
-                            )}
-                          </td>
-                          <td>
-                            <ProofList
-                              proofs={row.proofs}
-                              editable={entEditable}
-                              onChange={(next) => updateRow(row.id, { proofs: next })}
-                              onPreview={setPreview}
-                            />
-                          </td>
-                        </>
-                      ) : (
-                        <td colSpan={6} className="!p-0">
-                          <table className="w-full border-collapse text-[11px]">
-                            <thead className="bg-muted/30 text-[10px] text-muted-foreground">
-                              <tr className="[&>th]:border-b [&>th]:border-r [&>th]:border-border/60 [&>th]:px-2 [&>th]:py-1.5 [&>th]:text-center [&>th]:font-medium last:[&>th]:border-r-0">
-                                <th className="w-[110px]">产品名称</th>
-                                <th className="w-[120px]">单位</th>
-                                <th className="w-[80px]">引领值</th>
-                                <th className="w-[80px]">基准值</th>
-                                <th className="w-[110px]">{cfg.weightHeader}</th>
-                                <th className="w-[120px]">本年度指标值</th>
-                                <th>证明材料</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {products.map((p, pi) => (
-                                <tr
-                                  key={pi}
-                                  className={cn(
-                                    "align-top [&>td]:border-r [&>td]:px-2 [&>td]:py-1.5 last:[&>td]:border-r-0",
-                                    pi !== products.length - 1 && "border-b border-border/40",
-                                  )}
-                                >
-                                  <td>
-                                    {entEditable ? (
-                                      <Input
-                                        value={p.name}
-                                        placeholder={`产品${["一", "二", "三"][pi]}名称`}
-                                        className="h-7 text-[11px]"
-                                        onChange={(e) => updateProduct(pi, { name: e.target.value })}
-                                      />
-                                    ) : (
-                                      <span>{p.name || <span className="text-muted-foreground">—</span>}</span>
-                                    )}
-                                  </td>
-                                  <td>
-                                    {entEditable ? (
-                                      <Select
-                                        value={p.unit}
-                                        onValueChange={(v) => updateProduct(pi, { unit: v })}
-                                      >
-                                        <SelectTrigger className="h-7 text-[11px]">
-                                          <SelectValue placeholder="选择单位" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {cfg.unitOptions.map((u) => (
-                                            <SelectItem key={u} value={u}>{u}</SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                    ) : (
-                                      <span className="text-center font-mono">{p.unit || "—"}</span>
-                                    )}
-                                  </td>
-                                  <td className="text-center">
-                                    {entEditable ? (
-                                      <Input
-                                        value={p.leadValue}
-                                        placeholder={cfg.leadPlaceholder}
-                                        className="h-7 text-center font-mono text-[11px]"
-                                        onChange={(e) => updateProduct(pi, { leadValue: e.target.value })}
-                                      />
-                                    ) : (
-                                      <span className="font-mono">{p.leadValue || "—"}</span>
-                                    )}
-                                  </td>
-                                  <td className="text-center">
-                                    {entEditable ? (
-                                      <Input
-                                        value={p.baseValue}
-                                        placeholder={cfg.basePlaceholder}
-                                        className="h-7 text-center font-mono text-[11px]"
-                                        onChange={(e) => updateProduct(pi, { baseValue: e.target.value })}
-                                      />
-                                    ) : (
-                                      <span className="font-mono">{p.baseValue || "—"}</span>
-                                    )}
-                                  </td>
-                                  <td className="text-center">
-                                    {entEditable ? (
-                                      <Input
-                                        value={p.weight}
-                                        placeholder="吨标煤"
-                                        className="h-7 text-center font-mono text-[11px]"
-                                        onChange={(e) => updateProduct(pi, { weight: e.target.value })}
-                                      />
-                                    ) : (
-                                      <span className="font-mono">{p.weight || "—"}</span>
-                                    )}
-                                  </td>
-                                  <td>
-                                    {valueEditable ? (
-                                      <div className="space-y-1">
-                                        <Input
-                                          value={p.reportValue}
-                                          placeholder="请填写"
-                                          className="h-7 text-center font-mono text-[11px]"
-                                          onChange={(e) => updateProduct(pi, { reportValue: e.target.value })}
-                                        />
-                                        <OriginalHint original={row.originalProducts?.[pi]?.reportValue} small />
-                                      </div>
-                                    ) : (
-                                      <DiffValue
-                                        current={p.reportValue}
-                                        original={row.originalProducts?.[pi]?.reportValue}
-                                        small
-                                      />
-                                    )}
-                                  </td>
-                                  {pi === 0 && (
-                                    <td rowSpan={products.length} className="align-top">
-                                      <ProofList
-                                        proofs={row.proofs}
-                                        editable={entEditable}
-                                        onChange={(next) => updateRow(row.id, { proofs: next })}
-                                        onPreview={setPreview}
-                                      />
-                                    </td>
-                                  )}
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </td>
-                      )}
-                      {showGovRemark && (
-                        <td>
-                          {govEditable ? (
-                            <Textarea
-                              value={row.govRemark ?? ""}
-                              rows={2}
-                              className="min-h-[44px] resize-none text-xs"
-                              placeholder="如指标值有修订，请填写修订备注"
-                              onChange={(e) => updateRow(row.id, { govRemark: e.target.value })}
-                            />
-                          ) : row.govRemark ? (
-                            <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
-                          ) : (
-                            <span className="text-[11px] text-muted-foreground">如指标值有修订，请填写修订备注</span>
-                          )}
-                        </td>
-                      )}
-                      <td className="leading-relaxed text-muted-foreground">{row.proofRequirement}</td>
-                    </tr>
-                  );
-                }
-                const hl = matchKeyword(row);
-                return (
-                  <tr
-                    key={row.id}
-                    id={row.showL1 ? `indicator-l1-${row.l1}` : undefined}
-                    className={cn(
-                      "align-top transition-colors [&>td]:border-r [&>td]:border-border/60 [&>td]:px-2",
-                      row.isSubRow ? "[&>td]:py-1" : "[&>td]:py-2",
-                      !last && "border-b border-border/60",
-                      hl && "bg-primary/5 ring-1 ring-inset ring-primary/30",
-                    )}
-                  >
-                    {row.showL1 && (
-                      <td
-                        rowSpan={row.l1RowSpan ?? 1}
-                        className="bg-muted/20 text-center font-medium"
-                      >
-                        {row.l1}
-                      </td>
-                    )}
-                    {(row.showNo ?? true) && (
-                      <td rowSpan={row.noRowSpan ?? 1} className="text-center font-mono">
-                        {row.no}
-                      </td>
-                    )}
-                    {row.mergeL2L3 ? (
-                      <td colSpan={2} className="bg-muted/10 leading-relaxed">
-                        <div className="flex items-start gap-1.5">
-                          <span className="flex-1">{row.l3}</span>
-                          <IndicatorGuidePopover row={row} />
-                        </div>
-                      </td>
-                    ) : (
-                      <>
-                        {row.showL2 && (
-                          <td rowSpan={row.l2RowSpan ?? 1} className="bg-muted/10">
-                            {row.l2}
-                          </td>
-                        )}
-                        <td className="leading-relaxed">
-                          <div className="flex items-start gap-1.5">
-                            <span className="flex-1">{row.l3}</span>
-                            <IndicatorGuidePopover row={row} />
-                          </div>
-                        </td>
-                      </>
-                    )}
-                    <td className="text-center">
-                      <span
-                        className={cn(
-                          "inline-block whitespace-normal break-words rounded-full border px-1.5 py-0.5 text-center text-[10px] leading-tight",
-                          TYPE_TONE[row.type],
-                        )}
-                      >
-                        {row.type}
-                      </span>
-                    </td>
-                    <td className="text-center">{row.unit}</td>
-                    <td className="text-center font-mono">{row.leadValue ?? "/"}</td>
-                    <td className="text-center font-mono">{row.baseValue ?? "/"}</td>
-                    {(row.showWeight ?? true) && (
-                      <td rowSpan={row.weightRowSpan ?? 1} className="text-center font-mono">
-                        {row.weight ?? "/"}
-                      </td>
-                    )}
-                    <td>
-                      {row.id === "4" ? (
-                        <div className="space-y-1">
-                          <PlatformFunctionsField
-                            value={row.platformFunctions ?? []}
-                            editable={valueEditable}
-                            onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
-                          />
-                          {row.originalPlatformFunctions !== undefined && (
-                            <div className="rounded border border-dashed border-border/60 bg-muted/20 px-1.5 py-1 text-[10px] leading-tight text-muted-foreground">
-                              <span className="font-medium">原值：</span>
-                              {row.originalPlatformFunctions.length > 0
-                                ? `已勾选 ${row.originalPlatformFunctions.length} 项`
-                                : "未勾选"}
-                            </div>
-                          )}
-                        </div>
-                      ) : row.reportOptions ? (
-                        <div className="space-y-1">
-                          <ReportRadioField
-                            options={row.reportOptions}
-                            value={row.reportValue ?? ""}
-                            editable={valueEditable}
-                            onChange={(v) => updateRow(row.id, { reportValue: v })}
-                          />
-                          <OriginalHint original={row.originalReportValue} />
-                        </div>
-                      ) : valueEditable ? (
-                        <div className="space-y-1">
-                          <Textarea
-                            value={row.reportValue ?? ""}
-                            rows={2}
-                            className="min-h-[44px] resize-none text-xs"
-                            placeholder="请填写"
-                            onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
-                          />
-                          <OriginalHint original={row.originalReportValue} />
-                        </div>
-                      ) : (
-                        <DiffValue current={row.reportValue} original={row.originalReportValue} />
-                      )}
-                    </td>
-                    <td>
-                      <ProofList
-                        proofs={row.proofs}
-                        editable={entEditable}
-                        onChange={(next) => updateRow(row.id, { proofs: next })}
-                        onPreview={setPreview}
-                      />
-                    </td>
-                    {showGovRemark && (
-                      <td>
-                        {govEditable ? (
-                          <Textarea
-                            value={row.govRemark ?? ""}
-                            rows={2}
-                            className="min-h-[44px] resize-none text-xs"
-                            placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
-                            onChange={(e) => updateRow(row.id, { govRemark: e.target.value })}
-                          />
-                        ) : row.govRemark ? (
-                          <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
-                        ) : (
-                          <span className="text-[11px] text-muted-foreground">
-                            如指标值有修订，请填写修订备注
-                          </span>
-                        )}
-                      </td>
-                    )}
-                    {(row.showProofReq ?? true) && (
-                      <td rowSpan={row.proofReqRowSpan ?? 1} className="leading-relaxed text-muted-foreground">
-                        {row.proofRequirement}
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-              <tr className="border-t-2 border-border bg-muted/30 font-medium">
-                <td colSpan={totalCols - 1} className="px-3 py-2 text-right">
-                  得分
-                </td>
-                <td className="px-3 py-2 font-mono text-primary">{totalScore.toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
+                      row={row}
+                      mode={mode}
+                      entEditable={entEditable}
+                      govEditable={govEditable}
+                      valueEditable={valueEditable}
+                      showGovRemark={showGovRemark}
+                      updateRow={updateRow}
+                      onPreview={setPreview}
+                    />
+                  ))}
+                  {visibleRows.length === 0 && (
+                    <div className="px-4 py-6 text-center text-xs text-muted-foreground">
+                      该一级指标下无匹配项
+                    </div>
+                  )}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          );
+        })}
+
+        {/* 总分汇总条 */}
+        <div className="flex items-center justify-between rounded-md border border-primary/30 bg-primary/5 px-4 py-2.5">
+          <span className="text-sm font-medium">合计得分</span>
+          <span className="font-mono text-lg font-semibold text-primary">{totalScore.toFixed(2)}</span>
         </div>
       </CardContent>
     </Card>
@@ -1450,6 +1108,322 @@ export function EvaluationIndicatorCard({
       onOpenChange={(v) => !v && setPreview(null)}
     />
     </>
+  );
+}
+
+/** 单个指标卡片 — 替代原来的横向表格行 */
+function IndicatorItem({
+  row,
+  mode,
+  entEditable,
+  govEditable,
+  valueEditable,
+  showGovRemark,
+  updateRow,
+  onPreview,
+}: {
+  row: IndicatorRow;
+  mode: DetailMode;
+  entEditable: boolean;
+  govEditable: boolean;
+  valueEditable: boolean;
+  showGovRemark: boolean;
+  updateRow: (id: string, patch: Partial<IndicatorRow>) => void;
+  onPreview: (n: string) => void;
+}) {
+  const [reqOpen, setReqOpen] = useState(false);
+  const filled = isRowFilled(row);
+  const revised = isRowRevised(row);
+
+  // 序号 1 / 6 特殊：含产品分项
+  const isProductRow = row.no === 1 || row.no === 6;
+  const isWater = row.no === 6;
+  const productCfg = isWater
+    ? {
+        selectorLabel: "是否有适用工业用水定额国家标准",
+        hasOptionLabel: "有适用工业用水定额国家标准",
+        noOptionLabel: "无适用工业用水定额国家标准",
+        l3HasText:
+          "单位产品取水量（涉及多种产品时，仅填写取水量排序前三）",
+        l3NoText: "单位产值取水量",
+        unitOptions: ["m3/产品单位"],
+        leadPlaceholder: "先进值水平",
+        basePlaceholder: "通用值水平",
+        weightLabel: "权重（产品取水量 m3）",
+      }
+    : {
+        selectorLabel: "是否有适用国家强制性能源消耗限额标准",
+        hasOptionLabel: "有适用国家强制性能源消耗限额标准",
+        noOptionLabel: "无适用国家强制性能源消耗限额标准",
+        l3HasText:
+          "单位产品综合能耗（涉及多种产品时，仅填写综合能耗排序前三）",
+        l3NoText: "单位产值综合能耗",
+        unitOptions: ["tce/产品单位", "kgce/产品单位"],
+        leadPlaceholder: "1级水平",
+        basePlaceholder: "2级水平",
+        weightLabel: "权重（吨标煤）",
+      };
+  const has = row.hasStandard ?? "无";
+  const products: ProductEnergyEntry[] = (isProductRow && has === "有")
+    ? (row.products?.length === 3
+        ? row.products
+        : [EMPTY_PRODUCT_ENERGY_ENTRY, EMPTY_PRODUCT_ENERGY_ENTRY, EMPTY_PRODUCT_ENERGY_ENTRY])
+    : [];
+  const updateProduct = (i: number, patch: Partial<ProductEnergyEntry>) => {
+    const next = products.map((p, pi) => (pi === i ? { ...p, ...patch } : p));
+    updateRow(row.id, { products: next });
+  };
+
+  // 实际显示的三级指标文本
+  const l3Text = isProductRow
+    ? (has === "有" ? productCfg.l3HasText : productCfg.l3NoText)
+    : row.l3;
+
+  return (
+    <div className="px-4 py-3">
+      {/* 头部：序号 + 路径 + 类型 + 状态 + 权重 */}
+      <div className="flex flex-wrap items-start gap-2">
+        <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-[11px] font-medium">
+          {row.no}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="mb-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+            <span>{row.l2}</span>
+            <span
+              className={cn(
+                "inline-block whitespace-nowrap rounded-full border px-1.5 py-0 text-[10px] leading-tight",
+                TYPE_TONE[row.type],
+              )}
+            >
+              {row.type}
+            </span>
+          </div>
+          <div className="flex items-start gap-1.5 text-sm leading-snug">
+            <span className="flex-1 font-medium">{l3Text}</span>
+            <IndicatorGuidePopover row={row} />
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {filled ? (
+            <Badge variant="outline" className="border-success/40 bg-success/10 text-[10px] text-success">
+              已填
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="border-muted-foreground/30 bg-muted text-[10px] text-muted-foreground">
+              未填
+            </Badge>
+          )}
+          {revised && (
+            <Badge variant="outline" className="border-warning/40 bg-warning/10 text-[10px] text-warning">
+              已修订
+            </Badge>
+          )}
+          <Badge variant="outline" className="border-primary/40 bg-primary/5 text-[10px] text-primary">
+            分值 {row.weight ?? "/"}
+          </Badge>
+        </div>
+      </div>
+
+      {/* 序号 1/6 的标准选择条 */}
+      {isProductRow && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-md border border-border/50 bg-muted/30 px-2.5 py-1.5">
+          <span className="text-[11px] font-medium text-muted-foreground">{productCfg.selectorLabel}：</span>
+          {entEditable ? (
+            <Select
+              value={has}
+              onValueChange={(v) =>
+                updateRow(row.id, {
+                  hasStandard: v as "有" | "无",
+                  weight: v === "无" ? "8" : row.weight,
+                })
+              }
+            >
+              <SelectTrigger className="h-7 w-44 text-[11px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="有">{productCfg.hasOptionLabel}</SelectItem>
+                <SelectItem value="无">{productCfg.noOptionLabel}</SelectItem>
+              </SelectContent>
+            </Select>
+          ) : (
+            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] text-primary">
+              {has === "有" ? productCfg.hasOptionLabel : productCfg.noOptionLabel}
+            </Badge>
+          )}
+        </div>
+      )}
+
+      {/* 参考值条：单位 / 引领值 / 基准值（产品行 hasStandard='有' 时不显示，由产品表自带） */}
+      {!(isProductRow && has === "有") && (
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 rounded-md border border-border/50 bg-muted/20 px-2.5 py-1.5 text-[11px]">
+          <span><span className="text-muted-foreground">单位</span> <span className="font-mono">{row.unit || "/"}</span></span>
+          <span><span className="text-muted-foreground">引领值</span> <span className="font-mono text-emerald-600 dark:text-emerald-400">{row.leadValue ?? "/"}</span></span>
+          <span><span className="text-muted-foreground">基准值</span> <span className="font-mono text-amber-600 dark:text-amber-400">{row.baseValue ?? "/"}</span></span>
+        </div>
+      )}
+
+      {/* 主体：填报值 + 证明材料（响应式两栏） */}
+      <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+        {/* 左：填报值 */}
+        <div className="rounded-md border border-border/60 bg-background/40 p-2.5">
+          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <PencilLine className="h-3 w-3" />本年度指标值
+            {entEditable && <span className="text-[10px] text-muted-foreground/70">（企业填报）</span>}
+            {govEditable && <span className="text-[10px] text-warning">（政府可修订）</span>}
+          </div>
+          {isProductRow && has === "有" ? (
+            <div className="overflow-auto rounded border border-border/50">
+              <table className="w-full min-w-[560px] border-collapse text-[11px]">
+                <thead className="bg-muted/40 text-[10px] text-muted-foreground">
+                  <tr className="[&>th]:border-r [&>th]:border-border/50 [&>th]:px-1.5 [&>th]:py-1 [&>th]:text-center [&>th]:font-medium last:[&>th]:border-r-0">
+                    <th className="w-[100px]">产品名称</th>
+                    <th className="w-[110px]">单位</th>
+                    <th className="w-[70px]">引领值</th>
+                    <th className="w-[70px]">基准值</th>
+                    <th className="w-[90px]">{productCfg.weightLabel}</th>
+                    <th className="w-[100px]">本年度值</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((p, pi) => (
+                    <tr
+                      key={pi}
+                      className={cn(
+                        "align-top [&>td]:border-r [&>td]:border-border/40 [&>td]:px-1.5 [&>td]:py-1 last:[&>td]:border-r-0",
+                        pi !== products.length - 1 && "border-b border-border/40",
+                      )}
+                    >
+                      <td>
+                        {entEditable ? (
+                          <Input value={p.name} placeholder={`产品${["一", "二", "三"][pi]}`} className="h-7 text-[11px]" onChange={(e) => updateProduct(pi, { name: e.target.value })} />
+                        ) : (<span>{p.name || <span className="text-muted-foreground">—</span>}</span>)}
+                      </td>
+                      <td>
+                        {entEditable ? (
+                          <Select value={p.unit} onValueChange={(v) => updateProduct(pi, { unit: v })}>
+                            <SelectTrigger className="h-7 text-[11px]"><SelectValue placeholder="单位" /></SelectTrigger>
+                            <SelectContent>
+                              {productCfg.unitOptions.map((u) => (<SelectItem key={u} value={u}>{u}</SelectItem>))}
+                            </SelectContent>
+                          </Select>
+                        ) : (<span className="text-center font-mono">{p.unit || "—"}</span>)}
+                      </td>
+                      <td className="text-center">
+                        {entEditable ? (
+                          <Input value={p.leadValue} placeholder={productCfg.leadPlaceholder} className="h-7 text-center font-mono text-[11px]" onChange={(e) => updateProduct(pi, { leadValue: e.target.value })} />
+                        ) : (<span className="font-mono">{p.leadValue || "—"}</span>)}
+                      </td>
+                      <td className="text-center">
+                        {entEditable ? (
+                          <Input value={p.baseValue} placeholder={productCfg.basePlaceholder} className="h-7 text-center font-mono text-[11px]" onChange={(e) => updateProduct(pi, { baseValue: e.target.value })} />
+                        ) : (<span className="font-mono">{p.baseValue || "—"}</span>)}
+                      </td>
+                      <td className="text-center">
+                        {entEditable ? (
+                          <Input value={p.weight} placeholder="数值" className="h-7 text-center font-mono text-[11px]" onChange={(e) => updateProduct(pi, { weight: e.target.value })} />
+                        ) : (<span className="font-mono">{p.weight || "—"}</span>)}
+                      </td>
+                      <td>
+                        {valueEditable ? (
+                          <div className="space-y-1">
+                            <Input value={p.reportValue} placeholder="请填写" className="h-7 text-center font-mono text-[11px]" onChange={(e) => updateProduct(pi, { reportValue: e.target.value })} />
+                            <OriginalHint original={row.originalProducts?.[pi]?.reportValue} small />
+                          </div>
+                        ) : (
+                          <DiffValue current={p.reportValue} original={row.originalProducts?.[pi]?.reportValue} small />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : row.id === "4" ? (
+            <div className="space-y-1.5">
+              <PlatformFunctionsField
+                value={row.platformFunctions ?? []}
+                editable={valueEditable}
+                onChange={(next) => updateRow(row.id, { platformFunctions: next, reportValue: String(next.length) })}
+              />
+              {row.originalPlatformFunctions !== undefined && (
+                <div className="rounded border border-dashed border-border/60 bg-muted/20 px-1.5 py-1 text-[10px] leading-tight text-muted-foreground">
+                  <span className="font-medium">原值：</span>
+                  {row.originalPlatformFunctions.length > 0 ? `已勾选 ${row.originalPlatformFunctions.length} 项` : "未勾选"}
+                </div>
+              )}
+            </div>
+          ) : row.reportOptions ? (
+            <div className="space-y-1.5">
+              <ReportRadioField
+                options={row.reportOptions}
+                value={row.reportValue ?? ""}
+                editable={valueEditable}
+                onChange={(v) => updateRow(row.id, { reportValue: v })}
+              />
+              <OriginalHint original={row.originalReportValue} />
+            </div>
+          ) : valueEditable ? (
+            <div className="space-y-1.5">
+              <Textarea
+                value={row.reportValue ?? ""}
+                rows={2}
+                className="min-h-[44px] resize-none text-xs"
+                placeholder="请填写"
+                onChange={(e) => updateRow(row.id, { reportValue: e.target.value })}
+              />
+              <OriginalHint original={row.originalReportValue} />
+            </div>
+          ) : (
+            <DiffValue current={row.reportValue} original={row.originalReportValue} />
+          )}
+        </div>
+
+        {/* 右：证明材料 */}
+        <div className="rounded-md border border-border/60 bg-background/40 p-2.5">
+          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <FileText className="h-3 w-3" />证明材料（PDF / 图片）
+          </div>
+          <ProofList
+            proofs={row.proofs}
+            editable={entEditable}
+            onChange={(next) => updateRow(row.id, { proofs: next })}
+            onPreview={onPreview}
+          />
+          <button
+            type="button"
+            onClick={() => setReqOpen((v) => !v)}
+            className="mt-2 inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+          >
+            <ChevronDown className={cn("h-3 w-3 transition-transform", !reqOpen && "-rotate-90")} />
+            {reqOpen ? "收起证明材料要求" : "查看证明材料要求"}
+          </button>
+          {reqOpen && (
+            <div className="mt-1.5 rounded border border-dashed border-border/60 bg-muted/20 px-2 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+              {row.proofRequirement}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 政府审核备注 */}
+      {showGovRemark && (govEditable || row.govRemark) && (
+        <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-2.5">
+          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
+            <ClipboardCheck className="h-3 w-3" />审核备注（政府侧 · 选填）
+          </div>
+          {govEditable ? (
+            <Textarea
+              value={row.govRemark ?? ""}
+              rows={2}
+              className="min-h-[44px] resize-none text-xs"
+              placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
+              onChange={(e) => updateRow(row.id, { govRemark: e.target.value })}
+            />
+          ) : (
+            <span className="text-[12px] leading-relaxed">{row.govRemark}</span>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
