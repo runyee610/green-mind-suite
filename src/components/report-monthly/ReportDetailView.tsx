@@ -1,4 +1,4 @@
-import { ArrowLeft, Database, Factory, Flame, Leaf, Pencil, Printer, Sigma, Sparkles } from "lucide-react";
+import { ArrowLeft, Database, Factory, FileEdit, Flame, Leaf, Pencil, Printer, Sigma, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
