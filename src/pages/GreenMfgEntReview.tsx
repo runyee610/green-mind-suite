@@ -30,7 +30,7 @@ export default function GreenMfgEntReview() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
-              <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new")}>
+              <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/review/new")}>
                 <Plus className="mr-1 h-4 w-4" />自我评价
               </Button>
             </div>
