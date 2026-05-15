@@ -590,9 +590,22 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Target className="h-4 w-4 text-primary" />结果对标
                 </CardTitle>
-                <Badge variant="outline" className="font-medium border-info/40 bg-info/10 text-info">
-                  达到准入值
-                </Badge>
+                {(() => {
+                  const allPass = summary.length > 0 && summary.every((s) => s.calc <= s.limit);
+                  return (
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "font-medium",
+                        allPass
+                          ? "border-success/40 bg-success/10 text-success"
+                          : "border-destructive/40 bg-destructive/10 text-destructive",
+                      )}
+                    >
+                      {allPass ? "合格" : "不合格"}
+                    </Badge>
+                  );
+                })()}
               </div>
             </CardHeader>
             <CardContent>
