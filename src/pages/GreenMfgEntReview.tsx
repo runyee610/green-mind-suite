@@ -41,7 +41,7 @@ export default function GreenMfgEntReview() {
             <Field label="本年度提交批次" value={myDeclaration.batch} />
             <Field label="AI 智能预审得分" value={`${myDeclaration.score}`} accent="primary" />
             <Field label="专家审核" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
-            <Field label="审核结果" value={myDeclaration.level} />
+            <Field label="审核结果" value={myDeclaration.stage} />
           </div>
 
           <div>
