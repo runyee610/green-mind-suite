@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronRight, ClipboardList, Eye, FileEdit, Plus, Sparkles } from "lucide-react";
+import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Send, Sparkles, Sprout, Target } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,34 +8,45 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  MOCK_AUDIT_FLOW,
   MOCK_DECLARATIONS,
   MOCK_DYNAMIC,
   dynamicStatusClass,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
-import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
 import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
 import { MOCK_RISKS } from "@/components/green-mfg/dynamicExtData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
+// 本地"模拟自我评价"记录（仅 AI 智能体分析打分，不上报）
+interface SelfAssessRecord {
+  id: string;
+  date: string;
+  aiScore: number;
+  note?: string;
+}
+const MOCK_SELF_ASSESS: SelfAssessRecord[] = [
+  { id: "SA-2025-003", date: "2025-09-20", aiScore: 78, note: "新增 3 项绿色产品后再评" },
+  { id: "SA-2025-002", date: "2025-08-12", aiScore: 72 },
+  { id: "SA-2025-001", date: "2025-06-04", aiScore: 65, note: "首次试评" },
+];
+
 export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<string>(section ?? "declaration");
-  // Sync internal tab state when route-driven section prop changes
-  // (component instance is reused across /green-mfg/ent and /green-mfg/ent/dynamic)
   useEffect(() => {
     if (section) setTab(section);
   }, [section]);
 
-  // 假设当前企业 = MOCK_DECLARATIONS[0]
+  // 当前企业 = MOCK_DECLARATIONS[0]
   const myDeclaration = MOCK_DECLARATIONS[0];
   const myDynamics = MOCK_DYNAMIC.filter((_, i) => i < 2);
-  // 动态管理页演示企业 = 申能电力设备股份有限公司
   const entCreditCode = section === "dynamic" ? "913100007896543210" : myDeclaration.creditCode;
   const entRiskOpen = MOCK_RISKS.filter((r) => r.creditCode === entCreditCode && r.status !== "已关闭").length;
+  const isGreenFactory = myDeclaration.stage === "绿色工厂";
+
+  const latestSelf = MOCK_SELF_ASSESS[0];
 
   return (
     <AppLayout
@@ -47,7 +58,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表填报"
-          : "自我评价（模拟）、AI 智能打分"
+          : "自我评价（模拟）、AI 智能打分、审核推荐申报"
       }
     >
       <Tabs value={tab} onValueChange={setTab}>
@@ -58,60 +69,72 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
           </TabsList>
         )}
 
+        {/* ================= 自评价 Tab ================= */}
         <TabsContent value="declaration" className="mt-4 space-y-4">
-          {/* 自评价状态卡 */}
+          {/* —— 模拟自我评价（本地工具，仅 AI 智能体打分，不上报） —— */}
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <CardTitle className="text-base">本年度自我评价</CardTitle>
-                  <p className="mt-1 text-xs text-muted-foreground">2025第二批 · 提交于 {myDeclaration.submitDate}</p>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-secondary" />模拟自我评价
+                  </CardTitle>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    企业自助评估工具：填写指标后由 AI 智能体分析打分，仅供企业自查参考，不向监管侧提交。
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
-                  <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new")}>
+                  <Button size="sm" variant="outline" className="h-8" onClick={() => {
+                    toast.success("已加入区级培育库，可在「梯度培育」中查看");
+                  }}>
+                    <Sprout className="mr-1 h-4 w-4" />主动加入培育库
+                  </Button>
+                  <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new?mode=self")}>
                     <Plus className="mr-1 h-4 w-4" />新增自我评价
                   </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-              <Field label="AI 智能预审得分" value={`${myDeclaration.score}`} accent="primary" />
-              <Field label="专家打分" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
-              <Field label="所属区" value={myDeclaration.district} />
-              <Field label="当前等级" value={myDeclaration.level} />
-            </CardContent>
-          </Card>
-
-          {/* 历年自评价记录 */}
-          <Card className="panel">
-            <CardHeader className="pb-3"><CardTitle className="text-base"><ClipboardList className="mr-1 inline h-4 w-4" />历史自我评价记录</CardTitle></CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
+              {/* 最新一次概览 */}
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                <Field label="最近一次 AI 智能打分" value={`${latestSelf.aiScore}`} accent="primary" />
+                <Field label="评估日期" value={latestSelf.date} />
+                <Field label="所属区" value={myDeclaration.district} />
+                <Field label="所属行业" value={myDeclaration.industry} />
+              </div>
+              {/* 历次自评价 */}
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>自我评价批次</TableHead>
-                    <TableHead className="text-center px-[3px]">AI 智能打分</TableHead>
-                    <TableHead className="text-center">专家打分</TableHead>
-                    <TableHead className="text-center">状态</TableHead>
-                    <TableHead className="text-center">结果</TableHead>
-                    <TableHead>提交日期</TableHead>
+                    <TableHead>评估编号</TableHead>
+                    <TableHead className="text-center">AI 智能打分</TableHead>
+                    <TableHead>备注</TableHead>
+                    <TableHead>评估日期</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {MOCK_DECLARATIONS.slice(0, 3).map((r) => (
+                  {MOCK_SELF_ASSESS.map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell className="font-mono text-xs">{r.batch}</TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0"><Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.score}</TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs px-[9px] text-center">{r.manualScore ?? "—"}</TableCell>
-                      <TableCell className="text-center"><Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge></TableCell>
-                      <TableCell className="text-center text-xs">{r.level}</TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate}</TableCell>
+                      <TableCell className="font-mono text-xs">{r.id}</TableCell>
+                      <TableCell className="text-center font-mono text-xs">
+                        <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{r.note ?? "—"}</TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">{r.date}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${r.id}`)}>
-                          <Eye className="mr-1 h-3 w-3" />查看
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button size="sm" variant="ghost" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${myDeclaration.id}?mode=self`)}>
+                            <Eye className="mr-1 h-3 w-3" />查看
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-7" onClick={() => {
+                            toast.success("已基于此次自评价数据创建审核推荐草稿");
+                            navigate("/green-mfg/ent/declaration/new");
+                          }}>
+                            <Send className="mr-1 h-3 w-3" />用于申报
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -119,8 +142,75 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               </Table>
             </CardContent>
           </Card>
+
+          {/* —— 审核推荐（用于政府侧审核 / 区→市 上报） —— */}
+          <Card className="panel">
+            <CardHeader className="pb-3">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Send className="h-4 w-4 text-primary" />审核推荐
+                  </CardTitle>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    向监管侧正式申报：可直接引用最近一次自评价数据，或重新填报。先由区级专家审核，通过后上报市级；不通过将自动进入梯度培育。
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
+                  <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new")}>
+                    <Plus className="mr-1 h-4 w-4" />新增审核推荐
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                <Field label="本年度申报批次" value={myDeclaration.batch} />
+                <Field label="AI 智能预审得分" value={`${myDeclaration.score}`} accent="primary" />
+                <Field label="专家打分" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
+                <Field label="审核结果" value={myDeclaration.level} />
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-medium text-muted-foreground">
+                  <ClipboardList className="mr-1 inline h-3.5 w-3.5" />历史申报记录
+                </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-border/60 hover:bg-transparent">
+                      <TableHead>申报批次</TableHead>
+                      <TableHead className="text-center">AI 智能打分</TableHead>
+                      <TableHead className="text-center">专家打分</TableHead>
+                      <TableHead className="text-center">流转状态</TableHead>
+                      <TableHead className="text-center">最终结果</TableHead>
+                      <TableHead>提交日期</TableHead>
+                      <TableHead className="text-right">操作</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {MOCK_DECLARATIONS.slice(0, 3).map((r) => (
+                      <TableRow key={r.id} className="h-12 border-border/40">
+                        <TableCell className="font-mono text-xs">{r.batch}</TableCell>
+                        <TableCell className="text-center font-mono text-xs"><Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.score}</TableCell>
+                        <TableCell className="text-center font-mono text-xs">{r.manualScore ?? "—"}</TableCell>
+                        <TableCell className="text-center"><Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge></TableCell>
+                        <TableCell className="text-center text-xs">{r.level}</TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate}</TableCell>
+                        <TableCell className="text-right">
+                          <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${r.id}`)}>
+                            <Eye className="mr-1 h-3 w-3" />查看
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
+        {/* ================= 动态管理 Tab ================= */}
         <TabsContent value="dynamic" className="mt-4 space-y-4">
           <Tabs defaultValue="report">
             <TabsList>
@@ -133,6 +223,9 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     {entRiskOpen}
                   </span>
                 )}
+              </TabsTrigger>
+              <TabsTrigger value="zerocarbon">
+                <Leaf className="mr-1 h-3.5 w-3.5" />零碳进阶
               </TabsTrigger>
             </TabsList>
 
@@ -153,7 +246,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   <Table>
                     <TableHeader>
                       <TableRow className="border-border/60 hover:bg-transparent">
-                        
                         <TableHead className="text-center">年度</TableHead>
                         <TableHead className="text-right">综合能耗</TableHead>
                         <TableHead className="text-right">碳排放</TableHead>
@@ -166,7 +258,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     <TableBody>
                       {myDynamics.map((r) => (
                         <TableRow key={r.id} className="h-12 border-border/40">
-                          
                           <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
                           <TableCell className="text-right font-mono text-xs">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
                           <TableCell className="text-right font-mono text-xs">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
@@ -193,6 +284,10 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
             <TabsContent value="risk" className="mt-4">
               <RiskWarningPanel mode="ent" creditCode={entCreditCode} />
             </TabsContent>
+
+            <TabsContent value="zerocarbon" className="mt-4">
+              <ZeroCarbonPanel mode="ent" eligible={isGreenFactory} />
+            </TabsContent>
           </Tabs>
         </TabsContent>
       </Tabs>
@@ -208,6 +303,66 @@ function Field({ label, value, accent }: { label: string; value: string; accent?
       <p className={cn("mt-1 text-base font-semibold", cls)}>
         {value === "—" ? <CheckCircle2 className="inline h-4 w-4 text-muted-foreground" /> : value}
       </p>
+    </div>
+  );
+}
+
+/** 零碳进阶 - 基础骨架（具体功能后续补充） */
+export function ZeroCarbonPanel({ mode, eligible }: { mode: "ent" | "gov"; eligible?: boolean }) {
+  return (
+    <Card className="panel">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Leaf className="h-4 w-4 text-success" />零碳工厂进阶
+            </CardTitle>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {mode === "ent"
+                ? "已评为市级/国家级绿色工厂的企业，可在此申请向「零碳工厂」进阶。"
+                : "管理已获评绿色工厂企业的零碳进阶申请、过程跟踪与评定。"}
+            </p>
+          </div>
+          {mode === "ent" && (
+            <Button
+              size="sm"
+              className="h-8 bg-gradient-primary text-primary-foreground"
+              disabled={!eligible}
+              onClick={() => toast.info("零碳进阶申请已发起（演示）")}
+            >
+              <Target className="mr-1 h-4 w-4" />申请零碳进阶
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        {mode === "ent" && !eligible ? (
+          <div className="rounded-md border border-dashed border-border/60 bg-muted/20 p-4 text-xs text-muted-foreground">
+            当前尚未获评市级/国家级绿色工厂，暂不具备零碳进阶资格。请先完成绿色工厂评定。
+          </div>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-3">
+            <SkeletonStage step={1} title="碳核算基线" desc="温室气体核查、产品碳足迹基线" />
+            <SkeletonStage step={2} title="减碳路径" desc="能效提升、可再生能源替代、工艺低碳化" />
+            <SkeletonStage step={3} title="抵消与认证" desc="碳抵消方案、第三方认证、零碳工厂评定" />
+          </div>
+        )}
+        <p className="mt-4 text-[11px] text-muted-foreground/80">具体指标体系与评定流程待补充。</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SkeletonStage({ step, title, desc }: { step: number; title: string; desc: string }) {
+  return (
+    <div className="rounded-md border border-border/60 bg-muted/10 p-3">
+      <div className="flex items-center gap-2">
+        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-success/15 text-[11px] font-semibold text-success">
+          {step}
+        </span>
+        <span className="text-sm font-medium">{title}</span>
+      </div>
+      <p className="mt-2 text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
     </div>
   );
 }
