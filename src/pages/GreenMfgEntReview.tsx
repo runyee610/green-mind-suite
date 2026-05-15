@@ -41,7 +41,7 @@ export default function GreenMfgEntReview() {
             <Field label="本年度提交批次" value={myDeclaration.batch} />
             <Field label="AI 智能预审得分" value={`${myDeclaration.score}`} accent="primary" />
             <Field label="专家审核" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
-            <Field label="审核结果" value={myDeclaration.level} />
+            <Field label="流转状态" value={myDeclaration.stage} />
           </div>
 
           <div>
@@ -55,7 +55,6 @@ export default function GreenMfgEntReview() {
                   <TableHead className="text-center">AI 智能打分</TableHead>
                   <TableHead className="text-center">专家审核</TableHead>
                   <TableHead className="text-center">流转状态</TableHead>
-                  <TableHead className="text-center">最终结果</TableHead>
                   <TableHead>提交日期</TableHead>
                   <TableHead className="text-right">操作</TableHead>
                 </TableRow>
@@ -67,7 +66,6 @@ export default function GreenMfgEntReview() {
                     <TableCell className="text-center font-mono text-xs"><Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.score}</TableCell>
                     <TableCell className="text-center font-mono text-xs">{r.manualScore ?? "—"}</TableCell>
                     <TableCell className="text-center"><Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge></TableCell>
-                    <TableCell className="text-center text-xs">{r.level}</TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate}</TableCell>
                     <TableCell className="text-right">
                       <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${r.id}`)}>
