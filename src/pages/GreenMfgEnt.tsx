@@ -90,7 +90,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     <Sprout className="mr-1 h-4 w-4" />主动加入培育库
                   </Button>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new?mode=self")}>
-                    <Plus className="mr-1 h-4 w-4" />新增自我评价
+                    <Plus className="mr-1 h-4 w-4" />新增评价
                   </Button>
                 </div>
               </div>
@@ -132,7 +132,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                             toast.success("已基于此次自评价数据创建审核推荐草稿");
                             navigate("/green-mfg/ent/declaration/new");
                           }}>
-                            <Send className="mr-1 h-3 w-3" />用于申报
+                            <Send className="mr-1 h-3 w-3" />提交审核
                           </Button>
                         </div>
                       </TableCell>

@@ -156,7 +156,7 @@ export default function GreenMfgEntDeclarationNew() {
 
   return (
     <AppLayout
-      title="新增绿色工厂自我评价"
+      title="新增绿色工厂评价"
       subtitle={
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span><span className="text-muted-foreground/60">企业名称</span> · {DEFAULT_ENTERPRISE.name}</span>
@@ -201,7 +201,7 @@ export default function GreenMfgEntDeclarationNew() {
               <Save className="mr-1 h-4 w-4" />保存草稿
             </Button>
             <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交自我评价
+              <Send className="mr-1 h-4 w-4" />提交审核
             </Button>
           </div>
         </CardContent>
@@ -251,7 +251,7 @@ export default function GreenMfgEntDeclarationNew() {
           </Button>
           {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
             <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交自我评价
+              <Send className="mr-1 h-4 w-4" />提交审核
             </Button>
           ) : (
             <Button
