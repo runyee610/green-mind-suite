@@ -4,8 +4,6 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Save, Send } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EnterpriseBasicInfoCard,
@@ -21,10 +19,9 @@ import {
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
-import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
 
-const ALL_BATCHES = ["2025年第一批", "2025年第二批", "2026年第一批"];
 
 const ANCHORS = [
   { href: "basic-info", label: "企业基本信息表" },
@@ -136,19 +133,7 @@ export default function GreenMfgEntDeclarationNew() {
     }
   };
 
-  const usedBatches = MOCK_DECLARATIONS
-    .filter((d) => d.enterpriseName === DEFAULT_ENTERPRISE.name)
-    .map((d) => d.batch);
-
   const handleSubmit = () => {
-    if (!batch) {
-      toast.warning("请选择自我评价批次");
-      return;
-    }
-    if (usedBatches.includes(batch)) {
-      toast.error("该批次您已自我评价，不能重复自我评价");
-      return;
-    }
     toast.success("自我评价已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent"), 600);
@@ -165,35 +150,15 @@ export default function GreenMfgEntDeclarationNew() {
         </div>
       }
     >
-      {/* 顶部操作栏：批次 + 操作按钮一行 */}
+      {/* 顶部操作栏 */}
       <Card className="panel mb-4">
-        <CardContent className="flex flex-wrap items-end gap-3 p-3">
-          <div className="flex-1 min-w-[240px] space-y-1.5">
-            <Label className="text-xs text-muted-foreground">
-              自我评价批次<span className="ml-1 text-destructive">*</span>
-            </Label>
-            <Select value={batch} onValueChange={setBatch}>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="请选择自我评价批次" />
-              </SelectTrigger>
-              <SelectContent>
-                {ALL_BATCHES.map((b) => {
-                  const used = usedBatches.includes(b);
-                  return (
-                    <SelectItem key={b} value={b} disabled={used}>
-                      {b}{used ? "（已自我评价）" : ""}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
+        <CardContent className="flex flex-wrap items-center justify-end gap-3 p-3">
           {draftSavedAt && (
-            <span className="pb-2 text-[11px] text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground">
               草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
             </span>
           )}
-          <div className="flex items-center gap-2 pb-0.5">
+          <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
               <ArrowLeft className="mr-1 h-4 w-4" />返回
             </Button>
