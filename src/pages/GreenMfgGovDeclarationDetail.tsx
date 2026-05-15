@@ -55,7 +55,7 @@ export default function GreenMfgGovDeclarationDetail() {
   const totalWeight = SCORE_DIMENSIONS.reduce((s, d) => s + d.weight, 0);
 
   const handleApprove = () => {
-    toast.success(detail.stage === "区审批" ? "已上报市级审批" : "已上报，颁发市级绿色工厂");
+    toast.success(detail.stage === "市审核" ? "已上报市级审批" : "已上报，颁发市级绿色工厂");
     setApproveOpen(false);
     setComment("");
   };
@@ -225,7 +225,7 @@ export default function GreenMfgGovDeclarationDetail() {
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认上报</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">{detail.stage === "区审批" ? "上报后将自动进入市级审批。" : "上报后将颁发市级绿色工厂证书并锁定本次自评价。"}</p>
+          <p className="text-sm text-muted-foreground">{detail.stage === "市审核" ? "上报后将自动进入市级审批。" : "上报后将颁发市级绿色工厂证书并锁定本次自评价。"}</p>
           <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="审批意见（选填）" rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setApproveOpen(false)}>取消</Button>
