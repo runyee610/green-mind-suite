@@ -156,7 +156,7 @@ export default function GreenMfgEntDeclarationNew() {
 
   return (
     <AppLayout
-      title="新增绿色工厂评价"
+      title="绿色工厂自我评价（模拟）"
       subtitle={
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span><span className="text-muted-foreground/60">企业名称</span> · {DEFAULT_ENTERPRISE.name}</span>
