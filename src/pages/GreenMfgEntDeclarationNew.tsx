@@ -4,8 +4,6 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Save, Send } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EnterpriseBasicInfoCard,
@@ -21,10 +19,9 @@ import {
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
-import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import { toast } from "sonner";
 
-const ALL_BATCHES = ["2025年第一批", "2025年第二批", "2026年第一批"];
+
 
 const ANCHORS = [
   { href: "basic-info", label: "企业基本信息表" },
