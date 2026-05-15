@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { CheckCircle2, Clock, FileDown, History as HistoryIcon, TrendingDown, TrendingUp, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, FileDown, History as HistoryIcon, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,51 +9,78 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { enterpriseStatusStyle, sortStandardCodes, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
+type Conclusion = "达到先进值" | "达到准入值" | "达到限定值" | "未达标";
+
 export interface HistoryEntry {
-  cyclePeriod: string;        // 例 202501-202512
+  cyclePeriod: string;
   year: number;
   status: "已完成" | "已驳回" | "未填报";
   standardCodes: string[];
-  reportedAt?: string;        // 提交时间
-  auditedAt?: string;         // 审核时间
+  products: string[];
+  conclusion?: Conclusion;
+  reportedAt?: string;
+  auditedAt?: string;
   auditor?: string;
-  unitEnergy?: number;        // 主要单耗（吨标煤/吨）
-  limit?: number;             // 当年限额
-  comment?: string;           // 审核意见
+  comment?: string;
 }
 
-// 基于企业生成稳定的历史数据
+const CONCLUSION_LEVELS: Conclusion[] = ["达到先进值", "达到准入值", "达到限定值", "未达标"];
+
+const conclusionStyle: Record<Conclusion, string> = {
+  达到先进值: "border-success/40 bg-success/10 text-success",
+  达到准入值: "border-info/40 bg-info/10 text-info",
+  达到限定值: "border-warning/40 bg-warning/10 text-warning",
+  未达标: "border-destructive/40 bg-destructive/10 text-destructive",
+};
+
+// 行业 → 申报产品候选
+function getProductsByIndustry(industry: string, seed: number): string[] {
+  const map: Record<string, string[]> = {
+    "供水": ["自来水", "深度处理水", "再生水"],
+    "钢铁": ["粗钢", "热轧板", "冷轧板"],
+    "水泥": ["熟料", "P·O 42.5 水泥", "P·C 32.5 水泥"],
+    "化工": ["合成氨", "甲醇", "烧碱"],
+    "电力": ["发电量", "供热量"],
+    "造纸": ["新闻纸", "包装纸"],
+    "玻璃": ["浮法玻璃", "深加工玻璃"],
+  };
+  const matched = Object.entries(map).find(([k]) => industry.includes(k));
+  const pool = matched ? matched[1] : ["主要产品 A", "主要产品 B"];
+  const n = (seed % 2) + 1; // 1-2 个产品
+  return pool.slice(0, n);
+}
+
 function buildHistory(enterprise: QuotaEnterprise): HistoryEntry[] {
   const seedSum = enterprise.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   const codes = sortStandardCodes(enterprise.standardCodes);
-  const baseLimit = 0.6 + (seedSum % 35) / 100; // 0.60 - 0.95
+  const products = getProductsByIndustry(enterprise.industry, seedSum);
   const years = [2025, 2024, 2023, 2022, 2021];
   return years.map((year, idx) => {
-    const drift = ((seedSum + year) % 9) / 100; // 0 - 0.08
-    const limit = +(baseLimit + (4 - idx) * 0.01).toFixed(3);
-    const unitEnergy = +(limit - 0.04 + drift).toFixed(3);
-    const exceeded = unitEnergy > limit;
-    const skipped = (seedSum + year) % 11 === 0; // 偶发未填报
+    const skipped = (seedSum + year) % 11 === 0;
     if (skipped && idx === years.length - 1) {
       return {
         cyclePeriod: `${year}01-${year}12`,
         year,
         status: "未填报",
         standardCodes: codes,
+        products,
       };
     }
-    const rejected = exceeded && (seedSum + year) % 5 === 0;
+    const rejected = (seedSum + year) % 13 === 0;
+    const conclusion = rejected
+      ? undefined
+      : CONCLUSION_LEVELS[(seedSum + year) % CONCLUSION_LEVELS.length];
     return {
       cyclePeriod: `${year}01-${year}12`,
       year,
       status: rejected ? "已驳回" : "已完成",
       standardCodes: codes,
+      products,
+      conclusion,
       reportedAt: `${year + 1}-02-${String(10 + (seedSum % 18)).padStart(2, "0")}`,
       auditedAt: `${year + 1}-03-${String(5 + (seedSum % 22)).padStart(2, "0")}`,
       auditor: ["张审核", "李审核", "王审核"][idx % 3],
-      unitEnergy,
-      limit,
-      comment: rejected ? "单位产品能耗超出限额，请补充节能改造方案后重新提交" : undefined,
+      comment: rejected ? "数据存在异常，请核实后重新提交" : undefined,
     };
   });
 }
@@ -64,22 +91,25 @@ interface Props {
   onViewDetail?: (entry: HistoryEntry) => void;
 }
 
-export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: Props) {
+export function EnterpriseHistoryDialog({ enterprise, onClose }: Props) {
   const history = useMemo(() => (enterprise ? buildHistory(enterprise) : []), [enterprise]);
 
   const stats = useMemo(() => {
-    const submitted = history.filter((h) => h.status !== "未填报");
+    const total = history.length;
     const completed = history.filter((h) => h.status === "已完成").length;
-    const rejected = history.filter((h) => h.status === "已驳回").length;
-    const compliant = submitted.filter((h) => h.unitEnergy !== undefined && h.limit !== undefined && h.unitEnergy <= h.limit).length;
-    return { total: history.length, completed, rejected, compliant, submitted: submitted.length };
+    const advance = history.filter((h) => h.conclusion === "达到先进值").length;
+    const compliant = history.filter(
+      (h) => h.conclusion && h.conclusion !== "未达标",
+    ).length;
+    const complianceRate = completed > 0 ? Math.round((compliant / completed) * 100) : 0;
+    return { total, completed, advance, complianceRate };
   }, [history]);
 
   if (!enterprise) return null;
 
   return (
     <Dialog open={!!enterprise} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-5xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base">
             <HistoryIcon className="h-4 w-4 text-primary" />
@@ -102,15 +132,13 @@ export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: P
             <div className="text-[11px] text-success/80">通过审核</div>
             <div className="font-mono text-lg font-semibold text-success">{stats.completed}</div>
           </div>
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2">
-            <div className="text-[11px] text-destructive/80">驳回次数</div>
-            <div className="font-mono text-lg font-semibold text-destructive">{stats.rejected}</div>
-          </div>
           <div className="rounded-md border border-info/30 bg-info/5 px-3 py-2">
-            <div className="text-[11px] text-info/80">达标率</div>
-            <div className="font-mono text-lg font-semibold text-info">
-              {stats.submitted > 0 ? Math.round((stats.compliant / stats.submitted) * 100) : 0}%
-            </div>
+            <div className="text-[11px] text-info/80">达到先进值</div>
+            <div className="font-mono text-lg font-semibold text-info">{stats.advance}</div>
+          </div>
+          <div className="rounded-md border border-warning/30 bg-warning/5 px-3 py-2">
+            <div className="text-[11px] text-warning/80">达标率</div>
+            <div className="font-mono text-lg font-semibold text-warning">{stats.complianceRate}%</div>
           </div>
         </div>
 
@@ -121,14 +149,14 @@ export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: P
               <TableRow className="border-border/60 hover:bg-transparent">
                 <TableHead className="w-32">限额周期</TableHead>
                 <TableHead className="w-24">状态</TableHead>
+                <TableHead className="w-28">结论</TableHead>
                 <TableHead className="w-44">适用标准</TableHead>
-                <TableHead className="w-40">单耗 / 限额</TableHead>
+                <TableHead>产品</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {history.map((h) => {
                 const style = enterpriseStatusStyle[h.status];
-                const exceeded = h.unitEnergy !== undefined && h.limit !== undefined && h.unitEnergy > h.limit;
                 return (
                   <TableRow key={h.cyclePeriod} className="border-border/40">
                     <TableCell className="font-mono text-xs text-foreground">{h.cyclePeriod}</TableCell>
@@ -142,6 +170,15 @@ export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: P
                         {h.status === "未填报" && <Clock className="h-3 w-3" />}
                         {h.status}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      {h.conclusion ? (
+                        <Badge variant="outline" className={cn("font-medium", conclusionStyle[h.conclusion])}>
+                          {h.conclusion}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col items-start gap-1">
@@ -161,23 +198,14 @@ export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: P
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {h.unitEnergy !== undefined ? (
-                        <div className="flex items-center gap-1.5">
-                          <span className={cn("font-semibold", exceeded ? "text-destructive" : "text-success")}>
-                            {h.unitEnergy}
-                          </span>
-                          <span className="text-muted-foreground">/</span>
-                          <span className="text-foreground">{h.limit}</span>
-                          {exceeded ? (
-                            <TrendingUp className="h-3 w-3 text-destructive" />
-                          ) : (
-                            <TrendingDown className="h-3 w-3 text-success" />
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {h.products.map((p) => (
+                          <Badge key={p} variant="outline" className="text-[11px] font-normal">
+                            {p}
+                          </Badge>
+                        ))}
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
