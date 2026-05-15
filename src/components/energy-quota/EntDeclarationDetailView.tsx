@@ -586,78 +586,65 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
         <TabsContent value="result" className="space-y-4">
           <Card className="panel">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Target className="h-4 w-4 text-primary" />结果对标
-              </CardTitle>
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Target className="h-4 w-4 text-primary" />结果对标
+                </CardTitle>
+                <Badge variant="outline" className="font-medium border-info/40 bg-info/10 text-info">
+                  达到准入值
+                </Badge>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {summary.map((s) => {
-                const passLimit = s.calc <= s.limit;
-                const passAccess = s.calc <= s.access;
-                const passAdvance = s.calc <= s.advance;
-                return (
-                  <div key={s.idx} className="rounded-lg border border-border/60 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs text-muted-foreground">#{s.idx}</span>
-                        <h4 className="font-semibold text-foreground">{s.name}</h4>
-                      </div>
-                      {(() => {
-                        const reached = [
-                          passLimit && "限定值",
-                          passAccess && "准入值",
-                          passAdvance && "先进值",
-                        ].filter(Boolean) as string[];
-                        if (reached.length === 0) {
-                          return (
-                            <Badge variant="outline" className="font-medium border-destructive/40 bg-destructive/10 text-destructive">
-                              未达标
-                            </Badge>
-                          );
-                        }
-                        return (
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              "font-medium",
-                              passAdvance
-                                ? "border-success/40 bg-success/10 text-success"
-                                : passAccess
-                                ? "border-info/40 bg-info/10 text-info"
-                                : "border-warning/40 bg-warning/10 text-warning",
-                            )}
-                          >
-                            达到{reached.join("、")}
-                          </Badge>
-                        );
-                      })()}
-                    </div>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>指标名称</TableHead>
-                          <TableHead>单位</TableHead>
-                          <TableHead className="text-right">数值</TableHead>
-                          <TableHead className="w-32 text-center">评判</TableHead>
-                          <TableHead className="w-20 text-center">结论</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
+            <CardContent>
+              <div className="overflow-x-auto rounded-md border border-border/60">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/40 hover:bg-muted/40">
+                      <TableHead className="w-14 text-center">序号</TableHead>
+                      <TableHead>自来水厂名称</TableHead>
+                      <TableHead>指标名称</TableHead>
+                      <TableHead className="w-24">指标单位</TableHead>
+                      <TableHead className="text-right">计算值</TableHead>
+                      <TableHead className="text-right">限定值</TableHead>
+                      <TableHead className="text-right">准入值</TableHead>
+                      <TableHead className="text-right">先进值</TableHead>
+                      <TableHead className="w-24 text-center">评判准则</TableHead>
+                      <TableHead className="w-20 text-center">结论</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {summary.map((s) => {
+                      const passLimit = s.calc <= s.limit;
+                      return (
+                        <TableRow key={s.idx}>
+                          <TableCell className="text-center font-mono text-xs">{s.idx}</TableCell>
+                          <TableCell className="text-sm font-medium">{s.name}</TableCell>
                           <TableCell className="text-sm">可比自来水制水单位产品电耗</TableCell>
                           <TableCell className="font-mono text-xs">kWh/km³</TableCell>
                           <TableCell className="text-right font-mono text-xs font-semibold text-primary">{fmt(s.calc)}</TableCell>
-                          <TableCell className="text-center text-xs text-muted-foreground">—</TableCell>
-                          <TableCell className="text-center text-xs text-muted-foreground">—</TableCell>
+                          <TableCell className="text-right font-mono text-xs">{fmt(s.limit)}</TableCell>
+                          <TableCell className="text-right font-mono text-xs">{fmt(s.access)}</TableCell>
+                          <TableCell className="text-right font-mono text-xs">{fmt(s.advance)}</TableCell>
+                          <TableCell className="text-center font-mono text-sm">≤</TableCell>
+                          <TableCell className="text-center">
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "font-medium",
+                                passLimit
+                                  ? "border-success/40 bg-success/10 text-success"
+                                  : "border-destructive/40 bg-destructive/10 text-destructive",
+                              )}
+                            >
+                              {passLimit ? "合格" : "不合格"}
+                            </Badge>
+                          </TableCell>
                         </TableRow>
-                        <ResultRow label="限定值" value={s.limit} pass={passLimit} calc={s.calc} />
-                        <ResultRow label="准入值" value={s.access} pass={passAccess} calc={s.calc} />
-                        <ResultRow label="先进值" value={s.advance} pass={passAdvance} calc={s.calc} />
-                      </TableBody>
-                    </Table>
-                  </div>
-                );
-              })}
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
