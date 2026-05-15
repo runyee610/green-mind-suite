@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Leaf, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import {
 } from "@/components/green-mfg/data";
 import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
 import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
-import { ZeroCarbonPanel } from "./GreenMfgEnt";
+
 
 /** Cascading industry filter: hover parent → reveals children on the right */
 function IndustryCascadeFilter({
