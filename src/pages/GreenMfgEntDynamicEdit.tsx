@@ -31,7 +31,7 @@ export default function GreenMfgEntDynamicEdit() {
 
   const update = (k: string, v: string) => setValues((p) => ({ ...p, [k]: v }));
 
-  const handleSave = () => toast.success("已保存草稿");
+  const handleSave = () => toast.success("已保存");
   const handleSubmit = () => {
     const missing = DYNAMIC_FIELD_DEFS.filter((d) => !values[d.key as string]?.trim());
     if (missing.length) { toast.error(`请填写：${missing.map((m) => m.label).join("、")}`); return; }
@@ -48,7 +48,7 @@ export default function GreenMfgEntDynamicEdit() {
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent/dynamic")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
-        <Button variant="outline" size="sm" onClick={handleSave}><Save className="mr-1 h-4 w-4" />保存草稿</Button>
+        <Button variant="outline" size="sm" onClick={handleSave}><Save className="mr-1 h-4 w-4" />保存</Button>
         <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}><Send className="mr-1 h-4 w-4" />提交审核</Button>
       </div>
 

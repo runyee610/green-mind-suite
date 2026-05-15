@@ -130,7 +130,7 @@ export default function GreenMfgEntDeclarationNew() {
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
       setDraftSavedAt(savedAt);
-      toast.success("草稿已保存");
+      toast.success("已保存");
     } catch {
       toast.error("草稿保存失败");
     }
@@ -198,7 +198,7 @@ export default function GreenMfgEntDeclarationNew() {
               <ArrowLeft className="mr-1 h-4 w-4" />返回
             </Button>
             <Button size="sm" variant="outline" onClick={handleSave}>
-              <Save className="mr-1 h-4 w-4" />保存草稿
+              <Save className="mr-1 h-4 w-4" />保存
             </Button>
             <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
               <Send className="mr-1 h-4 w-4" />提交审核
@@ -247,7 +247,7 @@ export default function GreenMfgEntDeclarationNew() {
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleSave}>
-            <Save className="mr-1 h-4 w-4" />保存草稿
+            <Save className="mr-1 h-4 w-4" />保存
           </Button>
           {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
             <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>

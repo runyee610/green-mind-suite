@@ -181,7 +181,7 @@ export default function ReportMonthlyFilling() {
   const handleSave = () => {
     const t = new Date().toLocaleTimeString("zh-CN", { hour12: false });
     setSavedAt(t);
-    toast({ title: "已保存草稿", description: `保存时间 ${t}，可关闭页面后继续填报` });
+    toast({ title: "已保存", description: `保存时间 ${t}，可关闭页面后继续填报` });
   };
 
   const handleSubmit = () => {
@@ -230,7 +230,7 @@ export default function ReportMonthlyFilling() {
                     </span>
                   ) : null}
                   <Button size="sm" variant="outline" className="gap-1.5" onClick={handleSave}>
-                    <Save className="h-3.5 w-3.5" />保存草稿
+                    <Save className="h-3.5 w-3.5" />保存
                   </Button>
                 </div>
               </div>
@@ -565,7 +565,7 @@ export default function ReportMonthlyFilling() {
                 </Button>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" onClick={handleSave} className="gap-1.5">
-                    <Save className="h-4 w-4" /> 保存草稿
+                    <Save className="h-4 w-4" /> 保存
                   </Button>
                   {step !== "review" ? (
                     <Button onClick={goNext} className="gap-1.5">
