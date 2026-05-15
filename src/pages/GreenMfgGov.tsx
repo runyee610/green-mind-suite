@@ -251,7 +251,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理"
-          : "绿色工厂审核推荐"
+          : "绿色工厂专家审核推荐"
       }
       subtitle={
         section === "dynamic"
@@ -261,7 +261,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="专家审核推荐" value={82} accent="primary" />
+        <KpiTile icon={ClipboardList} label="专家专家审核推荐" value={82} accent="primary" />
         <KpiTile icon={CheckCircle2} label="本年国家级绿色工厂" value={116} accent="success" />
         <KpiTile icon={FileBarChart} label="培育中企业" value={MOCK_DECLARATIONS.filter((d) => d.stage === "培育中").length} accent="warning" />
         <KpiTile icon={ClipboardList} label="动态管理待审" value={MOCK_DYNAMIC.filter((d) => d.status === "已填报").length} accent="primary" />
@@ -270,17 +270,17 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       <Tabs value={tab} onValueChange={setTab}>
         {!section && (
           <TabsList>
-            <TabsTrigger value="declaration">绿色工厂审核推荐</TabsTrigger>
+            <TabsTrigger value="declaration">绿色工厂专家审核推荐</TabsTrigger>
             <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
           </TabsList>
         )}
 
-        {/* 审核推荐管理 */}
+        {/* 专家审核推荐管理 */}
         <TabsContent value="declaration" className="mt-4">
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <CardTitle className="text-base">审核推荐列表</CardTitle>
+                <CardTitle className="text-base">专家审核推荐列表</CardTitle>
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -378,7 +378,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     );
                   })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的审核推荐</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家审核推荐</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
