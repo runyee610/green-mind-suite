@@ -423,22 +423,18 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <MonthlyTable
-                rows={[
+              <ProductionTransposedTable
+                cols={[
                   { label: "电费账单总量", required: true, key: "elecBill" },
                   { label: "外供（转卖给其他企业）", required: true, key: "external" },
                 ]}
                 plant={activePlant}
                 onChange={(key, m, v) => updateMonth(activePlantIdx, key, m, v)}
                 unit="万kWh"
-                extraRows={[
-                  {
-                    label: "总计（电费账单合计 - 外供合计）",
-                    values: Array(12).fill(0),
-                    isCompactSummary: true,
-                    summaryValue: sum12(activePlant.elecBill) - sum12(activePlant.external),
-                  },
-                ]}
+                summary={{
+                  label: "总计（电费账单合计 - 外供合计）",
+                  value: sum12(activePlant.elecBill) - sum12(activePlant.external),
+                }}
               />
 
               {/* 折标系数与综合能耗 */}
