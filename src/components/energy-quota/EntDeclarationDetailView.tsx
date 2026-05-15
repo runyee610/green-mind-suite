@@ -390,8 +390,8 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <MonthlyTable
-                rows={[
+              <ProductionTransposedTable
+                cols={[
                   { label: "自来水总制水量", required: true, key: "waterTotal" },
                   { label: "深度处理工艺制水量", key: "deepProcess" },
                   { label: "污泥处理工艺制水量", key: "sludgeProcess" },
