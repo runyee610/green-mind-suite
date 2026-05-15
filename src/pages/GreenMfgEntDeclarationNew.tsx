@@ -142,7 +142,7 @@ export default function GreenMfgEntDeclarationNew() {
 
   const handleSubmit = () => {
     if (!batch) {
-      toast.warning("请选择自评价批次");
+      toast.warning("请选择自我评价批次");
       return;
     }
     if (usedBatches.includes(batch)) {
@@ -170,11 +170,11 @@ export default function GreenMfgEntDeclarationNew() {
         <CardContent className="flex flex-wrap items-end gap-3 p-3">
           <div className="flex-1 min-w-[240px] space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              自评价批次<span className="ml-1 text-destructive">*</span>
+              自我评价批次<span className="ml-1 text-destructive">*</span>
             </Label>
             <Select value={batch} onValueChange={setBatch}>
               <SelectTrigger className="h-9">
-                <SelectValue placeholder="请选择自评价批次" />
+                <SelectValue placeholder="请选择自我评价批次" />
               </SelectTrigger>
               <SelectContent>
                 {ALL_BATCHES.map((b) => {

@@ -90,7 +90,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>自评价批次</TableHead>
+                    <TableHead>自我评价批次</TableHead>
                     <TableHead className="text-center px-[3px]">AI 智能打分</TableHead>
                     <TableHead className="text-center">专家打分</TableHead>
                     <TableHead className="text-center">状态</TableHead>
