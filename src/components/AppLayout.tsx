@@ -19,7 +19,7 @@ const ROUTE_TITLES: Array<{ match: RegExp; crumbs: string[] }> = [
   { match: /^\/green-mfg\/(gov|ent)\/incubator/, crumbs: ["绿色制造", "梯度培育"] },
   { match: /^\/green-mfg\/(gov|ent)\/dynamic\/[^/]+/, crumbs: ["绿色制造", "动态管理", "详情"] },
   { match: /^\/green-mfg\/(gov|ent)\/dynamic/, crumbs: ["绿色制造", "动态管理"] },
-  { match: /^\/green-mfg\/(gov|ent)\/declaration\/new/, crumbs: ["绿色制造", "模拟自我评价", "新建申报"] },
+  { match: /^\/green-mfg\/(gov|ent)\/declaration\/new/, crumbs: ["绿色制造", "模拟自我评价", "开始评价"] },
   { match: /^\/green-mfg\/(gov|ent)\/declaration\/[^/]+/, crumbs: ["绿色制造", "模拟自我评价", "详情"] },
   { match: /^\/green-mfg\/(gov|ent)$/, crumbs: ["绿色制造", "模拟自我评价"] },
   { match: /^\/green-mfg-agent/, crumbs: ["绿色制造", "数据智能"] },
