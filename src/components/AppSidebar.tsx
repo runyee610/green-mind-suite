@@ -60,7 +60,7 @@ const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
 };
 
 const reportItems: NavItem[] = [
-  { title: "节能月度报告", url: "/report-monthly", icon: FileSpreadsheet },
+  { title: "经信委节能月报", url: "/report-monthly", icon: FileSpreadsheet },
 ];
 
 const quotaItemsByRole: Record<"gov" | "ent", NavItem[]> = {
@@ -153,7 +153,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         {renderGroup("绿色制造", greenMfgItemsByRole[role])}
-        {renderGroup("节能月度报告", reportItems)}
+        {renderGroup("经信委节能月报", reportItems)}
         {renderGroup("能耗限额管理", quotaItemsByRole[role])}
         {assetsItemsByRole[role].length > 0 && renderGroup("固定资产投资项目", assetsItemsByRole[role])}
         {systemItemsByRole[role].length > 0 && renderGroup("系统管理", systemItemsByRole[role])}

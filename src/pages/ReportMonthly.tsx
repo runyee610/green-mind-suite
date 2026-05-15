@@ -145,7 +145,7 @@ export default function ReportMonthly() {
   }
 
   return (
-    <AppLayout title="节能月度报告">
+    <AppLayout title="经信委节能月报">
       <section className="space-y-4">
         {/* KPI 卡片（仅政府侧） */}
         {!isEnt && (
