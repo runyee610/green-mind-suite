@@ -14,7 +14,7 @@ export default function GreenMfgEntReview() {
 
   return (
     <AppLayout
-      title="绿色工厂专家专家审核推荐 · 上海宝武特种合金有限公司"
+      title="绿色工厂专家审核推荐 · 上海宝武特种合金有限公司"
       subtitle="向监管侧正式申报：区级专家审核 → 市级评定；不通过将自动进入梯度培育"
     >
       <Card className="panel">
@@ -22,7 +22,7 @@ export default function GreenMfgEntReview() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <CardTitle className="text-base flex items-center gap-2">
-                <Send className="h-4 w-4 text-primary" />专家专家审核推荐
+                <Send className="h-4 w-4 text-primary" />专家审核推荐
               </CardTitle>
               <p className="mt-1 text-xs text-muted-foreground">
                 可直接引用最近一次模拟自我评价数据，或重新填报。先由区级专家审核，通过后上报市级；不通过将自动进入梯度培育。
