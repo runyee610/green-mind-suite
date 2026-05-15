@@ -250,17 +250,17 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理"
-          : "绿色工厂自我评价管理"
+          : "绿色工厂自我评价（模拟）"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表复核"
-          : "自我评价监管、AI 智能预审、专家审批"
+          : "自我评价监管、AI 智能预审、专家审核"
       }
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="待审批自我评价" value={82} accent="primary" />
+        <KpiTile icon={ClipboardList} label="待审核自我评价" value={82} accent="primary" />
         <KpiTile icon={CheckCircle2} label="本年国家级绿色工厂" value={116} accent="success" />
         <KpiTile icon={FileBarChart} label="培育中企业" value={MOCK_DECLARATIONS.filter((d) => d.stage === "培育中").length} accent="warning" />
         <KpiTile icon={ClipboardList} label="动态管理待审" value={MOCK_DYNAMIC.filter((d) => d.status === "已填报").length} accent="primary" />
@@ -269,7 +269,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       <Tabs value={tab} onValueChange={setTab}>
         {!section && (
           <TabsList>
-            <TabsTrigger value="declaration">绿色工厂自我评价管理</TabsTrigger>
+            <TabsTrigger value="declaration">绿色工厂自我评价（模拟）</TabsTrigger>
             <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
           </TabsList>
         )}
@@ -370,7 +370,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">{r.submitDate}</TableCell>
                       <TableCell className="sticky right-0 z-10 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))] group-hover:bg-muted/40">
                         <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
-                          <Eye className="mr-1 h-3 w-3" />详情/审批
+                          <Eye className="mr-1 h-3 w-3" />详情/审核
                         </Button>
                       </TableCell>
                     </TableRow>
