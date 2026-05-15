@@ -313,7 +313,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
-                      <SelectItem value="填报中">自评价中</SelectItem>
+                      <SelectItem value="填报中">自我评价中</SelectItem>
                       <SelectItem value="区审批">区审批</SelectItem>
                       <SelectItem value="市级培育">市级培育</SelectItem>
                       <SelectItem value="培育中">培育中</SelectItem>

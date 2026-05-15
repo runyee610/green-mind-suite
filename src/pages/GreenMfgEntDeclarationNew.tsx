@@ -34,7 +34,7 @@ const ANCHORS = [
   { href: "ai-scoring", label: "AI 打分智能体" },
 ];
 
-// 默认企业信息（登录企业），新增自评价时自动带入，不可编辑
+// 默认企业信息（登录企业），新增自我评价时自动带入，不可编辑
 const DEFAULT_ENTERPRISE = {
   name: "上海华普电缆有限公司",
   creditCode: "91310112132456789X",
@@ -146,17 +146,17 @@ export default function GreenMfgEntDeclarationNew() {
       return;
     }
     if (usedBatches.includes(batch)) {
-      toast.error("该批次您已自评价，不能重复自评价");
+      toast.error("该批次您已自我评价，不能重复自我评价");
       return;
     }
-    toast.success("自评价已提交,等待区级审核");
+    toast.success("自我评价已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent"), 600);
   };
 
   return (
     <AppLayout
-      title="新增绿色工厂自评价"
+      title="新增绿色工厂自我评价"
       subtitle={
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span><span className="text-muted-foreground/60">企业名称</span> · {DEFAULT_ENTERPRISE.name}</span>
@@ -181,7 +181,7 @@ export default function GreenMfgEntDeclarationNew() {
                   const used = usedBatches.includes(b);
                   return (
                     <SelectItem key={b} value={b} disabled={used}>
-                      {b}{used ? "（已自评价）" : ""}
+                      {b}{used ? "（已自我评价）" : ""}
                     </SelectItem>
                   );
                 })}
@@ -201,7 +201,7 @@ export default function GreenMfgEntDeclarationNew() {
               <Save className="mr-1 h-4 w-4" />保存草稿
             </Button>
             <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交自评价
+              <Send className="mr-1 h-4 w-4" />提交自我评价
             </Button>
           </div>
         </CardContent>
@@ -251,7 +251,7 @@ export default function GreenMfgEntDeclarationNew() {
           </Button>
           {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
             <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交自评价
+              <Send className="mr-1 h-4 w-4" />提交自我评价
             </Button>
           ) : (
             <Button

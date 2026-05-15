@@ -42,12 +42,12 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理 · 申能电力设备股份有限公司"
-          : "绿色工厂自评价-上海宝武特种合金有限公司"
+          : "绿色工厂自我评价（模拟）-上海宝武特种合金有限公司"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表填报"
-          : "自评价、审核进度查看"
+          : "自我评价（模拟）、AI 智能打分"
       }
     >
       <Tabs value={tab} onValueChange={setTab}>
@@ -64,13 +64,13 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <CardTitle className="text-base">本年度自评价</CardTitle>
+                  <CardTitle className="text-base">本年度自我评价</CardTitle>
                   <p className="mt-1 text-xs text-muted-foreground">2025第二批 · 提交于 {myDeclaration.submitDate}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new")}>
-                    <Plus className="mr-1 h-4 w-4" />新增自评价
+                    <Plus className="mr-1 h-4 w-4" />新增自我评价
                   </Button>
                 </div>
               </div>
@@ -85,7 +85,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
 
           {/* 历年自评价记录 */}
           <Card className="panel">
-            <CardHeader className="pb-3"><CardTitle className="text-base"><ClipboardList className="mr-1 inline h-4 w-4" />历史自评价记录</CardTitle></CardHeader>
+            <CardHeader className="pb-3"><CardTitle className="text-base"><ClipboardList className="mr-1 inline h-4 w-4" />历史自我评价记录</CardTitle></CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>

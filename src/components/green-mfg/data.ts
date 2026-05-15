@@ -1,7 +1,7 @@
 // 绿色工厂（梯度培育）模块共享数据 / 类型
 
-export type DeclarationStage = "自评价中" | "区审批" | "市级培育" | "培育中" | "绿色工厂";
-export type DeclarationLevel = "市级绿色工厂" | "区级培育" | "自评价中";
+export type DeclarationStage = "自我评价中" | "区审批" | "市级培育" | "培育中" | "绿色工厂";
+export type DeclarationLevel = "市级绿色工厂" | "区级培育" | "自我评价中";
 
 export interface DeclarationRecord {
   id: string;
@@ -92,7 +92,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     stage: "市级培育",
     score: 86,
     manualScore: 88,
-    level: "自评价中",
+    level: "自我评价中",
     reviewer: "李审核",
   },
   {
@@ -108,7 +108,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     submitDate: "2025-09-08",
     stage: "区审批",
     score: 79,
-    level: "自评价中",
+    level: "自我评价中",
   },
   {
     id: "GF-2025-003",
@@ -157,9 +157,9 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 67000,
     batch: "2025年第二批",
     submitDate: "2025-09-20",
-    stage: "自评价中",
+    stage: "自我评价中",
     score: 58,
-    level: "自评价中",
+    level: "自我评价中",
     reviewer: "区生态局",
     comment: "材料缺失：缺少近三年能源审计报告。",
   },
@@ -418,7 +418,7 @@ export const stageBadgeClass = (stage: DeclarationStage) => {
     case "培育中": return "border-warning/40 bg-warning/10 text-warning";
     case "市级培育":
     case "区审批": return "border-primary/40 bg-primary/10 text-primary";
-    case "自评价中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
+    case "自我评价中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
     default: return "border-border";
   }
 };
