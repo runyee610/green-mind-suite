@@ -90,7 +90,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     <Sprout className="mr-1 h-4 w-4" />加入培育库
                   </Button>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new?mode=self")}>
-                    <Plus className="mr-1 h-4 w-4" />新增评价
+                    <Plus className="mr-1 h-4 w-4" />开始评价
                   </Button>
                 </div>
               </div>
