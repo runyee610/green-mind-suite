@@ -1269,7 +1269,7 @@ function IndicatorItem({
           <div className="mb-2 flex flex-wrap items-center gap-2 text-sm font-medium text-muted-foreground">
             <PencilLine className="h-3.5 w-3.5" />本年度指标值
             {entEditable && <span className="text-xs text-muted-foreground/70">（企业填报）</span>}
-            {govEditable && <span className="text-xs text-warning">（政府可修订）</span>}
+            {govEditable && <span className="text-xs text-warning"></span>}
             <IndicatorGuidePopover row={row} />
           </div>
           {isProductRow && has === "有" ? (
@@ -1414,7 +1414,7 @@ function IndicatorItem({
       {showGovRemark && (govEditable || row.govRemark) && (
         <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-3">
           <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-amber-700 dark:text-amber-300">
-            <ClipboardCheck className="h-3.5 w-3.5" />审核备注（政府侧 · 选填）
+            <ClipboardCheck className="h-3.5 w-3.5" />审核备注
           </div>
           {govEditable ? (
             <Textarea
