@@ -250,17 +250,17 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理"
-          : "绿色工厂自评价管理"
+          : "绿色工厂自我评价管理"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表复核"
-          : "自评价监管、AI 智能预审、专家审批"
+          : "自我评价监管、AI 智能预审、专家审批"
       }
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="待审批自评价" value={82} accent="primary" />
+        <KpiTile icon={ClipboardList} label="待审批自我评价" value={82} accent="primary" />
         <KpiTile icon={CheckCircle2} label="本年国家级绿色工厂" value={116} accent="success" />
         <KpiTile icon={FileBarChart} label="培育中企业" value={MOCK_DECLARATIONS.filter((d) => d.stage === "培育中").length} accent="warning" />
         <KpiTile icon={ClipboardList} label="动态管理待审" value={MOCK_DYNAMIC.filter((d) => d.status === "已填报").length} accent="primary" />
@@ -269,7 +269,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       <Tabs value={tab} onValueChange={setTab}>
         {!section && (
           <TabsList>
-            <TabsTrigger value="declaration">绿色工厂自评价管理</TabsTrigger>
+            <TabsTrigger value="declaration">绿色工厂自我评价管理</TabsTrigger>
             <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
           </TabsList>
         )}
@@ -331,7 +331,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead className="whitespace-nowrap">企业名称 / 统一社会信用代码</TableHead>
                     <TableHead className="whitespace-nowrap">所属区</TableHead>
                     <TableHead className="whitespace-nowrap">行业</TableHead>
-                    <TableHead className="whitespace-nowrap">自评价批次</TableHead>
+                    <TableHead className="whitespace-nowrap">自我评价批次</TableHead>
                     <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家打分</TableHead>
                     <TableHead className="text-center whitespace-nowrap">综合能耗（吨标煤）</TableHead>
                     <TableHead className="text-center whitespace-nowrap">产值（万元）</TableHead>
@@ -509,7 +509,7 @@ function BatchManageDialog({
     <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) { setEditingKey(null); setNewName(""); } }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-base">自评价批次管理</DialogTitle>
+          <DialogTitle className="text-base">自我评价批次管理</DialogTitle>
         </DialogHeader>
 
         <div className="flex items-center gap-2">
