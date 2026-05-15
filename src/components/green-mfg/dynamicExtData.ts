@@ -18,7 +18,7 @@ export interface GreenArchive {
   district: string;
   industry: string;
   // 档案档案核心信息
-  certifyLevel: "市级绿色工厂" | "区级培育" | "自评价中" | "未获评";
+  certifyLevel: "市级绿色工厂" | "区级培育" | "自我评价中" | "未获评";
   certifyDate?: string; // 首次获评时间
   validUntil?: string;  // 证书有效期
   declarationCount: number;     // 累计自评价次数
@@ -94,7 +94,7 @@ export const MOCK_ARCHIVES: GreenArchive[] = [
     enterpriseName: "上海宝武特种合金有限公司",
     district: "宝山区",
     industry: "钢铁行业",
-    certifyLevel: "自评价中",
+    certifyLevel: "自我评价中",
     declarationCount: 1,
     dynamicReportCount: 0,
     rectificationCount: 0,
@@ -251,7 +251,7 @@ export const certifyLevelClass = (l: GreenArchive["certifyLevel"]) => {
   switch (l) {
     case "市级绿色工厂": return "border-success/40 bg-success/10 text-success";
     case "区级培育": return "border-warning/40 bg-warning/10 text-warning";
-    case "自评价中": return "border-primary/40 bg-primary/10 text-primary";
+    case "自我评价中": return "border-primary/40 bg-primary/10 text-primary";
     default: return "border-muted-foreground/30 bg-muted/40 text-muted-foreground";
   }
 };
