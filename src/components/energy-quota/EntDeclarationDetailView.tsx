@@ -591,18 +591,26 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
                   <Target className="h-4 w-4 text-primary" />结果对标
                 </CardTitle>
                 {(() => {
-                  const allPass = summary.length > 0 && summary.every((s) => s.calc <= s.limit);
+                  const allAdvance = summary.length > 0 && summary.every((s) => s.calc <= s.advance);
+                  const allAccess = summary.length > 0 && summary.every((s) => s.calc <= s.access);
+                  const allLimit = summary.length > 0 && summary.every((s) => s.calc <= s.limit);
+                  const label = allAdvance
+                    ? "达到先进值"
+                    : allAccess
+                    ? "达到准入值"
+                    : allLimit
+                    ? "达到限定值"
+                    : "未达标";
+                  const cls = allAdvance
+                    ? "border-success/40 bg-success/10 text-success"
+                    : allAccess
+                    ? "border-info/40 bg-info/10 text-info"
+                    : allLimit
+                    ? "border-warning/40 bg-warning/10 text-warning"
+                    : "border-destructive/40 bg-destructive/10 text-destructive";
                   return (
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "font-medium",
-                        allPass
-                          ? "border-success/40 bg-success/10 text-success"
-                          : "border-destructive/40 bg-destructive/10 text-destructive",
-                      )}
-                    >
-                      {allPass ? "合格" : "不合格"}
+                    <Badge variant="outline" className={cn("font-medium", cls)}>
+                      {label}
                     </Badge>
                   );
                 })()}
