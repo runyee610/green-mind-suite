@@ -565,7 +565,7 @@ export default function ReportMonthlyFilling() {
                 </Button>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" onClick={handleSave} className="gap-1.5">
-                    <Save className="h-4 w-4" /> 保存草稿
+                    <Save className="h-4 w-4" /> 保存
                   </Button>
                   {step !== "review" ? (
                     <Button onClick={goNext} className="gap-1.5">
