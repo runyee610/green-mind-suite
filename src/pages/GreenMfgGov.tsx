@@ -394,9 +394,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               <TabsTrigger value="report">动态管理表</TabsTrigger>
               <TabsTrigger value="archive">绿色档案</TabsTrigger>
               <TabsTrigger value="risk">风险预警</TabsTrigger>
-              <TabsTrigger value="zerocarbon">
-                <Leaf className="mr-1 h-3.5 w-3.5" />零碳进阶
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="report" className="mt-4">
@@ -462,9 +459,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               <RiskWarningPanel mode="gov" />
             </TabsContent>
 
-            <TabsContent value="zerocarbon" className="mt-4">
-              <ZeroCarbonPanel mode="gov" />
-            </TabsContent>
           </Tabs>
         </TabsContent>
       </Tabs>
