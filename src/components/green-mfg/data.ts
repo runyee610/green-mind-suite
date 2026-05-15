@@ -1,6 +1,6 @@
 // 绿色工厂（梯度培育）模块共享数据 / 类型
 
-export type DeclarationStage = "自我评价中" | "区审批" | "​" | "培育中" | "绿色工厂";
+export type DeclarationStage = "自我评价中" | "区审批" | "区审核" | "培育中" | "绿色工厂";
 export type DeclarationLevel = "市级绿色工厂" | "区级培育" | "自我评价中";
 
 export interface DeclarationRecord {
@@ -89,7 +89,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 128500,
     batch: "2025年第二批",
     submitDate: "2025-09-12",
-    stage: "​",
+    stage: "区审核",
     score: 86,
     manualScore: 88,
     level: "自我评价中",
@@ -416,7 +416,7 @@ export const stageBadgeClass = (stage: DeclarationStage) => {
   switch (stage) {
     case "绿色工厂": return "border-success/40 bg-success/10 text-success";
     case "培育中": return "border-warning/40 bg-warning/10 text-warning";
-    case "​":
+    case "区审核":
     case "区审批": return "border-primary/40 bg-primary/10 text-primary";
     case "自我评价中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
     default: return "border-border";
