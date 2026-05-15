@@ -261,7 +261,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="待审核推荐" value={82} accent="primary" />
+        <KpiTile icon={ClipboardList} label="专家审核推荐" value={82} accent="primary" />
         <KpiTile icon={CheckCircle2} label="本年国家级绿色工厂" value={116} accent="success" />
         <KpiTile icon={FileBarChart} label="培育中企业" value={MOCK_DECLARATIONS.filter((d) => d.stage === "培育中").length} accent="warning" />
         <KpiTile icon={ClipboardList} label="动态管理待审" value={MOCK_DYNAMIC.filter((d) => d.status === "已填报").length} accent="primary" />
@@ -332,8 +332,8 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead className="whitespace-nowrap">企业名称 / 统一社会信用代码</TableHead>
                     <TableHead className="whitespace-nowrap">所属区</TableHead>
                     <TableHead className="whitespace-nowrap">行业</TableHead>
-                    <TableHead className="whitespace-nowrap">申报批次</TableHead>
-                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家打分</TableHead>
+                    <TableHead className="whitespace-nowrap">提交批次</TableHead>
+                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家审核</TableHead>
                     <TableHead className="text-center whitespace-nowrap">综合能耗（吨标煤）</TableHead>
                     <TableHead className="text-center whitespace-nowrap">产值（万元）</TableHead>
                     <TableHead className="text-center whitespace-nowrap">流转状态</TableHead>
@@ -511,7 +511,7 @@ function BatchManageDialog({
     <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) { setEditingKey(null); setNewName(""); } }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-base">申报批次管理</DialogTitle>
+          <DialogTitle className="text-base">提交批次管理</DialogTitle>
         </DialogHeader>
 
         <div className="flex items-center gap-2">

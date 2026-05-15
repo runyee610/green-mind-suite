@@ -14,7 +14,7 @@ export default function GreenMfgEntReview() {
 
   return (
     <AppLayout
-      title="绿色工厂审核推荐 · 上海宝武特种合金有限公司"
+      title="绿色工厂专家审核推荐 · 上海宝武特种合金有限公司"
       subtitle="向监管侧正式申报：区级专家审核 → 市级评定；不通过将自动进入梯度培育"
     >
       <Card className="panel">
@@ -22,7 +22,7 @@ export default function GreenMfgEntReview() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <CardTitle className="text-base flex items-center gap-2">
-                <Send className="h-4 w-4 text-primary" />审核推荐
+                <Send className="h-4 w-4 text-primary" />专家审核推荐
               </CardTitle>
               <p className="mt-1 text-xs text-muted-foreground">
                 可直接引用最近一次模拟自我评价数据，或重新填报。先由区级专家审核，通过后上报市级；不通过将自动进入梯度培育。
@@ -31,29 +31,29 @@ export default function GreenMfgEntReview() {
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
               <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new")}>
-                <Plus className="mr-1 h-4 w-4" />新增审核推荐
+                <Plus className="mr-1 h-4 w-4" />自我评价
               </Button>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Field label="本年度申报批次" value={myDeclaration.batch} />
+            <Field label="本年度提交批次" value={myDeclaration.batch} />
             <Field label="AI 智能预审得分" value={`${myDeclaration.score}`} accent="primary" />
-            <Field label="专家打分" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
+            <Field label="专家审核" value={myDeclaration.manualScore != null ? `${myDeclaration.manualScore}` : "—"} accent="success" />
             <Field label="审核结果" value={myDeclaration.level} />
           </div>
 
           <div>
             <p className="mb-2 text-xs font-medium text-muted-foreground">
-              <ClipboardList className="mr-1 inline h-3.5 w-3.5" />历史申报记录
+              <ClipboardList className="mr-1 inline h-3.5 w-3.5" />历史提交记录
             </p>
             <Table>
               <TableHeader>
                 <TableRow className="border-border/60 hover:bg-transparent">
-                  <TableHead>申报批次</TableHead>
+                  <TableHead>提交批次</TableHead>
                   <TableHead className="text-center">AI 智能打分</TableHead>
-                  <TableHead className="text-center">专家打分</TableHead>
+                  <TableHead className="text-center">专家审核</TableHead>
                   <TableHead className="text-center">流转状态</TableHead>
                   <TableHead className="text-center">最终结果</TableHead>
                   <TableHead>提交日期</TableHead>

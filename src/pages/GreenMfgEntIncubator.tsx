@@ -43,7 +43,7 @@ export default function GreenMfgEntIncubator() {
             <InfoTile label="提交时间" value={me.submitDate} icon={CalendarDays} />
             <InfoTile label="产值（万元）" value={me.outputValue.toLocaleString()} />
             <InfoTile label="智能打分" value={`${me.score}`} />
-            <InfoTile label="专家打分" value={me.manualScore != null ? `${me.manualScore}` : "—"} />
+            <InfoTile label="专家审核" value={me.manualScore != null ? `${me.manualScore}` : "—"} />
             <InfoTile label="责任审核员" value={me.reviewer ?? "—"} />
           </div>
         </CardContent>

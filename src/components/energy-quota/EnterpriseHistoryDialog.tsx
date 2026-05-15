@@ -83,7 +83,7 @@ export function EnterpriseHistoryDialog({ enterprise, onClose, onViewDetail }: P
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base">
             <HistoryIcon className="h-4 w-4 text-primary" />
-            历史申报记录
+            历史提交记录
             <span className="text-sm font-normal text-muted-foreground">— {enterprise.name}</span>
           </DialogTitle>
           <DialogDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">

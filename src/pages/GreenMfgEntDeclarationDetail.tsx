@@ -105,7 +105,7 @@ export default function GreenMfgEntDeclarationDetail() {
         <Card className="panel">
           <CardContent className="flex h-full flex-col justify-between gap-2 p-4">
             <p className="text-xs text-muted-foreground">
-              <UserCheck className="mr-1 inline h-3.5 w-3.5 text-success" />专家打分
+              <UserCheck className="mr-1 inline h-3.5 w-3.5 text-success" />专家审核
             </p>
             <div className="flex items-end justify-between">
               {detail.manualScore != null ? (
@@ -193,7 +193,7 @@ export default function GreenMfgEntDeclarationDetail() {
             <Card className="panel">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <UserCheck className="h-4 w-4 text-success" />专家打分
+                  <UserCheck className="h-4 w-4 text-success" />专家审核
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -219,7 +219,7 @@ export default function GreenMfgEntDeclarationDetail() {
                 ) : (
                   <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border/60 bg-muted/20 p-6 text-center">
                     <UserCheck className="h-6 w-6 text-muted-foreground/50" />
-                    <p className="text-sm text-muted-foreground">尚未完成专家打分</p>
+                    <p className="text-sm text-muted-foreground">尚未完成专家审核</p>
                     <p className="text-[11px] text-muted-foreground">智能打分通过后，将由行业专家进行复核打分。</p>
                   </div>
                 )}
