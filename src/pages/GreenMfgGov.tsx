@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Leaf, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import {
 } from "@/components/green-mfg/data";
 import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
 import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
-import { ZeroCarbonPanel } from "./GreenMfgEnt";
+
 
 /** Cascading industry filter: hover parent → reveals children on the right */
 function IndustryCascadeFilter({
@@ -394,9 +394,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               <TabsTrigger value="report">动态管理表</TabsTrigger>
               <TabsTrigger value="archive">绿色档案</TabsTrigger>
               <TabsTrigger value="risk">风险预警</TabsTrigger>
-              <TabsTrigger value="zerocarbon">
-                <Leaf className="mr-1 h-3.5 w-3.5" />零碳进阶
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="report" className="mt-4">
@@ -462,9 +459,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               <RiskWarningPanel mode="gov" />
             </TabsContent>
 
-            <TabsContent value="zerocarbon" className="mt-4">
-              <ZeroCarbonPanel mode="gov" />
-            </TabsContent>
           </Tabs>
         </TabsContent>
       </Tabs>
