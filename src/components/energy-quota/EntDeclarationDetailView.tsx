@@ -423,22 +423,18 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <MonthlyTable
-                rows={[
+              <ProductionTransposedTable
+                cols={[
                   { label: "电费账单总量", required: true, key: "elecBill" },
                   { label: "外供（转卖给其他企业）", required: true, key: "external" },
                 ]}
                 plant={activePlant}
                 onChange={(key, m, v) => updateMonth(activePlantIdx, key, m, v)}
                 unit="万kWh"
-                extraRows={[
-                  {
-                    label: "总计（电费账单合计 - 外供合计）",
-                    values: Array(12).fill(0),
-                    isCompactSummary: true,
-                    summaryValue: sum12(activePlant.elecBill) - sum12(activePlant.external),
-                  },
-                ]}
+                summary={{
+                  label: "总计（电费账单合计 - 外供合计）",
+                  value: sum12(activePlant.elecBill) - sum12(activePlant.external),
+                }}
               />
 
               {/* 折标系数与综合能耗 */}
@@ -989,12 +985,25 @@ function ProductionTransposedTable({
   plant,
   onChange,
   unit,
+  summary,
 }: {
   cols: MonthlyRow[];
   plant: PlantData;
   onChange: (key: keyof PlantData, m: number, v: string) => void;
   unit: string;
+  summary?: { label: string; value: number };
 }) {
+  const handlePaste = (key: keyof PlantData, startMonth: number) => (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const text = e.clipboardData.getData("text");
+    const parts = text.split(/[\t\n\r,;]+/).map((s) => s.trim()).filter((s) => s !== "");
+    if (parts.length <= 1) return;
+    e.preventDefault();
+    parts.forEach((v, i) => {
+      const m = startMonth + i;
+      if (m < 12 && !isNaN(Number(v))) onChange(key, m, v);
+    });
+  };
+
   return (
     <div className="overflow-x-auto rounded-md border border-border/60">
       <Table>
@@ -1021,6 +1030,8 @@ function ProductionTransposedTable({
                       type="number"
                       value={arr[mi] || ""}
                       onChange={(e) => onChange(c.key, mi, e.target.value)}
+                      onPaste={handlePaste(c.key, mi)}
+                      placeholder={mi === 0 ? "可粘贴1-12月" : ""}
                       className="h-8 text-right font-mono text-xs"
                     />
                   </TableCell>
@@ -1036,6 +1047,16 @@ function ProductionTransposedTable({
               </TableCell>
             ))}
           </TableRow>
+          {summary ? (
+            <TableRow className="bg-warning/5 hover:bg-warning/5">
+              <TableCell className="sticky left-0 z-10 bg-warning/5 text-sm font-semibold text-warning">
+                {summary.label}
+              </TableCell>
+              <TableCell colSpan={cols.length} className="text-right font-mono text-xs font-semibold text-warning">
+                {fmt(summary.value)}
+              </TableCell>
+            </TableRow>
+          ) : null}
         </TableBody>
       </Table>
     </div>
