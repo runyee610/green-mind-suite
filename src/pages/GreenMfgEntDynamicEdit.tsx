@@ -48,7 +48,7 @@ export default function GreenMfgEntDynamicEdit() {
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent/dynamic")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
-        <Button variant="outline" size="sm" onClick={handleSave}><Save className="mr-1 h-4 w-4" />保存草稿</Button>
+        <Button variant="outline" size="sm" onClick={handleSave}><Save className="mr-1 h-4 w-4" />保存</Button>
         <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}><Send className="mr-1 h-4 w-4" />提交审核</Button>
       </div>
 

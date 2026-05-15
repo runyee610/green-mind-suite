@@ -230,7 +230,7 @@ export default function ReportMonthlyFilling() {
                     </span>
                   ) : null}
                   <Button size="sm" variant="outline" className="gap-1.5" onClick={handleSave}>
-                    <Save className="h-3.5 w-3.5" />保存草稿
+                    <Save className="h-3.5 w-3.5" />保存
                   </Button>
                 </div>
               </div>
