@@ -20,7 +20,7 @@ import {
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
 import { toast } from "sonner";
-
+import { Label } from "@/components/ui/label";
 
 
 const ANCHORS = [
@@ -132,10 +132,6 @@ export default function GreenMfgEntDeclarationNew() {
       toast.error("草稿保存失败");
     }
   };
-
-  const usedBatches = MOCK_DECLARATIONS
-    .filter((d) => d.enterpriseName === DEFAULT_ENTERPRISE.name)
-    .map((d) => d.batch);
 
   const handleSubmit = () => {
     toast.success("自我评价已提交,等待区级审核");
