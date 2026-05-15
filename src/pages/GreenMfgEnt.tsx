@@ -319,7 +319,7 @@ export function ZeroCarbonPanel({ mode, eligible }: { mode: "ent" | "gov"; eligi
             </CardTitle>
             <p className="mt-1 text-xs text-muted-foreground">
               {mode === "ent"
-                ? "已评为市级/国家级绿色工厂的企业，可在此申请向"零碳工厂"进阶。"
+                ? "已评为市级/国家级绿色工厂的企业，可在此申请向「零碳工厂」进阶。"
                 : "管理已获评绿色工厂企业的零碳进阶申请、过程跟踪与评定。"}
             </p>
           </div>
