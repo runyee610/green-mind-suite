@@ -390,8 +390,8 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <MonthlyTable
-                rows={[
+              <ProductionTransposedTable
+                cols={[
                   { label: "自来水总制水量", required: true, key: "waterTotal" },
                   { label: "深度处理工艺制水量", key: "deepProcess" },
                   { label: "污泥处理工艺制水量", key: "sludgeProcess" },
@@ -978,6 +978,64 @@ function MonthlyTable({
               </TableCell>
             </TableRow>
           ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+function ProductionTransposedTable({
+  cols,
+  plant,
+  onChange,
+  unit,
+}: {
+  cols: MonthlyRow[];
+  plant: PlantData;
+  onChange: (key: keyof PlantData, m: number, v: string) => void;
+  unit: string;
+}) {
+  return (
+    <div className="overflow-x-auto rounded-md border border-border/60">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-muted/40 hover:bg-muted/40">
+            <TableHead className="sticky left-0 z-10 min-w-[80px] bg-muted/40 font-semibold">月份 ({unit})</TableHead>
+            {cols.map((c) => (
+              <TableHead key={c.key as string} className="min-w-[140px] text-center text-xs">
+                {c.label}
+                {c.required && <span className="ml-0.5 text-destructive">*</span>}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {MONTHS.map((m, mi) => (
+            <TableRow key={m}>
+              <TableCell className="sticky left-0 z-10 bg-background text-sm font-medium">{m}</TableCell>
+              {cols.map((c) => {
+                const arr = plant[c.key] as MonthArr;
+                return (
+                  <TableCell key={c.key as string} className="p-1">
+                    <Input
+                      type="number"
+                      value={arr[mi] || ""}
+                      onChange={(e) => onChange(c.key, mi, e.target.value)}
+                      className="h-8 text-right font-mono text-xs"
+                    />
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          ))}
+          <TableRow className="bg-primary/5 hover:bg-primary/5">
+            <TableCell className="sticky left-0 z-10 bg-primary/5 text-sm font-semibold text-primary">合计</TableCell>
+            {cols.map((c) => (
+              <TableCell key={c.key as string} className="text-right font-mono text-xs font-semibold text-primary">
+                {fmt(sum12(plant[c.key] as MonthArr))}
+              </TableCell>
+            ))}
+          </TableRow>
         </TableBody>
       </Table>
     </div>
