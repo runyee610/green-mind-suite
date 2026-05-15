@@ -16,7 +16,7 @@ export interface DeclarationRecord {
   submitDate: string;
   stage: DeclarationStage;
   score: number; // 系统智能打分 0-100
-  manualScore?: number; // 专家打分
+  manualScore?: number; // 专家审核
   level: DeclarationLevel;
   reviewer?: string;
   comment?: string;

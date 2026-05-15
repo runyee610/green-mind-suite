@@ -5,7 +5,7 @@ import { SCORE_DIMENSIONS, type ScoreL1Dim } from "./data";
 import { cn } from "@/lib/utils";
 
 interface Props {
-  /** 缩放比例（用于专家打分按总体差异等比缩放）；默认 1 */
+  /** 缩放比例（用于专家审核按总体差异等比缩放）；默认 1 */
   ratio?: number;
   /** 是否隐藏数值（用于"待专家审核"占位） */
   hideValues?: boolean;

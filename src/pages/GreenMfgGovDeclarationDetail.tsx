@@ -169,7 +169,7 @@ export default function GreenMfgGovDeclarationDetail() {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <UserCheck className="h-4 w-4 text-success" />
-                  专家打分
+                  专家审核
                 </CardTitle>
               </CardHeader>
               <CardContent>

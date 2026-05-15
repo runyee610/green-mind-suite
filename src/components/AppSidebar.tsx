@@ -45,7 +45,7 @@ type NavItem = {
 const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
     { title: "全景视图看板", url: "/", icon: LayoutDashboard },
-    { title: "审核推荐", url: "/green-mfg/gov/review", icon: Send },
+    { title: "专家审核推荐", url: "/green-mfg/gov/review", icon: Send },
     { title: "梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
     { title: "零碳进阶", url: "/green-mfg/gov/zerocarbon", icon: Leaf },
@@ -55,7 +55,7 @@ const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   ent: [
     { title: "全景视图看板", url: "/", icon: LayoutDashboard },
     { title: "模拟自我评价", url: "/green-mfg/ent", icon: ShieldCheck },
-    { title: "审核推荐", url: "/green-mfg/ent/review", icon: Send },
+    { title: "专家审核推荐", url: "/green-mfg/ent/review", icon: Send },
     { title: "梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
     { title: "零碳进阶", url: "/green-mfg/ent/zerocarbon", icon: Leaf },

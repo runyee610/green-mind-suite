@@ -415,7 +415,7 @@ export function CycleAndDeclaration() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* 历史申报记录 */}
+      {/* 历史提交记录 */}
       <EnterpriseHistoryDialog
         enterprise={historyTarget}
         onClose={() => setHistoryTarget(null)}
