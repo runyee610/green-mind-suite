@@ -34,7 +34,7 @@ const ANCHORS = [
   { href: "ai-scoring", label: "AI 打分智能体" },
 ];
 
-// 默认企业信息（登录企业），新增评价时自动带入，不可编辑
+// 默认企业信息（登录企业），开始评价时自动带入，不可编辑
 const DEFAULT_ENTERPRISE = {
   name: "上海华普电缆有限公司",
   creditCode: "91310112132456789X",
