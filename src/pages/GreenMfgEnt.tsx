@@ -87,7 +87,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   <Button size="sm" variant="outline" className="h-8" onClick={() => {
                     toast.success("已加入区级培育库，可在「梯度培育」中查看");
                   }}>
-                    <Sprout className="mr-1 h-4 w-4" />主动加入培育库
+                    <Sprout className="mr-1 h-4 w-4" />加入培育库
                   </Button>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new?mode=self")}>
                     <Plus className="mr-1 h-4 w-4" />新增评价
