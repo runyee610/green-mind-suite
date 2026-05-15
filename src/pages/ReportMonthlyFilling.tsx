@@ -181,7 +181,7 @@ export default function ReportMonthlyFilling() {
   const handleSave = () => {
     const t = new Date().toLocaleTimeString("zh-CN", { hour12: false });
     setSavedAt(t);
-    toast({ title: "已保存草稿", description: `保存时间 ${t}，可关闭页面后继续填报` });
+    toast({ title: "已保存", description: `保存时间 ${t}，可关闭页面后继续填报` });
   };
 
   const handleSubmit = () => {

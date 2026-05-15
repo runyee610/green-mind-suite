@@ -31,7 +31,7 @@ export default function GreenMfgEntDynamicEdit() {
 
   const update = (k: string, v: string) => setValues((p) => ({ ...p, [k]: v }));
 
-  const handleSave = () => toast.success("已保存草稿");
+  const handleSave = () => toast.success("已保存");
   const handleSubmit = () => {
     const missing = DYNAMIC_FIELD_DEFS.filter((d) => !values[d.key as string]?.trim());
     if (missing.length) { toast.error(`请填写：${missing.map((m) => m.label).join("、")}`); return; }

@@ -130,7 +130,7 @@ export default function GreenMfgEntDeclarationNew() {
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
       setDraftSavedAt(savedAt);
-      toast.success("草稿已保存");
+      toast.success("已保存");
     } catch {
       toast.error("草稿保存失败");
     }
