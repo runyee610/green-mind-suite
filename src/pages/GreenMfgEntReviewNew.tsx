@@ -74,7 +74,7 @@ export default function GreenMfgEntReviewNew() {
 
   const usedBatches = useMemo(
     () =>
-      MOCK_DECLARATIONS.filter((d) => d.enterprise === DEFAULT_ENTERPRISE.name).map(
+      MOCK_DECLARATIONS.filter((d) => d.enterpriseName === DEFAULT_ENTERPRISE.name).map(
         (d) => d.batch,
       ),
     [],
