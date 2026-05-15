@@ -985,6 +985,7 @@ function ProductionTransposedTable({
   plant,
   onChange,
   unit,
+  summary,
 }: {
   cols: MonthlyRow[];
   plant: PlantData;
