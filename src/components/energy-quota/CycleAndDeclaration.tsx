@@ -273,7 +273,6 @@ export function CycleAndDeclaration() {
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                     <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="企业名称 / 信用代码 / 标准" className="h-9 w-64 pl-8" />
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => toast.info("从平台企业库批量导入")}><Plus className="mr-1 h-4 w-4" />导入企业</Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button size="sm" variant="outline"><FileDown className="mr-1 h-4 w-4" />导出汇总表</Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
