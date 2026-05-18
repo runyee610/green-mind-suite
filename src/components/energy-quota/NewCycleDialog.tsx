@@ -382,7 +382,7 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
           <Button onClick={handleSubmit} disabled={!canSubmit}>
-            <CheckCircle2 className="mr-1 h-4 w-4" />确认创建
+            <CheckCircle2 className="mr-1 h-4 w-4" />{isEdit ? "保存修改" : "确认创建"}
           </Button>
         </DialogFooter>
       </DialogContent>
