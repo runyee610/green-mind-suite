@@ -16,7 +16,7 @@ import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHis
 import { useRole } from "@/contexts/RoleContext";
 import { EditEnterpriseStandardDialog } from "@/components/energy-quota/EditEnterpriseStandardDialog";
 import { NewCycleDialog } from "@/components/energy-quota/NewCycleDialog";
-import { cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
+import { allContacts, cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, getEnterpriseContact, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
 export function CycleAndDeclaration() {
@@ -39,6 +39,7 @@ export function CycleAndDeclaration() {
   const [cycleId, setCycleId] = useState<string>(visibleCycles[0]?.id ?? cycles[0].id);
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("全部");
+  const [contactFilter, setContactFilter] = useState<string>("全部");
   const [expanded, setExpanded] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [editStandardTarget, setEditStandardTarget] = useState<QuotaEnterprise | null>(null);
@@ -46,6 +47,7 @@ export function CycleAndDeclaration() {
   const [forceCompleteTarget, setForceCompleteTarget] = useState<QuotaCycle | null>(null);
   const [historyTarget, setHistoryTarget] = useState<QuotaEnterprise | null>(null);
   const [newCycleOpen, setNewCycleOpen] = useState(false);
+  const [editCycleTarget, setEditCycleTarget] = useState<QuotaCycle | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 15;
 
@@ -69,13 +71,14 @@ export function CycleAndDeclaration() {
       if (isEnt && e.creditCode !== currentEntCreditCode) return false;
       const k = !keyword || e.name.includes(keyword) || e.creditCode.includes(keyword) || e.standardCodes.some((s) => s.includes(keyword));
       const s = statusFilter === "全部" || e.status === statusFilter;
-      return k && s;
+      const c = contactFilter === "全部" || getEnterpriseContact(e.id) === contactFilter;
+      return k && s && c;
     }),
-    [enterprises, cycleId, keyword, statusFilter, isEnt, currentEntCreditCode],
+    [enterprises, cycleId, keyword, statusFilter, contactFilter, isEnt, currentEntCreditCode],
   );
 
   // 过滤条件变化时重置页码
-  useEffect(() => { setPage(1); }, [cycleId, keyword, statusFilter]);
+  useEffect(() => { setPage(1); }, [cycleId, keyword, statusFilter, contactFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filteredEnterprises.length / pageSize));
   const safePage = Math.min(page, totalPages);
