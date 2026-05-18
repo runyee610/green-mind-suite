@@ -59,19 +59,23 @@ interface PlantData {
   productName: string;
   plantName: string;
   startYear: string;
-  designCapacity: string; // 万m³/日
+  designCapacity: string; // 数值
+  designCapacityUnit: string; // 单位，如 万m³/日
   // 产品产量
   waterTotal: MonthArr;       // 自来水总制水量（千立方米）
   deepProcess: MonthArr;      // 深度处理工艺制水量
   sludgeProcess: MonthArr;    // 污泥处理工艺制水量
   productionFiles: UploadedFile[];
+  productionSourceDesc: string; // 数据来源说明（必填）
   // 能源消耗
   elecBill: MonthArr;         // 电费账单总量（万kWh）
   external: MonthArr;         // 外供（万kWh）
   energyFiles: UploadedFile[];
+  energySourceDesc: string;   // 数据来源说明（必填）
   // 出厂水压力
   avgPressure: string;        // 兆帕
   pressureFiles: UploadedFile[];
+  pressureSourceDesc: string; // 数据来源说明（必填）
 }
 
 // 默认折标系数（来自后台）
@@ -86,15 +90,19 @@ const newPlant = (idx: number): PlantData => ({
   plantName: "",
   startYear: "",
   designCapacity: "",
+  designCapacityUnit: "万m³/日",
   waterTotal: emptyMonth(),
   deepProcess: emptyMonth(),
   sludgeProcess: emptyMonth(),
   productionFiles: [],
+  productionSourceDesc: "",
   elecBill: emptyMonth(),
   external: emptyMonth(),
   energyFiles: [],
+  energySourceDesc: "",
   avgPressure: "",
   pressureFiles: [],
+  pressureSourceDesc: "",
 });
 
 const seedPlant: PlantData = {
@@ -103,15 +111,19 @@ const seedPlant: PlantData = {
   plantName: "宝山月浦水厂",
   startYear: "1998",
   designCapacity: "60",
+  designCapacityUnit: "万m³/日",
   waterTotal: [3120, 2980, 3300, 3450, 3680, 3920, 4100, 4080, 3850, 3620, 3380, 3210],
   deepProcess: [800, 760, 880, 920, 990, 1050, 1100, 1090, 1020, 970, 900, 850],
   sludgeProcess: [120, 110, 130, 140, 150, 160, 170, 168, 155, 145, 135, 125],
   productionFiles: [{ name: "2025年制水量统计.xlsx", type: "excel", size: "186 KB" }],
+  productionSourceDesc: "自来水总制水量来源于厂区 SCADA 系统月度汇总报表，深度处理与污泥处理工艺制水量来源于工艺台账。详见已上传的《2025年制水量统计.xlsx》。",
   elecBill: [52.3, 50.1, 55.4, 58.2, 62.0, 66.4, 69.8, 69.2, 65.0, 61.2, 56.8, 53.6],
   external: [2.1, 2.0, 2.2, 2.3, 2.4, 2.6, 2.8, 2.7, 2.5, 2.4, 2.2, 2.1],
   energyFiles: [{ name: "电费账单汇总-2025.pdf", type: "pdf", size: "1.2 MB" }],
+  energySourceDesc: "电费账单总量来源于供电公司月度电费结算单，外供数据来源于转供用户结算抄表记录。详见《电费账单汇总-2025.pdf》。",
   avgPressure: "0.32",
   pressureFiles: [{ name: "出厂水压力监测照片.jpg", type: "image", size: "980 KB" }],
+  pressureSourceDesc: "出厂水平均压力来源于厂区出水总管压力变送器连续监测数据，按月平均计算。现场抄表照片见《出厂水压力监测照片.jpg》。",
 };
 
 const sum12 = (a: MonthArr) => a.reduce((s, v) => s + (Number(v) || 0), 0);
@@ -236,6 +248,9 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
       if (sum12(p.elecBill) <= 0) return toast.error(`${p.plantName} 电费账单总量必填`);
       if (sum12(p.external) <= 0) return toast.error(`${p.plantName} 外供数据必填`);
       if (!p.avgPressure) return toast.error(`${p.plantName} 出厂水平均压力必填`);
+      if (!p.productionSourceDesc.trim()) return toast.error(`${p.plantName} 产品产量数据来源说明必填`);
+      if (!p.energySourceDesc.trim()) return toast.error(`${p.plantName} 能源消耗数据来源说明必填`);
+      if (!p.pressureSourceDesc.trim()) return toast.error(`${p.plantName} 出厂水压力数据来源说明必填`);
     }
     if (!reportBasicDesc.trim()) return toast.error("限额报告：企业基本情况说明必填");
     if (!reportEnergyDesc.trim()) return toast.error("限额报告：全厂能源消耗情况说明必填");
@@ -470,12 +485,21 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                     />
                   </FormField>
                   <FormField label="设计产能">
-                    <Input
-                      type="number"
-                      value={p.designCapacity}
-                      onChange={(e) => updatePlant(i, { designCapacity: e.target.value })}
-                      placeholder="如：60"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        value={p.designCapacity}
+                        onChange={(e) => updatePlant(i, { designCapacity: e.target.value })}
+                        placeholder="如：60"
+                        className="flex-1"
+                      />
+                      <Input
+                        value={p.designCapacityUnit}
+                        onChange={(e) => updatePlant(i, { designCapacityUnit: e.target.value })}
+                        placeholder="单位，如：万m³/日"
+                        className="w-32"
+                      />
+                    </div>
                   </FormField>
                 </CardContent>
               </Card>
@@ -506,6 +530,14 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                 onChange={(key, m, v) => updateMonth(activePlantIdx, key, m, v)}
                 unit="千立方米"
               />
+              <FormField label="数据来源说明" required>
+                <Textarea
+                  value={activePlant.productionSourceDesc}
+                  onChange={(e) => updatePlant(activePlantIdx, { productionSourceDesc: e.target.value })}
+                  placeholder="请说明上述产量数据分别来源于哪些证明材料（如：SCADA 系统、月度统计报表、抄表台账等）"
+                  className="min-h-[80px]"
+                />
+              </FormField>
               <FileUploader
                 title="产量证明材料"
                 accept=".xlsx,.xls,.pdf,.png,.jpg,.jpeg"
@@ -563,6 +595,14 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                 />
               </div>
 
+              <FormField label="数据来源说明" required>
+                <Textarea
+                  value={activePlant.energySourceDesc}
+                  onChange={(e) => updatePlant(activePlantIdx, { energySourceDesc: e.target.value })}
+                  placeholder="请说明电费账单总量与外供数据分别来源于哪些证明材料（如：供电公司月度结算单、转供用户抄表记录等）"
+                  className="min-h-[80px]"
+                />
+              </FormField>
               <FileUploader
                 title="能源消耗证明材料"
                 accept=".xlsx,.xls,.pdf,.png,.jpg,.jpeg"
@@ -596,6 +636,14 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                   onChange={(e) => updatePlant(activePlantIdx, { avgPressure: e.target.value })}
                   placeholder="如：0.32"
                   className="max-w-xs"
+                />
+              </FormField>
+              <FormField label="数据来源说明" required>
+                <Textarea
+                  value={activePlant.pressureSourceDesc}
+                  onChange={(e) => updatePlant(activePlantIdx, { pressureSourceDesc: e.target.value })}
+                  placeholder="请说明出厂水平均压力数据来源（如：出水总管压力变送器在线监测数据、抄表记录等）"
+                  className="min-h-[80px]"
                 />
               </FormField>
               <FileUploader
@@ -749,7 +797,16 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                   </TableHeader>
                   <TableBody>
                     {summary.map((s) => {
-                      const passLimit = s.calc <= s.limit;
+                      const reachAdvance = s.calc <= s.advance;
+                      const reachAccess = s.calc <= s.access;
+                      const reachLimit = s.calc <= s.limit;
+                      const conclusion = reachAdvance
+                        ? { label: "达到先进值", cls: "border-success/40 bg-success/10 text-success" }
+                        : reachAccess
+                        ? { label: "达到准入值", cls: "border-info/40 bg-info/10 text-info" }
+                        : reachLimit
+                        ? { label: "达到限定值", cls: "border-warning/40 bg-warning/10 text-warning" }
+                        : { label: "未达标", cls: "border-destructive/40 bg-destructive/10 text-destructive" };
                       return (
                         <TableRow key={s.idx}>
                           <TableCell className="text-center font-mono text-xs">{s.idx}</TableCell>
@@ -762,16 +819,8 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                           <TableCell className="text-right font-mono text-xs">{fmt(s.advance)}</TableCell>
                           <TableCell className="text-center font-mono text-sm">≤</TableCell>
                           <TableCell className="text-center">
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                "font-medium",
-                                passLimit
-                                  ? "border-success/40 bg-success/10 text-success"
-                                  : "border-destructive/40 bg-destructive/10 text-destructive",
-                              )}
-                            >
-                              {passLimit ? "合格" : "不合格"}
+                            <Badge variant="outline" className={cn("font-medium whitespace-nowrap", conclusion.cls)}>
+                              {conclusion.label}
                             </Badge>
                           </TableCell>
                         </TableRow>
