@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { sortStandardCodes, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
+import { StandardScopeDialog } from "@/components/energy-quota/StandardScopeDialog";
 import { cn } from "@/lib/utils";
 
 type Conclusion = "达到先进值" | "达到准入值" | "达到限定值" | "未达标";
@@ -176,7 +177,10 @@ export function EnterpriseHistoryDialog({ enterprise, onClose }: Props) {
                   <TableCell>
                     <div className="flex flex-col items-start gap-0.5">
                       {h.standardCodes.map((c) => (
-                        <span key={c} className="font-mono text-[11px] text-foreground">{c}</span>
+                        <span key={c} className="inline-flex items-center gap-1">
+                          <span className="font-mono text-[11px] text-foreground">{c}</span>
+                          <StandardScopeDialog code={c} />
+                        </span>
                       ))}
                     </div>
                   </TableCell>

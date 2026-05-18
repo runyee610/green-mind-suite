@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cycles, enterprises, enterpriseStatusStyle, isKeyEnergyUnit, sampleDetail, sortStandards, standards } from "@/components/energy-quota/quotaData";
+import { StandardScopeDialog } from "@/components/energy-quota/StandardScopeDialog";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -96,17 +97,20 @@ export function EntDeclareDialog({ open, onOpenChange }: Props) {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">申报标准 <span className="text-destructive">*</span></Label>
-            <Select value={standardCode} onValueChange={setStandardCode}>
-              <SelectTrigger className="h-9"><SelectValue placeholder="请选择适用标准" /></SelectTrigger>
-              <SelectContent className="max-h-72">
-                {availableStandards.map((s) => (
-                  <SelectItem key={s.id} value={s.code}>
-                    <span className="font-mono text-xs">{s.code}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">{s.name}</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select value={standardCode} onValueChange={setStandardCode}>
+                <SelectTrigger className="h-9 flex-1"><SelectValue placeholder="请选择适用标准" /></SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {availableStandards.map((s) => (
+                    <SelectItem key={s.id} value={s.code}>
+                      <span className="font-mono text-xs">{s.code}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">{s.name}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {standardCode && <StandardScopeDialog code={standardCode} />}
+            </div>
           </div>
         </div>
 
@@ -144,7 +148,16 @@ export function EntDeclareDialog({ open, onOpenChange }: Props) {
                   return (
                     <TableRow key={h.id} className="border-border/40">
                       <TableCell className="font-mono text-xs">{h.period}</TableCell>
-                      <TableCell className="font-mono text-[11px] text-foreground">{h.standardCodes.join("、")}</TableCell>
+                      <TableCell className="text-[11px] text-foreground">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                          {h.standardCodes.map((code) => (
+                            <span key={code} className="inline-flex items-center gap-1">
+                              <span className="font-mono">{code}</span>
+                              <StandardScopeDialog code={code} />
+                            </span>
+                          ))}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap", style.badge)}>
                           <span className={cn("inline-block h-1.5 w-1.5 rounded-full", style.dot)} />
