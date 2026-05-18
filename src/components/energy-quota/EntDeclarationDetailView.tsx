@@ -527,6 +527,14 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                 onChange={(key, m, v) => updateMonth(activePlantIdx, key, m, v)}
                 unit="千立方米"
               />
+              <FormField label="数据来源说明" required>
+                <Textarea
+                  value={activePlant.productionSourceDesc}
+                  onChange={(e) => updatePlant(activePlantIdx, { productionSourceDesc: e.target.value })}
+                  placeholder="请说明上述产量数据分别来源于哪些证明材料（如：SCADA 系统、月度统计报表、抄表台账等）"
+                  className="min-h-[80px]"
+                />
+              </FormField>
               <FileUploader
                 title="产量证明材料"
                 accept=".xlsx,.xls,.pdf,.png,.jpg,.jpeg"
