@@ -635,6 +635,14 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                   className="max-w-xs"
                 />
               </FormField>
+              <FormField label="数据来源说明" required>
+                <Textarea
+                  value={activePlant.pressureSourceDesc}
+                  onChange={(e) => updatePlant(activePlantIdx, { pressureSourceDesc: e.target.value })}
+                  placeholder="请说明出厂水平均压力数据来源（如：出水总管压力变送器在线监测数据、抄表记录等）"
+                  className="min-h-[80px]"
+                />
+              </FormField>
               <FileUploader
                 title="出厂水压力证明材料"
                 accept=".png,.jpg,.jpeg"
