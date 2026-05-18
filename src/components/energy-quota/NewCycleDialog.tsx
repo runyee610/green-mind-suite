@@ -9,13 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { allIndustries, enterprises as allEnterprises, sortStandardCodes, sortStandards, standards, cycles, type QuotaCycle } from "@/components/energy-quota/quotaData";
+import { enterprises as allEnterprises, isKeyEnergyUnit, sortStandardCodes, cycles, type QuotaCycle } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
 interface NewCycleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: (cycle: QuotaCycle) => void;
+  editing?: QuotaCycle;
 }
 
 const currentYear = new Date().getFullYear();
@@ -30,7 +31,8 @@ const enterprisePool = (() => {
   return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
 })();
 
-export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialogProps) {
+export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCycleDialogProps) {
+  const isEdit = !!editing;
   const [year, setYear] = useState<number>(currentYear);
   const [startMonth, setStartMonth] = useState("01");
   const [endMonth, setEndMonth] = useState("12");
@@ -40,26 +42,27 @@ export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialog
 
   // 企业筛选与选择
   const [keyword, setKeyword] = useState("");
-  const [industryFilter, setIndustryFilter] = useState<string>("全部");
-  const [standardFilter, setStandardFilter] = useState<string>("全部");
+  const [keyUnitFilter, setKeyUnitFilter] = useState<string>("全部"); // 全部 / 是 / 否
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const enabledStandards = useMemo(
-    () => sortStandards(standards.filter((s) => s.status === "启用" && !s.parentId)),
-    [],
-  );
   const period = `${year}${startMonth}-${year}${endMonth}`;
-  const duplicate = useMemo(() => cycles.find((c) => c.period === period), [period]);
+  const duplicate = useMemo(
+    () => cycles.find((c) => c.period === period && c.id !== editing?.id),
+    [period, editing],
+  );
 
   // 筛选后的企业列表
   const filteredPool = useMemo(() => {
     return enterprisePool.filter((e) => {
-      if (industryFilter !== "全部" && e.industry !== industryFilter) return false;
-      if (standardFilter !== "全部" && !e.standardCodes.includes(standardFilter)) return false;
+      if (keyUnitFilter !== "全部") {
+        const isKey = isKeyEnergyUnit(e.id);
+        if (keyUnitFilter === "是" && !isKey) return false;
+        if (keyUnitFilter === "否" && isKey) return false;
+      }
       if (keyword && !e.name.includes(keyword) && !e.creditCode.includes(keyword)) return false;
       return true;
     });
-  }, [keyword, industryFilter, standardFilter]);
+  }, [keyword, keyUnitFilter]);
 
   const allFilteredSelected = filteredPool.length > 0 && filteredPool.every((e) => selectedIds.has(e.id));
   const someFilteredSelected = filteredPool.some((e) => selectedIds.has(e.id));
