@@ -122,12 +122,38 @@ const fileIcon = (t: UploadedFile["type"]) => t === "image" ? FileImage : t === 
 interface Props {
   detail: QuotaDetail;
   onBack: () => void;
+  mode?: "edit" | "audit";
 }
 
-export function EntDeclarationDetailView({ detail, onBack }: Props) {
+export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Props) {
+  const readOnly = mode === "audit";
   const [tab, setTab] = useState("basic");
   const [plants, setPlants] = useState<PlantData[]>([seedPlant]);
   const [activePlantIdx, setActivePlantIdx] = useState(0);
+
+  // 审批弹窗（仅政府侧审核模式使用）
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
+  const [rejectComment, setRejectComment] = useState("");
+  const [approveComment, setApproveComment] = useState("");
+  const [rejectErr, setRejectErr] = useState(false);
+
+  const submitReject = () => {
+    if (!rejectComment.trim()) {
+      setRejectErr(true);
+      toast.error("驳回时必须填写审批意见");
+      return;
+    }
+    toast.success("已驳回，审批意见已发送至企业");
+    setRejectOpen(false);
+    setRejectComment("");
+    setRejectErr(false);
+  };
+  const submitApprove = () => {
+    toast.success("审批通过，企业状态已更新为「已完成」");
+    setApproveOpen(false);
+    setApproveComment("");
+  };
 
   // 限额报告字段（复用历史填报）
   const [reportBasicDesc, setReportBasicDesc] = useState(
