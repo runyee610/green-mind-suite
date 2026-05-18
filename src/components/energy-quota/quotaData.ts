@@ -1,6 +1,6 @@
 // 能源消耗限额管理 - 类型定义与 mock 数据
 
-export type StandardStatus = "启用" | "禁用";
+export type StandardStatus = "启用" | "废止";
 export type StandardPrefix = "GB" | "DB";
 
 export interface QuotaStandard {
@@ -96,9 +96,9 @@ export const standards: QuotaStandard[] = [
   { id: "s5", code: "DB31/T 555-2022", name: "上海市钢铁行业能耗限额", years: [2022, 2023, 2024], isEnergyOutput: false, status: "启用" },
   { id: "s5-1", code: "DB31/T 555.1-2022", name: "上海市钢铁行业能耗限额-粗钢分则", parentId: "s5", years: [2022, 2023, 2024], isEnergyOutput: false, status: "启用" },
   { id: "s5-2", code: "DB31/T 555.2-2022", name: "上海市钢铁行业能耗限额-热轧分则", parentId: "s5", years: [2022, 2023, 2024], isEnergyOutput: false, status: "启用" },
-  // 顶级 - 禁用 GB / DB
-  { id: "s6", code: "GB 16780-2012", name: "水泥单位产品能源消耗限额（已废止）", years: [2021, 2022], isEnergyOutput: false, status: "禁用" },
-  { id: "s7", code: "DB31/T 401-2018", name: "上海市印染行业能耗限额（旧版）", years: [2021], isEnergyOutput: false, status: "禁用" },
+  // 顶级 - 废止 GB / DB
+  { id: "s6", code: "GB 16780-2012", name: "水泥单位产品能源消耗限额（已废止）", years: [2021, 2022], isEnergyOutput: false, status: "废止" },
+  { id: "s7", code: "DB31/T 401-2018", name: "上海市印染行业能耗限额（旧版）", years: [2021], isEnergyOutput: false, status: "废止" },
 ];
 
 export const cycles: QuotaCycle[] = [
@@ -228,7 +228,7 @@ export const enterpriseStatusStyle: Record<EnterpriseStatus, { dot: string; badg
   已完成: { dot: "bg-success", badge: "border-success/40 bg-success/10 text-success" },
 };
 
-// 排序：启用GB > 启用DB > 禁用GB > 禁用DB；同组按标准号升序
+// 排序：启用GB > 启用DB > 废止GB > 废止DB；同组按标准号升序
 export function sortStandards(list: QuotaStandard[]): QuotaStandard[] {
   const rank = (s: QuotaStandard) => {
     const enabled = s.status === "启用" ? 0 : 2;
