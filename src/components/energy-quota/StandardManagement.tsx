@@ -18,7 +18,7 @@ import {
 import { standards as initialStandards, type QuotaStandard } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
-// 扩展：对口人 / 历史对口人 / 关联禁用标准
+// 扩展：对口人 / 历史对口人 / 关联废止标准
 interface StandardExt extends QuotaStandard {
   contact?: string;
   contactHistory?: { name: string; period: string }[];
@@ -51,7 +51,7 @@ function makeContactHistory(seed: string) {
     { name: pickContact(seed, 13), period: "2023 - 2024" },
   ];
 }
-// mock：禁用标准过往每年的适用企业
+// mock：废止标准过往每年的适用企业
 const HIST_NAMES = ["上海宝钢实业", "申能集团", "上海石化", "华润上海", "上海耀皮玻璃", "上海华谊", "上海纺织", "金桥能源", "上海建工", "光明乳业", "锦江实业", "复星新材料"];
 function makeDisabledHistory(seed: string) {
   let h = 0;
@@ -231,17 +231,17 @@ export function StandardManagement() {
   };
 
   const toggleStatus = (s: StandardExt) => {
-    const next = s.status === "启用" ? "禁用" : "启用";
+    const next = s.status === "启用" ? "废止" : "启用";
     setList((prev) => prev.map((x) => (x.id === s.id ? { ...x, status: next } : x)));
     toast.success(`${s.code} 已${next}`);
   };
 
   const enabledCount = list.filter((s) => s.status === "启用").length;
-  const disabledCount = list.filter((s) => s.status === "禁用").length;
+  const disabledCount = list.filter((s) => s.status === "废止").length;
 
-  // 编辑弹窗中：关联禁用标准的历史
+  // 编辑弹窗中：关联废止标准的历史
   const linkedDisabledStd = form.linkedDisabledId ? list.find((s) => s.id === form.linkedDisabledId) : undefined;
-  const disabledOptions = list.filter((s) => s.status === "禁用" && s.id !== form.id);
+  const disabledOptions = list.filter((s) => s.status === "废止" && s.id !== form.id);
   const linkedHistory = useMemo(() => (linkedDisabledStd ? makeDisabledHistory(linkedDisabledStd.id) : []), [linkedDisabledStd]);
   const editingStd = form.id ? list.find((s) => s.id === form.id) : undefined;
 
@@ -272,7 +272,7 @@ export function StandardManagement() {
           <CardContent className="p-4 flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted text-muted-foreground"><Archive className="h-6 w-6" /></div>
             <div className="flex-1">
-              <p className="text-xs text-muted-foreground">已禁用</p>
+              <p className="text-xs text-muted-foreground">已废止</p>
               <div className="mt-1 font-mono text-2xl font-bold text-foreground/70">{disabledCount}</div>
               <p className="mt-0.5 text-xs text-muted-foreground">仅作历史档案保留</p>
             </div>
@@ -312,7 +312,7 @@ export function StandardManagement() {
                 const isChild = depth > 0;
                 const isExpanded = expanded[s.id];
                 return (
-                  <TableRow key={s.id} className={cn("h-12 border-border/40", s.status === "禁用" && "opacity-65", isChild && "bg-muted/30")}>
+                  <TableRow key={s.id} className={cn("h-12 border-border/40", s.status === "废止" && "opacity-65", isChild && "bg-muted/30")}>
                     <TableCell className="font-mono text-xs text-muted-foreground">{seq ?? ""}</TableCell>
                     <TableCell className="font-mono text-xs">
                       <div className="flex items-center gap-1.5" style={{ paddingLeft: depth * 20 }}>
@@ -409,12 +409,12 @@ export function StandardManagement() {
               </div>
             )}
 
-            {/* 关联禁用标准（仅启用标准可关联） */}
+            {/* 关联废止标准（仅启用标准可关联） */}
             {editingStd?.status === "启用" && (
               <div className="space-y-1.5 col-span-2">
-                <Label className="flex items-center gap-1.5 text-xs"><Link2 className="h-3.5 w-3.5 text-muted-foreground" />关联禁用标准</Label>
+                <Label className="flex items-center gap-1.5 text-xs"><Link2 className="h-3.5 w-3.5 text-muted-foreground" />关联废止标准</Label>
                 <Select value={form.linkedDisabledId ?? "__none"} onValueChange={(v) => setForm({ ...form, linkedDisabledId: v === "__none" ? undefined : v })}>
-                  <SelectTrigger><SelectValue placeholder="选择被替代的禁用标准" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="选择被替代的废止标准" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none">不关联</SelectItem>
                     {disabledOptions.map((s) => (
@@ -422,7 +422,7 @@ export function StandardManagement() {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-[11px] text-muted-foreground">关联后可继承该禁用标准过往的适用企业信息，便于沿用历史档案。</p>
+                <p className="text-[11px] text-muted-foreground">关联后可继承该废止标准过往的适用企业信息，便于沿用历史档案。</p>
 
                 {linkedDisabledStd && (
                   <div className="mt-2 rounded-md border border-border/60 bg-muted/20 p-3">
