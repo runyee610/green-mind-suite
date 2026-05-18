@@ -144,7 +144,7 @@ export function CycleAndDeclaration() {
   if (detailOpen) {
     return role === "ent"
       ? <EntDeclarationDetailView detail={sampleDetail} onBack={() => setDetailOpen(false)} />
-      : <AuditDetailView detail={sampleDetail} onBack={() => setDetailOpen(false)} />;
+      : <EntDeclarationDetailView detail={sampleDetail} onBack={() => setDetailOpen(false)} mode="audit" />;
   }
 
   const pendingPct = activeCycle.total > 0 ? Math.round((activeCycle.audited / activeCycle.total) * 100) : 0;
