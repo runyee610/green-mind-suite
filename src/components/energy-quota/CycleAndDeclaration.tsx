@@ -260,6 +260,11 @@ export function CycleAndDeclaration() {
                   {(["未填报", "填报中", "待审核", "已驳回", "已完成"] as const).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
+              {isEnt && (
+                <Button size="sm" onClick={() => setEntDeclareOpen(true)}>
+                  <Plus className="mr-1 h-4 w-4" />限额申报
+                </Button>
+              )}
               {!isEnt && (
                 <Select value={contactFilter} onValueChange={setContactFilter}>
                   <SelectTrigger className="h-9 w-32"><SelectValue /></SelectTrigger>
