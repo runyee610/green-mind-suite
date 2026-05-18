@@ -15,6 +15,7 @@ import { EntDeclarationDetailView } from "@/components/energy-quota/EntDeclarati
 import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHistoryDialog";
 import { useRole } from "@/contexts/RoleContext";
 import { EditEnterpriseStandardDialog } from "@/components/energy-quota/EditEnterpriseStandardDialog";
+import { EntDeclareDialog } from "@/components/energy-quota/EntDeclareDialog";
 import { NewCycleDialog } from "@/components/energy-quota/NewCycleDialog";
 import { allContacts, cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, getEnterpriseContact, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,7 @@ export function CycleAndDeclaration() {
   const [forceCompleteTarget, setForceCompleteTarget] = useState<QuotaCycle | null>(null);
   const [historyTarget, setHistoryTarget] = useState<QuotaEnterprise | null>(null);
   const [newCycleOpen, setNewCycleOpen] = useState(false);
+  const [entDeclareOpen, setEntDeclareOpen] = useState(false);
   const [editCycleTarget, setEditCycleTarget] = useState<QuotaCycle | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 15;
@@ -258,6 +260,11 @@ export function CycleAndDeclaration() {
                   {(["未填报", "填报中", "待审核", "已驳回", "已完成"] as const).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
+              {isEnt && (
+                <Button size="sm" onClick={() => setEntDeclareOpen(true)}>
+                  <Plus className="mr-1 h-4 w-4" />限额申报
+                </Button>
+              )}
               {!isEnt && (
                 <Select value={contactFilter} onValueChange={setContactFilter}>
                   <SelectTrigger className="h-9 w-32"><SelectValue /></SelectTrigger>
@@ -463,6 +470,8 @@ export function CycleAndDeclaration() {
           toast.success(`周期 ${cycle.period} 已更新`);
         }}
       />
+      {/* 企业侧 - 限额申报 */}
+      <EntDeclareDialog open={entDeclareOpen} onOpenChange={setEntDeclareOpen} />
     </div>
   );
 }
