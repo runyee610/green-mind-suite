@@ -228,6 +228,20 @@ export const enterpriseStatusStyle: Record<EnterpriseStatus, { dot: string; badg
   已完成: { dot: "bg-success", badge: "border-success/40 bg-success/10 text-success" },
 };
 
+// 对口人（按企业ID稳定派生）
+const _contacts = ["张明", "李雪", "王强", "刘洋", "陈静", "赵磊", "孙宇", "周琳"];
+export function getEnterpriseContact(enterpriseId: string): string {
+  const seed = enterpriseId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return _contacts[seed % _contacts.length];
+}
+export const allContacts = _contacts;
+
+// 是否重点用能单位（按企业ID稳定派生，约 40% 比例）
+export function isKeyEnergyUnit(enterpriseId: string): boolean {
+  const seed = enterpriseId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return seed % 5 < 2;
+}
+
 // 排序：启用GB > 启用DB > 废止GB > 废止DB；同组按标准号升序
 export function sortStandards(list: QuotaStandard[]): QuotaStandard[] {
   const rank = (s: QuotaStandard) => {
