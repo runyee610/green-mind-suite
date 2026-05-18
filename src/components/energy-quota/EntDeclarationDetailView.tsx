@@ -303,25 +303,93 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold">{detail.enterpriseName}</h2>
-              <Badge variant="outline" className="border-info/40 bg-info/10 text-info">填报中</Badge>
+              {readOnly ? (
+                <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning">待审核</Badge>
+              ) : (
+                <Badge variant="outline" className="border-info/40 bg-info/10 text-info">填报中</Badge>
+              )}
             </div>
             <p className="mt-0.5 font-mono text-xs text-muted-foreground">
               {detail.creditCode} · {detail.industry} · 限额周期 {detail.cyclePeriod}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={handleSave}>
-              <Save className="mr-1 h-4 w-4" />保存
-            </Button>
-            <Button size="sm" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交审核
-            </Button>
+            {readOnly ? (
+              <>
+                <Button variant="destructive" size="sm" onClick={() => setRejectOpen(true)}>
+                  <ShieldX className="mr-1 h-4 w-4" />驳回
+                </Button>
+                <Button size="sm" onClick={() => setApproveOpen(true)} className="bg-success text-success-foreground hover:bg-success/90">
+                  <ShieldCheck className="mr-1 h-4 w-4" />通过
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" size="sm" onClick={handleSave}>
+                  <Save className="mr-1 h-4 w-4" />保存
+                </Button>
+                <Button size="sm" onClick={handleSubmit}>
+                  <Send className="mr-1 h-4 w-4" />提交审核
+                </Button>
+              </>
+            )}
             <Button variant="ghost" size="sm" onClick={onBack}>
               <ArrowLeft className="mr-1 h-4 w-4" />返回列表
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* 审批记录卡片（两端均展示） */}
+      {detail.records && detail.records.length > 0 && (
+        <Card className="panel">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-3.5 w-3.5" />审批记录轴
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ol className="relative space-y-3 border-l border-border/60 pl-4">
+              {detail.records.map((r, i) => (
+                <li key={i} className="relative">
+                  <span
+                    className={cn(
+                      "absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border-2 border-background",
+                      r.action === "驳回"
+                        ? "bg-destructive"
+                        : r.action === "通过"
+                        ? "bg-success"
+                        : r.action === "提交"
+                        ? "bg-warning"
+                        : "bg-secondary",
+                    )}
+                  />
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-foreground">
+                      {r.operator} <span className="text-muted-foreground">@{r.account}</span>
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "h-5 text-[10px]",
+                        r.action === "驳回"
+                          ? "border-destructive/40 bg-destructive/10 text-destructive"
+                          : r.action === "通过"
+                          ? "border-success/40 bg-success/10 text-success"
+                          : "border-secondary/40 bg-secondary/10 text-secondary",
+                      )}
+                    >
+                      {r.action}
+                    </Badge>
+                  </div>
+                  <p className="mt-1 font-mono text-[11px] text-muted-foreground">{r.time}</p>
+                  {r.comment && <p className="mt-1 rounded bg-muted/40 p-2 text-xs text-foreground/80">{r.comment}</p>}
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs value={tab} onValueChange={setTab} className="space-y-4">
         <TabsList className="h-auto flex-wrap gap-1 bg-muted/40 p-1">
