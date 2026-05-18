@@ -959,9 +959,13 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
             第 {TAB_ORDER.indexOf(tab) + 1} / {TAB_ORDER.length} 步
           </span>
           {tab === TAB_ORDER[TAB_ORDER.length - 1] ? (
-            <Button size="sm" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交审核
-            </Button>
+            readOnly ? (
+              <span className="text-xs text-muted-foreground">已到末页</span>
+            ) : (
+              <Button size="sm" onClick={handleSubmit}>
+                <Send className="mr-1 h-4 w-4" />提交审核
+              </Button>
+            )
           ) : (
             <Button size="sm" onClick={goNext}>
               下一步<ChevronRight className="ml-1 h-4 w-4" />
@@ -969,6 +973,51 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
           )}
         </div>
       </Tabs>
+
+      {/* 驳回弹窗 */}
+      <Dialog open={rejectOpen} onOpenChange={(o) => { setRejectOpen(o); if (!o) setRejectErr(false); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-destructive"><ShieldX className="mr-2 inline h-5 w-5" />驳回审批</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">驳回意见将发送至企业填报人。<span className="text-destructive">必填</span>。</p>
+            <Textarea
+              value={rejectComment}
+              onChange={(e) => { setRejectComment(e.target.value); if (e.target.value.trim()) setRejectErr(false); }}
+              placeholder="请详细说明驳回原因（如：单位产品能耗高于限额，需补充能源审计报告等）"
+              rows={5}
+              className={cn(rejectErr && "border-destructive ring-2 ring-destructive/30")}
+            />
+            {rejectErr && (
+              <p className="text-xs text-destructive">
+                <MessageSquare className="mr-1 inline h-3 w-3" />驳回时必须填写审批意见
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectOpen(false)}>取消</Button>
+            <Button variant="destructive" onClick={submitReject}>确认驳回</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 通过弹窗 */}
+      <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />审批通过</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">确认通过后，企业状态将变更为「已完成」并锁定数据。审批意见可选。</p>
+            <Textarea value={approveComment} onChange={(e) => setApproveComment(e.target.value)} placeholder="审批意见（选填）" rows={4} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApproveOpen(false)}>取消</Button>
+            <Button onClick={submitApprove} className="bg-success text-success-foreground hover:bg-success/90">确认通过</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
