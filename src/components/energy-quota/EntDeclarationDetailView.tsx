@@ -23,6 +23,10 @@ import {
   FileSignature,
   Image as ImageIcon,
   X,
+  Clock,
+  MessageSquare,
+  ShieldCheck,
+  ShieldX,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { QuotaDetail } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
