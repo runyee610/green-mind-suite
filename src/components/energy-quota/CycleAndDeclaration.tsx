@@ -315,23 +315,15 @@ export function CycleAndDeclaration() {
                     <TableCell className="pr-2 text-sm font-medium text-foreground">{e.name}</TableCell>
                     <TableCell className="pl-2 text-xs text-muted-foreground">{e.industry}</TableCell>
                     <TableCell className="text-xs">
-                      <div className="flex flex-col items-start gap-1">
+                      <div className="flex flex-col items-start gap-0.5">
                         {sortedCodes.map((c) => (
-                          <Badge
-                            key={c}
-                            variant="outline"
-                            className={cn(
-                              "font-mono text-[10px] font-medium",
-                              c.startsWith("GB")
-                                ? "border-primary/30 bg-primary/10 text-primary"
-                                : "border-warning/40 bg-warning/10 text-warning",
-                            )}
-                          >
-                            {c}
-                          </Badge>
+                          <span key={c} className="font-mono text-[11px] text-foreground">{c}</span>
                         ))}
                       </div>
                     </TableCell>
+                    {!isEnt && (
+                      <TableCell className="text-xs text-foreground">{getEnterpriseContact(e.id)}</TableCell>
+                    )}
                     {isEnt && (
                       <TableCell className="font-mono text-xs text-foreground">
                         {cycles.find((c) => c.id === e.cycleId)?.period ?? "—"}
@@ -353,6 +345,11 @@ export function CycleAndDeclaration() {
                       <Button size="sm" variant="ghost" className="px-2" onClick={() => setHistoryTarget(e)}>
                         <History className="mr-1 h-3 w-3" />历史
                       </Button>
+                      {!isEnt && (
+                        <Button size="sm" variant="ghost" className="px-2" onClick={() => setEditStandardTarget(e)}>
+                          <Edit className="mr-1 h-3 w-3" />编辑
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
