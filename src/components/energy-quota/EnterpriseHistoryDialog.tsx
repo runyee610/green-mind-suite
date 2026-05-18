@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { CheckCircle2, Clock, FileDown, History as HistoryIcon, XCircle } from "lucide-react";
+import { FileDown, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { enterpriseStatusStyle, sortStandardCodes, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
+import { sortStandardCodes, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
 type Conclusion = "达到先进值" | "达到准入值" | "达到限定值" | "未达标";
