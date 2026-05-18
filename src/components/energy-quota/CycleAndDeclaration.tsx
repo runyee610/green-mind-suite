@@ -355,7 +355,7 @@ export function CycleAndDeclaration() {
                 );
               })}
               {filteredEnterprises.length === 0 && (
-                <TableRow><TableCell colSpan={7} className="py-12 text-center text-sm text-muted-foreground">该周期暂无符合条件的申报企业</TableCell></TableRow>
+                <TableRow><TableCell colSpan={isEnt ? 7 : 8} className="py-12 text-center text-sm text-muted-foreground">该周期暂无符合条件的申报企业</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
