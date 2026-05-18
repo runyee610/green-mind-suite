@@ -797,7 +797,16 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                   </TableHeader>
                   <TableBody>
                     {summary.map((s) => {
-                      const passLimit = s.calc <= s.limit;
+                      const reachAdvance = s.calc <= s.advance;
+                      const reachAccess = s.calc <= s.access;
+                      const reachLimit = s.calc <= s.limit;
+                      const conclusion = reachAdvance
+                        ? { label: "达到先进值", cls: "border-success/40 bg-success/10 text-success" }
+                        : reachAccess
+                        ? { label: "达到准入值", cls: "border-info/40 bg-info/10 text-info" }
+                        : reachLimit
+                        ? { label: "达到限定值", cls: "border-warning/40 bg-warning/10 text-warning" }
+                        : { label: "未达标", cls: "border-destructive/40 bg-destructive/10 text-destructive" };
                       return (
                         <TableRow key={s.idx}>
                           <TableCell className="text-center font-mono text-xs">{s.idx}</TableCell>
@@ -810,16 +819,8 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                           <TableCell className="text-right font-mono text-xs">{fmt(s.advance)}</TableCell>
                           <TableCell className="text-center font-mono text-sm">≤</TableCell>
                           <TableCell className="text-center">
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                "font-medium",
-                                passLimit
-                                  ? "border-success/40 bg-success/10 text-success"
-                                  : "border-destructive/40 bg-destructive/10 text-destructive",
-                              )}
-                            >
-                              {passLimit ? "合格" : "不合格"}
+                            <Badge variant="outline" className={cn("font-medium whitespace-nowrap", conclusion.cls)}>
+                              {conclusion.label}
                             </Badge>
                           </TableCell>
                         </TableRow>
