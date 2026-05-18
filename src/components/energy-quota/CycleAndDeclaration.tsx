@@ -222,7 +222,7 @@ export function CycleAndDeclaration() {
                       </TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         <Button size="sm" variant="ghost" onClick={() => switchCycleStatus(c)}>{c.status === "进行中" ? "完成" : "开启"}</Button>
-                        <Button size="sm" variant="ghost" onClick={() => toast.info(`编辑周期 ${c.period}`)}><Edit className="mr-1 h-3 w-3" />编辑</Button>
+                        <Button size="sm" variant="ghost" onClick={() => setEditCycleTarget(c)}><Edit className="mr-1 h-3 w-3" />编辑</Button>
                         <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteCycleTarget(c)}><Trash2 className="mr-1 h-3 w-3" />删除</Button>
                       </TableCell>
                     </TableRow>
@@ -259,6 +259,15 @@ export function CycleAndDeclaration() {
                 </SelectContent>
               </Select>
               {!isEnt && (
+                <Select value={contactFilter} onValueChange={setContactFilter}>
+                  <SelectTrigger className="h-9 w-32"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="全部">全部对口人</SelectItem>
+                    {allContacts.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              )}
+              {!isEnt && (
                 <>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -287,9 +296,10 @@ export function CycleAndDeclaration() {
                 <TableHead className="pr-2">企业名称</TableHead>
                 <TableHead className="w-40 pl-2">行业</TableHead>
                 <TableHead className="w-44">适用标准</TableHead>
+                {!isEnt && <TableHead className="w-20">对口人</TableHead>}
                 {isEnt && <TableHead className="w-36">申报周期</TableHead>}
                 <TableHead className="w-28">填报状态</TableHead>
-                <TableHead className="w-56 text-right">操作</TableHead>
+                <TableHead className="w-64 text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
