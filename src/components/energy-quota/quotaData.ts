@@ -11,7 +11,14 @@ export interface QuotaStandard {
   years: number[];          // 适用年份
   isEnergyOutput: boolean;  // 是否能源输出
   status: StandardStatus;
+  scope?: string;           // 适用范围（用于企业查看标准说明）
 }
+
+// 通用适用范围生成（演示用：基于标准名称合成一段说明）
+export const getStandardScope = (s: { code: string; name: string; scope?: string }): string => {
+  if (s.scope) return s.scope;
+  return `本标准（${s.code}）规定了「${s.name}」的能耗限额限定值、准入值、先进值，以及技术要求、统计范围与计算方法。\n\n适用范围：适用于在中华人民共和国境内从事相关生产/服务活动的企事业单位的能源消耗计算、考核，以及对新建、改建和扩建项目的能耗准入审核；不适用于非生产性辅助用能（如行政办公、生活用能等单列核算的部分）。\n\n统计边界：以法人单位或独立核算的生产经营场所为统计边界，含主要生产工艺、辅助生产及厂内运输环节的综合能源消耗。`;
+};
 
 export type CycleStatus = "进行中" | "已完成";
 
