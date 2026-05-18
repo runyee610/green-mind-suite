@@ -123,6 +123,7 @@ const seedPlant: PlantData = {
   energySourceDesc: "电费账单总量来源于供电公司月度电费结算单，外供数据来源于转供用户结算抄表记录。详见《电费账单汇总-2025.pdf》。",
   avgPressure: "0.32",
   pressureFiles: [{ name: "出厂水压力监测照片.jpg", type: "image", size: "980 KB" }],
+  pressureSourceDesc: "出厂水平均压力来源于厂区出水总管压力变送器连续监测数据，按月平均计算。现场抄表照片见《出厂水压力监测照片.jpg》。",
 };
 
 const sum12 = (a: MonthArr) => a.reduce((s, v) => s + (Number(v) || 0), 0);
