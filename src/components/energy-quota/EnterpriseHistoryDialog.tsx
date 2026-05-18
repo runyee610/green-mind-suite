@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { sortStandardCodes, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
+import { StandardScopeDialog } from "@/components/energy-quota/StandardScopeDialog";
 import { cn } from "@/lib/utils";
 
 type Conclusion = "达到先进值" | "达到准入值" | "达到限定值" | "未达标";
