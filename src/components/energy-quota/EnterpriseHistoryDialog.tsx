@@ -72,12 +72,17 @@ function buildHistory(enterprise: QuotaEnterprise): HistoryEntry[] {
     const conclusion = rejected
       ? undefined
       : CONCLUSION_LEVELS[(seedSum + year) % CONCLUSION_LEVELS.length];
+    // 单耗与碳强度：基于种子稳定派生
+    const unitEnergy = Number((0.4 + ((seedSum + year) % 25) / 100).toFixed(3));
+    const carbonIntensity = Number((unitEnergy * 2.66 + ((seedSum + year) % 7) / 100).toFixed(3));
     return {
       cyclePeriod: `${year}01-${year}12`,
       year,
       status: rejected ? "已驳回" : "已完成",
       standardCodes: codes,
       products,
+      unitEnergy,
+      carbonIntensity,
       conclusion,
       reportedAt: `${year + 1}-02-${String(10 + (seedSum % 18)).padStart(2, "0")}`,
       auditedAt: `${year + 1}-03-${String(5 + (seedSum % 22)).padStart(2, "0")}`,
