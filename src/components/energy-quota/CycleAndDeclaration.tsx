@@ -444,6 +444,17 @@ export function CycleAndDeclaration() {
           setCycleId(cycle.id);
         }}
       />
+
+      {/* 编辑周期 */}
+      <NewCycleDialog
+        open={!!editCycleTarget}
+        onOpenChange={(o) => !o && setEditCycleTarget(null)}
+        editing={editCycleTarget ?? undefined}
+        onCreated={(cycle) => {
+          setCycles((prev) => prev.map((x) => (x.id === cycle.id ? cycle : x)));
+          toast.success(`周期 ${cycle.period} 已更新`);
+        }}
+      />
     </div>
   );
 }
