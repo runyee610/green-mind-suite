@@ -23,6 +23,10 @@ import {
   FileSignature,
   Image as ImageIcon,
   X,
+  Clock,
+  MessageSquare,
+  ShieldCheck,
+  ShieldX,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { QuotaDetail } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
@@ -117,12 +122,38 @@ const fileIcon = (t: UploadedFile["type"]) => t === "image" ? FileImage : t === 
 interface Props {
   detail: QuotaDetail;
   onBack: () => void;
+  mode?: "edit" | "audit";
 }
 
-export function EntDeclarationDetailView({ detail, onBack }: Props) {
+export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Props) {
+  const readOnly = mode === "audit";
   const [tab, setTab] = useState("basic");
   const [plants, setPlants] = useState<PlantData[]>([seedPlant]);
   const [activePlantIdx, setActivePlantIdx] = useState(0);
+
+  // 审批弹窗（仅政府侧审核模式使用）
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
+  const [rejectComment, setRejectComment] = useState("");
+  const [approveComment, setApproveComment] = useState("");
+  const [rejectErr, setRejectErr] = useState(false);
+
+  const submitReject = () => {
+    if (!rejectComment.trim()) {
+      setRejectErr(true);
+      toast.error("驳回时必须填写审批意见");
+      return;
+    }
+    toast.success("已驳回，审批意见已发送至企业");
+    setRejectOpen(false);
+    setRejectComment("");
+    setRejectErr(false);
+  };
+  const submitApprove = () => {
+    toast.success("审批通过，企业状态已更新为「已完成」");
+    setApproveOpen(false);
+    setApproveComment("");
+  };
 
   // 限额报告字段（复用历史填报）
   const [reportBasicDesc, setReportBasicDesc] = useState(
@@ -272,25 +303,93 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold">{detail.enterpriseName}</h2>
-              <Badge variant="outline" className="border-info/40 bg-info/10 text-info">填报中</Badge>
+              {readOnly ? (
+                <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning">待审核</Badge>
+              ) : (
+                <Badge variant="outline" className="border-info/40 bg-info/10 text-info">填报中</Badge>
+              )}
             </div>
             <p className="mt-0.5 font-mono text-xs text-muted-foreground">
               {detail.creditCode} · {detail.industry} · 限额周期 {detail.cyclePeriod}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={handleSave}>
-              <Save className="mr-1 h-4 w-4" />保存
-            </Button>
-            <Button size="sm" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交审核
-            </Button>
+            {readOnly ? (
+              <>
+                <Button variant="destructive" size="sm" onClick={() => setRejectOpen(true)}>
+                  <ShieldX className="mr-1 h-4 w-4" />驳回
+                </Button>
+                <Button size="sm" onClick={() => setApproveOpen(true)} className="bg-success text-success-foreground hover:bg-success/90">
+                  <ShieldCheck className="mr-1 h-4 w-4" />通过
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" size="sm" onClick={handleSave}>
+                  <Save className="mr-1 h-4 w-4" />保存
+                </Button>
+                <Button size="sm" onClick={handleSubmit}>
+                  <Send className="mr-1 h-4 w-4" />提交审核
+                </Button>
+              </>
+            )}
             <Button variant="ghost" size="sm" onClick={onBack}>
               <ArrowLeft className="mr-1 h-4 w-4" />返回列表
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* 审批记录卡片（两端均展示） */}
+      {detail.records && detail.records.length > 0 && (
+        <Card className="panel">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-3.5 w-3.5" />审批记录轴
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ol className="relative space-y-3 border-l border-border/60 pl-4">
+              {detail.records.map((r, i) => (
+                <li key={i} className="relative">
+                  <span
+                    className={cn(
+                      "absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border-2 border-background",
+                      r.action === "驳回"
+                        ? "bg-destructive"
+                        : r.action === "通过"
+                        ? "bg-success"
+                        : r.action === "提交"
+                        ? "bg-warning"
+                        : "bg-secondary",
+                    )}
+                  />
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-foreground">
+                      {r.operator} <span className="text-muted-foreground">@{r.account}</span>
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "h-5 text-[10px]",
+                        r.action === "驳回"
+                          ? "border-destructive/40 bg-destructive/10 text-destructive"
+                          : r.action === "通过"
+                          ? "border-success/40 bg-success/10 text-success"
+                          : "border-secondary/40 bg-secondary/10 text-secondary",
+                      )}
+                    >
+                      {r.action}
+                    </Badge>
+                  </div>
+                  <p className="mt-1 font-mono text-[11px] text-muted-foreground">{r.time}</p>
+                  {r.comment && <p className="mt-1 rounded bg-muted/40 p-2 text-xs text-foreground/80">{r.comment}</p>}
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs value={tab} onValueChange={setTab} className="space-y-4">
         <TabsList className="h-auto flex-wrap gap-1 bg-muted/40 p-1">
@@ -305,6 +404,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
 
         {/* === 一、企业基本情况 === */}
         <TabsContent value="basic" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <Card className="panel">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-muted-foreground">默认信息</CardTitle>
@@ -377,10 +477,12 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               </Card>
             ))}
           </div>
+        </fieldset>
         </TabsContent>
 
         {/* === 二、产品产量计算 === */}
         <TabsContent value="production" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <PlantSwitcher plants={plants} active={activePlantIdx} onChange={setActivePlantIdx} />
           <Card className="panel">
             <CardHeader className="pb-3">
@@ -410,10 +512,12 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               />
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 三、能源消耗实物量 === */}
         <TabsContent value="energy" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <PlantSwitcher plants={plants} active={activePlantIdx} onChange={setActivePlantIdx} />
           <Card className="panel">
             <CardHeader className="pb-3">
@@ -465,10 +569,12 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               />
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 四、出厂水压力 === */}
         <TabsContent value="pressure" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <PlantSwitcher plants={plants} active={activePlantIdx} onChange={setActivePlantIdx} />
           <Card className="panel">
             <CardHeader className="pb-3">
@@ -498,10 +604,12 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               />
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 五、情况汇总表 === */}
         <TabsContent value="summary" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <Card className="panel">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -580,10 +688,12 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               <p className="mt-2 text-xs text-muted-foreground">单位：kWh/km³</p>
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 六、结果对标 === */}
         <TabsContent value="result" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between gap-2">
@@ -668,10 +778,12 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               </div>
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 七、限额报告 === */}
         <TabsContent value="report" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <Card className="panel">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -836,6 +948,7 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
               </div>
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         <div className="flex items-center justify-between border-t border-border/40 pt-3">
@@ -846,9 +959,13 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
             第 {TAB_ORDER.indexOf(tab) + 1} / {TAB_ORDER.length} 步
           </span>
           {tab === TAB_ORDER[TAB_ORDER.length - 1] ? (
-            <Button size="sm" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交审核
-            </Button>
+            readOnly ? (
+              <span className="text-xs text-muted-foreground">已到末页</span>
+            ) : (
+              <Button size="sm" onClick={handleSubmit}>
+                <Send className="mr-1 h-4 w-4" />提交审核
+              </Button>
+            )
           ) : (
             <Button size="sm" onClick={goNext}>
               下一步<ChevronRight className="ml-1 h-4 w-4" />
@@ -856,6 +973,51 @@ export function EntDeclarationDetailView({ detail, onBack }: Props) {
           )}
         </div>
       </Tabs>
+
+      {/* 驳回弹窗 */}
+      <Dialog open={rejectOpen} onOpenChange={(o) => { setRejectOpen(o); if (!o) setRejectErr(false); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-destructive"><ShieldX className="mr-2 inline h-5 w-5" />驳回审批</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">驳回意见将发送至企业填报人。<span className="text-destructive">必填</span>。</p>
+            <Textarea
+              value={rejectComment}
+              onChange={(e) => { setRejectComment(e.target.value); if (e.target.value.trim()) setRejectErr(false); }}
+              placeholder="请详细说明驳回原因（如：单位产品能耗高于限额，需补充能源审计报告等）"
+              rows={5}
+              className={cn(rejectErr && "border-destructive ring-2 ring-destructive/30")}
+            />
+            {rejectErr && (
+              <p className="text-xs text-destructive">
+                <MessageSquare className="mr-1 inline h-3 w-3" />驳回时必须填写审批意见
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectOpen(false)}>取消</Button>
+            <Button variant="destructive" onClick={submitReject}>确认驳回</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 通过弹窗 */}
+      <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />审批通过</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">确认通过后，企业状态将变更为「已完成」并锁定数据。审批意见可选。</p>
+            <Textarea value={approveComment} onChange={(e) => setApproveComment(e.target.value)} placeholder="审批意见（选填）" rows={4} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApproveOpen(false)}>取消</Button>
+            <Button onClick={submitApprove} className="bg-success text-success-foreground hover:bg-success/90">确认通过</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
