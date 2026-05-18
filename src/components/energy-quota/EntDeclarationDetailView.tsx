@@ -90,15 +90,19 @@ const newPlant = (idx: number): PlantData => ({
   plantName: "",
   startYear: "",
   designCapacity: "",
+  designCapacityUnit: "万m³/日",
   waterTotal: emptyMonth(),
   deepProcess: emptyMonth(),
   sludgeProcess: emptyMonth(),
   productionFiles: [],
+  productionSourceDesc: "",
   elecBill: emptyMonth(),
   external: emptyMonth(),
   energyFiles: [],
+  energySourceDesc: "",
   avgPressure: "",
   pressureFiles: [],
+  pressureSourceDesc: "",
 });
 
 const seedPlant: PlantData = {
