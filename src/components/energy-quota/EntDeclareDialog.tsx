@@ -97,17 +97,20 @@ export function EntDeclareDialog({ open, onOpenChange }: Props) {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">申报标准 <span className="text-destructive">*</span></Label>
-            <Select value={standardCode} onValueChange={setStandardCode}>
-              <SelectTrigger className="h-9"><SelectValue placeholder="请选择适用标准" /></SelectTrigger>
-              <SelectContent className="max-h-72">
-                {availableStandards.map((s) => (
-                  <SelectItem key={s.id} value={s.code}>
-                    <span className="font-mono text-xs">{s.code}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">{s.name}</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select value={standardCode} onValueChange={setStandardCode}>
+                <SelectTrigger className="h-9 flex-1"><SelectValue placeholder="请选择适用标准" /></SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {availableStandards.map((s) => (
+                    <SelectItem key={s.id} value={s.code}>
+                      <span className="font-mono text-xs">{s.code}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">{s.name}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {standardCode && <StandardScopeDialog code={standardCode} />}
+            </div>
           </div>
         </div>
 
