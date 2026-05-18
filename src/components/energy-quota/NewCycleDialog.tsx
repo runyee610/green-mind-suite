@@ -9,13 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { allIndustries, enterprises as allEnterprises, sortStandardCodes, sortStandards, standards, cycles, type QuotaCycle } from "@/components/energy-quota/quotaData";
+import { enterprises as allEnterprises, isKeyEnergyUnit, sortStandardCodes, cycles, type QuotaCycle } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
 interface NewCycleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: (cycle: QuotaCycle) => void;
+  editing?: QuotaCycle;
 }
 
 const currentYear = new Date().getFullYear();
@@ -30,7 +31,8 @@ const enterprisePool = (() => {
   return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
 })();
 
-export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialogProps) {
+export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCycleDialogProps) {
+  const isEdit = !!editing;
   const [year, setYear] = useState<number>(currentYear);
   const [startMonth, setStartMonth] = useState("01");
   const [endMonth, setEndMonth] = useState("12");
@@ -40,44 +42,59 @@ export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialog
 
   // 企业筛选与选择
   const [keyword, setKeyword] = useState("");
-  const [industryFilter, setIndustryFilter] = useState<string>("全部");
-  const [standardFilter, setStandardFilter] = useState<string>("全部");
+  const [keyUnitFilter, setKeyUnitFilter] = useState<string>("全部"); // 全部 / 是 / 否
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const enabledStandards = useMemo(
-    () => sortStandards(standards.filter((s) => s.status === "启用" && !s.parentId)),
-    [],
-  );
   const period = `${year}${startMonth}-${year}${endMonth}`;
-  const duplicate = useMemo(() => cycles.find((c) => c.period === period), [period]);
+  const duplicate = useMemo(
+    () => cycles.find((c) => c.period === period && c.id !== editing?.id),
+    [period, editing],
+  );
 
   // 筛选后的企业列表
   const filteredPool = useMemo(() => {
     return enterprisePool.filter((e) => {
-      if (industryFilter !== "全部" && e.industry !== industryFilter) return false;
-      if (standardFilter !== "全部" && !e.standardCodes.includes(standardFilter)) return false;
+      if (keyUnitFilter !== "全部") {
+        const isKey = isKeyEnergyUnit(e.id);
+        if (keyUnitFilter === "是" && !isKey) return false;
+        if (keyUnitFilter === "否" && isKey) return false;
+      }
       if (keyword && !e.name.includes(keyword) && !e.creditCode.includes(keyword)) return false;
       return true;
     });
-  }, [keyword, industryFilter, standardFilter]);
+  }, [keyword, keyUnitFilter]);
 
   const allFilteredSelected = filteredPool.length > 0 && filteredPool.every((e) => selectedIds.has(e.id));
   const someFilteredSelected = filteredPool.some((e) => selectedIds.has(e.id));
 
   useEffect(() => {
     if (open) {
-      setYear(currentYear);
-      setStartMonth("01");
-      setEndMonth("12");
-      setDeadline(`${currentYear}-03-31`);
+      if (editing) {
+        const [s, e] = editing.period.split("-");
+        const y = Number(s.slice(0, 4));
+        setYear(y);
+        setStartMonth(s.slice(4));
+        setEndMonth(e.slice(4));
+        setDeadline(editing.deadline);
+        // 选中本周期已包含的企业（用 creditCode 去重池映射）
+        const inCycle = new Set(
+          allEnterprises.filter((x) => x.cycleId === editing.id).map((x) => x.creditCode),
+        );
+        const ids = enterprisePool.filter((p) => inCycle.has(p.creditCode)).map((p) => p.id);
+        setSelectedIds(new Set(ids));
+      } else {
+        setYear(currentYear);
+        setStartMonth("01");
+        setEndMonth("12");
+        setDeadline(`${currentYear}-03-31`);
+        setSelectedIds(new Set());
+      }
       setNotifyEnterprise(true);
       setRemark("");
       setKeyword("");
-      setIndustryFilter("全部");
-      setStandardFilter("全部");
-      setSelectedIds(new Set());
+      setKeyUnitFilter("全部");
     }
-  }, [open]);
+  }, [open, editing]);
 
   const toggleEnterprise = (id: string) => {
     setSelectedIds((prev) => {
@@ -112,19 +129,21 @@ export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialog
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    const newCycle: QuotaCycle = {
-      id: `c${Date.now()}`,
+    const cycle: QuotaCycle = {
+      id: editing?.id ?? `c${Date.now()}`,
       period,
       startMonth: `${year}-${startMonth}`,
       endMonth: `${year}-${endMonth}`,
       deadline,
-      status: "进行中",
-      reported: 0,
-      audited: 0,
+      status: editing?.status ?? "进行中",
+      reported: editing?.reported ?? 0,
+      audited: editing?.audited ?? 0,
       total: selectedCount,
     };
-    onCreated(newCycle);
-    toast.success(`周期 ${period} 已创建，已导入 ${selectedCount} 家企业${notifyEnterprise ? "，并发送填报通知" : ""}`);
+    onCreated(cycle);
+    if (!editing) {
+      toast.success(`周期 ${period} 已创建，已导入 ${selectedCount} 家企业${notifyEnterprise ? "，并发送填报通知" : ""}`);
+    }
     onOpenChange(false);
   };
 
@@ -134,10 +153,10 @@ export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialog
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            新建限额周期
+            {isEdit ? "编辑限额周期" : "新建限额周期"}
           </DialogTitle>
           <DialogDescription>
-            创建一个新的能耗限额申报周期，并配置申报范围、截止时间与通知方式。
+            {isEdit ? "修改限额申报周期的范围、截止时间与通知方式。" : "创建一个新的能耗限额申报周期，并配置申报范围、截止时间与通知方式。"}
           </DialogDescription>
         </DialogHeader>
 
@@ -229,18 +248,12 @@ export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialog
                   className="h-9 w-64 pl-8"
                 />
               </div>
-              <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                <SelectTrigger className="h-9 w-44"><SelectValue placeholder="行业" /></SelectTrigger>
+              <Select value={keyUnitFilter} onValueChange={setKeyUnitFilter}>
+                <SelectTrigger className="h-9 w-44"><SelectValue placeholder="重点用能单位" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="全部">全部行业</SelectItem>
-                  {allIndustries.map((ind) => <SelectItem key={ind} value={ind}>{ind}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              <Select value={standardFilter} onValueChange={setStandardFilter}>
-                <SelectTrigger className="h-9 w-44"><SelectValue placeholder="适用标准" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="全部">全部标准</SelectItem>
-                  {enabledStandards.map((s) => <SelectItem key={s.id} value={s.code}>{s.code}</SelectItem>)}
+                  <SelectItem value="全部">全部企业</SelectItem>
+                  <SelectItem value="是">仅重点用能单位</SelectItem>
+                  <SelectItem value="否">非重点用能单位</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -369,7 +382,7 @@ export function NewCycleDialog({ open, onOpenChange, onCreated }: NewCycleDialog
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
           <Button onClick={handleSubmit} disabled={!canSubmit}>
-            <CheckCircle2 className="mr-1 h-4 w-4" />确认创建
+            <CheckCircle2 className="mr-1 h-4 w-4" />{isEdit ? "保存修改" : "确认创建"}
           </Button>
         </DialogFooter>
       </DialogContent>

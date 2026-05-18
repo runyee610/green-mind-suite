@@ -16,7 +16,7 @@ import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHis
 import { useRole } from "@/contexts/RoleContext";
 import { EditEnterpriseStandardDialog } from "@/components/energy-quota/EditEnterpriseStandardDialog";
 import { NewCycleDialog } from "@/components/energy-quota/NewCycleDialog";
-import { cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
+import { allContacts, cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, getEnterpriseContact, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
 export function CycleAndDeclaration() {
@@ -39,6 +39,7 @@ export function CycleAndDeclaration() {
   const [cycleId, setCycleId] = useState<string>(visibleCycles[0]?.id ?? cycles[0].id);
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("全部");
+  const [contactFilter, setContactFilter] = useState<string>("全部");
   const [expanded, setExpanded] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [editStandardTarget, setEditStandardTarget] = useState<QuotaEnterprise | null>(null);
@@ -46,6 +47,7 @@ export function CycleAndDeclaration() {
   const [forceCompleteTarget, setForceCompleteTarget] = useState<QuotaCycle | null>(null);
   const [historyTarget, setHistoryTarget] = useState<QuotaEnterprise | null>(null);
   const [newCycleOpen, setNewCycleOpen] = useState(false);
+  const [editCycleTarget, setEditCycleTarget] = useState<QuotaCycle | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 15;
 
@@ -69,13 +71,14 @@ export function CycleAndDeclaration() {
       if (isEnt && e.creditCode !== currentEntCreditCode) return false;
       const k = !keyword || e.name.includes(keyword) || e.creditCode.includes(keyword) || e.standardCodes.some((s) => s.includes(keyword));
       const s = statusFilter === "全部" || e.status === statusFilter;
-      return k && s;
+      const c = contactFilter === "全部" || getEnterpriseContact(e.id) === contactFilter;
+      return k && s && c;
     }),
-    [enterprises, cycleId, keyword, statusFilter, isEnt, currentEntCreditCode],
+    [enterprises, cycleId, keyword, statusFilter, contactFilter, isEnt, currentEntCreditCode],
   );
 
   // 过滤条件变化时重置页码
-  useEffect(() => { setPage(1); }, [cycleId, keyword, statusFilter]);
+  useEffect(() => { setPage(1); }, [cycleId, keyword, statusFilter, contactFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filteredEnterprises.length / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -219,7 +222,7 @@ export function CycleAndDeclaration() {
                       </TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         <Button size="sm" variant="ghost" onClick={() => switchCycleStatus(c)}>{c.status === "进行中" ? "完成" : "开启"}</Button>
-                        <Button size="sm" variant="ghost" onClick={() => toast.info(`编辑周期 ${c.period}`)}><Edit className="mr-1 h-3 w-3" />编辑</Button>
+                        <Button size="sm" variant="ghost" onClick={() => setEditCycleTarget(c)}><Edit className="mr-1 h-3 w-3" />编辑</Button>
                         <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteCycleTarget(c)}><Trash2 className="mr-1 h-3 w-3" />删除</Button>
                       </TableCell>
                     </TableRow>
@@ -256,6 +259,15 @@ export function CycleAndDeclaration() {
                 </SelectContent>
               </Select>
               {!isEnt && (
+                <Select value={contactFilter} onValueChange={setContactFilter}>
+                  <SelectTrigger className="h-9 w-32"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="全部">全部对口人</SelectItem>
+                    {allContacts.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              )}
+              {!isEnt && (
                 <>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -284,9 +296,10 @@ export function CycleAndDeclaration() {
                 <TableHead className="pr-2">企业名称</TableHead>
                 <TableHead className="w-40 pl-2">行业</TableHead>
                 <TableHead className="w-44">适用标准</TableHead>
+                {!isEnt && <TableHead className="w-20">对口人</TableHead>}
                 {isEnt && <TableHead className="w-36">申报周期</TableHead>}
                 <TableHead className="w-28">填报状态</TableHead>
-                <TableHead className="w-56 text-right">操作</TableHead>
+                <TableHead className="w-64 text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -302,23 +315,15 @@ export function CycleAndDeclaration() {
                     <TableCell className="pr-2 text-sm font-medium text-foreground">{e.name}</TableCell>
                     <TableCell className="pl-2 text-xs text-muted-foreground">{e.industry}</TableCell>
                     <TableCell className="text-xs">
-                      <div className="flex flex-col items-start gap-1">
+                      <div className="flex flex-col items-start gap-0.5">
                         {sortedCodes.map((c) => (
-                          <Badge
-                            key={c}
-                            variant="outline"
-                            className={cn(
-                              "font-mono text-[10px] font-medium",
-                              c.startsWith("GB")
-                                ? "border-primary/30 bg-primary/10 text-primary"
-                                : "border-warning/40 bg-warning/10 text-warning",
-                            )}
-                          >
-                            {c}
-                          </Badge>
+                          <span key={c} className="font-mono text-[11px] text-foreground">{c}</span>
                         ))}
                       </div>
                     </TableCell>
+                    {!isEnt && (
+                      <TableCell className="text-xs text-foreground">{getEnterpriseContact(e.id)}</TableCell>
+                    )}
                     {isEnt && (
                       <TableCell className="font-mono text-xs text-foreground">
                         {cycles.find((c) => c.id === e.cycleId)?.period ?? "—"}
@@ -340,12 +345,17 @@ export function CycleAndDeclaration() {
                       <Button size="sm" variant="ghost" className="px-2" onClick={() => setHistoryTarget(e)}>
                         <History className="mr-1 h-3 w-3" />历史
                       </Button>
+                      {!isEnt && (
+                        <Button size="sm" variant="ghost" className="px-2" onClick={() => setEditStandardTarget(e)}>
+                          <Edit className="mr-1 h-3 w-3" />编辑
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
               })}
               {filteredEnterprises.length === 0 && (
-                <TableRow><TableCell colSpan={7} className="py-12 text-center text-sm text-muted-foreground">该周期暂无符合条件的申报企业</TableCell></TableRow>
+                <TableRow><TableCell colSpan={isEnt ? 7 : 8} className="py-12 text-center text-sm text-muted-foreground">该周期暂无符合条件的申报企业</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
@@ -432,6 +442,17 @@ export function CycleAndDeclaration() {
         onCreated={(cycle) => {
           setCycles((prev) => [cycle, ...prev]);
           setCycleId(cycle.id);
+        }}
+      />
+
+      {/* 编辑周期 */}
+      <NewCycleDialog
+        open={!!editCycleTarget}
+        onOpenChange={(o) => !o && setEditCycleTarget(null)}
+        editing={editCycleTarget ?? undefined}
+        onCreated={(cycle) => {
+          setCycles((prev) => prev.map((x) => (x.id === cycle.id ? cycle : x)));
+          toast.success(`周期 ${cycle.period} 已更新`);
         }}
       />
     </div>

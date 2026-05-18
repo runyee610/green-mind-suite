@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { CheckCircle2, Clock, FileDown, History as HistoryIcon, XCircle } from "lucide-react";
+import { FileDown, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { enterpriseStatusStyle, sortStandardCodes, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
+import { sortStandardCodes, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
 
 type Conclusion = "达到先进值" | "达到准入值" | "达到限定值" | "未达标";
@@ -17,6 +17,8 @@ export interface HistoryEntry {
   status: "已完成" | "已驳回" | "未填报";
   standardCodes: string[];
   products: string[];
+  unitEnergy?: number;     // 单耗（kgce/单位产品）
+  carbonIntensity?: number; // 单位产品碳强度（kgCO₂/单位产品）
   conclusion?: Conclusion;
   reportedAt?: string;
   auditedAt?: string;
@@ -70,12 +72,17 @@ function buildHistory(enterprise: QuotaEnterprise): HistoryEntry[] {
     const conclusion = rejected
       ? undefined
       : CONCLUSION_LEVELS[(seedSum + year) % CONCLUSION_LEVELS.length];
+    // 单耗与碳强度：基于种子稳定派生
+    const unitEnergy = Number((0.4 + ((seedSum + year) % 25) / 100).toFixed(3));
+    const carbonIntensity = Number((unitEnergy * 2.66 + ((seedSum + year) % 7) / 100).toFixed(3));
     return {
       cyclePeriod: `${year}01-${year}12`,
       year,
       status: rejected ? "已驳回" : "已完成",
       standardCodes: codes,
       products,
+      unitEnergy,
+      carbonIntensity,
       conclusion,
       reportedAt: `${year + 1}-02-${String(10 + (seedSum % 18)).padStart(2, "0")}`,
       auditedAt: `${year + 1}-03-${String(5 + (seedSum % 22)).padStart(2, "0")}`,
@@ -102,7 +109,7 @@ export function EnterpriseHistoryDialog({ enterprise, onClose }: Props) {
       (h) => h.conclusion && h.conclusion !== "未达标",
     ).length;
     const complianceRate = completed > 0 ? Math.round((compliant / completed) * 100) : 0;
-    return { total, completed, advance, complianceRate };
+    return { total, advance, complianceRate };
   }, [history]);
 
   if (!enterprise) return null;
@@ -123,14 +130,10 @@ export function EnterpriseHistoryDialog({ enterprise, onClose }: Props) {
         </DialogHeader>
 
         {/* 统计 */}
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-3 gap-2">
           <div className="rounded-md border border-border/60 bg-muted/30 px-3 py-2">
             <div className="text-[11px] text-muted-foreground">历史周期</div>
             <div className="font-mono text-lg font-semibold text-foreground">{stats.total}</div>
-          </div>
-          <div className="rounded-md border border-success/30 bg-success/5 px-3 py-2">
-            <div className="text-[11px] text-success/80">通过审核</div>
-            <div className="font-mono text-lg font-semibold text-success">{stats.completed}</div>
           </div>
           <div className="rounded-md border border-info/30 bg-info/5 px-3 py-2">
             <div className="text-[11px] text-info/80">达到先进值</div>
@@ -148,68 +151,50 @@ export function EnterpriseHistoryDialog({ enterprise, onClose }: Props) {
             <TableHeader className="sticky top-0 bg-card">
               <TableRow className="border-border/60 hover:bg-transparent">
                 <TableHead className="w-32">限额周期</TableHead>
-                <TableHead className="w-24">状态</TableHead>
+                <TableHead className="w-20">状态</TableHead>
                 <TableHead className="w-28">结论</TableHead>
-                <TableHead className="w-44">适用标准</TableHead>
-                <TableHead>产品</TableHead>
+                <TableHead className="w-40">适用标准</TableHead>
+                <TableHead className="w-32">产品</TableHead>
+                <TableHead className="w-28">单耗</TableHead>
+                <TableHead className="w-36">单位产品碳强度</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {history.map((h) => {
-                const style = enterpriseStatusStyle[h.status];
-                return (
-                  <TableRow key={h.cyclePeriod} className="border-border/40">
-                    <TableCell className="font-mono text-xs text-foreground">{h.cyclePeriod}</TableCell>
-                    <TableCell>
-                      <span className={cn(
-                        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
-                        style.badge,
-                      )}>
-                        {h.status === "已完成" && <CheckCircle2 className="h-3 w-3" />}
-                        {h.status === "已驳回" && <XCircle className="h-3 w-3" />}
-                        {h.status === "未填报" && <Clock className="h-3 w-3" />}
-                        {h.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      {h.conclusion ? (
-                        <Badge variant="outline" className={cn("font-medium", conclusionStyle[h.conclusion])}>
-                          {h.conclusion}
-                        </Badge>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col items-start gap-1">
-                        {h.standardCodes.map((c) => (
-                          <Badge
-                            key={c}
-                            variant="outline"
-                            className={cn(
-                              "font-mono text-[10px] font-medium",
-                              c.startsWith("GB")
-                                ? "border-primary/30 bg-primary/10 text-primary"
-                                : "border-warning/40 bg-warning/10 text-warning",
-                            )}
-                          >
-                            {c}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {h.products.map((p) => (
-                          <Badge key={p} variant="outline" className="text-[11px] font-normal">
-                            {p}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {history.map((h) => (
+                <TableRow key={h.cyclePeriod} className="border-border/40">
+                  <TableCell className="font-mono text-xs text-foreground">{h.cyclePeriod}</TableCell>
+                  <TableCell className="text-xs text-foreground">{h.status}</TableCell>
+                  <TableCell>
+                    {h.conclusion ? (
+                      <Badge variant="outline" className={cn("font-medium", conclusionStyle[h.conclusion])}>
+                        {h.conclusion}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col items-start gap-0.5">
+                      {h.standardCodes.map((c) => (
+                        <span key={c} className="font-mono text-[11px] text-foreground">{c}</span>
+                      ))}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {h.products.map((p) => (
+                        <span key={p} className="text-[11px] text-foreground">{p}</span>
+                      ))}
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs text-foreground">
+                    {h.unitEnergy != null ? `${h.unitEnergy} kgce/t` : "—"}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs text-foreground">
+                    {h.carbonIntensity != null ? `${h.carbonIntensity} kgCO₂/t` : "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </ScrollArea>
