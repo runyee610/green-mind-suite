@@ -69,18 +69,32 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
 
   useEffect(() => {
     if (open) {
-      setYear(currentYear);
-      setStartMonth("01");
-      setEndMonth("12");
-      setDeadline(`${currentYear}-03-31`);
+      if (editing) {
+        const [s, e] = editing.period.split("-");
+        const y = Number(s.slice(0, 4));
+        setYear(y);
+        setStartMonth(s.slice(4));
+        setEndMonth(e.slice(4));
+        setDeadline(editing.deadline);
+        // 选中本周期已包含的企业（用 creditCode 去重池映射）
+        const inCycle = new Set(
+          allEnterprises.filter((x) => x.cycleId === editing.id).map((x) => x.creditCode),
+        );
+        const ids = enterprisePool.filter((p) => inCycle.has(p.creditCode)).map((p) => p.id);
+        setSelectedIds(new Set(ids));
+      } else {
+        setYear(currentYear);
+        setStartMonth("01");
+        setEndMonth("12");
+        setDeadline(`${currentYear}-03-31`);
+        setSelectedIds(new Set());
+      }
       setNotifyEnterprise(true);
       setRemark("");
       setKeyword("");
-      setIndustryFilter("全部");
-      setStandardFilter("全部");
-      setSelectedIds(new Set());
+      setKeyUnitFilter("全部");
     }
-  }, [open]);
+  }, [open, editing]);
 
   const toggleEnterprise = (id: string) => {
     setSelectedIds((prev) => {
@@ -115,19 +129,21 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    const newCycle: QuotaCycle = {
-      id: `c${Date.now()}`,
+    const cycle: QuotaCycle = {
+      id: editing?.id ?? `c${Date.now()}`,
       period,
       startMonth: `${year}-${startMonth}`,
       endMonth: `${year}-${endMonth}`,
       deadline,
-      status: "进行中",
-      reported: 0,
-      audited: 0,
+      status: editing?.status ?? "进行中",
+      reported: editing?.reported ?? 0,
+      audited: editing?.audited ?? 0,
       total: selectedCount,
     };
-    onCreated(newCycle);
-    toast.success(`周期 ${period} 已创建，已导入 ${selectedCount} 家企业${notifyEnterprise ? "，并发送填报通知" : ""}`);
+    onCreated(cycle);
+    if (!editing) {
+      toast.success(`周期 ${period} 已创建，已导入 ${selectedCount} 家企业${notifyEnterprise ? "，并发送填报通知" : ""}`);
+    }
     onOpenChange(false);
   };
 
@@ -137,7 +153,7 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            新建限额周期
+            {isEdit ? "编辑限额周期" : "新建限额周期"}
           </DialogTitle>
           <DialogDescription>
             创建一个新的能耗限额申报周期，并配置申报范围、截止时间与通知方式。
