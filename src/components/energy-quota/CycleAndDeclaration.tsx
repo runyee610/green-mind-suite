@@ -238,15 +238,15 @@ export function CycleAndDeclaration() {
       {/* 申报企业列表 */}
       <Card className="panel">
         <CardHeader className="pb-3">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="flex items-center gap-2 text-base text-foreground">
+          <div className="flex flex-nowrap items-center justify-between gap-3 overflow-x-auto">
+            <CardTitle className="flex shrink-0 items-center gap-2 whitespace-nowrap text-base text-foreground">
               <Building2 className="h-4 w-4 text-primary" />
               申报企业列表
               <Badge variant="outline" className="ml-1 border-primary/30 bg-primary/8 text-primary text-xs font-medium">
                 {filteredEnterprises.length}
               </Badge>
             </CardTitle>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex shrink-0 flex-nowrap items-center gap-2 whitespace-nowrap">
               <Select value={cycleId} onValueChange={setCycleId}>
                 <SelectTrigger className="h-9 w-44"><SelectValue /></SelectTrigger>
                 <SelectContent>{sortedCycles.map((c) => <SelectItem key={c.id} value={c.id}>{c.period}</SelectItem>)}</SelectContent>
