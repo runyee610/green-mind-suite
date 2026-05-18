@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AuditDetailView } from "@/components/energy-quota/AuditDetailView";
+
 import { EntDeclarationDetailView } from "@/components/energy-quota/EntDeclarationDetailView";
 import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHistoryDialog";
 import { useRole } from "@/contexts/RoleContext";
