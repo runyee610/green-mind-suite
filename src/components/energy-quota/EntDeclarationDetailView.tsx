@@ -592,6 +592,14 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                 />
               </div>
 
+              <FormField label="数据来源说明" required>
+                <Textarea
+                  value={activePlant.energySourceDesc}
+                  onChange={(e) => updatePlant(activePlantIdx, { energySourceDesc: e.target.value })}
+                  placeholder="请说明电费账单总量与外供数据分别来源于哪些证明材料（如：供电公司月度结算单、转供用户抄表记录等）"
+                  className="min-h-[80px]"
+                />
+              </FormField>
               <FileUploader
                 title="能源消耗证明材料"
                 accept=".xlsx,.xls,.pdf,.png,.jpg,.jpeg"
