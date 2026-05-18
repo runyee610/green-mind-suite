@@ -15,6 +15,7 @@ import { EntDeclarationDetailView } from "@/components/energy-quota/EntDeclarati
 import { EnterpriseHistoryDialog } from "@/components/energy-quota/EnterpriseHistoryDialog";
 import { useRole } from "@/contexts/RoleContext";
 import { EditEnterpriseStandardDialog } from "@/components/energy-quota/EditEnterpriseStandardDialog";
+import { EntDeclareDialog } from "@/components/energy-quota/EntDeclareDialog";
 import { NewCycleDialog } from "@/components/energy-quota/NewCycleDialog";
 import { allContacts, cycles as initialCycles, enterprises as initialEnterprises, enterpriseStatusStyle, getEnterpriseContact, sampleDetail, sortStandardCodes, standards, type CycleStatus, type QuotaCycle, type QuotaEnterprise } from "@/components/energy-quota/quotaData";
 import { cn } from "@/lib/utils";
