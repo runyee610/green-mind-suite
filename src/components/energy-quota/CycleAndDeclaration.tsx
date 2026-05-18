@@ -470,6 +470,8 @@ export function CycleAndDeclaration() {
           toast.success(`周期 ${cycle.period} 已更新`);
         }}
       />
+      {/* 企业侧 - 限额申报 */}
+      <EntDeclareDialog open={entDeclareOpen} onOpenChange={setEntDeclareOpen} />
     </div>
   );
 }
