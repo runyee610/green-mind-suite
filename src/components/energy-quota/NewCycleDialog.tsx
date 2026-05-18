@@ -248,18 +248,12 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
                   className="h-9 w-64 pl-8"
                 />
               </div>
-              <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                <SelectTrigger className="h-9 w-44"><SelectValue placeholder="行业" /></SelectTrigger>
+              <Select value={keyUnitFilter} onValueChange={setKeyUnitFilter}>
+                <SelectTrigger className="h-9 w-44"><SelectValue placeholder="重点用能单位" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="全部">全部行业</SelectItem>
-                  {allIndustries.map((ind) => <SelectItem key={ind} value={ind}>{ind}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              <Select value={standardFilter} onValueChange={setStandardFilter}>
-                <SelectTrigger className="h-9 w-44"><SelectValue placeholder="适用标准" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="全部">全部标准</SelectItem>
-                  {enabledStandards.map((s) => <SelectItem key={s.id} value={s.code}>{s.code}</SelectItem>)}
+                  <SelectItem value="全部">全部企业</SelectItem>
+                  <SelectItem value="是">仅重点用能单位</SelectItem>
+                  <SelectItem value="否">非重点用能单位</SelectItem>
                 </SelectContent>
               </Select>
             </div>
