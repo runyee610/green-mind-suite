@@ -17,6 +17,8 @@ export interface HistoryEntry {
   status: "已完成" | "已驳回" | "未填报";
   standardCodes: string[];
   products: string[];
+  unitEnergy?: number;     // 单耗（kgce/单位产品）
+  carbonIntensity?: number; // 单位产品碳强度（kgCO₂/单位产品）
   conclusion?: Conclusion;
   reportedAt?: string;
   auditedAt?: string;
