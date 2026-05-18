@@ -59,19 +59,23 @@ interface PlantData {
   productName: string;
   plantName: string;
   startYear: string;
-  designCapacity: string; // 万m³/日
+  designCapacity: string; // 数值
+  designCapacityUnit: string; // 单位，如 万m³/日
   // 产品产量
   waterTotal: MonthArr;       // 自来水总制水量（千立方米）
   deepProcess: MonthArr;      // 深度处理工艺制水量
   sludgeProcess: MonthArr;    // 污泥处理工艺制水量
   productionFiles: UploadedFile[];
+  productionSourceDesc: string; // 数据来源说明（必填）
   // 能源消耗
   elecBill: MonthArr;         // 电费账单总量（万kWh）
   external: MonthArr;         // 外供（万kWh）
   energyFiles: UploadedFile[];
+  energySourceDesc: string;   // 数据来源说明（必填）
   // 出厂水压力
   avgPressure: string;        // 兆帕
   pressureFiles: UploadedFile[];
+  pressureSourceDesc: string; // 数据来源说明（必填）
 }
 
 // 默认折标系数（来自后台）
