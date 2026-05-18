@@ -248,6 +248,9 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
       if (sum12(p.elecBill) <= 0) return toast.error(`${p.plantName} 电费账单总量必填`);
       if (sum12(p.external) <= 0) return toast.error(`${p.plantName} 外供数据必填`);
       if (!p.avgPressure) return toast.error(`${p.plantName} 出厂水平均压力必填`);
+      if (!p.productionSourceDesc.trim()) return toast.error(`${p.plantName} 产品产量数据来源说明必填`);
+      if (!p.energySourceDesc.trim()) return toast.error(`${p.plantName} 能源消耗数据来源说明必填`);
+      if (!p.pressureSourceDesc.trim()) return toast.error(`${p.plantName} 出厂水压力数据来源说明必填`);
     }
     if (!reportBasicDesc.trim()) return toast.error("限额报告：企业基本情况说明必填");
     if (!reportEnergyDesc.trim()) return toast.error("限额报告：全厂能源消耗情况说明必填");
