@@ -482,12 +482,21 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
                     />
                   </FormField>
                   <FormField label="设计产能">
-                    <Input
-                      type="number"
-                      value={p.designCapacity}
-                      onChange={(e) => updatePlant(i, { designCapacity: e.target.value })}
-                      placeholder="如：60"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        value={p.designCapacity}
+                        onChange={(e) => updatePlant(i, { designCapacity: e.target.value })}
+                        placeholder="如：60"
+                        className="flex-1"
+                      />
+                      <Input
+                        value={p.designCapacityUnit}
+                        onChange={(e) => updatePlant(i, { designCapacityUnit: e.target.value })}
+                        placeholder="单位，如：万m³/日"
+                        className="w-32"
+                      />
+                    </div>
                   </FormField>
                 </CardContent>
               </Card>
