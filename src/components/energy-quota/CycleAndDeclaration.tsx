@@ -238,15 +238,15 @@ export function CycleAndDeclaration() {
       {/* 申报企业列表 */}
       <Card className="panel">
         <CardHeader className="pb-3">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="flex items-center gap-2 text-base text-foreground">
+          <div className="flex flex-nowrap items-center justify-between gap-3 overflow-x-auto">
+            <CardTitle className="flex shrink-0 items-center gap-2 whitespace-nowrap text-base text-foreground">
               <Building2 className="h-4 w-4 text-primary" />
               申报企业列表
               <Badge variant="outline" className="ml-1 border-primary/30 bg-primary/8 text-primary text-xs font-medium">
                 {filteredEnterprises.length}
               </Badge>
             </CardTitle>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex shrink-0 flex-nowrap items-center gap-2 whitespace-nowrap">
               <Select value={cycleId} onValueChange={setCycleId}>
                 <SelectTrigger className="h-9 w-44"><SelectValue /></SelectTrigger>
                 <SelectContent>{sortedCycles.map((c) => <SelectItem key={c.id} value={c.id}>{c.period}</SelectItem>)}</SelectContent>
@@ -273,7 +273,6 @@ export function CycleAndDeclaration() {
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                     <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="企业名称 / 信用代码 / 标准" className="h-9 w-64 pl-8" />
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => toast.info("从平台企业库批量导入")}><Plus className="mr-1 h-4 w-4" />导入企业</Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button size="sm" variant="outline"><FileDown className="mr-1 h-4 w-4" />导出汇总表</Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -342,14 +341,23 @@ export function CycleAndDeclaration() {
                       <Button size="sm" variant="ghost" className="px-2" onClick={() => setDetailOpen(true)}>
                         <Eye className="mr-1 h-3 w-3" />查看
                       </Button>
-                      <Button size="sm" variant="ghost" className="px-2" onClick={() => setHistoryTarget(e)}>
-                        <History className="mr-1 h-3 w-3" />历史
-                      </Button>
-                      {!isEnt && (
-                        <Button size="sm" variant="ghost" className="px-2" onClick={() => setEditStandardTarget(e)}>
-                          <Edit className="mr-1 h-3 w-3" />编辑
-                        </Button>
-                      )}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="ghost" className="px-2">
+                            <MoreHorizontal className="mr-1 h-3 w-3" />更多
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setHistoryTarget(e)}>
+                            <History className="mr-2 h-3.5 w-3.5" />历史
+                          </DropdownMenuItem>
+                          {!isEnt && (
+                            <DropdownMenuItem onClick={() => setEditStandardTarget(e)}>
+                              <Edit className="mr-2 h-3.5 w-3.5" />编辑
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 );
