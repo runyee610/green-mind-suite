@@ -148,7 +148,16 @@ export function EntDeclareDialog({ open, onOpenChange }: Props) {
                   return (
                     <TableRow key={h.id} className="border-border/40">
                       <TableCell className="font-mono text-xs">{h.period}</TableCell>
-                      <TableCell className="font-mono text-[11px] text-foreground">{h.standardCodes.join("、")}</TableCell>
+                      <TableCell className="text-[11px] text-foreground">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                          {h.standardCodes.map((code) => (
+                            <span key={code} className="inline-flex items-center gap-1">
+                              <span className="font-mono">{code}</span>
+                              <StandardScopeDialog code={code} />
+                            </span>
+                          ))}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap", style.badge)}>
                           <span className={cn("inline-block h-1.5 w-1.5 rounded-full", style.dot)} />
