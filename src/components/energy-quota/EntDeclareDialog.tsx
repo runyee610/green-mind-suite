@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cycles, enterprises, enterpriseStatusStyle, isKeyEnergyUnit, sampleDetail, sortStandards, standards } from "@/components/energy-quota/quotaData";
+import { StandardScopeDialog } from "@/components/energy-quota/StandardScopeDialog";
 import { cn } from "@/lib/utils";
 
 interface Props {
