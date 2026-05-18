@@ -156,7 +156,7 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
             {isEdit ? "编辑限额周期" : "新建限额周期"}
           </DialogTitle>
           <DialogDescription>
-            创建一个新的能耗限额申报周期，并配置申报范围、截止时间与通知方式。
+            {isEdit ? "修改限额申报周期的范围、截止时间与通知方式。" : "创建一个新的能耗限额申报周期，并配置申报范围、截止时间与通知方式。"}
           </DialogDescription>
         </DialogHeader>
 
