@@ -404,6 +404,7 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
 
         {/* === 一、企业基本情况 === */}
         <TabsContent value="basic" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <Card className="panel">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-muted-foreground">默认信息</CardTitle>
@@ -476,10 +477,12 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
               </Card>
             ))}
           </div>
+        </fieldset>
         </TabsContent>
 
         {/* === 二、产品产量计算 === */}
         <TabsContent value="production" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <PlantSwitcher plants={plants} active={activePlantIdx} onChange={setActivePlantIdx} />
           <Card className="panel">
             <CardHeader className="pb-3">
@@ -509,10 +512,12 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
               />
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 三、能源消耗实物量 === */}
         <TabsContent value="energy" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <PlantSwitcher plants={plants} active={activePlantIdx} onChange={setActivePlantIdx} />
           <Card className="panel">
             <CardHeader className="pb-3">
@@ -564,10 +569,12 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
               />
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 四、出厂水压力 === */}
         <TabsContent value="pressure" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <PlantSwitcher plants={plants} active={activePlantIdx} onChange={setActivePlantIdx} />
           <Card className="panel">
             <CardHeader className="pb-3">
@@ -597,10 +604,12 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
               />
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 五、情况汇总表 === */}
         <TabsContent value="summary" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <Card className="panel">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -679,10 +688,12 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
               <p className="mt-2 text-xs text-muted-foreground">单位：kWh/km³</p>
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 六、结果对标 === */}
         <TabsContent value="result" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between gap-2">
@@ -767,10 +778,12 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
               </div>
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         {/* === 七、限额报告 === */}
         <TabsContent value="report" className="space-y-4">
+          <fieldset disabled={readOnly} className="contents">
           <Card className="panel">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -935,6 +948,7 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
               </div>
             </CardContent>
           </Card>
+        </fieldset>
         </TabsContent>
 
         <div className="flex items-center justify-between border-t border-border/40 pt-3">
