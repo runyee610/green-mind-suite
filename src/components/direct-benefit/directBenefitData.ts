@@ -353,6 +353,10 @@ export interface Disbursement {
   timeline: { stage: DisburseStage; time: string; operator: string }[];
   /** 凭证 PDF（mock） */
   voucherNo?: string;
+  /** 引用的数据确权证书编号 */
+  certificateId?: string;
+  /** 本次拨付实际引用的证书项 key */
+  usedCertItemKeys?: string[];
 }
 
 export const disbursements: Disbursement[] = [
@@ -364,6 +368,8 @@ export const disbursements: Disbursement[] = [
     amount: 62,
     stage: "已到账",
     voucherNo: "SH-CZ-2026-05-001138",
+    certificateId: "CERT-2026-000138",
+    usedCertItemKeys: ["key_unit", "platform_connected", "data_quality"],
     timeline: [
       { stage: "已核准", time: "2026-05-14 14:20", operator: "免审即享智能体（系统初审）" },
       { stage: "财政划拨中", time: "2026-05-15 10:08", operator: "市财政局" },
@@ -377,12 +383,172 @@ export const disbursements: Disbursement[] = [
     policyId: "P-2025-002",
     amount: 122,
     stage: "财政划拨中",
+    certificateId: "CERT-2026-000206",
+    usedCertItemKeys: ["area", "saving_rate", "online_meter"],
     timeline: [
       { stage: "已核准", time: "2026-05-17 11:00", operator: "免审即享智能体（系统初审）" },
       { stage: "财政划拨中", time: "2026-05-18 08:30", operator: "市财政局" },
     ],
   },
+  {
+    id: "D003",
+    matchId: "M001",
+    enterpriseId: "E001",
+    policyId: "P-2025-001",
+    amount: 186,
+    stage: "财政划拨中",
+    certificateId: "CERT-2026-000138",
+    usedCertItemKeys: ["energy_saving", "key_unit", "monthly_report", "no_violation"],
+    timeline: [
+      { stage: "已核准", time: "2026-05-17 16:42", operator: "市经信委（系统自动通过）" },
+      { stage: "财政划拨中", time: "2026-05-18 09:15", operator: "市财政局" },
+    ],
+  },
+  {
+    id: "D004",
+    matchId: "M004",
+    enterpriseId: "E001",
+    policyId: "P-2025-004",
+    amount: 35,
+    stage: "已核准",
+    certificateId: "CERT-2026-000138",
+    usedCertItemKeys: ["district", "saving"],
+    timeline: [
+      { stage: "已核准", time: "2026-05-18 10:02", operator: "浦东区发改委" },
+    ],
+  },
 ];
+
+// ============ 数据确权证书 ============
+
+export interface CertificateItem {
+  key: string;
+  label: string;
+  value: string;
+  source: string;
+  collectedAt: string;
+  fieldPath: string;
+}
+
+export interface DataCertificate {
+  id: string;
+  enterpriseId: string;
+  issuer: string;
+  issuedAt: string;
+  validUntil: string;
+  hash: string;
+  scope: string[];
+  items: CertificateItem[];
+}
+
+export const certificates: DataCertificate[] = [
+  {
+    id: "CERT-2026-000138",
+    enterpriseId: "E001",
+    issuer: "上海市数据要素登记中心",
+    issuedAt: "2026-05-15",
+    validUntil: "2027-05-14",
+    hash: "0x9a3f7c8b41e2d5a067fd9b21c4e0a8c1f3b56e2c1d8a47f0e9b3a51c2d8f6e30",
+    scope: ["免审即享资金核拨", "节能补贴申报", "重点用能单位监管"],
+    items: [
+      { key: "key_unit", label: "单位属性", value: "重点用能单位 / 规上工业", source: "企业基础档案", collectedAt: "2026-04-30", fieldPath: "企业基础档案.unit_attr" },
+      { key: "monthly_report", label: "近 12 月节能月报", value: "12/12 已完整填报", source: "经信委节能月报", collectedAt: "2026-05-10", fieldPath: "节能月报.submit_count" },
+      { key: "energy_saving", label: "本年累计节能量", value: "186 吨标准煤", source: "节能技改项目信息", collectedAt: "2026-05-15", fieldPath: "节能技改.saving_tce" },
+      { key: "platform_connected", label: "在线监测接入", value: "已接入 14 个月", source: "能耗监测平台", collectedAt: "2026-05-18", fieldPath: "能耗监测.online_months" },
+      { key: "data_quality", label: "数据完整率", value: "98.2%", source: "能耗监测平台", collectedAt: "2026-05-18", fieldPath: "能耗监测.completeness" },
+      { key: "no_violation", label: "近 3 年节能违法", value: "无", source: "市场监管局处罚库", collectedAt: "2026-05-01", fieldPath: "市监.penalty_count" },
+      { key: "ghg", label: "温室气体排放", value: "1.23 万 tCO₂e（同比 -8%）", source: "温室气体排放报告", collectedAt: "2026-03-31", fieldPath: "温室气体.total_emission" },
+      { key: "green_factory", label: "绿色工厂自评", value: "已通过 / 87 分", source: "绿色工厂自我评价", collectedAt: "2026-02-20", fieldPath: "绿色工厂.self_score" },
+      { key: "district", label: "注册地", value: "浦东新区", source: "企业基础档案", collectedAt: "2026-04-30", fieldPath: "企业基础档案.district" },
+      { key: "saving", label: "年节能量（区级）", value: "186 吨标准煤", source: "节能技改项目信息", collectedAt: "2026-05-15", fieldPath: "节能技改.saving_tce" },
+    ],
+  },
+  {
+    id: "CERT-2026-000206",
+    enterpriseId: "E002",
+    issuer: "上海市数据要素登记中心",
+    issuedAt: "2026-05-12",
+    validUntil: "2027-05-11",
+    hash: "0x4b2e8f1c7a09d5e6b3a87c14f0d29e6b15a8c47e3d9f0a26c81b5e7d4f2a09c1",
+    scope: ["既有建筑节能改造补贴", "公共建筑能耗监测"],
+    items: [
+      { key: "area", label: "管理建筑面积", value: "6,820 ㎡", source: "固定资产投资项目", collectedAt: "2026-01-15", fieldPath: "固投.building_area" },
+      { key: "saving_rate", label: "改造后能耗下降", value: "18.6%", source: "能源利用报告", collectedAt: "2026-04-20", fieldPath: "能源利用.yoy_drop" },
+      { key: "online_meter", label: "在线监测接入", value: "已接入", source: "能耗监测平台", collectedAt: "2026-05-17", fieldPath: "能耗监测.connected" },
+      { key: "monthly_report", label: "节能月报", value: "12/12 完整填报", source: "经信委节能月报", collectedAt: "2026-05-10", fieldPath: "节能月报.submit_count" },
+    ],
+  },
+  {
+    id: "CERT-2026-000312",
+    enterpriseId: "E003",
+    issuer: "上海市数据要素登记中心",
+    issuedAt: "2026-05-10",
+    validUntil: "2027-05-09",
+    hash: "0x7e1a4c93b8d2f06e5a47c980b13e6f2a89d4c75e1f036b8a2d49c7e0b5a17f23",
+    scope: ["能耗在线监测建设补贴", "重点用能单位申报"],
+    items: [
+      { key: "key_unit", label: "单位属性", value: "重点用能单位", source: "企业基础档案", collectedAt: "2026-04-30", fieldPath: "企业基础档案.unit_attr" },
+      { key: "platform_connected", label: "在线监测时长", value: "6 个月", source: "能耗监测平台", collectedAt: "2026-05-18", fieldPath: "能耗监测.online_months" },
+      { key: "data_quality", label: "数据完整率", value: "96.4%", source: "能耗监测平台", collectedAt: "2026-05-18", fieldPath: "能耗监测.completeness" },
+      { key: "monthly_report", label: "节能月报", value: "11/12（4 月延迟）", source: "经信委节能月报", collectedAt: "2026-05-10", fieldPath: "节能月报.submit_count" },
+    ],
+  },
+];
+
+// ============ 数据源配置 ============
+
+export type DataSourceCategory = "政策渠道" | "企业填报" | "监管数据" | "金融数据";
+export type DataSourceStatus = "已连接" | "异常" | "暂停";
+
+export interface DataSource {
+  id: string;
+  name: string;
+  category: DataSourceCategory;
+  owner: string;
+  endpoint: string;
+  refreshCron: string;
+  status: DataSourceStatus;
+  lastSync: string;
+  recordCount: number;
+  fieldsMapped: number;
+  note?: string;
+}
+
+export const dataSources: DataSource[] = [
+  { id: "DS01", name: "市经信委政策库", category: "政策渠道", owner: "市经信委", endpoint: "https://api.sheitc.sh.gov.cn/policy/v2", refreshCron: "每日 02:00", status: "已连接", lastSync: "2026-05-18 02:03", recordCount: 1284, fieldsMapped: 18 },
+  { id: "DS02", name: "市发改委公告", category: "政策渠道", owner: "市发改委", endpoint: "https://fgw.sh.gov.cn/openapi/notice", refreshCron: "每日 02:10", status: "已连接", lastSync: "2026-05-18 02:11", recordCount: 562, fieldsMapped: 16 },
+  { id: "DS03", name: "国家发改委政策推送", category: "政策渠道", owner: "国家发改委", endpoint: "https://www.ndrc.gov.cn/policy/feed.json", refreshCron: "每 4 小时", status: "已连接", lastSync: "2026-05-18 08:00", recordCount: 318, fieldsMapped: 14 },
+  { id: "DS04", name: "经信委节能月报", category: "企业填报", owner: "市经信委", endpoint: "internal://report-monthly", refreshCron: "实时", status: "已连接", lastSync: "2026-05-18 09:02", recordCount: 18420, fieldsMapped: 36 },
+  { id: "DS05", name: "能耗在线监测平台", category: "企业填报", owner: "市能耗监测中心", endpoint: "https://energy.sh.gov.cn/iot/v1", refreshCron: "每 5 分钟", status: "已连接", lastSync: "2026-05-18 09:05", recordCount: 9871234, fieldsMapped: 22, note: "高频时序数据，已做下采样存证" },
+  { id: "DS06", name: "温室气体排放报告", category: "企业填报", owner: "市生态环境局", endpoint: "internal://ghg-report", refreshCron: "每月 5 日", status: "已连接", lastSync: "2026-05-05 10:30", recordCount: 826, fieldsMapped: 24 },
+  { id: "DS07", name: "市场监管局处罚库", category: "监管数据", owner: "市市场监管局", endpoint: "https://scjg.sh.gov.cn/penalty/api", refreshCron: "每日 03:00", status: "异常", lastSync: "2026-05-17 03:00", recordCount: 4321, fieldsMapped: 12, note: "鉴权 Token 5/17 过期，已自动重试 3 次" },
+  { id: "DS08", name: "绿色信贷数据", category: "金融数据", owner: "人行上海分行", endpoint: "https://pbcsh.gov.cn/green-credit/api", refreshCron: "每周一 04:00", status: "暂停", lastSync: "2026-05-13 04:01", recordCount: 1980, fieldsMapped: 10, note: "数据共享协议续签中" },
+];
+
+export const dataSourceStatusStyle: Record<DataSourceStatus, { badge: string; dot: string }> = {
+  "已连接": { badge: "border-success/40 bg-success/10 text-success", dot: "bg-success" },
+  "异常": { badge: "border-destructive/40 bg-destructive/10 text-destructive", dot: "bg-destructive" },
+  "暂停": { badge: "border-muted-foreground/30 bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground" },
+};
+
+export const syncLogs: Array<{ id: string; sourceId: string; time: string; status: "成功" | "失败" | "重试"; detail: string }> = [
+  { id: "L1", sourceId: "DS05", time: "2026-05-18 09:05", status: "成功", detail: "拉取 12,480 条监测点位数据，写入时序库" },
+  { id: "L2", sourceId: "DS04", time: "2026-05-18 09:02", status: "成功", detail: "增量同步 38 家企业月报" },
+  { id: "L3", sourceId: "DS03", time: "2026-05-18 08:00", status: "成功", detail: "新增 3 项国家级政策，已结构化解析" },
+  { id: "L4", sourceId: "DS07", time: "2026-05-18 03:00", status: "失败", detail: "鉴权失败 401，已自动告警" },
+  { id: "L5", sourceId: "DS07", time: "2026-05-17 03:00", status: "重试", detail: "Token 过期，已切换备用通道" },
+  { id: "L6", sourceId: "DS02", time: "2026-05-18 02:11", status: "成功", detail: "增量同步 4 项公告" },
+  { id: "L7", sourceId: "DS01", time: "2026-05-18 02:03", status: "成功", detail: "新增 12 项政策，更新 47 项" },
+];
+
+export const findCertificate = (id: string) => certificates.find((c) => c.id === id);
+export const getEntCertificate = (entId: string) => certificates.find((c) => c.enterpriseId === entId);
+export const getMatchCertificate = (matchId: string) => {
+  const m = matches.find((x) => x.id === matchId);
+  if (!m) return null;
+  return certificates.find((c) => c.enterpriseId === m.enterpriseId) ?? null;
+};
+
 
 // ============ 智能体活动 Feed ============
 
