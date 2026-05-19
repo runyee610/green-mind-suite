@@ -57,7 +57,7 @@ export default function DirectBenefitEntProfileDetail() {
           <Card className="border-border/60">
             <CardContent className="p-5">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">数据确权证书（企业画像）</h3>
+                <h3 className="font-semibold text-foreground text-lg">数据确权证书（企业画像）</h3>
                 <Badge variant="outline" className="text-[10px]">A4 公文展示</Badge>
               </div>
               <DataCertificate certificate={cert} />
@@ -68,7 +68,7 @@ export default function DirectBenefitEntProfileDetail() {
         {/* 已匹配政策 */}
         <Card className="border-border/60">
           <CardContent className="p-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">
+            <h3 className="mb-2 font-semibold text-foreground text-lg">
               <Workflow className="mr-1 inline h-3.5 w-3.5" />已匹配政策（{ms.length}）
             </h3>
             <Table>
@@ -103,7 +103,7 @@ export default function DirectBenefitEntProfileDetail() {
         {/* 证书使用记录 */}
         <Card className="border-border/60">
           <CardContent className="p-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">
+            <h3 className="mb-2 font-semibold text-foreground text-lg">
               <CircleDollarSign className="mr-1 inline h-3.5 w-3.5" />证书引用记录（{ds.length}）
             </h3>
             <ul className="space-y-1.5">

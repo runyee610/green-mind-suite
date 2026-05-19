@@ -71,7 +71,7 @@ export default function DirectBenefitPolicyDetail() {
         <div className="grid grid-cols-3 gap-3">
           <Card className="border-border/60">
             <CardContent className="p-4">
-              <h3 className="mb-2 text-sm font-semibold text-foreground">申报条件</h3>
+              <h3 className="mb-2 font-semibold text-foreground text-lg">申报条件</h3>
               <ul className="space-y-2">
                 {p.conditions.map((c) => (
                   <li key={c.key} className="rounded-md border border-border bg-muted/20 p-2">
@@ -84,7 +84,7 @@ export default function DirectBenefitPolicyDetail() {
           </Card>
           <Card className="border-border/60">
             <CardContent className="p-4">
-              <h3 className="mb-2 text-sm font-semibold text-foreground">资助额度</h3>
+              <h3 className="mb-2 font-semibold text-foreground text-lg">资助额度</h3>
               <div className="rounded-md border border-warning/30 bg-warning/5 p-3 text-xs leading-relaxed text-foreground">
                 {p.fundingFormula}
               </div>
@@ -95,7 +95,7 @@ export default function DirectBenefitPolicyDetail() {
           </Card>
           <Card className="border-border/60">
             <CardContent className="p-4">
-              <h3 className="mb-2 text-sm font-semibold text-foreground">申报指引</h3>
+              <h3 className="mb-2 font-semibold text-foreground text-lg">申报指引</h3>
               <ol className="space-y-1.5">
                 {p.guideSteps.map((s, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs">
@@ -112,7 +112,7 @@ export default function DirectBenefitPolicyDetail() {
         <Card className="border-border/60">
           <CardContent className="p-4">
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="font-semibold text-foreground text-lg">
                 <Users className="mr-1 inline h-3.5 w-3.5" />智能体匹配的企业（{hits.length}）
               </h3>
               <Badge variant="outline" className="text-[10px] text-muted-foreground">点击行进入撮合详情</Badge>
@@ -161,7 +161,7 @@ export default function DirectBenefitPolicyDetail() {
         {/* 推送操作 */}
         <Card className="border-primary/30 bg-primary/5">
           <CardContent className="p-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">
+            <h3 className="mb-2 font-semibold text-foreground text-lg">
               <Send className="mr-1 inline h-3.5 w-3.5 text-primary" />点对点推送
             </h3>
             <p className="text-[11px] text-muted-foreground">

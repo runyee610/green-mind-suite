@@ -44,7 +44,7 @@ export default function DirectBenefitMatchDetail() {
           <Card className="border-border/60">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground">企业</div>
-              <div className="mt-1 text-sm font-semibold text-foreground">{e.name}</div>
+              <div className="mt-1 font-semibold text-foreground text-lg">{e.name}</div>
               <div className="mt-0.5 font-mono text-[10px] text-muted-foreground">{e.creditCode}</div>
               <div className="mt-2 flex gap-1.5">
                 <Badge variant="outline" className="text-[10px]">{e.district}</Badge>
@@ -56,7 +56,7 @@ export default function DirectBenefitMatchDetail() {
           <Card className="border-border/60">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground">政策</div>
-              <div className="mt-1 text-sm font-semibold text-foreground line-clamp-2">{p.name}</div>
+              <div className="mt-1 font-semibold text-foreground text-lg line-clamp-2">{p.name}</div>
               <div className="mt-0.5 text-[10px] text-muted-foreground">{p.docNo} · {p.issuer}</div>
               <div className="mt-2 flex items-center gap-3">
                 <span className="font-mono text-base font-semibold text-warning">{m.estimatedFunding} 万</span>
@@ -88,7 +88,7 @@ export default function DirectBenefitMatchDetail() {
         {/* 条件命中 */}
         <Card className="border-border/60">
           <CardContent className="p-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">条件命中证据（条件 ↔ 数据）</h3>
+            <h3 className="mb-2 font-semibold text-foreground text-lg">条件命中证据（条件 ↔ 数据）</h3>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -121,7 +121,7 @@ export default function DirectBenefitMatchDetail() {
         {cert && (
           <Card className="border-border/60">
             <CardContent className="p-4">
-              <h3 className="mb-3 text-sm font-semibold text-foreground">本次撮合所引用的数据确权证书</h3>
+              <h3 className="mb-3 font-semibold text-foreground text-lg">本次撮合所引用的数据确权证书</h3>
               <DataCertificate certificate={cert} highlightItemKeys={usedKeys} />
             </CardContent>
           </Card>

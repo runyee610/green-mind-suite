@@ -80,7 +80,7 @@ export default function DirectBenefitClaim() {
         <Card className="border-border/60">
           <CardContent className="p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-foreground">A. 条件命中清单</h3>
+              <h3 className="font-semibold text-foreground text-lg">A. 条件命中清单</h3>
               <Badge variant="outline" className={cn(
                 "text-[10px]",
                 allHit ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning",
@@ -143,7 +143,7 @@ export default function DirectBenefitClaim() {
         <Card className="border-border/60">
           <CardContent className="p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="font-semibold text-foreground text-lg">
                 <Building2 className="mr-1 inline h-3.5 w-3.5" />B. 企业基础信息核对
               </h3>
               <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">申请修正</Button>
@@ -165,7 +165,7 @@ export default function DirectBenefitClaim() {
         <Card className="border-border/60">
           <CardContent className="p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="font-semibold text-foreground text-lg">
                 <Wallet className="mr-1 inline h-3.5 w-3.5" />C. 收款对公账户
               </h3>
               {ent.bank.verified ? (
