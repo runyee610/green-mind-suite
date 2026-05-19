@@ -398,7 +398,7 @@ function DetailSection({
             <Icon className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+            <h3 className="font-semibold text-foreground text-lg">{title}</h3>
             {subtitle ? <p className="text-[11px] text-muted-foreground">{subtitle}</p> : null}
           </div>
         </div>

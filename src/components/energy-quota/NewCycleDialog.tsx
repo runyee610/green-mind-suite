@@ -163,7 +163,7 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
         <div className="space-y-5 py-2">
           {/* 周期信息 */}
           <section className="space-y-3">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <h3 className="flex items-center gap-2 font-semibold text-foreground text-lg">
               <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">1</span>
               周期信息
             </h3>
@@ -207,7 +207,7 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
             <div className="flex items-center gap-2 rounded-md border border-border/60 bg-muted/30 px-3 py-2">
               <Info className="h-4 w-4 text-muted-foreground" />
               <span className="text-xs text-muted-foreground">周期编号：</span>
-              <span className="font-mono text-sm font-semibold text-foreground">{period}</span>
+              <span className="font-mono font-semibold text-foreground text-lg">{period}</span>
               {duplicate && (
                 <Badge variant="outline" className="ml-2 border-destructive/40 bg-destructive/10 text-destructive text-[10px]">
                   <AlertTriangle className="mr-1 h-3 w-3" />已存在同名周期
@@ -219,7 +219,7 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
           {/* 申报范围 - 企业选择 */}
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <h3 className="flex items-center gap-2 font-semibold text-foreground text-lg">
                 <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">2</span>
                 申报范围（从企业库选择）
               </h3>
@@ -331,7 +331,7 @@ export function NewCycleDialog({ open, onOpenChange, onCreated, editing }: NewCy
 
           {/* 通知与备注 */}
           <section className="space-y-3">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <h3 className="flex items-center gap-2 font-semibold text-foreground text-lg">
               <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">3</span>
               通知与备注
             </h3>

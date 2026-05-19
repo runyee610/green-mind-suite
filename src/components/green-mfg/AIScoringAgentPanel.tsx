@@ -385,7 +385,7 @@ export function AIScoringAgentPanel() {
                               className="rounded-md border border-border/60 bg-gradient-to-br from-muted/60 to-muted/20 px-2.5 py-1.5"
                             >
                               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{o.label}</div>
-                              <div className="font-mono text-sm font-semibold text-foreground">{o.value}</div>
+                              <div className="font-mono font-semibold text-foreground text-lg">{o.value}</div>
                             </div>
                           ))}
                         </div>

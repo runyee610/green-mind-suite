@@ -1829,7 +1829,7 @@ export function EnterpriseSelfView({
                 <Building2 className="h-4.5 w-4.5" />
               </div>
               <div>
-                <div className="text-sm font-semibold text-foreground">{profile.enterpriseName}</div>
+                <div className="font-semibold text-foreground text-lg">{profile.enterpriseName}</div>
                 <div className="text-[11px] text-muted-foreground mt-0.5">
                   账号：<span className="font-mono">{self.account}</span> · 信用代码：
                   <span className="font-mono">{profile.creditCode}</span>

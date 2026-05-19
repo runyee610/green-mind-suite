@@ -40,7 +40,7 @@ export function TelecomDetailSection() {
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
             <Radio className="h-4 w-4" />
           </div>
-          <h3 className="text-sm font-semibold text-foreground">电信业务总量与单位能耗</h3>
+          <h3 className="font-semibold text-foreground text-lg">电信业务总量与单位能耗</h3>
           <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
             电信企业 专属
           </Badge>
