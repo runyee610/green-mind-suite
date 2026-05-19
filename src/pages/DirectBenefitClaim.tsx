@@ -14,8 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import {
-  findMatch, findPolicy, findEnterprise,
+  findMatch, findPolicy, findEnterprise, getMatchCertificate,
 } from "@/components/direct-benefit/directBenefitData";
+import { DataCertificateMini } from "@/components/direct-benefit/DataCertificateMini";
 import { cn } from "@/lib/utils";
 
 export default function DirectBenefitClaim() {
@@ -24,6 +25,8 @@ export default function DirectBenefitClaim() {
   const match = id ? findMatch(id) : null;
   const pol = match ? findPolicy(match.policyId) : null;
   const ent = match ? findEnterprise(match.enterpriseId) : null;
+  const cert = id ? getMatchCertificate(id) : null;
+  const usedKeys = match?.hits.filter((h) => h.hit).map((h) => h.conditionKey) ?? [];
 
   const [confirmInfo, setConfirmInfo] = useState(false);
   const [confirmBank, setConfirmBank] = useState(false);
@@ -85,22 +88,54 @@ export default function DirectBenefitClaim() {
                 {match.hits.filter((h) => h.hit).length}/{match.hits.length} 命中
               </Badge>
             </div>
-            <ul className="space-y-2">
-              {match.hits.map((h) => {
-                const c = pol.conditions.find((x) => x.key === h.conditionKey);
-                return (
-                  <li key={h.conditionKey} className="flex items-start gap-2.5 rounded-md border border-border bg-muted/20 p-2.5">
-                    {h.hit ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> : <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />}
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs font-medium text-foreground">{c?.text}</div>
-                      <div className="mt-0.5 text-[10px] text-muted-foreground">
-                        <span className="inline-flex items-center gap-0.5"><FileSearch className="h-2.5 w-2.5" />{h.evidence}</span>
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+
+            {/* 数据确权证书引用提示 */}
+            {cert && (
+              <div className="mb-3">
+                <div className="mb-1.5 text-[11px] text-muted-foreground">
+                  本次申领将引用以下数据确权证书（共 {cert.items.length} 项，本次引用 {usedKeys.length} 项）：
+                </div>
+                <DataCertificateMini certificate={cert} usedItemKeys={usedKeys} />
+              </div>
+            )}
+
+            {/* 命中表：增加「确权项」列 */}
+            <div className="overflow-hidden rounded-md border border-border">
+              <table className="w-full text-[11px]">
+                <thead className="bg-muted/40 text-muted-foreground">
+                  <tr>
+                    <th className="w-12 px-2 py-1.5 text-center">命中</th>
+                    <th className="px-2 py-1.5 text-left">申报条件</th>
+                    <th className="px-2 py-1.5 text-left">数据证据</th>
+                    <th className="w-40 px-2 py-1.5 text-left">引用的确权项</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {match.hits.map((h) => {
+                    const c = pol.conditions.find((x) => x.key === h.conditionKey);
+                    const item = cert?.items.find((it) => it.key === h.conditionKey);
+                    return (
+                      <tr key={h.conditionKey} className="border-t border-border">
+                        <td className="px-2 py-2 text-center">
+                          {h.hit ? <CheckCircle2 className="mx-auto h-3.5 w-3.5 text-success" /> : <XCircle className="mx-auto h-3.5 w-3.5 text-destructive" />}
+                        </td>
+                        <td className="px-2 py-2 text-foreground">{c?.text}</td>
+                        <td className="px-2 py-2 text-muted-foreground">
+                          <FileSearch className="mr-1 inline h-2.5 w-2.5" />{h.evidence}
+                        </td>
+                        <td className="px-2 py-2">
+                          {item ? (
+                            <span className="inline-flex items-center gap-1 rounded-sm border border-[hsl(0_65%_35%/0.4)] bg-[hsl(45_60%_92%)] px-1.5 py-0.5 font-mono text-[10px] text-[hsl(0_70%_25%)]">
+                              {item.label}
+                            </span>
+                          ) : <span className="text-[10px] text-muted-foreground">—</span>}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
 

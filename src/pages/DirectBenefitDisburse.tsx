@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { CircleDollarSign, Wallet, CheckCircle2, FileText, Download, Building2 } from "lucide-react";
+import { CircleDollarSign, Wallet, CheckCircle2, FileText, Download, Sparkles, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -8,9 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRole } from "@/contexts/RoleContext";
 import {
-  disbursements, findEnterprise, findPolicy, CURRENT_ENTERPRISE_ID, getEntDisbursements,
+  disbursements, findEnterprise, findPolicy, findMatch, findCertificate,
+  CURRENT_ENTERPRISE_ID, getEntDisbursements,
   type DisburseStage,
 } from "@/components/direct-benefit/directBenefitData";
+import { DataCertificateMini } from "@/components/direct-benefit/DataCertificateMini";
 import { cn } from "@/lib/utils";
 
 const stageStyle: Record<DisburseStage, { badge: string; dot: string }> = {
@@ -110,20 +112,54 @@ export default function DirectBenefitDisburse() {
           <div className="space-y-3">
             {list.map((d) => {
               const p = findPolicy(d.policyId);
+              const m = findMatch(d.matchId);
+              const cert = d.certificateId ? findCertificate(d.certificateId) : null;
               const currentIdx = STAGES.indexOf(d.stage);
+              const s = stageStyle[d.stage];
               return (
                 <Card key={d.id} className="border-border/60">
                   <CardContent className="p-5">
+                    {/* 头：金额 + 状态 */}
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm font-semibold text-foreground">{p?.name}</div>
-                        <div className="mt-0.5 text-[11px] text-muted-foreground">{p?.docNo} · {p?.issuer}</div>
+                        <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium", s.badge)}>
+                          <span className={cn("h-1.5 w-1.5 rounded-full", s.dot)} />{d.stage}
+                        </span>
+                        <div className="mt-2 font-mono text-[10px] text-muted-foreground">拨付编号 {d.id}</div>
                       </div>
                       <div className="text-right">
                         <div className="font-mono text-2xl font-bold text-warning">{d.amount}</div>
                         <div className="text-[10px] text-muted-foreground">万元</div>
                       </div>
                     </div>
+
+                    {/* 匹配政策 */}
+                    <div className="mt-3 rounded-md border border-primary/30 bg-primary/5 p-3">
+                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-primary">
+                        <Sparkles className="h-3 w-3" />匹配政策
+                      </div>
+                      <div className="mt-1 text-sm font-medium text-foreground">{p?.name}</div>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] text-muted-foreground">
+                        <span>{p?.docNo}</span>
+                        <span>·</span>
+                        <span>{p?.issuer}</span>
+                        {m && <><span>·</span><span>撮合置信度 <span className="font-mono text-foreground">{(m.confidence * 100).toFixed(0)}%</span></span></>}
+                      </div>
+                    </div>
+
+                    {/* 引用的数据确权证书 */}
+                    {cert && (
+                      <div className="mt-3">
+                        <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-foreground">
+                          <ShieldCheck className="h-3 w-3 text-[hsl(0_65%_35%)]" />引用的数据确权证书
+                        </div>
+                        <DataCertificateMini
+                          certificate={cert}
+                          usedItemKeys={d.usedCertItemKeys}
+                          href={`/direct-benefit/gov/entprofile/${d.enterpriseId}`}
+                        />
+                      </div>
+                    )}
 
                     {/* 横向进度 */}
                     <ol className="mt-4 grid grid-cols-3 gap-0">

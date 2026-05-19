@@ -44,6 +44,10 @@ import DirectBenefitMatches from "./pages/DirectBenefitMatches.tsx";
 import DirectBenefitEntProfile from "./pages/DirectBenefitEntProfile.tsx";
 import DirectBenefitClaim from "./pages/DirectBenefitClaim.tsx";
 import DirectBenefitDisburse from "./pages/DirectBenefitDisburse.tsx";
+import DirectBenefitDataSources from "./pages/DirectBenefitDataSources.tsx";
+import DirectBenefitPolicyDetail from "./pages/DirectBenefitPolicyDetail.tsx";
+import DirectBenefitMatchDetail from "./pages/DirectBenefitMatchDetail.tsx";
+import DirectBenefitEntProfileDetail from "./pages/DirectBenefitEntProfileDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -95,6 +99,10 @@ const App = () => (
           <Route path="/direct-benefit/ent/claim/:id" element={<DirectBenefitClaim />} />
           <Route path="/direct-benefit/gov/disburse" element={<DirectBenefitDisburse />} />
           <Route path="/direct-benefit/ent/funds" element={<DirectBenefitDisburse />} />
+          <Route path="/direct-benefit/gov/sources" element={<DirectBenefitDataSources />} />
+          <Route path="/direct-benefit/gov/policies/:id" element={<DirectBenefitPolicyDetail />} />
+          <Route path="/direct-benefit/gov/matches/:id" element={<DirectBenefitMatchDetail />} />
+          <Route path="/direct-benefit/gov/entprofile/:id" element={<DirectBenefitEntProfileDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
