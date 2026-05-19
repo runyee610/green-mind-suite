@@ -42,7 +42,7 @@ export function NonEnergyDetailSection({ products = demoProducts }: { products?:
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground">分产品单位产量综合能耗</h3>
+              <h3 className="font-semibold text-foreground text-lg">分产品单位产量综合能耗</h3>
               <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
                 非能源加工转换工业企业 专属
               </Badge>
@@ -69,7 +69,7 @@ export function NonEnergyDetailSection({ products = demoProducts }: { products?:
                     <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
                       产品 {idx + 1}
                     </Badge>
-                    <h4 className="text-sm font-semibold text-foreground">{p.name}</h4>
+                    <h4 className="font-semibold text-foreground text-lg">{p.name}</h4>
                     <span className="text-[11px] text-muted-foreground">产量单位：{p.unit}</span>
                   </div>
                   <div className="grid gap-3 lg:grid-cols-[1fr_auto_1fr] lg:items-stretch">

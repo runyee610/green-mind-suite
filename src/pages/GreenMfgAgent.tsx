@@ -223,7 +223,7 @@ export default function GreenMfgAgent() {
               <img src={logoUrl} alt="logo" className="h-8 w-8 object-contain" />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-foreground">绿色制造数字智能体</div>
+              <div className="font-semibold text-foreground text-lg">绿色制造数字智能体</div>
               <div className="text-[11px] text-muted-foreground">基于上海市绿色制造体系名单实时数据 · 智能分析与培育建议</div>
             </div>
           </div>

@@ -91,7 +91,7 @@ export default function DirectBenefit() {
               <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-background" />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-foreground">免审即享智能体</div>
+              <div className="font-semibold text-foreground text-lg">免审即享智能体</div>
               <div className="text-[10px] text-muted-foreground">
                 <Activity className="mr-0.5 inline h-2.5 w-2.5" />运行中 · GPT-5.2
               </div>
@@ -159,7 +159,7 @@ export default function DirectBenefit() {
         <section className="flex min-h-0 flex-col rounded-lg border border-border bg-card">
           <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold text-foreground">
+            <span className="font-semibold text-foreground text-lg">
               {role === "gov" ? "政府工作台 · 智能对话" : "我的免审即享 · 智能对话"}
             </span>
             <Badge variant="outline" className="ml-auto border-success/40 bg-success/10 text-success text-[10px]">
@@ -291,7 +291,7 @@ function CardRenderer({ card, navigate }: { card: CardKind; navigate: ReturnType
         {cells.map((c) => (
           <div key={c.label} className="text-center">
             <div className="text-[10px] text-muted-foreground">{c.label}</div>
-            <div className="mt-0.5 font-mono text-sm font-semibold text-foreground">{c.v}</div>
+            <div className="mt-0.5 font-mono font-semibold text-foreground text-lg">{c.v}</div>
           </div>
         ))}
       </div>

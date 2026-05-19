@@ -440,7 +440,7 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
 
           {/* 多水厂卡片 */}
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground mx-[11px]">水厂明细</h3>
+            <h3 className="font-semibold text-foreground text-lg mx-[11px]">水厂明细</h3>
             <Button size="sm" variant="outline" onClick={addPlant}>
               <Plus className="mr-1 h-4 w-4" />新增水厂
             </Button>
@@ -1377,7 +1377,7 @@ function ReportSection({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline gap-2">
-        <span className="text-sm font-semibold text-foreground">{index}、{title}</span>
+        <span className="font-semibold text-foreground text-lg">{index}、{title}</span>
         {required && <span className="text-xs text-destructive">必填</span>}
         {note && <span className="text-xs text-muted-foreground">{note}</span>}
       </div>

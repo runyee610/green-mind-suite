@@ -118,7 +118,7 @@ export default function DirectBenefitDataSources() {
           <Card className="border-border/60">
             <CardContent className="p-4">
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">同步日志（最近 10 条）</h3>
+                <h3 className="font-semibold text-foreground text-lg">同步日志（最近 10 条）</h3>
                 <Button variant="ghost" size="sm" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" />刷新</Button>
               </div>
               <ul className="space-y-1.5">
@@ -147,7 +147,7 @@ export default function DirectBenefitDataSources() {
           <Card className="border-border/60">
             <CardContent className="p-4">
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">字段映射规则（示例）</h3>
+                <h3 className="font-semibold text-foreground text-lg">字段映射规则（示例）</h3>
                 <Button variant="ghost" size="sm" className="text-xs" onClick={() => toast.success("已复制到剪贴板")}>
                   <Copy className="mr-1 h-3 w-3" />复制
                 </Button>

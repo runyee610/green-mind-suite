@@ -34,7 +34,7 @@ export function PowerSupplyDetailSection() {
             <Zap className="h-4 w-4" />
           </div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-foreground">供电量与线损指标</h3>
+            <h3 className="font-semibold text-foreground text-lg">供电量与线损指标</h3>
             <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
               供电企业 专属
             </Badge>

@@ -73,7 +73,7 @@ export function EditEnterpriseStandardDialog({ enterprise, onClose, onConfirm }:
             <div className="rounded-md border border-border/60 bg-muted/30 p-3">
               <div className="flex items-baseline justify-between gap-3">
                 <div>
-                  <div className="text-sm font-semibold text-foreground">{enterprise.name}</div>
+                  <div className="font-semibold text-foreground text-lg">{enterprise.name}</div>
                   <div className="mt-0.5 font-mono text-[11px] text-muted-foreground">
                     {enterprise.creditCode} · {enterprise.industry}
                   </div>

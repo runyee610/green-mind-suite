@@ -154,7 +154,7 @@ export function DataCenterDetailSection() {
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
             <Server className="h-4 w-4" />
           </div>
-          <h3 className="text-sm font-semibold text-foreground">数据中心明细</h3>
+          <h3 className="font-semibold text-foreground text-lg">数据中心明细</h3>
           <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
             电信企业 专属
           </Badge>
@@ -169,7 +169,7 @@ export function DataCenterDetailSection() {
                   <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
                     #{idx + 1}
                   </Badge>
-                  <span className="text-sm font-semibold text-foreground">{dc.name}</span>
+                  <span className="font-semibold text-foreground text-lg">{dc.name}</span>
                 </div>
                 <div className="grid gap-2 text-xs sm:grid-cols-3">
                   <ReadField label="在用机架数" value={`${dc.racks} 个`} />

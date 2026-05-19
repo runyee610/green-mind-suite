@@ -299,7 +299,7 @@ function PowerSection({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+              <h3 className="font-semibold text-foreground text-lg">{title}</h3>
               {subtitle ? (
                 <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 px-1.5 text-[10px] text-primary">
                   {subtitle}
