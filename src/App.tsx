@@ -38,6 +38,12 @@ import SystemUsers from "./pages/SystemUsers.tsx";
 import SystemPermissions from "./pages/SystemPermissions.tsx";
 import PolicyAgent from "./pages/PolicyAgent.tsx";
 import GreenMfgAgent from "./pages/GreenMfgAgent.tsx";
+import DirectBenefit from "./pages/DirectBenefit.tsx";
+import DirectBenefitPolicies from "./pages/DirectBenefitPolicies.tsx";
+import DirectBenefitMatches from "./pages/DirectBenefitMatches.tsx";
+import DirectBenefitEntProfile from "./pages/DirectBenefitEntProfile.tsx";
+import DirectBenefitClaim from "./pages/DirectBenefitClaim.tsx";
+import DirectBenefitDisburse from "./pages/DirectBenefitDisburse.tsx";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +85,16 @@ const App = () => (
           <Route path="/system/permissions" element={<SystemPermissions />} />
           <Route path="/policy-agent" element={<PolicyAgent />} />
           <Route path="/green-mfg-agent" element={<GreenMfgAgent />} />
+          {/* 免审即享 */}
+          <Route path="/direct-benefit/gov" element={<DirectBenefit />} />
+          <Route path="/direct-benefit/ent/home" element={<DirectBenefit />} />
+          <Route path="/direct-benefit/gov/policies" element={<DirectBenefitPolicies />} />
+          <Route path="/direct-benefit/ent" element={<DirectBenefitPolicies />} />
+          <Route path="/direct-benefit/gov/matches" element={<DirectBenefitMatches />} />
+          <Route path="/direct-benefit/gov/entprofile" element={<DirectBenefitEntProfile />} />
+          <Route path="/direct-benefit/ent/claim/:id" element={<DirectBenefitClaim />} />
+          <Route path="/direct-benefit/gov/disburse" element={<DirectBenefitDisburse />} />
+          <Route path="/direct-benefit/ent/funds" element={<DirectBenefitDisburse />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>

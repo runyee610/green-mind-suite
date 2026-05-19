@@ -17,6 +17,10 @@ import {
   ListChecks,
   CalendarRange,
   Brain,
+  Wallet,
+  Workflow,
+  CircleDollarSign,
+  FileSearch,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
@@ -85,6 +89,21 @@ const assetsItemsByRole: Record<"gov" | "ent", NavItem[]> = {
 };
 const assetsItems: NavItem[] = assetsItemsByRole.gov;
 
+const directBenefitItemsByRole: Record<"gov" | "ent", NavItem[]> = {
+  gov: [
+    { title: "智能体工作台", url: "/direct-benefit/gov", icon: Brain },
+    { title: "政策图谱", url: "/direct-benefit/gov/policies", icon: FileSearch },
+    { title: "企业画像", url: "/direct-benefit/gov/entprofile", icon: Users },
+    { title: "撮合名单", url: "/direct-benefit/gov/matches", icon: Workflow },
+    { title: "资金拨付", url: "/direct-benefit/gov/disburse", icon: CircleDollarSign },
+  ],
+  ent: [
+    { title: "智能体工作台", url: "/direct-benefit/ent/home", icon: Brain },
+    { title: "我的专属政策", url: "/direct-benefit/ent", icon: Wallet },
+    { title: "资金到账", url: "/direct-benefit/ent/funds", icon: CircleDollarSign },
+  ],
+};
+
 const systemItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
     { title: "用户管理", url: "/system/users", icon: Users },
@@ -101,6 +120,7 @@ export const navItems: NavItem[] = [
   ...reportItems,
   ...quotaItems,
   ...assetsItems,
+  ...directBenefitItemsByRole.gov,
   ...systemItems,
 ];
 
@@ -161,8 +181,10 @@ export function AppSidebar() {
         {renderGroup("经信委节能月报", reportItems)}
         {renderGroup("能耗限额管理", quotaItemsByRole[role])}
         {assetsItemsByRole[role].length > 0 && renderGroup("固定资产投资项目", assetsItemsByRole[role])}
+        {renderGroup("免审即享", directBenefitItemsByRole[role])}
         {systemItemsByRole[role].length > 0 && renderGroup("系统管理", systemItemsByRole[role])}
       </SidebarContent>
+
 
       <SidebarFooter className="border-t border-sidebar-border">
         <div className={`flex items-center px-1 py-1 ${collapsed ? "justify-center" : "justify-end"}`}>
