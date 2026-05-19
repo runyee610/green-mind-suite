@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { CircleDollarSign, Wallet, CheckCircle2, FileText, Download, Building2 } from "lucide-react";
+import { CircleDollarSign, Wallet, CheckCircle2, FileText, Download, Sparkles, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -8,9 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRole } from "@/contexts/RoleContext";
 import {
-  disbursements, findEnterprise, findPolicy, CURRENT_ENTERPRISE_ID, getEntDisbursements,
+  disbursements, findEnterprise, findPolicy, findMatch, findCertificate,
+  CURRENT_ENTERPRISE_ID, getEntDisbursements,
   type DisburseStage,
 } from "@/components/direct-benefit/directBenefitData";
+import { DataCertificateMini } from "@/components/direct-benefit/DataCertificateMini";
 import { cn } from "@/lib/utils";
 
 const stageStyle: Record<DisburseStage, { badge: string; dot: string }> = {
