@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Database, Plus, RefreshCw, Settings2, Copy, AlertTriangle, CheckCircle2, PauseCircle, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
@@ -72,8 +72,8 @@ export default function DirectBenefitDataSources() {
                   const s = dataSourceStatusStyle[d.status];
                   const expanded = openId === d.id;
                   return (
-                    <>
-                      <TableRow key={d.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setOpenId(expanded ? null : d.id)}>
+                    <Fragment key={d.id}>
+                      <TableRow className="cursor-pointer hover:bg-muted/30" onClick={() => setOpenId(expanded ? null : d.id)}>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", expanded && "rotate-180")} />
@@ -105,7 +105,7 @@ export default function DirectBenefitDataSources() {
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </Fragment>
                   );
                 })}
               </TableBody>
