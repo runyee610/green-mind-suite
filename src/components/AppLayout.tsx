@@ -33,6 +33,13 @@ const ROUTE_TITLES: Array<{ match: RegExp; crumbs: string[] }> = [
   { match: /^\/system\/users/, crumbs: ["系统管理", "用户管理"] },
   { match: /^\/system\/permissions/, crumbs: ["系统管理", "权限配置中心"] },
   { match: /^\/system/, crumbs: ["系统管理"] },
+  { match: /^\/direct-benefit\/(gov|ent)\/policies/, crumbs: ["免审即享", "政策图谱"] },
+  { match: /^\/direct-benefit\/gov\/entprofile/, crumbs: ["免审即享", "企业画像"] },
+  { match: /^\/direct-benefit\/gov\/matches/, crumbs: ["免审即享", "撮合名单"] },
+  { match: /^\/direct-benefit\/ent\/claim\/[^/]+/, crumbs: ["免审即享", "申领与确认"] },
+  { match: /^\/direct-benefit\/(gov\/disburse|ent\/funds)/, crumbs: ["免审即享", "资金拨付"] },
+  { match: /^\/direct-benefit\/ent$/, crumbs: ["免审即享", "我的专属政策"] },
+  { match: /^\/direct-benefit\/(gov|ent\/home)/, crumbs: ["免审即享", "智能体工作台"] },
 ];
 
 function getCrumbs(pathname: string): string[] {
