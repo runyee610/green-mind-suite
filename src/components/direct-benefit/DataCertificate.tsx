@@ -177,7 +177,7 @@ export function DataCertificate({ certificate, highlightItemKeys, className }: P
             <p>
               兹证明上述数据项已经过来源核验与归集，所有权及对应使用权归确权主体所有；本证书可作为申报、监管、资金核拨等政务场景的合法数据凭据。
             </p>
-            <p className="mt-1.5 font-mono text-[10px] text-[#7a5a3a]">
+            <p className="mt-1.5 font-mono text-[#7a5a3a] text-xs">
               区块链存证：{certificate.hash}
             </p>
           </div>
