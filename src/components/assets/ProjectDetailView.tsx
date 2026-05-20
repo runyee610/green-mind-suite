@@ -1,10 +1,12 @@
-import { AlertTriangle, Building2, Calculator, FileText, Gauge, Link2, Paperclip, Target, User } from "lucide-react";
+import { useRef, useState } from "react";
+import { AlertTriangle, Building2, Calculator, FileText, Gauge, Link2, Paperclip, Target, Upload, User, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { linkStatusStyle, type InvestmentProject } from "./assetsData";
+import { linkStatusStyle, type InvestmentProject, type ProjectAttachment } from "./assetsData";
 
 const fmt = (n: number, d = 2) => n.toLocaleString(undefined, { maximumFractionDigits: d });
 
@@ -43,13 +45,49 @@ function EnergyMetric({ label, value, unit, warn = false, hint }: { label: strin
 const sections = [
   { id: "key", label: "重点信息", icon: Target },
   { id: "energy", label: "能耗数据", icon: Gauge },
+  { id: "attachments", label: "项目附件", icon: Paperclip },
   { id: "project", label: "项目信息", icon: FileText },
   { id: "unit", label: "单位信息", icon: Building2 },
 ];
 
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
 export function ProjectDetailView({ project, onLink }: { project: InvestmentProject; onLink: () => void }) {
   const status = linkStatusStyle[project.linkStatus];
   const needLink = project.linkStatus !== "已关联";
+  const [attachments, setAttachments] = useState<ProjectAttachment[]>(project.attachments);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => fileInputRef.current?.click();
+  const handleFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const allowed = ["pdf", "doc", "docx"];
+    const today = new Date().toISOString().slice(0, 10);
+    const accepted: ProjectAttachment[] = [];
+    const rejected: string[] = [];
+    Array.from(files).forEach((f) => {
+      const ext = (f.name.split(".").pop() || "").toLowerCase();
+      if (!allowed.includes(ext)) {
+        rejected.push(f.name);
+        return;
+      }
+      accepted.push({ name: f.name, size: formatFileSize(f.size), uploadedAt: today, type: ext as "pdf" | "doc" | "docx" });
+    });
+    if (accepted.length) {
+      setAttachments((prev) => [...prev, ...accepted]);
+      toast.success(`已上传 ${accepted.length} 份附件`);
+    }
+    if (rejected.length) toast.error(`仅支持 PDF / DOC / DOCX：${rejected.join("、")}`);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+  const handleRemove = (idx: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== idx));
+    toast.success("附件已删除");
+  };
 
   return (
     <Card className="panel flex h-full min-h-[640px] flex-col">
@@ -60,7 +98,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               <CardTitle className="truncate text-base">{project.name}</CardTitle>
             </div>
             <div className="text-xs text-muted-foreground">
-              项目编号 {project.id} · {project.unitName} · {project.district}
+              {project.unitName} · {project.district}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -117,13 +155,30 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <Target className="h-4 w-4 text-primary" />重点信息
               </h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                <Field label="项目编号" value={project.id} mono />
-                <Field label="项目名称" value={project.name} span={2} />
+                <Field label="项目名称" value={project.name} span={3} />
                 <Field label="中心对口人" value={<><User className="mr-1 inline h-3.5 w-3.5" />{project.contact}</>} />
                 <Field label="关联状态" value={<Badge variant="outline">{status.label}</Badge>} />
                 <Field label="已关联企业" value={project.linkedEnterpriseName} />
                 <Field label="项目地址" value={`${project.district} · ${project.unitName}`} span={3} />
                 <Field label="建设内容" value={project.buildingContent} span={3} />
+                <Field
+                  label="是否现场检查"
+                  value={
+                    <Badge variant="outline" className={cn(project.onSiteCheck ? "border-success/40 bg-success/10 text-success" : "border-muted-foreground/30 text-muted-foreground")}>
+                      {project.onSiteCheck ? "是" : "否"}
+                    </Badge>
+                  }
+                />
+                <Field label="现场检查年份" value={project.onSiteCheckYear} mono />
+                <Field
+                  label="是否发现问题"
+                  value={
+                    <Badge variant="outline" className={cn(project.hasIssue ? "border-destructive/50 bg-destructive/10 text-destructive" : "border-success/40 bg-success/10 text-success")}>
+                      {project.hasIssue ? "是" : "否"}
+                    </Badge>
+                  }
+                />
+                <Field label="问题详情" value={project.issueDetail} warn={project.hasIssue} span={3} />
               </div>
             </section>
 
@@ -198,6 +253,55 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               })()}
             </section>
 
+            {/* 项目附件 */}
+            <section id="attachments" className="scroll-mt-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <Paperclip className="h-4 w-4 text-primary" />项目附件
+                  <Badge variant="outline" className="ml-1 border-primary/30 bg-primary/5 text-primary">{attachments.length}</Badge>
+                </h3>
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    className="hidden"
+                    onChange={(e) => handleFiles(e.target.files)}
+                  />
+                  <Button size="sm" variant="outline" className="gap-1" onClick={handleUploadClick}>
+                    <Upload className="h-3.5 w-3.5" />上传附件
+                  </Button>
+                </div>
+              </div>
+              <div className="rounded-md border border-border/60">
+                {attachments.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-muted-foreground">暂无附件，点击右上角"上传附件"添加 PDF / DOC / DOCX 文件</div>
+                ) : (
+                  <ul className="divide-y divide-border/60">
+                    {attachments.map((att, idx) => (
+                      <li key={`${att.name}-${idx}`} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <FileText className="h-4 w-4 shrink-0 text-primary" />
+                          <span className="truncate">{att.name}</span>
+                          <Badge variant="outline" className="shrink-0 uppercase">{att.type}</Badge>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
+                          <span>{att.size}</span>
+                          <span>{att.uploadedAt}</span>
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleRemove(idx)} aria-label="删除附件">
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="border-t border-border/60 px-3 py-2 text-[11px] text-muted-foreground">
+                  仅支持 PDF / DOC / DOCX 格式，支持多份同时上传
+                </div>
+              </div>
+            </section>
 
             {/* 项目信息 */}
             <section id="project" className="scroll-mt-4">
@@ -207,14 +311,9 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <Field label="开工日期" value={project.startDate} mono />
                 <Field label="竣工日期" value={project.endDate} mono />
-                <Field label="投资总额" value={`${fmt(project.investment, 0)} 万元`} mono />
                 <Field label="项目类型" value={<Badge variant="secondary">{project.projectType}</Badge>} />
                 <Field label="项目状态" value={<Badge variant="outline">建设中</Badge>} />
-                <Field label="是否已申请补贴" value={<Badge variant="outline">否</Badge>} />
-                <Field label="项目联系人" value={`${project.projectContact.name} · ${project.projectContact.phone}`} />
-                <Field label="项目联系邮箱" value={project.projectContact.email} />
-                <Field label="节能审查批复时间及文号" value={project.energyReviewDoc} span={2} />
-                <Field label="环评审批批复时间及文号" value={project.eiaReviewDoc} span={2} />
+                <Field label="节能审查批复时间及文号" value={project.energyReviewDoc} span={3} />
                 <Field label="备注" value={project.remark} span={3} />
               </div>
             </section>
