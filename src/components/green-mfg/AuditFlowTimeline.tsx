@@ -77,7 +77,6 @@ function nodeIcon(n: AuditFlowNode) {
     case "ai": return Sparkles;
     case "expert": return UserCheck;
     case "incubate": return Hourglass;
-    case "done": return Award;
     default:
       if (n.result === "通过") return Check;
       if (n.result === "驳回") return X;
@@ -92,8 +91,8 @@ function resultLabel(n: AuditFlowNode): string {
   if (n.kind === "submit") return "已提交";
   if (n.kind === "revise") return "已修改并重新提交";
   if (n.kind === "ai") return n.result === "通过" ? "AI 评分完成" : "AI 评分异常";
-  if (n.kind === "expert") return n.result === "通过" ? "审核通过" : n.result === "驳回" ? "已驳回" : n.result;
-  if (n.kind === "done") return "已颁证";
+  if (n.kind === "expert") return n.result === "通过" ? "审核通过（流程结束）" : n.result === "驳回" ? "已驳回" : n.result;
+  if (n.kind === "incubate") return "进入培育库（流程结束）";
   return n.result;
 }
 
