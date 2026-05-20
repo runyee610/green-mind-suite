@@ -287,7 +287,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <Input
                       value={keyword}
                       onChange={(e) => setKeyword(e.target.value)}
-                      placeholder="搜索企业名称 / 信用代码"
+                      placeholder="搜索企业名称"
                       className="h-8 w-64 pl-8 text-xs"
                     />
                   </div>
@@ -399,7 +399,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </div>
                     <div className="relative">
                       <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                      <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="搜索企业名称 / 信用代码" className="h-8 w-64 pl-8 text-xs" />
+                      <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="搜索企业名称" className="h-8 w-64 pl-8 text-xs" />
                     </div>
                   </div>
                 </CardHeader>
