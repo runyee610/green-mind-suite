@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, ChevronRight, Clock, FileText, ShieldCheck, ShieldX, Sparkles, UserCheck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronRight, Clock, FileText, ShieldCheck, ShieldX, Sparkles, UserCheck, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +48,7 @@ export default function GreenMfgGovDeclarationDetail() {
 
   const [approveOpen, setApproveOpen] = useState(false);
   const [cultivateOpen, setCultivateOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [activeTab, setActiveTab] = useState<string>(TABS[0].value);
   const [indicators, setIndicators] = useState<IndicatorRow[]>(EVALUATION_INDICATORS);
@@ -63,6 +64,11 @@ export default function GreenMfgGovDeclarationDetail() {
   const handleCultivate = () => {
     toast.success("已转入培育阶段，企业等级标记为「区级培育」");
     setCultivateOpen(false);
+    setComment("");
+  };
+  const handleReject = () => {
+    toast.success("已驳回，企业将收到驳回通知并可修改后重新提交");
+    setRejectOpen(false);
     setComment("");
   };
 
@@ -93,6 +99,14 @@ export default function GreenMfgGovDeclarationDetail() {
                 className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
               >
                 <Clock className="mr-1 h-4 w-4" />进入培育
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setRejectOpen(true)}
+                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <XCircle className="mr-1 h-4 w-4" />驳回
               </Button>
               <Button
                 size="sm"
@@ -247,6 +261,19 @@ export default function GreenMfgGovDeclarationDetail() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setCultivateOpen(false)}>取消</Button>
             <Button onClick={handleCultivate} className="bg-warning text-warning-foreground hover:bg-warning/90">确认转入培育</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 驳回 */}
+      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle className="text-destructive"><XCircle className="mr-2 inline h-5 w-5" />确认驳回</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">驳回后企业将收到通知，可根据驳回意见修改材料后重新提交。</p>
+          <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="驳回意见 / 整改方向（必填）" rows={4} />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectOpen(false)}>取消</Button>
+            <Button onClick={handleReject} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">确认驳回</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
