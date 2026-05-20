@@ -710,48 +710,172 @@ function buildReply(topic: Topic, text: string): Msg {
     };
   }
 
-  // matches
-  if (text.includes("高置信") || text.includes("置信")) {
-    const ids = matches.filter((m) => m.confidence >= 0.9).map((m) => m.id);
+  if (topic === "matches") {
+    if (text.includes("高置信") || text.includes("置信")) {
+      const ids = matches.filter((m) => m.confidence >= 0.9).map((m) => m.id);
+      return {
+        id, role: "agent", time: t,
+        text: `本期置信度 ≥ 90% 的撮合共 ${ids.length} 条，建议优先公示：`,
+        cards: [
+          { kind: "action", title: "高置信撮合", confidence: 0.95, detail: "条件命中证据均来自数据确权证书，可直接进入公示流程。" },
+          { kind: "match-table", ids },
+        ],
+      };
+    }
+    if (text.includes("状态") || text.includes("分布") || text.includes("漏斗")) {
+      const groups = groupBy(matches, (m) => m.status);
+      return {
+        id, role: "agent", time: t,
+        text: "撮合按状态聚合：",
+        cards: [{
+          kind: "group-bar", title: "撮合状态分布",
+          rows: groups.map(([k, v]) => ({ label: k, value: v.length, tone: k === "已拨付" ? "success" as const : "primary" as const })),
+        }],
+      };
+    }
+    if (text.includes("top") || text.includes("金额") || text.includes("最高")) {
+      const ids = [...matches].sort((a, b) => b.estimatedFunding - a.estimatedFunding).slice(0, 5).map((m) => m.id);
+      return { id, role: "agent", time: t, text: "估算金额 Top 5 的撮合：", cards: [{ kind: "match-table", ids }] };
+    }
+    if (text.includes("待公示")) {
+      const ids = matches.filter((m) => m.status === "待公示").map((m) => m.id);
+      return { id, role: "agent", time: t, text: `待公示的撮合共 ${ids.length} 条：`, cards: [{ kind: "match-table", ids }] };
+    }
+    const hit = enterprises.find((e) => text.includes(e.name) || text.includes(e.id));
+    if (hit) {
+      const ids = matches.filter((m) => m.enterpriseId === hit.id).map((m) => m.id);
+      return { id, role: "agent", time: t, text: `${hit.name} 的全部撮合记录（${ids.length} 条）：`, cards: [{ kind: "match-table", ids }] };
+    }
     return {
       id, role: "agent", time: t,
-      text: `本期置信度 ≥ 90% 的撮合共 ${ids.length} 条，建议优先公示：`,
-      cards: [
-        { kind: "action", title: "高置信撮合", confidence: 0.95, detail: "条件命中证据均来自数据确权证书，可直接进入公示流程。" },
-        { kind: "match-table", ids },
-      ],
+      text: "已列出全部撮合。可继续问：「高置信撮合」「金额 Top 5」「待公示」「按状态分布」「<企业名> 的撮合」。",
+      cards: [{ kind: "match-table", ids: matches.map((m) => m.id) }],
     };
   }
-  if (text.includes("状态") || text.includes("分布") || text.includes("漏斗")) {
-    const groups = groupBy(matches, (m) => m.status);
+
+  // disburse topic
+  const period = resolvePeriod(text);
+  if (text.includes("阶段") || text.includes("漏斗") || text.includes("状态")) {
+    const filtered = disbursements.filter(period.filter);
     return {
       id, role: "agent", time: t,
-      text: "撮合按状态聚合：",
+      text: `${period.label}的资金拨付阶段漏斗（共 ${filtered.length} 笔）：`,
       cards: [{
-        kind: "group-bar", title: "撮合状态分布",
-        rows: groups.map(([k, v]) => ({ label: k, value: v.length, tone: k === "已拨付" ? "success" as const : "primary" as const })),
+        kind: "group-bar", title: `${period.label} · 按阶段笔数`,
+        rows: groupBy(filtered, (d) => d.stage).map(([k, v]) => ({
+          label: k, value: v.length,
+          tone: k === "已到账" ? "success" : k === "财政划拨中" ? "warning" : "info",
+        })),
       }],
     };
   }
-  if (text.includes("top") || text.includes("金额") || text.includes("最高")) {
-    const ids = [...matches].sort((a, b) => b.estimatedFunding - a.estimatedFunding).slice(0, 5).map((m) => m.id);
-    return { id, role: "agent", time: t, text: "估算金额 Top 5 的撮合：", cards: [{ kind: "match-table", ids }] };
+  if (text.includes("行政区") || text.includes("区域") || text.includes("分布")) {
+    const filtered = disbursements.filter(period.filter);
+    const rows = groupBy(filtered, (d) => findEnterprise(d.enterpriseId)?.district ?? "未知")
+      .map(([k, v]) => ({ label: k, value: v.reduce((s, d) => s + d.amount, 0), tone: "primary" as const }));
+    return {
+      id, role: "agent", time: t,
+      text: `${period.label}按行政区拨付金额（万元）：`,
+      cards: [{ kind: "group-bar", title: `${period.label} · 按行政区拨付金额`, rows }],
+    };
   }
-  if (text.includes("待公示")) {
-    const ids = matches.filter((m) => m.status === "待公示").map((m) => m.id);
-    return { id, role: "agent", time: t, text: `待公示的撮合共 ${ids.length} 条：`, cards: [{ kind: "match-table", ids }] };
+  if (text.includes("政策") || text.includes("汇总")) {
+    const filtered = disbursements.filter(period.filter);
+    const rows = groupBy(filtered, (d) => findPolicy(d.policyId)?.name ?? d.policyId)
+      .map(([k, v]) => ({ label: k.length > 12 ? k.slice(0, 12) + "…" : k, value: v.reduce((s, d) => s + d.amount, 0), tone: "info" as const }));
+    return {
+      id, role: "agent", time: t,
+      text: `${period.label}按政策汇总拨付金额（万元）：`,
+      cards: [{ kind: "group-bar", title: `${period.label} · 按政策拨付金额`, rows }],
+    };
   }
-  // 按企业聚合
-  const hit = enterprises.find((e) => text.includes(e.name) || text.includes(e.id));
-  if (hit) {
-    const ids = matches.filter((m) => m.enterpriseId === hit.id).map((m) => m.id);
-    return { id, role: "agent", time: t, text: `${hit.name} 的全部撮合记录（${ids.length} 条）：`, cards: [{ kind: "match-table", ids }] };
+  if (text.includes("已到账") || text.includes("到账明细")) {
+    const ids = disbursements.filter(period.filter).filter((d) => d.stage === "已到账").map((d) => d.id);
+    return { id, role: "agent", time: t, text: `${period.label}已到账明细共 ${ids.length} 笔：`, cards: [{ kind: "disburse-list", ids }] };
+  }
+  if (text.includes("top") || text.includes("最大") || text.includes("最高")) {
+    const ids = [...disbursements].filter(period.filter).sort((a, b) => b.amount - a.amount).slice(0, 5).map((d) => d.id);
+    return { id, role: "agent", time: t, text: `${period.label}金额 Top 5 拨付：`, cards: [{ kind: "disburse-list", ids }] };
   }
   return {
     id, role: "agent", time: t,
-    text: "已列出全部撮合。可继续问：「高置信撮合」「金额 Top 5」「待公示」「按状态分布」「<企业名> 的撮合」。",
-    cards: [{ kind: "match-table", ids: matches.map((m) => m.id) }],
+    text: `已为您生成 ${period.label} 的资金拨付看板，可继续追问：「按阶段漏斗」「按行政区分布」「按政策汇总」「已到账明细」「金额 Top 5」。`,
+    cards: buildDisburseDashboard(period.label, period.filter),
   };
+}
+
+// ---------- 资金拨付：时间周期与看板 ----------
+interface PeriodSpec { label: string; filter: (d: Disbursement) => boolean }
+
+function resolvePeriod(text: string): PeriodSpec {
+  // 锚定 mock 数据时间：2026-05
+  const ANCHOR = new Date("2026-05-18");
+  const parseTime = (d: Disbursement) => new Date(d.timeline[d.timeline.length - 1].time.replace(" ", "T"));
+
+  // 2026 年 X 月
+  const ym = text.match(/(20\d{2})\s*年\s*(\d{1,2})\s*月/);
+  if (ym) {
+    const y = +ym[1], m = +ym[2];
+    return {
+      label: `${y} 年 ${m} 月`,
+      filter: (d) => { const dt = parseTime(d); return dt.getFullYear() === y && dt.getMonth() + 1 === m; },
+    };
+  }
+  // 第 N 季度 / QN
+  const q = text.match(/(?:Q|q|第)\s*([1-4])\s*季?度?/);
+  if (q) {
+    const qi = +q[1];
+    return {
+      label: `2026 Q${qi}`,
+      filter: (d) => { const dt = parseTime(d); return dt.getFullYear() === 2026 && Math.floor(dt.getMonth() / 3) + 1 === qi; },
+    };
+  }
+  // 近 N 天
+  const lastN = text.match(/近\s*(\d{1,3})\s*天/);
+  if (lastN) {
+    const days = +lastN[1];
+    const start = new Date(ANCHOR); start.setDate(start.getDate() - days);
+    return { label: `近 ${days} 天`, filter: (d) => parseTime(d) >= start && parseTime(d) <= ANCHOR };
+  }
+  if (text.includes("今年") || text.includes("本年")) {
+    return { label: "2026 年", filter: (d) => parseTime(d).getFullYear() === 2026 };
+  }
+  if (text.includes("本周") || text.includes("这周")) {
+    const start = new Date(ANCHOR); start.setDate(start.getDate() - 7);
+    return { label: "本周", filter: (d) => parseTime(d) >= start && parseTime(d) <= ANCHOR };
+  }
+  if (text.includes("上月")) {
+    return { label: "2026 年 4 月", filter: (d) => { const dt = parseTime(d); return dt.getFullYear() === 2026 && dt.getMonth() + 1 === 4; } };
+  }
+  // 默认：本月（2026-05）
+  return { label: "本月（2026 年 5 月）", filter: (d) => { const dt = parseTime(d); return dt.getFullYear() === 2026 && dt.getMonth() + 1 === 5; } };
+}
+
+function buildDisburseDashboard(label: string, filter: (d: Disbursement) => boolean): Card[] {
+  const list = disbursements.filter(filter);
+  const total = list.reduce((s, d) => s + d.amount, 0);
+  const arrived = list.filter((d) => d.stage === "已到账");
+  const arrivedAmt = arrived.reduce((s, d) => s + d.amount, 0);
+  const inflight = list.filter((d) => d.stage === "财政划拨中");
+  return [
+    {
+      kind: "kpi-grid", title: `${label} · 资金拨付看板`,
+      cells: [
+        { label: "拨付笔数", value: `${list.length}`, tone: "primary" },
+        { label: "拨付总额", value: `${total} 万`, tone: "info" },
+        { label: "已到账", value: `${arrivedAmt} 万`, tone: "success" },
+        { label: "在途", value: `${inflight.length} 笔`, tone: "warning" },
+      ],
+    },
+    {
+      kind: "group-bar", title: `${label} · 按阶段笔数`,
+      rows: groupBy(list, (d) => d.stage).map(([k, v]) => ({
+        label: k, value: v.length,
+        tone: k === "已到账" ? "success" as const : k === "财政划拨中" ? "warning" as const : "info" as const,
+      })),
+    },
+    { kind: "disburse-list", ids: list.map((d) => d.id) },
+  ];
 }
 
 function groupBy<T>(arr: T[], key: (x: T) => string): Array<[string, T[]]> {
