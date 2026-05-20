@@ -19,6 +19,8 @@ export interface InvestmentProject {
   // 能耗
   approvedEnergy: number; // 批复年综合能耗（等价值，吨标煤）
   collectedEnergy: number; // 采集综合能耗（等价值）
+  collectedUpdatedAt: string; // 采集综合能耗更新时间（YYYY-MM-DD）
+  lastYearCollectedEnergy: number; // 上一年度采集综合能耗（等价值，吨标煤）
   actualSavingTce: number; // 2025 实际节能量（万吨标煤）
   actualSavingKwh: number; // 2025 实际节电量（万千瓦时）
   remainingSaving: number; // 剩余可用节能量（万吨标煤）
