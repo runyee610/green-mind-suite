@@ -178,72 +178,152 @@ export default function Assets() {
               </div>
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <div className="relative min-w-[260px] flex-1">
-                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="项目名称 / 单位名称模糊搜索" className="h-9 pl-9" />
+            <div className="mt-3 space-y-3">
+              {/* 顶部紧凑行：搜索 + 激活芯片 + 控制 */}
+              <div className="flex items-center gap-3">
+                <div className="relative min-w-[240px] flex-1">
+                  <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    placeholder="搜索项目名称 / 单位名称…"
+                    className="h-9 rounded-lg bg-muted/40 pl-9 focus-visible:bg-background"
+                  />
+                </div>
+
+                {activeChips.length > 0 && (
+                  <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto">
+                    {activeChips.map((c) => (
+                      <button
+                        key={c.key}
+                        type="button"
+                        onClick={c.remove}
+                        className="group flex shrink-0 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[11px] text-primary hover:bg-primary/15"
+                      >
+                        <span className="opacity-70">{c.label}:</span>
+                        <span className="font-medium">{c.value}</span>
+                        <X className="h-3 w-3 opacity-60 group-hover:opacity-100" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex shrink-0 items-center gap-1 border-l border-border/60 pl-3">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-9 w-9 p-0 text-muted-foreground hover:text-primary"
+                    onClick={reset}
+                    title="重置筛选"
+                    disabled={activeChips.length === 0 && !keyword}
+                  >
+                    <FilterX className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={filtersOpen ? "secondary" : "outline"}
+                    className="h-9 gap-1.5"
+                    onClick={() => setFiltersOpen((v) => !v)}
+                  >
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                    高级筛选
+                    {totalActive > 0 && (
+                      <Badge variant="secondary" className="ml-0.5 h-5 bg-primary/15 px-1.5 text-primary">{totalActive}</Badge>
+                    )}
+                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", filtersOpen && "rotate-180")} />
+                  </Button>
+                </div>
               </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 gap-1">
-                    <MapPin className="h-3.5 w-3.5" />所属区
-                    {districtFilter.length > 0 && <Badge variant="secondary" className="ml-1 h-5 px-1.5">{districtFilter.length}</Badge>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-44 p-2" align="start">
-                  {districts.map((d) => {
-                    const checked = districtFilter.includes(d);
-                    return (
-                      <label key={d} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
-                        <Checkbox checked={checked} onCheckedChange={(v) => setDistrictFilter((arr) => v ? [...arr, d] : arr.filter((x) => x !== d))} />
-                        <span>{d}</span>
-                      </label>
-                    );
-                  })}
-                </PopoverContent>
-              </Popover>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 gap-1">
-                    <Activity className="h-3.5 w-3.5" />状态
-                    {statusFilter.length > 0 && <Badge variant="secondary" className="ml-1 h-5 px-1.5">{statusFilter.length}</Badge>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-40 p-2" align="start">
-                  {ALL_STATUSES.map((s) => {
-                    const checked = statusFilter.includes(s);
-                    return (
-                      <label key={s} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
-                        <Checkbox checked={checked} onCheckedChange={(v) => setStatusFilter((arr) => v ? [...arr, s] : arr.filter((x) => x !== s))} />
-                        <span>{s}</span>
-                      </label>
-                    );
-                  })}
-                </PopoverContent>
-              </Popover>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 gap-1">
-                    <Factory className="h-3.5 w-3.5" />关联企业行业
-                    {industryFilter.length > 0 && <Badge variant="secondary" className="ml-1 h-5 px-1.5">{industryFilter.length}</Badge>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-72 p-2" align="start">
-                  <div className="mb-1 px-2 py-1 text-[11px] text-muted-foreground">仅在有关联企业的项目中筛选</div>
-                  {linkedIndustries.map((ind) => {
-                    const checked = industryFilter.includes(ind);
-                    return (
-                      <label key={ind} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
-                        <Checkbox checked={checked} onCheckedChange={(v) => setIndustryFilter((arr) => v ? [...arr, ind] : arr.filter((x) => x !== ind))} />
-                        <span className="truncate">{ind}</span>
-                      </label>
-                    );
-                  })}
-                </PopoverContent>
-              </Popover>
-              <Button size="sm" variant="ghost" className="h-9 gap-1" onClick={reset}>
-                <FilterX className="h-3.5 w-3.5" />重置
-              </Button>
+
+              {/* 可折叠面板 */}
+              {filtersOpen && (
+                <div className="grid gap-3 rounded-xl border border-dashed border-border/60 bg-muted/30 p-3 md:grid-cols-3">
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">所属区</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2">
+                            <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className={cn(districtFilter.length === 0 && "text-muted-foreground")}>
+                              {districtFilter.length === 0 ? "全部区" : `已选 ${districtFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 p-2" align="start">
+                        {districts.map((d) => {
+                          const checked = districtFilter.includes(d);
+                          return (
+                            <label key={d} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setDistrictFilter((arr) => v ? [...arr, d] : arr.filter((x) => x !== d))} />
+                              <span>{d}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">状态</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2">
+                            <Activity className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className={cn(statusFilter.length === 0 && "text-muted-foreground")}>
+                              {statusFilter.length === 0 ? "全部状态" : `已选 ${statusFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-48 p-2" align="start">
+                        {ALL_STATUSES.map((s) => {
+                          const checked = statusFilter.includes(s);
+                          return (
+                            <label key={s} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setStatusFilter((arr) => v ? [...arr, s] : arr.filter((x) => x !== s))} />
+                              <span>{s}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">关联企业行业</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2 truncate">
+                            <Factory className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                            <span className={cn("truncate", industryFilter.length === 0 && "text-muted-foreground")}>
+                              {industryFilter.length === 0 ? "全部行业" : `已选 ${industryFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 p-2" align="start">
+                        <div className="mb-1 px-2 py-1 text-[11px] text-muted-foreground">仅在有关联企业的项目中筛选</div>
+                        {linkedIndustries.map((ind) => {
+                          const checked = industryFilter.includes(ind);
+                          return (
+                            <label key={ind} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setIndustryFilter((arr) => v ? [...arr, ind] : arr.filter((x) => x !== ind))} />
+                              <span className="truncate">{ind}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+              )}
             </div>
           </CardHeader>
 
