@@ -206,6 +206,17 @@ export function EntChatConsole({ topic, initialPolicyId, initialQuery }: { topic
 
         {/* 主区 */}
         <section className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-card">
+          {/* tech grid background */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+              maskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+              WebkitMaskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+            }}
+          />
           {/* 背景光晕 */}
           <div className="pointer-events-none absolute -top-24 right-10 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 -left-10 h-48 w-48 rounded-full bg-info/10 blur-3xl" />
