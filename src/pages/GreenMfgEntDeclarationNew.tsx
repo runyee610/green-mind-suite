@@ -157,7 +157,7 @@ export default function GreenMfgEntDeclarationNew() {
       <Card className="panel mb-4">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3">
           <div className="flex items-center gap-2">
-            <Label className="text-xs text-muted-foreground">申报批次</Label>
+            <Label className="text-xs text-muted-foreground">评价批次</Label>
             <Select value={batch} onValueChange={setBatch}>
               <SelectTrigger className="h-8 w-[180px] text-xs">
                 <SelectValue placeholder="请选择批次" />
