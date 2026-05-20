@@ -235,7 +235,7 @@ export default function GreenMfgEntDeclarationDetail() {
           <BasicRequirementsCard />
         </TabsContent>
         <TabsContent value="evaluation-indicator" className="mt-0">
-          <EvaluationIndicatorCard mode="ent" />
+          <EvaluationIndicatorCard mode="view" />
         </TabsContent>
         <TabsContent value="authenticity-commitment" className="mt-0">
           <AuthenticityCommitmentCard defaultSignedFileName="真实性承诺函-签章扫描件.pdf" />
