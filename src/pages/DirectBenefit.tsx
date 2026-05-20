@@ -107,12 +107,12 @@ export default function DirectBenefit() {
             <div className="px-1.5 py-1.5">
               <div className="flex items-center gap-2 rounded-md bg-primary/10 px-2 py-1.5 text-xs text-foreground">
                 <MessageSquare className="h-3.5 w-3.5 text-primary" />
-                <span className="flex-1 truncate">今日工作台</span>
+                <span className="flex-1 truncate text-sm">今日工作台</span>
                 <span className="font-mono text-[9px] text-muted-foreground">{NOW}</span>
               </div>
               <div className="mt-0.5 flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/40">
                 <MessageSquare className="h-3.5 w-3.5" />
-                <span className="flex-1 truncate">{role === "gov" ? "上周拨付复盘" : "Q1 政策匹配"}</span>
+                <span className="flex-1 truncate text-sm">{role === "gov" ? "上周拨付复盘" : "Q1 政策匹配"}</span>
                 <Trash2 className="h-3 w-3 opacity-0 group-hover:opacity-100" />
               </div>
             </div>
