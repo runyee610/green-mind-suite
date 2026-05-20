@@ -56,7 +56,7 @@ export default function GreenMfgGovDeclarationDetail() {
   const totalWeight = SCORE_DIMENSIONS.reduce((s, d) => s + d.weight, 0);
 
   const handleApprove = () => {
-    toast.success(detail.stage === "市审核" ? "已上报市级审批" : "已上报，颁发市级绿色工厂");
+    toast.success(detail.stage === "待审核" ? "已通过审核，颁发市级绿色工厂" : "已上报，颁发市级绿色工厂");
     setApproveOpen(false);
     setComment("");
   };
