@@ -146,12 +146,12 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
                 <MessageSquare className="h-3.5 w-3.5 text-primary" />
                 <span className="flex-1 truncate text-sm">{meta.title}</span>
               </div>
-              {(["policies", "enterprises", "matches"] as Topic[])
+              {(["policies", "enterprises", "matches", "disburse"] as Topic[])
                 .filter((t) => t !== topic)
                 .map((t) => (
                   <button
                     key={t}
-                    onClick={() => navigate(`/direct-benefit/gov/${t === "policies" ? "policies" : t === "enterprises" ? "entprofile" : "matches"}`)}
+                    onClick={() => navigate(TOPIC_ROUTE[t])}
                     className="mt-0.5 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/40"
                   >
                     <MessageSquare className="h-3.5 w-3.5" />
