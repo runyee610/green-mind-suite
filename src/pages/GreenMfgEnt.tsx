@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Send, Sparkles, Sprout, Target, Undo2 } from "lucide-react";
+import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Send, Sparkles, Sprout, Target } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,20 +19,17 @@ import { MOCK_RISKS } from "@/components/green-mfg/dynamicExtData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// 本地"审核推荐"记录（含流转状态，支持撤回）
-type SelfAssessStage = "填写中" | "待审核" | "已驳回" | "已完成";
+// 本地"审核推荐"记录（仅 AI 智能体分析打分，不提交）
 interface SelfAssessRecord {
   id: string;
-  batch: string;
   date: string;
   aiScore: number;
-  stage: SelfAssessStage;
   note?: string;
 }
-const INITIAL_SELF_ASSESS: SelfAssessRecord[] = [
-  { id: "SA-2025-003", batch: "2025年第二批", date: "2025-09-20", aiScore: 78, stage: "待审核", note: "新增 3 项绿色产品后再评" },
-  { id: "SA-2025-002", batch: "2025年第一批", date: "2025-08-12", aiScore: 72, stage: "已驳回" },
-  { id: "SA-2025-001", batch: "2024年第二批", date: "2025-06-04", aiScore: 65, stage: "已完成", note: "首次试评" },
+const MOCK_SELF_ASSESS: SelfAssessRecord[] = [
+  { id: "SA-2025-003", date: "2025-09-20", aiScore: 78, note: "新增 3 项绿色产品后再评" },
+  { id: "SA-2025-002", date: "2025-08-12", aiScore: 72 },
+  { id: "SA-2025-001", date: "2025-06-04", aiScore: 65, note: "首次试评" },
 ];
 
 export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
@@ -49,23 +46,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
   const entRiskOpen = MOCK_RISKS.filter((r) => r.creditCode === entCreditCode && r.status !== "已关闭").length;
   const isGreenFactory = myDeclaration.stage === "已完成";
 
-  const [selfAssessList, setSelfAssessList] = useState<SelfAssessRecord[]>(INITIAL_SELF_ASSESS);
-  const latestSelf = selfAssessList[0];
-  // 最近一个待审核的记录 id（用于判定撤回按钮）
-  const withdrawableId = useMemo(() => selfAssessList.find((r) => r.stage === "待审核")?.id, [selfAssessList]);
-  const handleWithdraw = (id: string) => {
-    setSelfAssessList((list) => list.map((r) => (r.id === id ? { ...r, stage: "填写中" as const } : r)));
-    toast.success("已撤回，状态变更为「填写中」");
-  };
-
-  const stageClass = (s: SelfAssessStage) => {
-    switch (s) {
-      case "已完成": return "border-success/40 bg-success/10 text-success";
-      case "待审核": return "border-primary/40 bg-primary/10 text-primary";
-      case "已驳回": return "border-destructive/40 bg-destructive/10 text-destructive";
-      default: return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
-    }
-  };
+  const latestSelf = MOCK_SELF_ASSESS[0];
 
   return (
     <AppLayout
@@ -126,23 +107,19 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>提交批次</TableHead>
+                    <TableHead>评估编号</TableHead>
                     <TableHead className="text-center">AI 智能打分</TableHead>
-                    <TableHead className="text-center">流转状态</TableHead>
                     <TableHead>备注</TableHead>
                     <TableHead>评估日期</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {selfAssessList.map((r) => (
+                  {MOCK_SELF_ASSESS.map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell className="font-mono text-xs">{r.batch}</TableCell>
+                      <TableCell className="font-mono text-xs">{r.id}</TableCell>
                       <TableCell className="text-center font-mono text-xs">
                         <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="outline" className={stageClass(r.stage)}>{r.stage}</Badge>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.note ?? "—"}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{r.date}</TableCell>
@@ -151,23 +128,12 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                           <Button size="sm" variant="ghost" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${myDeclaration.id}?mode=self`)}>
                             <Eye className="mr-1 h-3 w-3" />查看
                           </Button>
-                          {r.id === withdrawableId ? (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                              onClick={() => handleWithdraw(r.id)}
-                            >
-                              <Undo2 className="mr-1 h-3 w-3" />撤回
-                            </Button>
-                          ) : (
-                            <Button size="sm" variant="outline" className="h-7" onClick={() => {
-                              toast.success("已基于此次自评价数据创建专家审核推荐草稿");
-                              navigate("/green-mfg/ent/declaration/new");
-                            }}>
-                              <Send className="mr-1 h-3 w-3" />提交审核
-                            </Button>
-                          )}
+                          <Button size="sm" variant="outline" className="h-7" onClick={() => {
+                            toast.success("已基于此次自评价数据创建专家审核推荐草稿");
+                            navigate("/green-mfg/ent/declaration/new");
+                          }}>
+                            <Send className="mr-1 h-3 w-3" />提交审核
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
