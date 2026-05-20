@@ -98,7 +98,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               <CardTitle className="truncate text-base">{project.name}</CardTitle>
             </div>
             <div className="text-xs text-muted-foreground">
-              项目编号 {project.id} · {project.unitName} · {project.district}
+              {project.unitName} · {project.district}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
