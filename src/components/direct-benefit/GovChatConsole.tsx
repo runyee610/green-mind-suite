@@ -590,22 +590,32 @@ function buildInitial(topic: Topic): Msg[] {
       },
     ];
   }
-  // matches
+  if (topic === "matches") {
+    return [
+      {
+        id: "m1", role: "agent", time: t,
+        text: "您好，这里是「撮合名单」对话工作台。我已基于企业数据确权证书与政策条件生成本期撮合。您可以直接说「高置信」「按状态分布」「金额 Top N」等。下面是默认快照：",
+        cards: [
+          {
+            kind: "group-bar",
+            title: "撮合按状态分布",
+            rows: groupBy(matches, (m) => m.status).map(([k, v]) => ({
+              label: k, value: v.length,
+              tone: k === "已拨付" ? "success" : k === "已驳回" ? "warning" : "primary",
+            })),
+          },
+          { kind: "match-table", ids: matches.slice(0, 5).map((m) => m.id) },
+        ],
+      },
+    ];
+  }
+  // disburse
+  const period = resolvePeriod("本月");
   return [
     {
-      id: "m1", role: "agent", time: t,
-      text: "您好，这里是「撮合名单」对话工作台。我已基于企业数据确权证书与政策条件生成本期撮合。您可以直接说「高置信」「按状态分布」「金额 Top N」等。下面是默认快照：",
-      cards: [
-        {
-          kind: "group-bar",
-          title: "撮合按状态分布",
-          rows: groupBy(matches, (m) => m.status).map(([k, v]) => ({
-            label: k, value: v.length,
-            tone: k === "已拨付" ? "success" : k === "已驳回" ? "warning" : "primary",
-          })),
-        },
-        { kind: "match-table", ids: matches.slice(0, 5).map((m) => m.id) },
-      ],
+      id: "d1", role: "agent", time: t,
+      text: `您好，这里是「资金拨付」对话工作台。告诉我一个时间周期（如「本月」「近 30 天」「2026 年 5 月」「Q2」），我会立刻生成资金拨付看板。下方默认展示 ${period.label}：`,
+      cards: buildDisburseDashboard(period.label, period.filter),
     },
   ];
 }
