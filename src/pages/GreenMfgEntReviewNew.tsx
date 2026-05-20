@@ -148,21 +148,21 @@ export default function GreenMfgEntReviewNew() {
 
   const handleSubmit = () => {
     if (!batch) {
-      toast.warning("请选择审核推荐批次");
+      toast.warning("请选择自我评价批次");
       return;
     }
     if (usedBatches.includes(batch)) {
       toast.error("该批次已存在评价记录，请选择其他批次");
       return;
     }
-    toast.success("审核推荐已提交,等待区级审核");
+    toast.success("自我评价已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent/review"), 600);
   };
 
   return (
     <AppLayout
-      title="绿色工厂审核推荐"
+      title="绿色工厂自我评价"
       subtitle={
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span><span className="text-muted-foreground/60">企业名称</span> · {DEFAULT_ENTERPRISE.name}</span>
@@ -174,7 +174,7 @@ export default function GreenMfgEntReviewNew() {
       <Card className="panel mb-4">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3">
           <div className="flex items-center gap-2">
-            <Label className="text-xs text-muted-foreground whitespace-nowrap">审核推荐批次</Label>
+            <Label className="text-xs text-muted-foreground whitespace-nowrap">自我评价批次</Label>
             <Select value={batch} onValueChange={setBatch}>
               <SelectTrigger className="h-9 w-[180px]">
                 <SelectValue placeholder="请选择批次" />

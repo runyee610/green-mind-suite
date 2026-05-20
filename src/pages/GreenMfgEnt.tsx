@@ -53,12 +53,12 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理 · 申能电力设备股份有限公司"
-          : "绿色工厂模拟自我评价-上海宝武特种合金有限公司"
+          : "绿色工厂自我评价（模拟）-上海宝武特种合金有限公司"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表填报"
-          : "模拟自我评价、AI 智能打分、审核推荐申报"
+          : "自我评价（模拟）、AI 智能打分、审核推荐申报"
       }
     >
       <Tabs value={tab} onValueChange={setTab}>
@@ -129,7 +129,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                             <Eye className="mr-1 h-3 w-3" />查看
                           </Button>
                           <Button size="sm" variant="outline" className="h-7" onClick={() => {
-                            toast.success("已基于此次自评价数据创建审核推荐草稿");
+                            toast.success("已基于此次自评价数据创建专家审核推荐草稿");
                             navigate("/green-mfg/ent/declaration/new");
                           }}>
                             <Send className="mr-1 h-3 w-3" />提交审核

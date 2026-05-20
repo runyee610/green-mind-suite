@@ -251,7 +251,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理"
-          : "模拟自我评价"
+          : "审核推荐"
       }
       subtitle={
         section === "dynamic"
@@ -261,7 +261,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="模拟自我评价" value={MOCK_DECLARATIONS.length} accent="primary" />
+        <KpiTile icon={ClipboardList} label="审核推荐" value={MOCK_DECLARATIONS.length} accent="primary" />
         <KpiTile icon={Clock} label="待审核" value={MOCK_DECLARATIONS.filter((d) => d.stage === "待审核").length} accent="primary" />
         <KpiTile icon={XCircle} label="已驳回" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已驳回").length} accent="warning" />
         <KpiTile icon={CheckCircle2} label="已完成" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已完成").length} accent="success" />
@@ -270,7 +270,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       <Tabs value={tab} onValueChange={setTab}>
         {!section && (
           <TabsList>
-            <TabsTrigger value="declaration">模拟自我评价</TabsTrigger>
+            <TabsTrigger value="declaration">审核推荐</TabsTrigger>
             <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
           </TabsList>
         )}
@@ -280,7 +280,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <CardTitle className="text-base">模拟自我评价列表</CardTitle>
+                <CardTitle className="text-base">审核推荐列表</CardTitle>
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -371,7 +371,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     );
                   })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家模拟自我评价</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家审核推荐</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
