@@ -61,6 +61,16 @@ export default function Assets() {
     });
   }, [keyword, districtFilter, statusFilter, industryFilter]);
 
+  const totalActive = districtFilter.length + statusFilter.length + industryFilter.length;
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const activeChips = useMemo(() => {
+    const chips: { key: string; label: string; value: string; remove: () => void }[] = [];
+    districtFilter.forEach((d) => chips.push({ key: `d-${d}`, label: "区", value: d, remove: () => setDistrictFilter((arr) => arr.filter((x) => x !== d)) }));
+    statusFilter.forEach((s) => chips.push({ key: `s-${s}`, label: "状态", value: s, remove: () => setStatusFilter((arr) => arr.filter((x) => x !== s)) }));
+    industryFilter.forEach((i) => chips.push({ key: `i-${i}`, label: "行业", value: i, remove: () => setIndustryFilter((arr) => arr.filter((x) => x !== i)) }));
+    return chips;
+  }, [districtFilter, statusFilter, industryFilter]);
+
   const stats = useMemo(() => {
     const total = projects.length;
     return [
