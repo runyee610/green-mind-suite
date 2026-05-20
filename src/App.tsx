@@ -48,6 +48,8 @@ import DirectBenefitDataSources from "./pages/DirectBenefitDataSources.tsx";
 import DirectBenefitPolicyDetail from "./pages/DirectBenefitPolicyDetail.tsx";
 import DirectBenefitMatchDetail from "./pages/DirectBenefitMatchDetail.tsx";
 import DirectBenefitEntProfileDetail from "./pages/DirectBenefitEntProfileDetail.tsx";
+import DirectBenefitAllPolicies from "./pages/DirectBenefitAllPolicies.tsx";
+import { EntChatConsole } from "./components/direct-benefit/EntChatConsole";
 
 const queryClient = new QueryClient();
 
