@@ -1,5 +1,6 @@
 export type LinkStatus = "已关联" | "待关联" | "待确认";
 export type ProjectType = "新建" | "改建" | "扩建" | "迁建";
+export type ProjectStatus = "筹建中" | "建设中" | "已竣工" | "已暂停";
 export type UnitNature = "央企" | "地方国企" | "民营企业" | "外资企业" | "其他";
 
 export interface Contact {
@@ -45,6 +46,7 @@ export interface InvestmentProject {
   investment: number; // 投资总额（万元）
   projectContact: Contact;
   projectType: ProjectType;
+  status: ProjectStatus;
   buildingContent: string;
   energyReviewDoc: string;
   eiaReviewDoc: string;
@@ -91,6 +93,7 @@ onSiteCheck: true,
     investment: 186500,
     projectContact: { name: "孙立军", phone: "13901234567", email: "sunlj@baosteel.com" },
     projectType: "改建",
+    status: "建设中",
     buildingContent: "新建 150t 电炉 1 座，配套二次除尘、连铸连轧机组及智能能源管控平台。",
     energyReviewDoc: "沪发改环资节〔2024〕38 号",
     eiaReviewDoc: "沪环保许字〔2024〕021 号 / 2024-01-26",
@@ -130,6 +133,7 @@ onSiteCheck: true,
     investment: 92000,
     projectContact: { name: "黄启明", phone: "13701112233", email: "huangqm@sinopec.com" },
     projectType: "改建",
+    status: "建设中",
     buildingContent: "对乙烯裂解炉烟气余热进行梯级回收，新增 4 台 SHA 余热锅炉。",
     energyReviewDoc: "沪发改环资节〔2023〕112 号",
     eiaReviewDoc: "沪环保许字〔2023〕086 号 / 2023-06-12",
@@ -166,6 +170,7 @@ onSiteCheck: false,
     investment: 58600,
     projectContact: { name: "汪建宇", phone: "13601239988", email: "wangjy@huayi.com" },
     projectType: "新建",
+    status: "筹建中",
     buildingContent: "新建年产 5 万吨甲基丙烯酸甲酯（MMA）低碳示范线，配套蒸汽自给及绿电直供。",
     energyReviewDoc: "沪发改环资节〔2025〕014 号",
     eiaReviewDoc: "沪环保许字〔2025〕007 号 / 2025-02-22",
@@ -205,6 +210,7 @@ onSiteCheck: true,
     investment: 246000,
     projectContact: { name: "罗振宇", phone: "13816667788", email: "luozy@saicmotor.com" },
     projectType: "扩建",
+    status: "建设中",
     buildingContent: "扩建临港工厂三期冲焊涂总四大工艺，年增 25 万辆纯电整车产能。",
     energyReviewDoc: "沪发改环资节〔2024〕073 号",
     eiaReviewDoc: "沪环保许字〔2024〕045 号 / 2024-04-18",
@@ -242,6 +248,7 @@ onSiteCheck: true,
     investment: 73500,
     projectContact: { name: "崔思远", phone: "13509990012", email: "cuisy@idc-jd.cn" },
     projectType: "改建",
+    status: "建设中",
     buildingContent: "对 8MW 机房群采用液冷+间接蒸发冷却方案，PUE 从 1.45 降至 1.18。",
     energyReviewDoc: "沪发改环资节〔2024〕158 号",
     eiaReviewDoc: "沪环保许字〔2024〕112 号 / 2024-09-20",
@@ -280,6 +287,7 @@ onSiteCheck: false,
     investment: 21800,
     projectContact: { name: "蒋丽萍", phone: "13002224455", email: "jianglp@brightdairy.com" },
     projectType: "扩建",
+    status: "已竣工",
     buildingContent: "新建 1.2 万平方米全自动冷库，采用 CO₂ 跨临界制冷与光储直柔系统。",
     energyReviewDoc: "沪发改环资节〔2024〕101 号",
     eiaReviewDoc: "沪环保许字〔2024〕067 号 / 2024-06-30",
@@ -317,6 +325,7 @@ onSiteCheck: false,
     investment: 312000,
     projectContact: { name: "钱伟", phone: "13218876655", email: "qianwei@waigaoqiao.com" },
     projectType: "迁建",
+    status: "筹建中",
     buildingContent: "迁建 30 万吨级船坞，配套岸电、太阳能光伏 20MW 及智慧能源平台。",
     energyReviewDoc: "沪发改环资节〔2025〕022 号",
     eiaReviewDoc: "沪环保许字〔2025〕015 号 / 2025-04-02",
@@ -355,6 +364,7 @@ onSiteCheck: true,
     investment: 18900,
     projectContact: { name: "施梦琪", phone: "13755669988", email: "shimq@minxin-energy.com" },
     projectType: "新建",
+    status: "已竣工",
     buildingContent: "全区工商业屋顶分布式光伏 85MW，配套 12MWh 储能。",
     energyReviewDoc: "沪发改环资节〔2024〕045 号",
     eiaReviewDoc: "沪环保许字〔2024〕012 号 / 2024-01-08",
