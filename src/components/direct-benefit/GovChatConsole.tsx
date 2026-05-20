@@ -93,6 +93,7 @@ interface Msg {
   text?: string;
   cards?: Card[];
   time: string;
+  hero?: boolean;
 }
 
 const NOW = () => {
@@ -104,17 +105,30 @@ const NOW = () => {
 export function GovChatConsole({ topic }: { topic: Topic }) {
   const meta = TOPIC_META[topic];
   const navigate = useNavigate();
+  const location = useLocation();
+  const stateAny = location.state as { policyId?: string; query?: string } | null;
+  const seedQuery = stateAny?.query;
   const initial = useMemo(() => buildInitial(topic), [topic]);
 
   const [messages, setMessages] = useState<Msg[]>(initial);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const seededRef = useRef(false);
 
   useEffect(() => setMessages(buildInitial(topic)), [topic]);
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length, thinking]);
+
+  useEffect(() => {
+    if (seededRef.current) return;
+    if (seedQuery) {
+      seededRef.current = true;
+      setTimeout(() => send(seedQuery), 400);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seedQuery]);
 
   const send = (text: string) => {
     setMessages((m) => [...m, { id: `u-${Date.now()}`, role: "user", text, time: NOW() }]);
