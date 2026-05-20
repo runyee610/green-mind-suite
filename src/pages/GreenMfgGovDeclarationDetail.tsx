@@ -264,6 +264,19 @@ export default function GreenMfgGovDeclarationDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* 驳回 */}
+      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle className="text-destructive"><ShieldX className="mr-2 inline h-5 w-5" />驳回申报</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">驳回后本次申报将被退回企业，企业需按驳回意见整改后重新提交。</p>
+          <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="驳回意见（建议填写，便于企业整改）" rows={4} />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectOpen(false)}>取消</Button>
+            <Button onClick={handleReject} variant="destructive">确认驳回</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
