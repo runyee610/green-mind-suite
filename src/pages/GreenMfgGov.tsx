@@ -256,7 +256,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表复核"
-          : "区级专家审核 → 市级评定；不通过自动进入梯度培育"
+          : "专家审核 → 通过评定；不通过自动进入梯度培育"
       }
     >
       {/* 概览指标 */}

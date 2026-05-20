@@ -19,7 +19,7 @@ import { MOCK_RISKS } from "@/components/green-mfg/dynamicExtData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// 本地"模拟自我评价"记录（仅 AI 智能体分析打分，不上报）
+// 本地"模拟自我评价"记录（仅 AI 智能体分析打分，不提交）
 interface SelfAssessRecord {
   id: string;
   date: string;
@@ -71,7 +71,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
 
         {/* ================= 自评价 Tab ================= */}
         <TabsContent value="declaration" className="mt-4 space-y-4">
-          {/* —— 模拟自我评价（本地工具，仅 AI 智能体打分，不上报） —— */}
+          {/* —— 模拟自我评价（本地工具，仅 AI 智能体打分，不提交） —— */}
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
