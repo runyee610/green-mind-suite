@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Brain, Send, Sparkles, Activity, Plus, FileSearch, Workflow, Users,
   ChevronRight, MessageSquare, BarChart3, ShieldCheck, Building2, Wand2,
-  TrendingUp, MapPin, Layers, GitCompare, CircleDollarSign, Wallet,
+  TrendingUp, MapPin, Layers, GitCompare, CircleDollarSign, Wallet, Compass,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ import {
   type Disbursement,
 } from "@/components/direct-benefit/directBenefitData";
 import { DataCertificateMini } from "@/components/direct-benefit/DataCertificateMini";
+import { ChatHero } from "@/components/direct-benefit/ChatHero";
 import { cn } from "@/lib/utils";
 
 export type Topic = "policies" | "enterprises" | "matches" | "disburse";
@@ -26,6 +27,8 @@ const TOPIC_META: Record<Topic, {
   icon: typeof FileSearch;
   placeholder: string;
   quicks: string[];
+  heroSuggestions: string[];
+  welcome: string;
 }> = {
   policies: {
     title: "政策图谱",
@@ -33,6 +36,8 @@ const TOPIC_META: Record<Topic, {
     icon: FileSearch,
     placeholder: "例如：列出节能技改类已公示政策；对比 P-2025-001 和 P-2025-002；按发文机关统计…",
     quicks: ["今天新增了哪些政策？", "按支持方向分组统计", "对比工业节能两项政策", "解析置信度最低的政策"],
+    heroSuggestions: ["今天新增了哪些政策？", "按支持方向分组统计", "对比 P-2025-001 和 P-2025-002", "解析置信度最低的政策"],
+    welcome: "我已抓取并解析全市最新政策。请直接用自然语言告诉我您想看什么 — 政策清单、对比、聚合统计都能即时生成。",
   },
   enterprises: {
     title: "企业画像",
@@ -40,6 +45,8 @@ const TOPIC_META: Record<Topic, {
     icon: Users,
     placeholder: "例如：筛选浦东重点用能企业；展示某企业的数据确权证书；按行政区统计画像数量…",
     quicks: ["按行政区分布画像", "列出重点用能单位", "查看 E001 的数据确权证书", "完整度 < 100% 的企业"],
+    heroSuggestions: ["按行政区分布画像", "重点用能单位有哪些？", "E001 的数据确权证书", "画像完整度不足的企业"],
+    welcome: "我已为辖区企业生成画像与数据确权证书。试试问「按行政区分布」「重点用能企业」或「某企业的证书」。",
   },
   matches: {
     title: "撮合名单",
@@ -47,6 +54,8 @@ const TOPIC_META: Record<Topic, {
     icon: Workflow,
     placeholder: "例如：本周高置信撮合；按状态分布；某企业的全部撮合记录；待公示的有哪些…",
     quicks: ["本周高置信撮合", "按状态统计撮合", "金额 Top 5 的撮合", "待公示的撮合明细"],
+    heroSuggestions: ["本周高置信撮合", "按状态分布", "金额 Top 5", "待公示的撮合"],
+    welcome: "我已基于企业数据确权证书与政策条件完成本期撮合。直接问 — 高置信、状态分布、Top N、待公示都行。",
   },
   disburse: {
     title: "资金拨付",
@@ -54,6 +63,8 @@ const TOPIC_META: Record<Topic, {
     icon: CircleDollarSign,
     placeholder: "例如：本月拨付看板；2026 年 5 月按政策汇总；近 30 天按行政区分布；已到账明细…",
     quicks: ["本月拨付看板", "近 30 天按行政区", "按政策汇总", "已到账明细"],
+    heroSuggestions: ["本月拨付看板", "近 30 天按行政区", "按政策汇总金额", "已到账明细"],
+    welcome: "告诉我一个时间周期（如「本月」「近 30 天」「2026 Q2」），我会立刻生成资金拨付看板与明细。",
   },
 };
 
@@ -82,6 +93,7 @@ interface Msg {
   text?: string;
   cards?: Card[];
   time: string;
+  hero?: boolean;
 }
 
 const NOW = () => {
@@ -93,17 +105,30 @@ const NOW = () => {
 export function GovChatConsole({ topic }: { topic: Topic }) {
   const meta = TOPIC_META[topic];
   const navigate = useNavigate();
+  const location = useLocation();
+  const stateAny = location.state as { policyId?: string; query?: string } | null;
+  const seedQuery = stateAny?.query;
   const initial = useMemo(() => buildInitial(topic), [topic]);
 
   const [messages, setMessages] = useState<Msg[]>(initial);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const seededRef = useRef(false);
 
   useEffect(() => setMessages(buildInitial(topic)), [topic]);
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length, thinking]);
+
+  useEffect(() => {
+    if (seededRef.current) return;
+    if (seedQuery) {
+      seededRef.current = true;
+      setTimeout(() => send(seedQuery), 400);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seedQuery]);
 
   const send = (text: string) => {
     setMessages((m) => [...m, { id: `u-${Date.now()}`, role: "user", text, time: NOW() }]);
@@ -158,6 +183,13 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
                     <span className="flex-1 truncate text-left text-sm">{TOPIC_META[t].title}</span>
                   </button>
                 ))}
+              <button
+                onClick={() => navigate("/direct-benefit/gov/all-policies")}
+                className="mt-0.5 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/40"
+              >
+                <Compass className="h-3.5 w-3.5" />
+                <span className="flex-1 truncate text-left text-sm">全部政策</span>
+              </button>
             </div>
           </div>
 
@@ -178,9 +210,23 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
         </aside>
 
         {/* 主区：对话 */}
-        <section className="flex min-h-0 flex-col rounded-lg border border-border bg-card">
-          <div className="flex items-start gap-3 border-b border-border px-4 py-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+        <section className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-card">
+          {/* tech grid background */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+              maskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+              WebkitMaskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+            }}
+          />
+          <div className="pointer-events-none absolute -top-24 right-10 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-info/10 blur-3xl" />
+
+          <div className="relative flex items-start gap-3 border-b border-border px-4 py-3 bg-gradient-to-r from-transparent via-primary/[0.03] to-transparent">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-gradient-to-br from-primary/20 to-info/20 text-primary">
               <HeaderIcon className="h-4 w-4" />
             </div>
             <div className="min-w-0 flex-1">
@@ -194,15 +240,26 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
             </div>
           </div>
 
-          <ScrollArea className="flex-1 px-4 py-4">
+          <ScrollArea className="relative flex-1 px-4 py-4">
             <div className="mx-auto max-w-3xl space-y-4">
-              {messages.map((m) => (
-                <Bubble key={m.id} msg={m} navigate={navigate} />
-              ))}
+              {messages.map((m) =>
+                m.hero ? (
+                  <ChatHero
+                    key={m.id}
+                    title={meta.title}
+                    subtitle={m.text ?? meta.welcome}
+                    suggestions={meta.heroSuggestions}
+                    onPick={(s) => send(s)}
+                  />
+                ) : (
+                  <Bubble key={m.id} msg={m} navigate={navigate} />
+                )
+              )}
               {thinking && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/15">
-                    <Brain className="h-3.5 w-3.5 text-primary" />
+                  <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-primary/15">
+                    <span className="absolute inset-0 rounded-full bg-primary/20 blur-md animate-pulse" />
+                    <Brain className="relative h-3.5 w-3.5 text-primary" />
                   </span>
                   <span className="inline-flex items-center gap-1">
                     智能体正在根据数据源生成结果
@@ -218,7 +275,7 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
             </div>
           </ScrollArea>
 
-          <div className="border-t border-border p-3">
+          <div className="relative border-t border-border p-3">
             <div className="mb-2 flex flex-wrap gap-1.5">
               {meta.quicks.map((q) => (
                 <button
@@ -548,75 +605,8 @@ function CardView({ card, navigate }: { card: Card; navigate: ReturnType<typeof 
 // ---------- 初始对话脚本 ----------
 function buildInitial(topic: Topic): Msg[] {
   const t = NOW();
-  if (topic === "policies") {
-    return [
-      {
-        id: "p1", role: "agent", time: t,
-        text: "您好，这里是「政策图谱」对话工作台。我已抓取并解析全市最新政策，您可以直接用自然语言提问，无需操作报表。下方是今早采集的快速概览：",
-        cards: [
-          { kind: "action", title: "今日新增政策 3 项", confidence: 0.94, detail: "来自市经信委、市发改委、浦东发改委；结构化解析平均置信度 92%。" },
-          { kind: "policy-list", ids: policies.slice(0, 3).map((p) => p.id) },
-          {
-            kind: "group-bar",
-            title: "按支持方向分组",
-            rows: groupBy(policies, (p) => p.domain).map(([k, v], i) => ({
-              label: k, value: v.length, tone: (["primary", "info", "warning"] as const)[i % 3],
-            })),
-          },
-        ],
-      },
-    ];
-  }
-  if (topic === "enterprises") {
-    return [
-      {
-        id: "e1", role: "agent", time: t,
-        text: "您好，这里是「企业画像」对话工作台。智能体已为入库企业生成画像与数据确权证书，您可以直接问「按行政区分布」「重点用能企业」「某企业的证书」等。下面是默认全景：",
-        cards: [
-          {
-            kind: "group-bar",
-            title: "按行政区企业画像数量",
-            rows: groupBy(enterprises, (e) => e.district).map(([k, v]) => ({
-              label: k, value: v.length, tone: "primary" as const,
-            })),
-          },
-          { kind: "ent-list", ids: enterprises.map((e) => e.id) },
-        ],
-      },
-      {
-        id: "e2", role: "agent", time: t,
-        text: "如需查看任意企业的数据确权证书，可直接点击企业进入详情；以下是示例：",
-        cards: [{ kind: "ent-certificate", entId: enterprises[0].id }],
-      },
-    ];
-  }
-  if (topic === "matches") {
-    return [
-      {
-        id: "m1", role: "agent", time: t,
-        text: "您好，这里是「撮合名单」对话工作台。我已基于企业数据确权证书与政策条件生成本期撮合。您可以直接说「高置信」「按状态分布」「金额 Top N」等。下面是默认快照：",
-        cards: [
-          {
-            kind: "group-bar",
-            title: "撮合按状态分布",
-            rows: groupBy(matches, (m) => m.status).map(([k, v]) => ({
-              label: k, value: v.length,
-              tone: k === "已拨付" ? "success" : k === "已驳回" ? "warning" : "primary",
-            })),
-          },
-          { kind: "match-table", ids: matches.slice(0, 5).map((m) => m.id) },
-        ],
-      },
-    ];
-  }
-  // disburse
-  const period = resolvePeriod("本月");
   return [
-    {
-      id: "d1", role: "agent", time: t,
-      text: `您好，这里是「资金拨付」对话工作台。告诉我一个时间周期（如「本月」「近 30 天」「2026 年 5 月」「Q2」），我会立刻生成资金拨付看板。下方默认展示 ${period.label}：`,
-      cards: buildDisburseDashboard(period.label, period.filter),
-    },
+    { id: "hero", role: "agent", time: t, hero: true, text: TOPIC_META[topic].welcome },
   ];
 }
 

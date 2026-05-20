@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, Star, Sparkles, FileSearch, CalendarClock, Coins, Compass, MessageCircle } from "lucide-react";
+import { Search, Star, Sparkles, FileSearch, CalendarClock, Coins, Compass, MessageCircle, ExternalLink, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
@@ -12,16 +12,21 @@ import {
   type SupportDomain,
 } from "@/components/direct-benefit/directBenefitData";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useRole } from "@/contexts/RoleContext";
 import { cn } from "@/lib/utils";
 
 type TabKey = "全部" | SupportDomain | "收藏";
-const DOMAIN_TABS: TabKey[] = ["全部", "工业节能技术改造", "既有建筑节能改造", "能耗在线监测建设", "收藏"];
+const DOMAIN_TABS_ENT: TabKey[] = ["全部", "工业节能技术改造", "既有建筑节能改造", "能耗在线监测建设", "收藏"];
+const DOMAIN_TABS_GOV: TabKey[] = ["全部", "工业节能技术改造", "既有建筑节能改造", "能耗在线监测建设"];
 
 export default function DirectBenefitAllPolicies() {
   const navigate = useNavigate();
+  const { role } = useRole();
   const { favorites, toggle, has } = useFavorites();
   const [tab, setTab] = useState<TabKey>("全部");
   const [q, setQ] = useState("");
+  const isGov = role === "gov";
+  const tabs = isGov ? DOMAIN_TABS_GOV : DOMAIN_TABS_ENT;
 
   const hitInfoMap = useMemo(() => {
     const map = new Map<string, { hit: number; total: number; confidence: number }>();
@@ -39,6 +44,9 @@ export default function DirectBenefitAllPolicies() {
     return true;
   }), [tab, q, favorites]);
 
+  const detailRoute = (id: string) =>
+    isGov ? `/direct-benefit/gov/policies/${id}` : `/direct-benefit/gov/policies/${id}`;
+
   return (
     <AppLayout hideHeader>
       <div className="space-y-4">
@@ -53,11 +61,15 @@ export default function DirectBenefitAllPolicies() {
             <div className="min-w-0 flex-1">
               <h1 className="text-xl font-semibold text-foreground">全部政策</h1>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                浏览全市绿色低碳类政策；点击右下角 <span className="font-medium text-primary">智能体</span> 可即时解读政策、判断是否建议申领；点击 <Star className="inline h-3 w-3 text-warning" /> 加入收藏，同步到「我的专属政策 · 收藏」。
+                {isGov ? (
+                  <>浏览全市绿色低碳类政策池；点击「查看原文」可查阅政策原始文件，点击右下角 <span className="font-medium text-primary">智能体</span> 可即时生成清单、对比与统计报表。</>
+                ) : (
+                  <>浏览全市绿色低碳类政策；点击「查看原文」可查阅政策原始文件，右下角 <span className="font-medium text-primary">智能体</span> 可即时解读政策与判断是否建议申领；点击 <Star className="inline h-3 w-3 text-warning" /> 加入收藏，同步到「我的专属政策 · 收藏」。</>
+                )}
               </p>
             </div>
             <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary text-[10px]">
-              共 {policies.length} 项 · 收藏 {favorites.length}
+              共 {policies.length} 项{!isGov && ` · 收藏 ${favorites.length}`}
             </Badge>
           </div>
         </div>
@@ -66,7 +78,7 @@ export default function DirectBenefitAllPolicies() {
         <div className="flex flex-wrap items-center gap-3">
           <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
             <TabsList>
-              {DOMAIN_TABS.map((t) => (
+              {tabs.map((t) => (
                 <TabsTrigger key={t} value={t} className="text-xs">
                   {t === "收藏" && <Star className="mr-1 h-3 w-3" />}
                   {t}
@@ -101,16 +113,18 @@ export default function DirectBenefitAllPolicies() {
                   <span className="inline-flex items-center gap-1 rounded-full border border-warning/40 bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning">
                     <Coins className="h-3 w-3" />{p.fundingMin}–{p.fundingMax} 万
                   </span>
-                  <button
-                    onClick={() => toggle(p.id)}
-                    aria-label={fav ? "取消收藏" : "收藏"}
-                    className={cn(
-                      "ml-auto rounded p-1 transition",
-                      fav ? "text-warning" : "text-muted-foreground hover:text-warning",
-                    )}
-                  >
-                    <Star className={cn("h-4 w-4", fav && "fill-warning")} />
-                  </button>
+                  {!isGov && (
+                    <button
+                      onClick={() => toggle(p.id)}
+                      aria-label={fav ? "取消收藏" : "收藏"}
+                      className={cn(
+                        "ml-auto rounded p-1 transition",
+                        fav ? "text-warning" : "text-muted-foreground hover:text-warning",
+                      )}
+                    >
+                      <Star className={cn("h-4 w-4", fav && "fill-warning")} />
+                    </button>
+                  )}
                 </div>
 
                 <h3 className="mt-2.5 line-clamp-2 text-[15px] font-semibold leading-snug text-foreground">{p.name}</h3>
@@ -119,7 +133,7 @@ export default function DirectBenefitAllPolicies() {
                 <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
                   <span className="inline-flex items-center gap-1"><FileSearch className="h-3 w-3" />{p.docNo}</span>
                   <span className="inline-flex items-center gap-1"><CalendarClock className="h-3 w-3" />截止 {p.deadline}</span>
-                  {hit && (
+                  {!isGov && hit && (
                     <Badge variant="outline" className={cn(
                       "ml-auto text-[10px]",
                       hit.hit === hit.total ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning",
@@ -133,19 +147,40 @@ export default function DirectBenefitAllPolicies() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 border-primary/40 text-primary hover:bg-primary/10"
-                    onClick={() => navigate("/direct-benefit/ent/policy-chat", { state: { policyId: p.id, query: "解读该政策" } })}
+                    className="flex-1 border-border hover:border-primary/40 hover:bg-primary/5"
+                    onClick={() => navigate(detailRoute(p.id))}
                   >
-                    <Sparkles className="mr-1 h-3.5 w-3.5" />智能体解读
+                    <FileText className="mr-1 h-3.5 w-3.5" />查看原文
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="px-2"
-                    onClick={() => navigate("/direct-benefit/ent/policy-chat", { state: { policyId: p.id, query: "是否建议我申领" } })}
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" />
-                  </Button>
+                  {isGov ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-primary/40 text-primary hover:bg-primary/10"
+                      onClick={() => navigate("/direct-benefit/gov/policies", { state: { policyId: p.id, query: `解读 ${p.id}` } })}
+                    >
+                      <Sparkles className="mr-1 h-3.5 w-3.5" />智能体
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-primary/40 text-primary hover:bg-primary/10"
+                        onClick={() => navigate("/direct-benefit/ent/policy-chat", { state: { policyId: p.id, query: "解读该政策" } })}
+                      >
+                        <Sparkles className="mr-1 h-3.5 w-3.5" />智能体
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="px-2"
+                        onClick={() => navigate("/direct-benefit/ent/policy-chat", { state: { policyId: p.id, query: "是否建议我申领" } })}
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             );

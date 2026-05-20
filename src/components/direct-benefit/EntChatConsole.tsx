@@ -206,6 +206,17 @@ export function EntChatConsole({ topic, initialPolicyId, initialQuery }: { topic
 
         {/* 主区 */}
         <section className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-card">
+          {/* tech grid background */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+              maskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+              WebkitMaskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+            }}
+          />
           {/* 背景光晕 */}
           <div className="pointer-events-none absolute -top-24 right-10 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 -left-10 h-48 w-48 rounded-full bg-info/10 blur-3xl" />
@@ -639,30 +650,14 @@ function buildInitial(topic: EntTopic, favorites: string[], policyId?: string): 
     ];
   }
   if (topic === "my-funds") {
-    const ids = getEntDisbursements(CURRENT_ENTERPRISE_ID).map((d) => d.id);
-    const arrived = getEntDisbursements(CURRENT_ENTERPRISE_ID).filter((d) => d.stage === "已到账");
     return [
-      { id: "h", role: "agent", time: t, hero: true, text: "随问随答 — 试试「本月到账」「在途资金」「所有凭证」。" },
-      {
-        id: "k", role: "agent", time: t,
-        cards: [{
-          kind: "kpi-grid", title: "我的资金看板",
-          cells: [
-            { label: "拨付笔数", value: `${ids.length}`, tone: "primary" },
-            { label: "总金额", value: `${getEntDisbursements(CURRENT_ENTERPRISE_ID).reduce((s, d) => s + d.amount, 0)} 万`, tone: "info" },
-            { label: "已到账", value: `${arrived.reduce((s, d) => s + d.amount, 0)} 万`, tone: "success" },
-            { label: "在途", value: `${ids.length - arrived.length} 笔`, tone: "warning" },
-          ],
-        }, { kind: "disburse-list", ids }],
-      },
+      { id: "h", role: "agent", time: t, hero: true, text: "随问随答 — 试试「本月到账」「在途资金」「所有凭证」「按政策汇总」。" },
     ];
   }
   // my-policies
   const ms = getEntMatches(CURRENT_ENTERPRISE_ID);
   return [
-    { id: "h", role: "agent", time: t, hero: true, text: `您好！基于您的数据确权证书与画像，我已为您匹配 ${ms.length} 项适用政策${favorites.length ? `，并保留了 ${favorites.length} 项收藏` : ""}。` },
-    { id: "c", role: "agent", time: t, text: "您的数据确权证书：", cards: [{ kind: "ent-certificate", entId: CURRENT_ENTERPRISE_ID }] },
-    { id: "m", role: "agent", time: t, text: "为您匹配的政策与命中度：", cards: [{ kind: "match-table", ids: ms.map((m) => m.id) }] },
+    { id: "h", role: "agent", time: t, hero: true, text: `您好！基于您的数据确权证书与画像，我已为您匹配 ${ms.length} 项适用政策${favorites.length ? `，并保留了 ${favorites.length} 项收藏` : ""}。试试「我能申请哪些」「我的收藏」「命中度最高的政策」。` },
   ];
 }
 

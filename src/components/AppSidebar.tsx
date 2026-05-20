@@ -21,6 +21,7 @@ import {
   Workflow,
   CircleDollarSign,
   FileSearch,
+  Compass,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
@@ -96,6 +97,7 @@ const directBenefitItemsByRole: Record<"gov" | "ent", NavItem[]> = {
     { title: "企业画像", url: "/direct-benefit/gov/entprofile", icon: Users },
     { title: "撮合名单", url: "/direct-benefit/gov/matches", icon: Workflow },
     { title: "资金拨付", url: "/direct-benefit/gov/disburse", icon: CircleDollarSign },
+    { title: "全部政策", url: "/direct-benefit/gov/all-policies", icon: Compass },
     { title: "数据源配置", url: "/direct-benefit/gov/sources", icon: Settings },
   ],
   ent: [
