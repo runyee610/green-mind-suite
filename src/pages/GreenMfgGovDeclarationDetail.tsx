@@ -95,6 +95,14 @@ export default function GreenMfgGovDeclarationDetail() {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => setRejectOpen(true)}
+                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <ShieldX className="mr-1 h-4 w-4" />驳回
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setCultivateOpen(true)}
                 className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
               >
