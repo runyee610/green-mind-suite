@@ -59,6 +59,35 @@ function formatFileSize(bytes: number) {
 export function ProjectDetailView({ project, onLink }: { project: InvestmentProject; onLink: () => void }) {
   const status = linkStatusStyle[project.linkStatus];
   const needLink = project.linkStatus !== "已关联";
+  const [attachments, setAttachments] = useState<ProjectAttachment[]>(project.attachments);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => fileInputRef.current?.click();
+  const handleFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const allowed = ["pdf", "doc", "docx"];
+    const today = new Date().toISOString().slice(0, 10);
+    const accepted: ProjectAttachment[] = [];
+    const rejected: string[] = [];
+    Array.from(files).forEach((f) => {
+      const ext = (f.name.split(".").pop() || "").toLowerCase();
+      if (!allowed.includes(ext)) {
+        rejected.push(f.name);
+        return;
+      }
+      accepted.push({ name: f.name, size: formatFileSize(f.size), uploadedAt: today, type: ext as "pdf" | "doc" | "docx" });
+    });
+    if (accepted.length) {
+      setAttachments((prev) => [...prev, ...accepted]);
+      toast.success(`已上传 ${accepted.length} 份附件`);
+    }
+    if (rejected.length) toast.error(`仅支持 PDF / DOC / DOCX：${rejected.join("、")}`);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+  const handleRemove = (idx: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== idx));
+    toast.success("附件已删除");
+  };
 
   return (
     <Card className="panel flex h-full min-h-[640px] flex-col">
