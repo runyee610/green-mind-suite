@@ -44,7 +44,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
   const myDynamics = MOCK_DYNAMIC.filter((_, i) => i < 2);
   const entCreditCode = section === "dynamic" ? "913100007896543210" : myDeclaration.creditCode;
   const entRiskOpen = MOCK_RISKS.filter((r) => r.creditCode === entCreditCode && r.status !== "已关闭").length;
-  const isGreenFactory = myDeclaration.stage === "绿色工厂";
+  const isGreenFactory = myDeclaration.stage === "已完成";
 
   const latestSelf = MOCK_SELF_ASSESS[0];
 
