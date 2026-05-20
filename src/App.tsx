@@ -105,6 +105,8 @@ const App = () => (
           <Route path="/direct-benefit/gov/policies/:id" element={<DirectBenefitPolicyDetail />} />
           <Route path="/direct-benefit/gov/matches/:id" element={<DirectBenefitMatchDetail />} />
           <Route path="/direct-benefit/gov/entprofile/:id" element={<DirectBenefitEntProfileDetail />} />
+          <Route path="/direct-benefit/ent/all-policies" element={<DirectBenefitAllPolicies />} />
+          <Route path="/direct-benefit/ent/policy-chat" element={<EntChatConsole topic="policy-chat" />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
