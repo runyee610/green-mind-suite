@@ -56,7 +56,7 @@ export default function GreenMfgGovDeclarationDetail() {
   const totalWeight = SCORE_DIMENSIONS.reduce((s, d) => s + d.weight, 0);
 
   const handleApprove = () => {
-    toast.success(detail.stage === "待审核" ? "已通过审核，颁发市级绿色工厂" : "已上报，颁发市级绿色工厂");
+    toast.success(detail.stage === "待审核" ? "已通过审核，颁发市级绿色工厂" : "已通过，颁发市级绿色工厂");
     setApproveOpen(false);
     setComment("");
   };
@@ -99,7 +99,7 @@ export default function GreenMfgGovDeclarationDetail() {
                 onClick={() => setApproveOpen(true)}
                 className="bg-success text-success-foreground hover:bg-success/90"
               >
-                <ShieldCheck className="mr-1 h-4 w-4" />上报
+                <ShieldCheck className="mr-1 h-4 w-4" />通过
               </Button>
             </>
           )}
@@ -225,15 +225,15 @@ export default function GreenMfgGovDeclarationDetail() {
         </TabsContent>
       </Tabs>
 
-      {/* 上报 */}
+      {/* 通过 */}
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认上报</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">{detail.stage === "待审核" ? "通过后将颁发市级绿色工厂证书并锁定本次自评价。" : "上报后将颁发市级绿色工厂证书并锁定本次自评价。"}</p>
+          <DialogHeader><DialogTitle className="text-success"><ShieldCheck className="mr-2 inline h-5 w-5" />确认通过</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">{detail.stage === "待审核" ? "通过后将颁发市级绿色工厂证书并锁定本次自评价。" : "通过后将颁发市级绿色工厂证书并锁定本次自评价。"}</p>
           <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="审批意见（选填）" rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setApproveOpen(false)}>取消</Button>
-            <Button onClick={handleApprove} className="bg-success text-success-foreground hover:bg-success/90">确认上报</Button>
+            <Button onClick={handleApprove} className="bg-success text-success-foreground hover:bg-success/90">确认通过</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
