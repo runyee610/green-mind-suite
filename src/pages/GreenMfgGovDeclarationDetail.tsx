@@ -66,6 +66,11 @@ export default function GreenMfgGovDeclarationDetail() {
     setCultivateOpen(false);
     setComment("");
   };
+  const handleReject = () => {
+    toast.error("已驳回该申报，企业可按意见整改后重新提交");
+    setRejectOpen(false);
+    setComment("");
+  };
 
   return (
     <AppLayout
