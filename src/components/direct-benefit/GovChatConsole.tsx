@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Brain, Send, Sparkles, Activity, Plus, FileSearch, Workflow, Users,
   ChevronRight, MessageSquare, BarChart3, ShieldCheck, Building2, Wand2,
-  TrendingUp, MapPin, Layers, GitCompare, CircleDollarSign, Wallet,
+  TrendingUp, MapPin, Layers, GitCompare, CircleDollarSign, Wallet, Compass,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ import {
   type Disbursement,
 } from "@/components/direct-benefit/directBenefitData";
 import { DataCertificateMini } from "@/components/direct-benefit/DataCertificateMini";
+import { ChatHero } from "@/components/direct-benefit/ChatHero";
 import { cn } from "@/lib/utils";
 
 export type Topic = "policies" | "enterprises" | "matches" | "disburse";
