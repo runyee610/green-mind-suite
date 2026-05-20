@@ -27,7 +27,7 @@ const TOPIC_META: Record<Topic, {
   quicks: string[];
 }> = {
   policies: {
-    title: "企业画像",
+    title: "政策图谱",
     subtitle: "用自然语言查询、对比、推送政策。无需翻报表，直接问。",
     icon: FileSearch,
     placeholder: "例如：列出节能技改类已公示政策；对比 P-2025-001 和 P-2025-002；按发文机关统计…",
