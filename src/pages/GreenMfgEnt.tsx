@@ -107,7 +107,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>评估编号</TableHead>
                     <TableHead className="text-center">AI 智能打分</TableHead>
                     <TableHead>备注</TableHead>
                     <TableHead>评估日期</TableHead>
@@ -117,7 +116,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                 <TableBody>
                   {MOCK_SELF_ASSESS.map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell className="font-mono text-xs">{r.id}</TableCell>
                       <TableCell className="text-center font-mono text-xs">
                         <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
                       </TableCell>
