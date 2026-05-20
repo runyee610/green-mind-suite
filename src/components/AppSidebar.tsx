@@ -100,6 +100,7 @@ const directBenefitItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   ],
   ent: [
     { title: "智能体工作台", url: "/direct-benefit/ent/home", icon: Brain },
+    { title: "全部政策", url: "/direct-benefit/ent/all-policies", icon: FileSearch },
     { title: "我的专属政策", url: "/direct-benefit/ent", icon: Wallet },
     { title: "资金到账", url: "/direct-benefit/ent/funds", icon: CircleDollarSign },
   ],
