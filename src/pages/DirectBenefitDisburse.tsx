@@ -13,6 +13,7 @@ import {
   type DisburseStage,
 } from "@/components/direct-benefit/directBenefitData";
 import { DataCertificateMini } from "@/components/direct-benefit/DataCertificateMini";
+import { GovChatConsole } from "@/components/direct-benefit/GovChatConsole";
 import { cn } from "@/lib/utils";
 
 const stageStyle: Record<DisburseStage, { badge: string; dot: string }> = {
@@ -25,6 +26,7 @@ const STAGES: DisburseStage[] = ["已核准", "财政划拨中", "已到账"];
 
 export default function DirectBenefitDisburse() {
   const { role } = useRole();
+  if (role === "gov") return <GovChatConsole topic="disburse" />;
   const list = useMemo(
     () => (role === "gov" ? disbursements : getEntDisbursements(CURRENT_ENTERPRISE_ID)),
     [role],
