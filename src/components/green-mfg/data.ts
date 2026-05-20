@@ -1,6 +1,6 @@
 // 绿色工厂（梯度培育）模块共享数据 / 类型
 
-export type DeclarationStage = "自我评价中" | "市审核" | "区审核" | "培育中" | "绿色工厂";
+export type DeclarationStage = "填写中" | "待审核" | "已驳回" | "培育中" | "已完成";
 export type DeclarationLevel = "市级绿色工厂" | "区级培育" | "自我评价中";
 
 export interface DeclarationRecord {
@@ -89,7 +89,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 128500,
     batch: "2025年第二批",
     submitDate: "2025-09-12",
-    stage: "区审核",
+    stage: "待审核",
     score: 86,
     manualScore: 88,
     level: "自我评价中",
@@ -106,7 +106,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 45600,
     batch: "2025年第二批",
     submitDate: "2025-09-08",
-    stage: "市审核",
+    stage: "待审核",
     score: 79,
     level: "自我评价中",
   },
@@ -121,7 +121,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 32000,
     batch: "2025年第一批",
     submitDate: "2025-08-21",
-    stage: "绿色工厂",
+    stage: "已完成",
     score: 92,
     manualScore: 94,
     level: "市级绿色工厂",
@@ -157,7 +157,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 67000,
     batch: "2025年第二批",
     submitDate: "2025-09-20",
-    stage: "自我评价中",
+    stage: "已驳回",
     score: 58,
     level: "自我评价中",
     reviewer: "区生态局",
@@ -344,10 +344,10 @@ export const MOCK_DYNAMIC: DynamicRecord[] = [
 ];
 
 export const MOCK_AUDIT_FLOW: AuditFlowNode[] = [
-  { stage: "企业提交", operator: "张工/企业填报员", time: "2025-09-12 10:24", result: "提交", comment: "已上传自评价书及附件 12 份" },
+  { stage: "企业填写", operator: "张工/企业填报员", time: "2025-09-12 10:24", result: "提交", comment: "已上传自评价书及附件 12 份" },
   { stage: "系统智能打分", operator: "系统", time: "2025-09-12 10:25", result: "通过", score: 86, comment: "综合得分 86 分，达到推荐线" },
-  { stage: "区级审批", operator: "李审核/宝山区生态局", time: "2025-09-15 14:08", result: "通过", score: 88, comment: "能耗、碳排、固废等核心指标达标，建议上报市级。" },
-  { stage: "市级审批", operator: "—", time: "—", result: "待办", score: undefined },
+  { stage: "专家审核", operator: "李审核/宝山区生态局", time: "2025-09-15 14:08", result: "通过", score: 88, comment: "能耗、碳排、固废等核心指标达标，建议通过。" },
+  { stage: "完成", operator: "—", time: "—", result: "待办" },
 ];
 
 // 打分维度：按一级指标（汇总二级指标分数）+ 二级指标名称组织
@@ -414,11 +414,11 @@ export const DYNAMIC_FIELD_DEFS: Array<{
 
 export const stageBadgeClass = (stage: DeclarationStage) => {
   switch (stage) {
-    case "绿色工厂": return "border-success/40 bg-success/10 text-success";
+    case "已完成": return "border-success/40 bg-success/10 text-success";
     case "培育中": return "border-warning/40 bg-warning/10 text-warning";
-    case "区审核":
-    case "市审核": return "border-primary/40 bg-primary/10 text-primary";
-    case "自我评价中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
+    case "待审核": return "border-primary/40 bg-primary/10 text-primary";
+    case "已驳回": return "border-destructive/40 bg-destructive/10 text-destructive";
+    case "填写中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
     default: return "border-border";
   }
 };

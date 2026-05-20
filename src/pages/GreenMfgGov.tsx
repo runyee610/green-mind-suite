@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2, XCircle, Clock } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -261,10 +261,10 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="审核推荐" value={82} accent="primary" />
-        <KpiTile icon={CheckCircle2} label="本年国家级绿色工厂" value={116} accent="success" />
-        <KpiTile icon={FileBarChart} label="培育中企业" value={MOCK_DECLARATIONS.filter((d) => d.stage === "培育中").length} accent="warning" />
-        <KpiTile icon={ClipboardList} label="动态管理待审" value={MOCK_DYNAMIC.filter((d) => d.status === "已填报").length} accent="primary" />
+        <KpiTile icon={ClipboardList} label="审核推荐" value={MOCK_DECLARATIONS.length} accent="primary" />
+        <KpiTile icon={Clock} label="待审核" value={MOCK_DECLARATIONS.filter((d) => d.stage === "待审核").length} accent="primary" />
+        <KpiTile icon={XCircle} label="已驳回" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已驳回").length} accent="warning" />
+        <KpiTile icon={CheckCircle2} label="已完成" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已完成").length} accent="success" />
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
@@ -314,11 +314,11 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
-                      <SelectItem value="填报中">自我评价中</SelectItem>
-                      <SelectItem value="市审核">市审核</SelectItem>
-                      <SelectItem value="区审核">区审核</SelectItem>
+                      <SelectItem value="填写中">填写中</SelectItem>
+                      <SelectItem value="待审核">待审核</SelectItem>
+                      <SelectItem value="已驳回">已驳回</SelectItem>
                       <SelectItem value="培育中">培育中</SelectItem>
-                      <SelectItem value="绿色工厂">绿色工厂</SelectItem>
+                      <SelectItem value="已完成">已完成</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -334,8 +334,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead className="whitespace-nowrap">行业</TableHead>
                     <TableHead className="whitespace-nowrap">提交批次</TableHead>
                     <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家审核</TableHead>
-                    <TableHead className="text-center whitespace-nowrap">综合能耗（吨标煤）</TableHead>
-                    <TableHead className="text-center whitespace-nowrap">产值（万元）</TableHead>
                     <TableHead className="text-center whitespace-nowrap">流转状态</TableHead>
                     <TableHead className="whitespace-nowrap">提交时间</TableHead>
                     <TableHead className="sticky right-0 z-20 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))]">操作</TableHead>
@@ -343,7 +341,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                 </TableHeader>
                 <TableBody>
                   {declarations.map((r) => {
-                    const dyn = MOCK_DYNAMIC.find((d) => d.enterpriseName === r.enterpriseName);
                     return (
                     <TableRow key={r.id} className="h-12 border-border/40 group">
                       <TableCell className="whitespace-nowrap">
@@ -361,10 +358,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs px-[9px] text-center">
-                        {dyn?.energyConsumption != null ? dyn.energyConsumption.toLocaleString() : <span className="text-muted-foreground">—</span>}
-                      </TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.outputValue.toLocaleString()}</TableCell>
                       <TableCell className="text-center whitespace-nowrap">
                         <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
                       </TableCell>
@@ -378,7 +371,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     );
                   })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家审核推荐</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家审核推荐</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
