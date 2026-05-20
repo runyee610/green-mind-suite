@@ -155,13 +155,30 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <Target className="h-4 w-4 text-primary" />重点信息
               </h3>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                <Field label="项目编号" value={project.id} mono />
-                <Field label="项目名称" value={project.name} span={2} />
+                <Field label="项目名称" value={project.name} span={3} />
                 <Field label="中心对口人" value={<><User className="mr-1 inline h-3.5 w-3.5" />{project.contact}</>} />
                 <Field label="关联状态" value={<Badge variant="outline">{status.label}</Badge>} />
                 <Field label="已关联企业" value={project.linkedEnterpriseName} />
                 <Field label="项目地址" value={`${project.district} · ${project.unitName}`} span={3} />
                 <Field label="建设内容" value={project.buildingContent} span={3} />
+                <Field
+                  label="是否现场检查"
+                  value={
+                    <Badge variant="outline" className={cn(project.onSiteCheck ? "border-success/40 bg-success/10 text-success" : "border-muted-foreground/30 text-muted-foreground")}>
+                      {project.onSiteCheck ? "是" : "否"}
+                    </Badge>
+                  }
+                />
+                <Field label="现场检查年份" value={project.onSiteCheckYear} mono />
+                <Field
+                  label="是否发现问题"
+                  value={
+                    <Badge variant="outline" className={cn(project.hasIssue ? "border-destructive/50 bg-destructive/10 text-destructive" : "border-success/40 bg-success/10 text-success")}>
+                      {project.hasIssue ? "是" : "否"}
+                    </Badge>
+                  }
+                />
+                <Field label="问题详情" value={project.issueDetail} warn={project.hasIssue} span={3} />
               </div>
             </section>
 
