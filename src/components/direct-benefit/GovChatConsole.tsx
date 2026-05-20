@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Brain, Send, Sparkles, Activity, Plus, FileSearch, Workflow, Users,
   ChevronRight, MessageSquare, BarChart3, ShieldCheck, Building2, Wand2,
-  TrendingUp, MapPin, Layers, GitCompare,
+  TrendingUp, MapPin, Layers, GitCompare, CircleDollarSign, Wallet,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -11,13 +11,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  policies, matches, enterprises, findPolicy, findEnterprise,
+  policies, matches, enterprises, disbursements, findPolicy, findEnterprise,
   getEntCertificate, matchStatusStyle, domainStyle,
+  type Disbursement,
 } from "@/components/direct-benefit/directBenefitData";
 import { DataCertificateMini } from "@/components/direct-benefit/DataCertificateMini";
 import { cn } from "@/lib/utils";
 
-export type Topic = "policies" | "enterprises" | "matches";
+export type Topic = "policies" | "enterprises" | "matches" | "disburse";
 
 const TOPIC_META: Record<Topic, {
   title: string;
@@ -47,6 +48,20 @@ const TOPIC_META: Record<Topic, {
     placeholder: "例如：本周高置信撮合；按状态分布；某企业的全部撮合记录；待公示的有哪些…",
     quicks: ["本周高置信撮合", "按状态统计撮合", "金额 Top 5 的撮合", "待公示的撮合明细"],
   },
+  disburse: {
+    title: "资金拨付",
+    subtitle: "直接说一个时间段，智能体即时生成拨付看板、阶段漏斗、政策与行政区报表。",
+    icon: CircleDollarSign,
+    placeholder: "例如：本月拨付看板；2026 年 5 月按政策汇总；近 30 天按行政区分布；已到账明细…",
+    quicks: ["本月拨付看板", "近 30 天按行政区", "按政策汇总", "已到账明细"],
+  },
+};
+
+const TOPIC_ROUTE: Record<Topic, string> = {
+  policies: "/direct-benefit/gov/policies",
+  enterprises: "/direct-benefit/gov/entprofile",
+  matches: "/direct-benefit/gov/matches",
+  disburse: "/direct-benefit/gov/disburse",
 };
 
 // ---------- 卡片模型 ----------
@@ -56,6 +71,8 @@ type Card =
   | { kind: "ent-list"; ids: string[] }
   | { kind: "ent-certificate"; entId: string }
   | { kind: "match-table"; ids: string[] }
+  | { kind: "disburse-list"; ids: string[] }
+  | { kind: "kpi-grid"; title?: string; cells: Array<{ label: string; value: string; tone?: "primary" | "success" | "warning" | "info" }> }
   | { kind: "group-bar"; title: string; rows: Array<{ label: string; value: number; tone?: "primary" | "success" | "warning" | "info" }> }
   | { kind: "action"; title: string; detail: string; confidence: number };
 
