@@ -19,7 +19,7 @@ import { MOCK_RISKS } from "@/components/green-mfg/dynamicExtData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// 本地"模拟自我评价"记录（仅 AI 智能体分析打分，不提交）
+// 本地"审核推荐"记录（仅 AI 智能体分析打分，不提交）
 interface SelfAssessRecord {
   id: string;
   date: string;
@@ -53,12 +53,12 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理 · 申能电力设备股份有限公司"
-          : "绿色工厂自我评价（模拟）-上海宝武特种合金有限公司"
+          : "绿色工厂审核推荐-上海宝武特种合金有限公司"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表填报"
-          : "自我评价（模拟）、AI 智能打分、审核推荐申报"
+          : "审核推荐、AI 智能打分、审核推荐申报"
       }
     >
       <Tabs value={tab} onValueChange={setTab}>
@@ -71,13 +71,13 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
 
         {/* ================= 自评价 Tab ================= */}
         <TabsContent value="declaration" className="mt-4 space-y-4">
-          {/* —— 模拟自我评价（本地工具，仅 AI 智能体打分，不提交） —— */}
+          {/* —— 审核推荐（本地工具，仅 AI 智能体打分，不提交） —— */}
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-secondary" />模拟自我评价
+                    <Sparkles className="h-4 w-4 text-secondary" />审核推荐
                   </CardTitle>
                   <p className="mt-1 text-xs text-muted-foreground">
                     企业自助评估工具：填写指标后由 AI 智能体分析打分，仅供企业自查参考，不向监管侧提交。

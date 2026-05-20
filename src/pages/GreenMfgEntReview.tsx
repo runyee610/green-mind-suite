@@ -25,13 +25,13 @@ export default function GreenMfgEntReview() {
                 <Send className="h-4 w-4 text-primary" />审核推荐
               </CardTitle>
               <p className="mt-1 text-xs text-muted-foreground">
-                可直接引用最近一次模拟自我评价数据，或重新填报。先由专家审核，通过后完成评定；不通过将自动进入梯度培育。
+                可直接引用最近一次审核推荐数据，或重新填报。先由专家审核，通过后完成评定；不通过将自动进入梯度培育。
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
               <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/review/new")}>
-                <Plus className="mr-1 h-4 w-4" />自我评价
+                <Plus className="mr-1 h-4 w-4" />审核推荐
               </Button>
             </div>
           </div>
