@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { ImportDialog } from "@/components/assets/ImportDialog";
 import { LinkEnterpriseDialog } from "@/components/assets/LinkEnterpriseDialog";
 import { ProjectDetailView } from "@/components/assets/ProjectDetailView";
-import { districts, linkStatusStyle, projects, type InvestmentProject, type ProjectStatus } from "@/components/assets/assetsData";
+import { districts, projects, type InvestmentProject, type ProjectStatus } from "@/components/assets/assetsData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
