@@ -12,7 +12,7 @@ export interface DeclarationRecord {
   subIndustry?: string;
   industryType: "重点行业" | "非重点行业/通则";
   outputValue: number; // 产值（万元）
-  batch: string; // 审核推荐批次
+  batch: string; // 模拟自我评价批次
   submitDate: string;
   stage: DeclarationStage;
   score: number; // 系统智能打分 0-100
@@ -94,7 +94,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     stage: "待审核",
     score: 86,
     manualScore: 88,
-    level: "审核推荐中",
+    level: "模拟自我评价中",
     reviewer: "李审核",
   },
   {
@@ -110,7 +110,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     submitDate: "2025-09-08",
     stage: "待审核",
     score: 79,
-    level: "审核推荐中",
+    level: "模拟自我评价中",
   },
   {
     id: "GF-2025-003",
@@ -161,7 +161,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     submitDate: "2025-09-20",
     stage: "已驳回",
     score: 58,
-    level: "审核推荐中",
+    level: "模拟自我评价中",
     reviewer: "区生态局",
     comment: "材料缺失：缺少近三年能源审计报告。",
   },
@@ -347,7 +347,7 @@ export const MOCK_DYNAMIC: DynamicRecord[] = [
 
 export const MOCK_AUDIT_FLOW: AuditFlowNode[] = [
   // 第一轮：企业首次填写 → 智能打分 → 专家驳回
-  { round: 1, kind: "submit", stage: "企业填写 · 提交", operator: "张工 / 企业填报员", time: "2025-09-12 10:24", result: "提交", comment: "已上传审核推荐书及附件 12 份。" },
+  { round: 1, kind: "submit", stage: "企业填写 · 提交", operator: "张工 / 企业填报员", time: "2025-09-12 10:24", result: "提交", comment: "已上传模拟自我评价书及附件 12 份。" },
   { round: 1, kind: "ai", stage: "系统智能打分", operator: "AI 评分引擎", time: "2025-09-12 10:25", result: "通过", score: 78, comment: "综合得分 78 分，达到推荐线；建议人工复核能耗与碳排数据。" },
   { round: 1, kind: "expert", stage: "专家审核", operator: "李审核 / 宝山区生态局", time: "2025-09-13 16:20", result: "驳回", score: 72, comment: "能源消耗强度证明材料缺失，碳排放强度核算口径存疑，请补充并修订后重新提交。" },
   // 第二轮：企业修改后再次提交 → 智能打分 → 专家通过 → 完成
