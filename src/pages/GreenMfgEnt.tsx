@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Send, Sparkles, Sprout, Target } from "lucide-react";
+import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Send, Sparkles, Sprout, Target, Undo2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,17 +19,20 @@ import { MOCK_RISKS } from "@/components/green-mfg/dynamicExtData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// 本地"审核推荐"记录（仅 AI 智能体分析打分，不提交）
+// 本地"审核推荐"记录（含流转状态，支持撤回）
+type SelfAssessStage = "填写中" | "待审核" | "已驳回" | "已完成";
 interface SelfAssessRecord {
   id: string;
+  batch: string;
   date: string;
   aiScore: number;
+  stage: SelfAssessStage;
   note?: string;
 }
-const MOCK_SELF_ASSESS: SelfAssessRecord[] = [
-  { id: "SA-2025-003", date: "2025-09-20", aiScore: 78, note: "新增 3 项绿色产品后再评" },
-  { id: "SA-2025-002", date: "2025-08-12", aiScore: 72 },
-  { id: "SA-2025-001", date: "2025-06-04", aiScore: 65, note: "首次试评" },
+const INITIAL_SELF_ASSESS: SelfAssessRecord[] = [
+  { id: "SA-2025-003", batch: "2025年第二批", date: "2025-09-20", aiScore: 78, stage: "待审核", note: "新增 3 项绿色产品后再评" },
+  { id: "SA-2025-002", batch: "2025年第一批", date: "2025-08-12", aiScore: 72, stage: "已驳回" },
+  { id: "SA-2025-001", batch: "2024年第二批", date: "2025-06-04", aiScore: 65, stage: "已完成", note: "首次试评" },
 ];
 
 export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
