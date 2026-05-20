@@ -49,7 +49,23 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
   const entRiskOpen = MOCK_RISKS.filter((r) => r.creditCode === entCreditCode && r.status !== "已关闭").length;
   const isGreenFactory = myDeclaration.stage === "已完成";
 
-  const latestSelf = MOCK_SELF_ASSESS[0];
+  const [selfAssessList, setSelfAssessList] = useState<SelfAssessRecord[]>(INITIAL_SELF_ASSESS);
+  const latestSelf = selfAssessList[0];
+  // 最近一个待审核的记录 id（用于判定撤回按钮）
+  const withdrawableId = useMemo(() => selfAssessList.find((r) => r.stage === "待审核")?.id, [selfAssessList]);
+  const handleWithdraw = (id: string) => {
+    setSelfAssessList((list) => list.map((r) => (r.id === id ? { ...r, stage: "填写中" as const } : r)));
+    toast.success("已撤回，状态变更为「填写中」");
+  };
+
+  const stageClass = (s: SelfAssessStage) => {
+    switch (s) {
+      case "已完成": return "border-success/40 bg-success/10 text-success";
+      case "待审核": return "border-primary/40 bg-primary/10 text-primary";
+      case "已驳回": return "border-destructive/40 bg-destructive/10 text-destructive";
+      default: return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
+    }
+  };
 
   return (
     <AppLayout
@@ -110,19 +126,23 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead>评估编号</TableHead>
+                    <TableHead>提交批次</TableHead>
                     <TableHead className="text-center">AI 智能打分</TableHead>
+                    <TableHead className="text-center">流转状态</TableHead>
                     <TableHead>备注</TableHead>
                     <TableHead>评估日期</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {MOCK_SELF_ASSESS.map((r) => (
+                  {selfAssessList.map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
-                      <TableCell className="font-mono text-xs">{r.id}</TableCell>
+                      <TableCell className="font-mono text-xs">{r.batch}</TableCell>
                       <TableCell className="text-center font-mono text-xs">
                         <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant="outline" className={stageClass(r.stage)}>{r.stage}</Badge>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.note ?? "—"}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{r.date}</TableCell>
@@ -131,12 +151,23 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                           <Button size="sm" variant="ghost" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${myDeclaration.id}?mode=self`)}>
                             <Eye className="mr-1 h-3 w-3" />查看
                           </Button>
-                          <Button size="sm" variant="outline" className="h-7" onClick={() => {
-                            toast.success("已基于此次自评价数据创建专家审核推荐草稿");
-                            navigate("/green-mfg/ent/declaration/new");
-                          }}>
-                            <Send className="mr-1 h-3 w-3" />提交审核
-                          </Button>
+                          {r.id === withdrawableId ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                              onClick={() => handleWithdraw(r.id)}
+                            >
+                              <Undo2 className="mr-1 h-3 w-3" />撤回
+                            </Button>
+                          ) : (
+                            <Button size="sm" variant="outline" className="h-7" onClick={() => {
+                              toast.success("已基于此次自评价数据创建专家审核推荐草稿");
+                              navigate("/green-mfg/ent/declaration/new");
+                            }}>
+                              <Send className="mr-1 h-3 w-3" />提交审核
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
