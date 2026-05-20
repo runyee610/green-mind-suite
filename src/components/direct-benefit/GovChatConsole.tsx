@@ -147,12 +147,12 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
           <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card">
             <div className="border-b border-border px-3 py-2 font-semibold text-foreground text-base">智能体可生成</div>
             <ul className="space-y-1.5 p-2.5 text-[11px] text-muted-foreground">
-              <li className="flex items-center gap-1.5"><BarChart3 className="h-3 w-3 text-primary" />分组统计图表</li>
-              <li className="flex items-center gap-1.5"><Layers className="h-3 w-3 text-primary" />筛选明细清单</li>
-              <li className="flex items-center gap-1.5"><GitCompare className="h-3 w-3 text-primary" />多对象对比表</li>
-              <li className="flex items-center gap-1.5"><ShieldCheck className="h-3 w-3 text-primary" />数据确权证书</li>
-              <li className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-primary" />行政区/行业分布</li>
-              <li className="flex items-center gap-1.5"><TrendingUp className="h-3 w-3 text-primary" />Top-N 排行</li>
+              <li className="flex items-center gap-1.5 text-xs"><BarChart3 className="h-3 w-3 text-primary" />分组统计图表</li>
+              <li className="flex items-center gap-1.5 text-xs"><Layers className="h-3 w-3 text-primary" />筛选明细清单</li>
+              <li className="flex items-center gap-1.5 text-xs"><GitCompare className="h-3 w-3 text-primary" />多对象对比表</li>
+              <li className="flex items-center gap-1.5 text-xs"><ShieldCheck className="h-3 w-3 text-primary" />数据确权证书</li>
+              <li className="flex items-center gap-1.5 text-xs"><MapPin className="h-3 w-3 text-primary" />行政区/行业分布</li>
+              <li className="flex items-center gap-1.5 text-xs"><TrendingUp className="h-3 w-3 text-primary" />Top-N 排行</li>
             </ul>
             <div className="border-t border-border px-3 py-2 text-[10px] text-muted-foreground">
               所有结果均基于政府侧数据源即时生成，无需配置报表。

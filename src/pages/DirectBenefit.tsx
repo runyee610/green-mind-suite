@@ -128,7 +128,7 @@ export default function DirectBenefit() {
                 const Icon = stepIcon[s.key];
                 return (
                   <div key={s.key} className="rounded-md border border-border/60 bg-muted/20 p-2">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 text-xs">
                       <Icon className="h-3 w-3 text-primary" />
                       <span className="text-[11px] font-medium text-foreground">{s.name}</span>
                       <span className={cn("ml-auto h-1.5 w-1.5 rounded-full", s.confidence >= 0.9 ? "bg-success" : "bg-warning")} />
@@ -141,7 +141,7 @@ export default function DirectBenefit() {
                 );
               })}
               <div className="rounded-md border border-border/60 bg-muted/20 p-2">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 text-xs">
                   <Database className="h-3 w-3 text-primary" />
                   <span className="text-[11px] font-medium text-foreground">数据源</span>
                   <span className="ml-auto font-mono text-[10px] text-foreground">{dataSources.length}</span>
@@ -417,7 +417,7 @@ function CardRenderer({ card, navigate }: { card: CardKind; navigate: ReturnType
         <div className="space-y-1">
           {dataSources.slice(0, 4).map((d) => (
             <div key={d.id} className="flex items-center justify-between text-[11px]">
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 text-xs">
                 <span className={cn("h-1.5 w-1.5 rounded-full", d.status === "已连接" ? "bg-success" : d.status === "异常" ? "bg-destructive" : "bg-muted-foreground")} />
                 <span className="text-foreground">{d.name}</span>
               </span>
