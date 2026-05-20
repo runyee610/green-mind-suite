@@ -157,7 +157,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 67000,
     batch: "2025年第二批",
     submitDate: "2025-09-20",
-    stage: "自我评价中",
+    stage: "已驳回",
     score: 58,
     level: "自我评价中",
     reviewer: "区生态局",
