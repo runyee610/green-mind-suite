@@ -58,7 +58,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表填报"
-          : "模拟自我评价、AI 智能打分、申报"
+          : "模拟自我评价、AI 智能打分、审核推荐申报"
       }
     >
       <Tabs value={tab} onValueChange={setTab}>
@@ -129,7 +129,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                             <Eye className="mr-1 h-3 w-3" />查看
                           </Button>
                           <Button size="sm" variant="outline" className="h-7" onClick={() => {
-                            toast.success("已基于此次自评价数据创建申报草稿");
+                            toast.success("已基于此次自评价数据创建审核推荐草稿");
                             navigate("/green-mfg/ent/declaration/new");
                           }}>
                             <Send className="mr-1 h-3 w-3" />提交审核
