@@ -7,7 +7,6 @@ import {
   Sparkles,
   UserCheck,
   FileEdit,
-  Award,
   RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
