@@ -251,7 +251,7 @@ export function AuditFlowTimeline({ nodes, dense = false }: { nodes: AuditFlowNo
           <LegendDot tone="success" label="专家审核通过" Icon={Check} />
           <LegendDot tone="destructive" label="专家驳回（可修改重提）" Icon={X} />
           <LegendDot tone="warning" label="进入培育库" Icon={Hourglass} />
-          <LegendDot tone="success" label="完成 · 颁发证书" Icon={Award} />
+          
         </div>
       )}
     </div>
