@@ -1,7 +1,7 @@
 // 绿色工厂（梯度培育）模块共享数据 / 类型
 
 export type DeclarationStage = "填写中" | "待审核" | "已驳回" | "培育中" | "已完成";
-export type DeclarationLevel = "市级绿色工厂" | "区级培育" | "审核推荐中";
+export type DeclarationLevel = "市级绿色工厂" | "区级培育" | "模拟自我评价中";
 
 export interface DeclarationRecord {
   id: string;
