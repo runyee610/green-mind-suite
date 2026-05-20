@@ -89,7 +89,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     outputValue: 128500,
     batch: "2025年第二批",
     submitDate: "2025-09-12",
-    stage: "区审核",
+    stage: "待审核",
     score: 86,
     manualScore: 88,
     level: "自我评价中",
