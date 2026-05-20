@@ -48,8 +48,7 @@ const sections = [
 ];
 
 export function ProjectDetailView({ project, onLink }: { project: InvestmentProject; onLink: () => void }) {
-  const overQuota = project.collectedEnergy > project.approvedEnergy && project.collectedEnergy > 0;
-  const exceed = project.collectedEnergy - project.approvedEnergy;
+  const status = linkStatusStyle[project.linkStatus];
   const status = linkStatusStyle[project.linkStatus];
   const needLink = project.linkStatus !== "已关联";
 
