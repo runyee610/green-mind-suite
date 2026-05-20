@@ -21,6 +21,9 @@ import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const BATCH_OPTIONS = ["2026年第一批", "2025年第二批", "2025年第一批", "2024年第二批"];
 
 
 const ANCHORS = [
