@@ -414,11 +414,11 @@ export const DYNAMIC_FIELD_DEFS: Array<{
 
 export const stageBadgeClass = (stage: DeclarationStage) => {
   switch (stage) {
-    case "绿色工厂": return "border-success/40 bg-success/10 text-success";
+    case "已完成": return "border-success/40 bg-success/10 text-success";
     case "培育中": return "border-warning/40 bg-warning/10 text-warning";
-    case "区审核":
-    case "市审核": return "border-primary/40 bg-primary/10 text-primary";
-    case "自我评价中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
+    case "待审核": return "border-primary/40 bg-primary/10 text-primary";
+    case "已驳回": return "border-destructive/40 bg-destructive/10 text-destructive";
+    case "填写中": return "border-muted-foreground/40 bg-muted/40 text-muted-foreground";
     default: return "border-border";
   }
 };
