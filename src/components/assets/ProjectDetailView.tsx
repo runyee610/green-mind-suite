@@ -45,9 +45,16 @@ function EnergyMetric({ label, value, unit, warn = false, hint }: { label: strin
 const sections = [
   { id: "key", label: "重点信息", icon: Target },
   { id: "energy", label: "能耗数据", icon: Gauge },
+  { id: "attachments", label: "项目附件", icon: Paperclip },
   { id: "project", label: "项目信息", icon: FileText },
   { id: "unit", label: "单位信息", icon: Building2 },
 ];
+
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
 
 export function ProjectDetailView({ project, onLink }: { project: InvestmentProject; onLink: () => void }) {
   const status = linkStatusStyle[project.linkStatus];
