@@ -8,6 +8,13 @@ export interface Contact {
   email: string;
 }
 
+export interface ProjectAttachment {
+  name: string;
+  size: string; // 显示用，例：2.3 MB
+  uploadedAt: string; // YYYY-MM-DD
+  type: "pdf" | "doc" | "docx";
+}
+
 export interface InvestmentProject {
   // 重点
   id: string;
@@ -16,6 +23,13 @@ export interface InvestmentProject {
   linkStatus: LinkStatus;
   linkedEnterpriseName?: string;
   linkedCreditCode?: string;
+  // 现场检查
+  onSiteCheck: boolean;
+  onSiteCheckYear?: string;
+  hasIssue: boolean;
+  issueDetail?: string;
+  // 附件
+  attachments: ProjectAttachment[];
   // 能耗
   approvedEnergy: number; // 批复年综合能耗（等价值，吨标煤）
   collectedEnergy: number; // 采集综合能耗（等价值）
@@ -26,8 +40,8 @@ export interface InvestmentProject {
   remainingSaving: number; // 剩余可用节能量（万吨标煤）
   // 项目次要
   district: string;
-  startDate: string;
-  endDate: string;
+  startDate: string; // YYYY-MM
+  endDate: string; // YYYY-MM
   investment: number; // 投资总额（万元）
   projectContact: Contact;
   projectType: ProjectType;
