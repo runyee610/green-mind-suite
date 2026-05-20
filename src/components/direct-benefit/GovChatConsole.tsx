@@ -27,6 +27,8 @@ const TOPIC_META: Record<Topic, {
   icon: typeof FileSearch;
   placeholder: string;
   quicks: string[];
+  heroSuggestions: string[];
+  welcome: string;
 }> = {
   policies: {
     title: "政策图谱",
@@ -34,6 +36,8 @@ const TOPIC_META: Record<Topic, {
     icon: FileSearch,
     placeholder: "例如：列出节能技改类已公示政策；对比 P-2025-001 和 P-2025-002；按发文机关统计…",
     quicks: ["今天新增了哪些政策？", "按支持方向分组统计", "对比工业节能两项政策", "解析置信度最低的政策"],
+    heroSuggestions: ["今天新增了哪些政策？", "按支持方向分组统计", "对比 P-2025-001 和 P-2025-002", "解析置信度最低的政策"],
+    welcome: "我已抓取并解析全市最新政策。请直接用自然语言告诉我您想看什么 — 政策清单、对比、聚合统计都能即时生成。",
   },
   enterprises: {
     title: "企业画像",
@@ -41,6 +45,8 @@ const TOPIC_META: Record<Topic, {
     icon: Users,
     placeholder: "例如：筛选浦东重点用能企业；展示某企业的数据确权证书；按行政区统计画像数量…",
     quicks: ["按行政区分布画像", "列出重点用能单位", "查看 E001 的数据确权证书", "完整度 < 100% 的企业"],
+    heroSuggestions: ["按行政区分布画像", "重点用能单位有哪些？", "E001 的数据确权证书", "画像完整度不足的企业"],
+    welcome: "我已为辖区企业生成画像与数据确权证书。试试问「按行政区分布」「重点用能企业」或「某企业的证书」。",
   },
   matches: {
     title: "撮合名单",
@@ -48,6 +54,8 @@ const TOPIC_META: Record<Topic, {
     icon: Workflow,
     placeholder: "例如：本周高置信撮合；按状态分布；某企业的全部撮合记录；待公示的有哪些…",
     quicks: ["本周高置信撮合", "按状态统计撮合", "金额 Top 5 的撮合", "待公示的撮合明细"],
+    heroSuggestions: ["本周高置信撮合", "按状态分布", "金额 Top 5", "待公示的撮合"],
+    welcome: "我已基于企业数据确权证书与政策条件完成本期撮合。直接问 — 高置信、状态分布、Top N、待公示都行。",
   },
   disburse: {
     title: "资金拨付",
@@ -55,6 +63,8 @@ const TOPIC_META: Record<Topic, {
     icon: CircleDollarSign,
     placeholder: "例如：本月拨付看板；2026 年 5 月按政策汇总；近 30 天按行政区分布；已到账明细…",
     quicks: ["本月拨付看板", "近 30 天按行政区", "按政策汇总", "已到账明细"],
+    heroSuggestions: ["本月拨付看板", "近 30 天按行政区", "按政策汇总金额", "已到账明细"],
+    welcome: "告诉我一个时间周期（如「本月」「近 30 天」「2026 Q2」），我会立刻生成资金拨付看板与明细。",
   },
 };
 
