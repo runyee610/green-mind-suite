@@ -155,22 +155,37 @@ export default function GreenMfgEntDeclarationNew() {
     >
       {/* 顶部操作栏 */}
       <Card className="panel mb-4">
-        <CardContent className="flex flex-wrap items-center justify-end gap-3 p-3">
-          {draftSavedAt && (
-            <span className="text-[11px] text-muted-foreground">
-              草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
-            </span>
-          )}
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
-              <ArrowLeft className="mr-1 h-4 w-4" />返回
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleSave}>
-              <Save className="mr-1 h-4 w-4" />保存
-            </Button>
-            <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
-              <Send className="mr-1 h-4 w-4" />提交审核
-            </Button>
+            <Label className="text-xs text-muted-foreground">申报批次</Label>
+            <Select value={batch} onValueChange={setBatch}>
+              <SelectTrigger className="h-8 w-[180px] text-xs">
+                <SelectValue placeholder="请选择批次" />
+              </SelectTrigger>
+              <SelectContent>
+                {BATCH_OPTIONS.map((b) => (
+                  <SelectItem key={b} value={b} className="text-xs">{b}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-3">
+            {draftSavedAt && (
+              <span className="text-[11px] text-muted-foreground">
+                草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
+              </span>
+            )}
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
+                <ArrowLeft className="mr-1 h-4 w-4" />返回
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleSave}>
+                <Save className="mr-1 h-4 w-4" />保存
+              </Button>
+              <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
+                <Send className="mr-1 h-4 w-4" />提交审核
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
