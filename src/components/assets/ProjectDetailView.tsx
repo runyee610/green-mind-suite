@@ -49,7 +49,6 @@ const sections = [
 
 export function ProjectDetailView({ project, onLink }: { project: InvestmentProject; onLink: () => void }) {
   const status = linkStatusStyle[project.linkStatus];
-  const status = linkStatusStyle[project.linkStatus];
   const needLink = project.linkStatus !== "已关联";
 
   return (
