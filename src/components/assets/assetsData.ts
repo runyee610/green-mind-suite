@@ -1,5 +1,6 @@
 export type LinkStatus = "已关联" | "待关联" | "待确认";
 export type ProjectType = "新建" | "改建" | "扩建" | "迁建";
+export type ProjectStatus = "筹建中" | "建设中" | "已竣工" | "已暂停";
 export type UnitNature = "央企" | "地方国企" | "民营企业" | "外资企业" | "其他";
 
 export interface Contact {
@@ -45,6 +46,7 @@ export interface InvestmentProject {
   investment: number; // 投资总额（万元）
   projectContact: Contact;
   projectType: ProjectType;
+  status: ProjectStatus;
   buildingContent: string;
   energyReviewDoc: string;
   eiaReviewDoc: string;
