@@ -192,7 +192,7 @@ export const enterprises: Enterprise[] = [
       { label: "在线监测接入", value: "已接入 · 数据完整率 98.2%", source: "能耗监测平台", updatedAt: "2026-05-18" },
       { label: "近 3 年节能违法", value: "无", source: "市场监管局处罚库", updatedAt: "2026-05-01" },
       { label: "温室气体排放", value: "1.23 万 tCO₂e（同比 -8%）", source: "温室气体排放报告", updatedAt: "2026-03-31" },
-      { label: "绿色工厂审核推荐", value: "已通过 / 87 分", source: "绿色工厂审核推荐", updatedAt: "2026-02-20" },
+      { label: "绿色工厂模拟自我评价", value: "已通过 / 87 分", source: "绿色工厂模拟自我评价", updatedAt: "2026-02-20" },
     ],
   },
   {
