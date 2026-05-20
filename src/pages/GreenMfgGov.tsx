@@ -287,7 +287,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <Input
                       value={keyword}
                       onChange={(e) => setKeyword(e.target.value)}
-                      placeholder="搜索企业名称 / 信用代码"
+                      placeholder="搜索企业名称"
                       className="h-8 w-64 pl-8 text-xs"
                     />
                   </div>
