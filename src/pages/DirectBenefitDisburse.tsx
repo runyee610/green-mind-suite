@@ -13,6 +13,7 @@ import {
   type DisburseStage,
 } from "@/components/direct-benefit/directBenefitData";
 import { DataCertificateMini } from "@/components/direct-benefit/DataCertificateMini";
+import { GovChatConsole } from "@/components/direct-benefit/GovChatConsole";
 import { cn } from "@/lib/utils";
 
 const stageStyle: Record<DisburseStage, { badge: string; dot: string }> = {
@@ -25,9 +26,10 @@ const STAGES: DisburseStage[] = ["已核准", "财政划拨中", "已到账"];
 
 export default function DirectBenefitDisburse() {
   const { role } = useRole();
+  if (role === "gov") return <GovChatConsole topic="disburse" />;
   const list = useMemo(
-    () => (role === "gov" ? disbursements : getEntDisbursements(CURRENT_ENTERPRISE_ID)),
-    [role],
+    () => getEntDisbursements(CURRENT_ENTERPRISE_ID),
+    [],
   );
 
   const totalAmount = list.reduce((s, d) => s + d.amount, 0);
@@ -38,14 +40,8 @@ export default function DirectBenefitDisburse() {
     <AppLayout hideHeader>
       <div className="space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">
-            {role === "gov" ? "资金拨付" : "资金到账"}
-          </h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {role === "gov"
-              ? "跟踪企业确认后的财政直达拨付流程，全程留痕。"
-              : "查看您已确认申领的资金拨付进度与到账凭证。"}
-          </p>
+          <h1 className="text-xl font-semibold text-foreground">资金到账</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">查看您已确认申领的资金拨付进度与到账凭证。</p>
         </div>
 
         {/* 概览 */}
@@ -55,61 +51,8 @@ export default function DirectBenefitDisburse() {
           <KpiCard label="已到账" value={`${arrivedAmount} 万 / ${arrived.length} 笔`} icon={CheckCircle2} tone="success" />
         </div>
 
-        {/* 拨付清单 */}
-        {role === "gov" ? (
-          <Card className="border-border/60">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>企业</TableHead>
-                    <TableHead>政策</TableHead>
-                    <TableHead className="w-24">金额</TableHead>
-                    <TableHead className="w-28">阶段</TableHead>
-                    <TableHead>最新时间</TableHead>
-                    <TableHead className="w-32">凭证</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {list.map((d) => {
-                    const e = findEnterprise(d.enterpriseId);
-                    const p = findPolicy(d.policyId);
-                    const latest = d.timeline[d.timeline.length - 1];
-                    const s = stageStyle[d.stage];
-                    return (
-                      <TableRow key={d.id}>
-                        <TableCell>
-                          <div className="font-medium text-foreground">{e?.name}</div>
-                          <div className="font-mono text-[10px] text-muted-foreground">{e?.bank.account}</div>
-                        </TableCell>
-                        <TableCell className="text-xs">{p?.name}</TableCell>
-                        <TableCell><span className="font-mono text-sm font-semibold text-warning">{d.amount} 万</span></TableCell>
-                        <TableCell>
-                          <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium", s.badge)}>
-                            <span className={cn("h-1.5 w-1.5 rounded-full", s.dot)} />
-                            {d.stage}
-                          </span>
-                        </TableCell>
-                        <TableCell className="font-mono text-[11px] text-muted-foreground">{latest.time}</TableCell>
-                        <TableCell>
-                          {d.voucherNo ? (
-                            <Button variant="ghost" size="sm" onClick={() => toast.info(`下载凭证 ${d.voucherNo}`)}>
-                              <Download className="mr-1 h-3.5 w-3.5" />{d.voucherNo}
-                            </Button>
-                          ) : (
-                            <span className="text-[10px] text-muted-foreground">未生成</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        ) : (
-          // 企业侧：每笔展开时间轴
-          <div className="space-y-3">
+        {/* 拨付清单（企业侧时间轴） */}
+        <div className="space-y-3">
             {list.map((d) => {
               const p = findPolicy(d.policyId);
               const m = findMatch(d.matchId);
@@ -211,7 +154,6 @@ export default function DirectBenefitDisburse() {
               </div>
             )}
           </div>
-        )}
       </div>
     </AppLayout>
   );
