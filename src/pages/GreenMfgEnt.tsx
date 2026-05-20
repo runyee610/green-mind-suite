@@ -58,7 +58,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表填报"
-          : "模拟自我评价、AI 智能打分、申报"
+          : "模拟自我评价、AI 智能打分、审核推荐申报"
       }
     >
       <Tabs value={tab} onValueChange={setTab}>
