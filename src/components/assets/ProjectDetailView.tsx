@@ -1,10 +1,12 @@
-import { AlertTriangle, Building2, Calculator, FileText, Gauge, Link2, Paperclip, Target, User } from "lucide-react";
+import { useRef, useState } from "react";
+import { AlertTriangle, Building2, Calculator, FileText, Gauge, Link2, Paperclip, Target, Upload, User, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { linkStatusStyle, type InvestmentProject } from "./assetsData";
+import { linkStatusStyle, type InvestmentProject, type ProjectAttachment } from "./assetsData";
 
 const fmt = (n: number, d = 2) => n.toLocaleString(undefined, { maximumFractionDigits: d });
 
