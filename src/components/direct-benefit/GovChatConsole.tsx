@@ -605,75 +605,8 @@ function CardView({ card, navigate }: { card: Card; navigate: ReturnType<typeof 
 // ---------- 初始对话脚本 ----------
 function buildInitial(topic: Topic): Msg[] {
   const t = NOW();
-  if (topic === "policies") {
-    return [
-      {
-        id: "p1", role: "agent", time: t,
-        text: "您好，这里是「政策图谱」对话工作台。我已抓取并解析全市最新政策，您可以直接用自然语言提问，无需操作报表。下方是今早采集的快速概览：",
-        cards: [
-          { kind: "action", title: "今日新增政策 3 项", confidence: 0.94, detail: "来自市经信委、市发改委、浦东发改委；结构化解析平均置信度 92%。" },
-          { kind: "policy-list", ids: policies.slice(0, 3).map((p) => p.id) },
-          {
-            kind: "group-bar",
-            title: "按支持方向分组",
-            rows: groupBy(policies, (p) => p.domain).map(([k, v], i) => ({
-              label: k, value: v.length, tone: (["primary", "info", "warning"] as const)[i % 3],
-            })),
-          },
-        ],
-      },
-    ];
-  }
-  if (topic === "enterprises") {
-    return [
-      {
-        id: "e1", role: "agent", time: t,
-        text: "您好，这里是「企业画像」对话工作台。智能体已为入库企业生成画像与数据确权证书，您可以直接问「按行政区分布」「重点用能企业」「某企业的证书」等。下面是默认全景：",
-        cards: [
-          {
-            kind: "group-bar",
-            title: "按行政区企业画像数量",
-            rows: groupBy(enterprises, (e) => e.district).map(([k, v]) => ({
-              label: k, value: v.length, tone: "primary" as const,
-            })),
-          },
-          { kind: "ent-list", ids: enterprises.map((e) => e.id) },
-        ],
-      },
-      {
-        id: "e2", role: "agent", time: t,
-        text: "如需查看任意企业的数据确权证书，可直接点击企业进入详情；以下是示例：",
-        cards: [{ kind: "ent-certificate", entId: enterprises[0].id }],
-      },
-    ];
-  }
-  if (topic === "matches") {
-    return [
-      {
-        id: "m1", role: "agent", time: t,
-        text: "您好，这里是「撮合名单」对话工作台。我已基于企业数据确权证书与政策条件生成本期撮合。您可以直接说「高置信」「按状态分布」「金额 Top N」等。下面是默认快照：",
-        cards: [
-          {
-            kind: "group-bar",
-            title: "撮合按状态分布",
-            rows: groupBy(matches, (m) => m.status).map(([k, v]) => ({
-              label: k, value: v.length,
-              tone: k === "已拨付" ? "success" : k === "已驳回" ? "warning" : "primary",
-            })),
-          },
-          { kind: "match-table", ids: matches.slice(0, 5).map((m) => m.id) },
-        ],
-      },
-    ];
-  }
-  // disburse
-  const period = resolvePeriod("本月");
   return [
-    {
-      id: "d1", role: "agent", time: t,
-      text: `您好，这里是「资金拨付」对话工作台。告诉我一个时间周期（如「本月」「近 30 天」「2026 年 5 月」「Q2」），我会立刻生成资金拨付看板。下方默认展示 ${period.label}：`,
-      cards: buildDisburseDashboard(period.label, period.filter),
-    },
+    { id: "hero", role: "agent", time: t, hero: true, text: TOPIC_META[topic].welcome },
   ];
 }
 
