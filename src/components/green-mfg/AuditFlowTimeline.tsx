@@ -7,7 +7,6 @@ import {
   Sparkles,
   UserCheck,
   FileEdit,
-  Award,
   RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -77,7 +76,6 @@ function nodeIcon(n: AuditFlowNode) {
     case "ai": return Sparkles;
     case "expert": return UserCheck;
     case "incubate": return Hourglass;
-    case "done": return Award;
     default:
       if (n.result === "通过") return Check;
       if (n.result === "驳回") return X;
@@ -92,8 +90,8 @@ function resultLabel(n: AuditFlowNode): string {
   if (n.kind === "submit") return "已提交";
   if (n.kind === "revise") return "已修改并重新提交";
   if (n.kind === "ai") return n.result === "通过" ? "AI 评分完成" : "AI 评分异常";
-  if (n.kind === "expert") return n.result === "通过" ? "审核通过" : n.result === "驳回" ? "已驳回" : n.result;
-  if (n.kind === "done") return "已颁证";
+  if (n.kind === "expert") return n.result === "通过" ? "审核通过（流程结束）" : n.result === "驳回" ? "已驳回" : n.result;
+  if (n.kind === "incubate") return "进入培育库（流程结束）";
   return n.result;
 }
 
@@ -115,14 +113,14 @@ function groupByRound(nodes: AuditFlowNode[]): RoundGroup[] {
 }
 
 function roundConclusion(nodes: AuditFlowNode[]): { label: string; tone: Tone } {
-  // 取该轮最终态：done > expert > ai > submit
+  // 取该轮最终态：incubate > expert > ai > submit
   const expert = [...nodes].reverse().find((n) => n.kind === "expert");
-  const done = nodes.find((n) => n.kind === "done");
-  if (done && done.result !== "待办") return { label: "已颁证", tone: "success" };
+  const incubate = nodes.find((n) => n.kind === "incubate");
+  if (incubate && incubate.result !== "待办") return { label: "进入培育库（流程结束）", tone: "warning" };
   if (expert) {
-    if (expert.result === "通过") return { label: "专家审核通过", tone: "success" };
+    if (expert.result === "通过") return { label: "专家审核通过（流程结束）", tone: "success" };
     if (expert.result === "驳回") return { label: "专家驳回，企业修改中", tone: "destructive" };
-    if (expert.result === "进入培育") return { label: "进入培育库", tone: "warning" };
+    if (expert.result === "进入培育") return { label: "进入培育库（流程结束）", tone: "warning" };
   }
   if (nodes.some((n) => n.kind === "ai" && n.result !== "待办")) {
     return { label: "AI 评分完成，待专家审核", tone: "primary" };
@@ -253,7 +251,7 @@ export function AuditFlowTimeline({ nodes, dense = false }: { nodes: AuditFlowNo
           <LegendDot tone="success" label="专家审核通过" Icon={Check} />
           <LegendDot tone="destructive" label="专家驳回（可修改重提）" Icon={X} />
           <LegendDot tone="warning" label="进入培育库" Icon={Hourglass} />
-          <LegendDot tone="success" label="完成 · 颁发证书" Icon={Award} />
+          
         </div>
       )}
     </div>

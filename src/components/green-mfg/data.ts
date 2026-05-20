@@ -128,7 +128,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     manualScore: 94,
     level: "市级绿色工厂",
     reviewer: "王主任",
-    comment: "各项指标均超基准线，颁发市级绿色工厂证书。",
+    comment: "各项指标均超基准线，审核通过，认定为市级绿色工厂。",
   },
   {
     id: "GF-2025-004",
@@ -353,8 +353,7 @@ export const MOCK_AUDIT_FLOW: AuditFlowNode[] = [
   // 第二轮：企业修改后再次提交 → 智能打分 → 专家通过 → 完成
   { round: 2, kind: "revise", stage: "企业修改 · 重新提交", operator: "张工 / 企业填报员", time: "2025-09-14 11:08", result: "提交", comment: "已按驳回意见补充近三年能源审计报告及碳排核算说明。" },
   { round: 2, kind: "ai", stage: "系统智能打分", operator: "AI 评分引擎", time: "2025-09-14 11:09", result: "通过", score: 86, comment: "综合得分 86 分，较上轮提升 8 分。" },
-  { round: 2, kind: "expert", stage: "专家审核", operator: "李审核 / 宝山区生态局", time: "2025-09-15 14:08", result: "通过", score: 88, comment: "能耗、碳排、固废等核心指标达标，建议通过。" },
-  { round: 2, kind: "done", stage: "完成 · 颁发证书", operator: "—", time: "—", result: "待办" },
+  { round: 2, kind: "expert", stage: "专家审核", operator: "李审核 / 宝山区生态局", time: "2025-09-15 14:08", result: "通过", score: 88, comment: "能耗、碳排、固废等核心指标达标，审核通过，流程结束。" },
 ];
 
 // 打分维度：按一级指标（汇总二级指标分数）+ 二级指标名称组织
