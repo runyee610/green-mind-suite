@@ -58,7 +58,6 @@ const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
     { title: "政策推送", url: "/policy-agent", icon: Megaphone },
   ],
   ent: [
-    { title: "全景视图看板", url: "/", icon: LayoutDashboard },
     { title: "模拟自我评价", url: "/green-mfg/ent", icon: ShieldCheck },
     { title: "审核推荐", url: "/green-mfg/ent/review", icon: Send },
     { title: "梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
