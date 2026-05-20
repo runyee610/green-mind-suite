@@ -114,14 +114,14 @@ function groupByRound(nodes: AuditFlowNode[]): RoundGroup[] {
 }
 
 function roundConclusion(nodes: AuditFlowNode[]): { label: string; tone: Tone } {
-  // 取该轮最终态：done > expert > ai > submit
+  // 取该轮最终态：incubate > expert > ai > submit
   const expert = [...nodes].reverse().find((n) => n.kind === "expert");
-  const done = nodes.find((n) => n.kind === "done");
-  if (done && done.result !== "待办") return { label: "已颁证", tone: "success" };
+  const incubate = nodes.find((n) => n.kind === "incubate");
+  if (incubate && incubate.result !== "待办") return { label: "进入培育库（流程结束）", tone: "warning" };
   if (expert) {
-    if (expert.result === "通过") return { label: "专家审核通过", tone: "success" };
+    if (expert.result === "通过") return { label: "专家审核通过（流程结束）", tone: "success" };
     if (expert.result === "驳回") return { label: "专家驳回，企业修改中", tone: "destructive" };
-    if (expert.result === "进入培育") return { label: "进入培育库", tone: "warning" };
+    if (expert.result === "进入培育") return { label: "进入培育库（流程结束）", tone: "warning" };
   }
   if (nodes.some((n) => n.kind === "ai" && n.result !== "待办")) {
     return { label: "AI 评分完成，待专家审核", tone: "primary" };
