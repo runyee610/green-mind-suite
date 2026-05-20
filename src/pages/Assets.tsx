@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, ArrowLeft, Boxes, Download, Eye, Flame, Leaf, Link2, Search, Upload, Users, FilterX } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Boxes, Download, Eye, Flame, Leaf, Search, Upload, MapPin, Activity, Factory, FilterX } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { ImportDialog } from "@/components/assets/ImportDialog";
 import { LinkEnterpriseDialog } from "@/components/assets/LinkEnterpriseDialog";
 import { ProjectDetailView } from "@/components/assets/ProjectDetailView";
-import { contacts, linkStatusStyle, projects, type InvestmentProject } from "@/components/assets/assetsData";
+import { districts, linkStatusStyle, projects, type InvestmentProject, type ProjectStatus } from "@/components/assets/assetsData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,29 +14,52 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
+const ALL_STATUSES: ProjectStatus[] = ["筹建中", "建设中", "已竣工", "已暂停"];
+const statusBadgeStyle: Record<ProjectStatus, string> = {
+  筹建中: "border-muted-foreground/30 bg-muted/40 text-muted-foreground",
+  建设中: "border-primary/40 bg-primary/10 text-primary",
+  已竣工: "border-success/40 bg-success/10 text-success",
+  已暂停: "border-destructive/40 bg-destructive/10 text-destructive",
+};
+
+function computeYtdRatio(p: InvestmentProject) {
+  const updated = new Date(p.collectedUpdatedAt);
+  const year = updated.getFullYear();
+  const start = new Date(year, 0, 1);
+  const end = new Date(year, 11, 31);
+  const daysInYear = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+  const dayOfYear = Math.round((updated.getTime() - start.getTime()) / 86400000) + 1;
+  const ytdApproved = p.approvedEnergy * (dayOfYear / daysInYear);
+  return ytdApproved > 0 ? (p.collectedEnergy / ytdApproved) * 100 : 0;
+}
+
 const fmt = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });
 
 export default function Assets() {
   const [detail, setDetail] = useState<InvestmentProject | null>(null);
   const [keyword, setKeyword] = useState("");
-  const [creditCode, setCreditCode] = useState("");
-  const [contactFilter, setContactFilter] = useState<string[]>([]);
+  const [districtFilter, setDistrictFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<ProjectStatus[]>([]);
+  const [industryFilter, setIndustryFilter] = useState<string[]>([]);
   const [importOpen, setImportOpen] = useState(false);
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkTarget, setLinkTarget] = useState<InvestmentProject | null>(null);
 
+  const linkedIndustries = useMemo(() => {
+    const set = new Set<string>();
+    projects.forEach((p) => { if (p.linkedEnterpriseName) set.add(p.industry); });
+    return Array.from(set);
+  }, []);
+
   const filtered = useMemo(() => {
-    const list = projects.filter((p) => {
+    return projects.filter((p) => {
       const kw = !keyword || p.name.includes(keyword) || p.unitName.includes(keyword);
-      const cc = !creditCode || p.creditCode.includes(creditCode);
-      const ct = contactFilter.length === 0 || contactFilter.includes(p.contact);
-      return kw && cc && ct;
+      const dt = districtFilter.length === 0 || districtFilter.includes(p.district);
+      const st = statusFilter.length === 0 || statusFilter.includes(p.status);
+      const ind = industryFilter.length === 0 || (!!p.linkedEnterpriseName && industryFilter.includes(p.industry));
+      return kw && dt && st && ind;
     });
-    if (contactFilter.length > 1) {
-      return [...list].sort((a, b) => contactFilter.indexOf(a.contact) - contactFilter.indexOf(b.contact));
-    }
-    return list;
-  }, [keyword, creditCode, contactFilter]);
+  }, [keyword, districtFilter, statusFilter, industryFilter]);
 
   const stats = useMemo(() => {
     const total = projects.length;
@@ -68,7 +91,7 @@ export default function Assets() {
     ];
   }, []);
 
-  const reset = () => { setKeyword(""); setCreditCode(""); setContactFilter([]); };
+  const reset = () => { setKeyword(""); setDistrictFilter([]); setStatusFilter([]); setIndustryFilter([]); };
   const openLink = (p: InvestmentProject) => { setLinkTarget(p); setLinkOpen(true); };
 
   const toneClass = (tone: "primary" | "warning" | "success") => {
