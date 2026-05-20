@@ -334,8 +334,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead className="whitespace-nowrap">行业</TableHead>
                     <TableHead className="whitespace-nowrap">提交批次</TableHead>
                     <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家审核</TableHead>
-                    <TableHead className="text-center whitespace-nowrap">综合能耗（吨标煤）</TableHead>
-                    <TableHead className="text-center whitespace-nowrap">产值（万元）</TableHead>
                     <TableHead className="text-center whitespace-nowrap">流转状态</TableHead>
                     <TableHead className="whitespace-nowrap">提交时间</TableHead>
                     <TableHead className="sticky right-0 z-20 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))]">操作</TableHead>
