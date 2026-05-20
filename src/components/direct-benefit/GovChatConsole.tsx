@@ -27,21 +27,21 @@ const TOPIC_META: Record<Topic, {
   quicks: string[];
 }> = {
   policies: {
-    title: "政策图谱 · 智能对话",
+    title: "政策图谱",
     subtitle: "用自然语言查询、对比、推送政策。无需翻报表，直接问。",
     icon: FileSearch,
     placeholder: "例如：列出节能技改类已公示政策；对比 P-2025-001 和 P-2025-002；按发文机关统计…",
     quicks: ["今天新增了哪些政策？", "按支持方向分组统计", "对比工业节能两项政策", "解析置信度最低的政策"],
   },
   enterprises: {
-    title: "企业画像 · 智能对话",
+    title: "企业画像",
     subtitle: "向智能体提问，自动生成画像清单、确权证书与分布报告。",
     icon: Users,
     placeholder: "例如：筛选浦东重点用能企业；展示某企业的数据确权证书；按行政区统计画像数量…",
     quicks: ["按行政区分布画像", "列出重点用能单位", "查看 E001 的数据确权证书", "完整度 < 100% 的企业"],
   },
   matches: {
-    title: "撮合名单 · 智能对话",
+    title: "撮合名单",
     subtitle: "智能体随问随答 — 高置信撮合、企业聚合、状态漏斗都能即时生成。",
     icon: Workflow,
     placeholder: "例如：本周高置信撮合；按状态分布；某企业的全部撮合记录；待公示的有哪些…",
@@ -112,7 +112,7 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
               <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-background" />
             </div>
             <div className="min-w-0">
-              <div className="font-semibold text-foreground text-sm">免审即享智能体</div>
+              <div className="font-semibold text-foreground text-lg">免审即享智能体</div>
               <div className="text-[10px] text-muted-foreground">
                 <Activity className="mr-0.5 inline h-2.5 w-2.5" />运行中 · GPT-5.2
               </div>
@@ -127,7 +127,7 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
             <div className="px-1.5 py-1.5">
               <div className="flex items-center gap-2 rounded-md bg-primary/10 px-2 py-1.5 text-xs text-foreground">
                 <MessageSquare className="h-3.5 w-3.5 text-primary" />
-                <span className="flex-1 truncate">{meta.title}</span>
+                <span className="flex-1 truncate text-sm">{meta.title}</span>
               </div>
               {(["policies", "enterprises", "matches"] as Topic[])
                 .filter((t) => t !== topic)
@@ -138,7 +138,7 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
                     className="mt-0.5 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/40"
                   >
                     <MessageSquare className="h-3.5 w-3.5" />
-                    <span className="flex-1 truncate text-left">{TOPIC_META[t].title}</span>
+                    <span className="flex-1 truncate text-left text-sm">{TOPIC_META[t].title}</span>
                   </button>
                 ))}
             </div>
