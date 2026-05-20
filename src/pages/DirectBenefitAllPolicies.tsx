@@ -96,7 +96,7 @@ export default function DirectBenefitAllPolicies() {
         </div>
 
         {/* 列表 */}
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 items-stretch">
           {list.map((p) => {
             const ds = domainStyle[p.domain];
             const fav = has(p.id);
@@ -104,7 +104,7 @@ export default function DirectBenefitAllPolicies() {
             return (
               <div
                 key={p.id}
-                className="group relative flex flex-col rounded-lg border border-border bg-card p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+                className="group relative flex h-full min-h-[260px] flex-col rounded-lg border border-border bg-card p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md"
               >
                 <div className="flex items-center gap-2">
                   <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium", ds.badge)}>
@@ -143,7 +143,7 @@ export default function DirectBenefitAllPolicies() {
                   )}
                 </div>
 
-                <div className="mt-3 flex items-center gap-2">
+                <div className="mt-auto pt-3 flex items-center gap-2">
                   <Button
                     size="sm"
                     variant="outline"
