@@ -121,7 +121,7 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
 
           <div className="rounded-lg border border-border bg-card">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">
-              <div className="text-[11px] font-semibold text-foreground">会话</div>
+              <div className="font-semibold text-foreground text-base">功能</div>
               <button className="text-muted-foreground hover:text-foreground"><Plus className="h-3.5 w-3.5" /></button>
             </div>
             <div className="px-1.5 py-1.5">
@@ -145,7 +145,7 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
           </div>
 
           <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card">
-            <div className="border-b border-border px-3 py-2 text-[11px] font-semibold text-foreground">智能体可生成</div>
+            <div className="border-b border-border px-3 py-2 font-semibold text-foreground text-base">智能体可生成</div>
             <ul className="space-y-1.5 p-2.5 text-[11px] text-muted-foreground">
               <li className="flex items-center gap-1.5"><BarChart3 className="h-3 w-3 text-primary" />分组统计图表</li>
               <li className="flex items-center gap-1.5"><Layers className="h-3 w-3 text-primary" />筛选明细清单</li>
