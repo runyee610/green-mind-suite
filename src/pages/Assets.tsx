@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, ArrowLeft, Boxes, Download, Eye, Flame, Leaf, Search, Upload, MapPin, Activity, Factory, FilterX } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Boxes, ChevronDown, Download, Eye, Flame, Leaf, Search, Upload, MapPin, Activity, Factory, FilterX, SlidersHorizontal, X } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { ImportDialog } from "@/components/assets/ImportDialog";
 import { LinkEnterpriseDialog } from "@/components/assets/LinkEnterpriseDialog";
