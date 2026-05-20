@@ -313,7 +313,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <Field label="竣工日期" value={project.endDate} mono />
                 <Field label="项目类型" value={<Badge variant="secondary">{project.projectType}</Badge>} />
                 <Field label="项目状态" value={<Badge variant="outline">建设中</Badge>} />
-                <Field label="节能审查批复时间及文号" value={project.energyReviewDoc} span={3} />
+                <Field label="节能审查批复文号" value={project.energyReviewDoc} span={3} />
                 <Field label="备注" value={project.remark} span={3} />
               </div>
             </section>
