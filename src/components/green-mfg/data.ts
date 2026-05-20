@@ -75,6 +75,8 @@ export interface AuditFlowNode {
   result: "通过" | "驳回" | "提交" | "进入培育" | "待办";
   comment?: string;
   score?: number; // 该环节最终评分（0-100）
+  round?: number; // 第几轮（支持企业修改后再提交的循环）
+  kind?: "submit" | "ai" | "expert" | "revise" | "incubate" | "done"; // 节点类别
 }
 
 export const MOCK_DECLARATIONS: DeclarationRecord[] = [
@@ -344,10 +346,15 @@ export const MOCK_DYNAMIC: DynamicRecord[] = [
 ];
 
 export const MOCK_AUDIT_FLOW: AuditFlowNode[] = [
-  { stage: "企业填写", operator: "张工/企业填报员", time: "2025-09-12 10:24", result: "提交", comment: "已上传自评价书及附件 12 份" },
-  { stage: "系统智能打分", operator: "系统", time: "2025-09-12 10:25", result: "通过", score: 86, comment: "综合得分 86 分，达到推荐线" },
-  { stage: "专家审核", operator: "李审核/宝山区生态局", time: "2025-09-15 14:08", result: "通过", score: 88, comment: "能耗、碳排、固废等核心指标达标，建议通过。" },
-  { stage: "完成", operator: "—", time: "—", result: "待办" },
+  // 第一轮：企业首次填写 → 智能打分 → 专家驳回
+  { round: 1, kind: "submit", stage: "企业填写 · 提交", operator: "张工 / 企业填报员", time: "2025-09-12 10:24", result: "提交", comment: "已上传自评价书及附件 12 份。" },
+  { round: 1, kind: "ai", stage: "系统智能打分", operator: "AI 评分引擎", time: "2025-09-12 10:25", result: "通过", score: 78, comment: "综合得分 78 分，达到推荐线；建议人工复核能耗与碳排数据。" },
+  { round: 1, kind: "expert", stage: "专家审核", operator: "李审核 / 宝山区生态局", time: "2025-09-13 16:20", result: "驳回", score: 72, comment: "能源消耗强度证明材料缺失，碳排放强度核算口径存疑，请补充并修订后重新提交。" },
+  // 第二轮：企业修改后再次提交 → 智能打分 → 专家通过 → 完成
+  { round: 2, kind: "revise", stage: "企业修改 · 重新提交", operator: "张工 / 企业填报员", time: "2025-09-14 11:08", result: "提交", comment: "已按驳回意见补充近三年能源审计报告及碳排核算说明。" },
+  { round: 2, kind: "ai", stage: "系统智能打分", operator: "AI 评分引擎", time: "2025-09-14 11:09", result: "通过", score: 86, comment: "综合得分 86 分，较上轮提升 8 分。" },
+  { round: 2, kind: "expert", stage: "专家审核", operator: "李审核 / 宝山区生态局", time: "2025-09-15 14:08", result: "通过", score: 88, comment: "能耗、碳排、固废等核心指标达标，建议通过。" },
+  { round: 2, kind: "done", stage: "完成 · 颁发证书", operator: "—", time: "—", result: "待办" },
 ];
 
 // 打分维度：按一级指标（汇总二级指标分数）+ 二级指标名称组织
