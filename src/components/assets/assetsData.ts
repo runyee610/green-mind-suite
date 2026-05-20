@@ -19,6 +19,8 @@ export interface InvestmentProject {
   // 能耗
   approvedEnergy: number; // 批复年综合能耗（等价值，吨标煤）
   collectedEnergy: number; // 采集综合能耗（等价值）
+  collectedUpdatedAt: string; // 采集综合能耗更新时间（YYYY-MM-DD）
+  lastYearCollectedEnergy: number; // 上一年度采集综合能耗（等价值，吨标煤）
   actualSavingTce: number; // 2025 实际节能量（万吨标煤）
   actualSavingKwh: number; // 2025 实际节电量（万千瓦时）
   remainingSaving: number; // 剩余可用节能量（万吨标煤）
@@ -55,6 +57,8 @@ export const projects: InvestmentProject[] = [
     linkedCreditCode: "913100006072120631",
     approvedEnergy: 128000,
     collectedEnergy: 121580,
+    collectedUpdatedAt: "2026-06-30",
+    lastYearCollectedEnergy: 119580,
     actualSavingTce: 0.86,
     actualSavingKwh: 4520.5,
     remainingSaving: 0.64,
@@ -84,6 +88,8 @@ export const projects: InvestmentProject[] = [
     linkedCreditCode: "91310000132211457X",
     approvedEnergy: 96000,
     collectedEnergy: 102350,
+    collectedUpdatedAt: "2026-06-30",
+    lastYearCollectedEnergy: 100350,
     actualSavingTce: 1.12,
     actualSavingKwh: 6120.0,
     remainingSaving: -0.18,
@@ -111,6 +117,8 @@ export const projects: InvestmentProject[] = [
     linkStatus: "待关联",
     approvedEnergy: 45000,
     collectedEnergy: 0,
+    collectedUpdatedAt: "2026-06-30",
+    lastYearCollectedEnergy: 0,
     actualSavingTce: 0,
     actualSavingKwh: 0,
     remainingSaving: 0.42,
@@ -140,6 +148,8 @@ export const projects: InvestmentProject[] = [
     linkedCreditCode: "913101157776100068",
     approvedEnergy: 62000,
     collectedEnergy: 58420,
+    collectedUpdatedAt: "2026-06-30",
+    lastYearCollectedEnergy: 56420,
     actualSavingTce: 0.55,
     actualSavingKwh: 2980.7,
     remainingSaving: 0.36,
@@ -167,6 +177,8 @@ export const projects: InvestmentProject[] = [
     linkStatus: "待确认",
     approvedEnergy: 38000,
     collectedEnergy: 41200,
+    collectedUpdatedAt: "2026-06-30",
+    lastYearCollectedEnergy: 39200,
     actualSavingTce: 0.21,
     actualSavingKwh: 1860.4,
     remainingSaving: -0.05,
@@ -196,6 +208,8 @@ export const projects: InvestmentProject[] = [
     linkedCreditCode: "91310000132206289P",
     approvedEnergy: 18500,
     collectedEnergy: 16980,
+    collectedUpdatedAt: "2026-06-30",
+    lastYearCollectedEnergy: 14980,
     actualSavingTce: 0.12,
     actualSavingKwh: 980.5,
     remainingSaving: 0.15,
@@ -223,6 +237,8 @@ export const projects: InvestmentProject[] = [
     linkStatus: "待关联",
     approvedEnergy: 71000,
     collectedEnergy: 0,
+    collectedUpdatedAt: "2026-06-30",
+    lastYearCollectedEnergy: 0,
     actualSavingTce: 0,
     actualSavingKwh: 0,
     remainingSaving: 0.55,
@@ -252,6 +268,8 @@ export const projects: InvestmentProject[] = [
     linkedCreditCode: "91310112MA1G2YH75T",
     approvedEnergy: 6500,
     collectedEnergy: 5840,
+    collectedUpdatedAt: "2026-06-30",
+    lastYearCollectedEnergy: 3840,
     actualSavingTce: 0.32,
     actualSavingKwh: 2210.6,
     remainingSaving: 0.08,

@@ -48,8 +48,6 @@ const sections = [
 ];
 
 export function ProjectDetailView({ project, onLink }: { project: InvestmentProject; onLink: () => void }) {
-  const overQuota = project.collectedEnergy > project.approvedEnergy && project.collectedEnergy > 0;
-  const exceed = project.collectedEnergy - project.approvedEnergy;
   const status = linkStatusStyle[project.linkStatus];
   const needLink = project.linkStatus !== "已关联";
 
@@ -135,21 +133,71 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <Gauge className="h-4 w-4 text-primary" />能耗数据
                 <Badge variant="outline" className="ml-1 border-primary/40 bg-primary/10 text-primary">核心指标</Badge>
               </h3>
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                <EnergyMetric label="批复年综合能耗（等价值）" value={project.approvedEnergy} unit="吨标煤" />
-                <EnergyMetric label="采集综合能耗（等价值）" value={project.collectedEnergy} unit="吨标煤" warn={overQuota} hint={overQuota ? `已超批复 ${fmt(exceed)} 吨标煤` : "在批复范围内"} />
-                <EnergyMetric
-                  label="采集 / 批复占比"
-                  value={project.approvedEnergy > 0 ? (project.collectedEnergy / project.approvedEnergy) * 100 : 0}
-                  unit="%"
-                  warn={overQuota}
-                  hint={overQuota ? "已超出批复能耗" : "占批复综合能耗比例"}
-                />
-                <EnergyMetric label="剩余可用节能量" value={project.remainingSaving} unit="万吨标煤" warn={project.remainingSaving < 0} hint={project.remainingSaving < 0 ? "节能量已透支" : undefined} />
-                <EnergyMetric label="2025 年度实际节能量" value={project.actualSavingTce} unit="万吨标煤" />
-                <EnergyMetric label="2025 年度实际节电量" value={project.actualSavingKwh} unit="万千瓦时" />
-              </div>
+              {(() => {
+                const updated = new Date(project.collectedUpdatedAt);
+                const year = updated.getFullYear();
+                const start = new Date(year, 0, 1);
+                const end = new Date(year, 11, 31);
+                const daysInYear = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+                const dayOfYear = Math.round((updated.getTime() - start.getTime()) / 86400000) + 1;
+                const ytdApproved = project.approvedEnergy * (dayOfYear / daysInYear);
+                const ratio = ytdApproved > 0 ? (project.collectedEnergy / ytdApproved) * 100 : 0;
+                const ratioWarn = ratio > 110;
+                const ratioOk = ratio < 90;
+                const ratioMid = ratio >= 90 && ratio <= 110;
+                const overQuotaYtd = project.collectedEnergy > ytdApproved;
+                return (
+                  <>
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                      <EnergyMetric label="批复年综合能耗（等价值）" value={project.approvedEnergy} unit="吨标煤" />
+                      <EnergyMetric
+                        label="采集综合能耗（等价值）"
+                        value={project.collectedEnergy}
+                        unit="吨标煤"
+                        warn={overQuotaYtd}
+                        hint={`更新时间 ${project.collectedUpdatedAt}`}
+                      />
+                      <EnergyMetric label="上一年度采集综合能耗（等价值）" value={project.lastYearCollectedEnergy} unit="吨标煤" />
+                      <div className={cn(
+                        "rounded-lg border p-4 md:col-span-2 xl:col-span-3",
+                        ratioOk && "border-success/40 bg-success/10",
+                        ratioMid && "border-warning/40 bg-warning/10",
+                        ratioWarn && "border-destructive/50 bg-destructive/10",
+                      )}>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>采集 / 批复占比（YTD）</span>
+                          <Calculator className={cn(
+                            "h-3.5 w-3.5",
+                            ratioOk && "text-success",
+                            ratioMid && "text-warning",
+                            ratioWarn && "text-destructive",
+                          )} />
+                        </div>
+                        <div className={cn(
+                          "mt-2 font-mono text-2xl font-semibold",
+                          ratioOk && "text-success",
+                          ratioMid && "text-warning",
+                          ratioWarn && "text-destructive",
+                        )}>
+                          {fmt(ratio)}
+                          <span className="ml-1 text-xs font-normal text-muted-foreground">%</span>
+                        </div>
+                        <div className={cn(
+                          "mt-1 flex items-center gap-1 text-[11px]",
+                          ratioOk && "text-success",
+                          ratioMid && "text-warning",
+                          ratioWarn && "text-destructive",
+                        )}>
+                          {ratioWarn && <AlertTriangle className="h-3 w-3" />}
+                          按 YTD 折算：截至 {project.collectedUpdatedAt}（第 {dayOfYear}/{daysInYear} 天），折算批复 {fmt(ytdApproved)} 吨标煤
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </section>
+
 
             {/* 项目信息 */}
             <section id="project" className="scroll-mt-4">
