@@ -12,7 +12,8 @@ interface Props {
   policyName?: string;
 }
 
-const SUGGESTIONS = ["解读该政策", "申领条件", "申报指引", "是否建议我申领"];
+const SUGGESTIONS_ENT = ["解读该政策", "申领条件", "申报指引", "是否建议我申领"];
+const SUGGESTIONS_GOV = ["解读该政策", "对比相似政策", "命中此政策的企业", "拨付情况"];
 
 /**
  * 企业侧 · 智能体悬浮对话按钮（FAB）
