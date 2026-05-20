@@ -183,6 +183,13 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
                     <span className="flex-1 truncate text-left text-sm">{TOPIC_META[t].title}</span>
                   </button>
                 ))}
+              <button
+                onClick={() => navigate("/direct-benefit/gov/all-policies")}
+                className="mt-0.5 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/40"
+              >
+                <Compass className="h-3.5 w-3.5" />
+                <span className="flex-1 truncate text-left text-sm">全部政策</span>
+              </button>
             </div>
           </div>
 
