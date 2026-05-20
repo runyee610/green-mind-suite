@@ -39,7 +39,7 @@ export default function GreenMfgEntIncubator() {
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
             <InfoTile label="所属区" value={me.district} />
             <InfoTile label="所属行业" value={`${me.industry}${me.subIndustry ? " / " + me.subIndustry : ""}`} />
-            <InfoTile label="自我评价批次" value={me.batch} />
+            <InfoTile label="审核推荐批次" value={me.batch} />
             <InfoTile label="提交时间" value={me.submitDate} icon={CalendarDays} />
             <InfoTile label="产值（万元）" value={me.outputValue.toLocaleString()} />
             <InfoTile label="智能打分" value={`${me.score}`} />
