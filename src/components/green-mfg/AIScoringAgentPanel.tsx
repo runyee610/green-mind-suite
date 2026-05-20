@@ -470,7 +470,7 @@ export function AIScoringAgentPanel() {
                   <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-muted-foreground">
                     <Sparkles className="h-3 w-3 text-primary" /> AI 综合评分结果
                   </div>
-                  <div className="mt-0.5 text-base font-semibold text-foreground">达到三星级绿色工厂申报基准</div>
+                  <div className="mt-0.5 text-base font-semibold text-foreground">达到绿色工厂申报基准</div>
                   <Badge className="mt-1 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/15">
                     <CheckCircle2 className="mr-1 h-3 w-3" /> 建议提交自评价
                   </Badge>
