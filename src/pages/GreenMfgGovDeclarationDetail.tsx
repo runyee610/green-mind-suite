@@ -48,6 +48,7 @@ export default function GreenMfgGovDeclarationDetail() {
 
   const [approveOpen, setApproveOpen] = useState(false);
   const [cultivateOpen, setCultivateOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [activeTab, setActiveTab] = useState<string>(TABS[0].value);
   const [indicators, setIndicators] = useState<IndicatorRow[]>(EVALUATION_INDICATORS);
@@ -63,6 +64,11 @@ export default function GreenMfgGovDeclarationDetail() {
   const handleCultivate = () => {
     toast.success("已转入培育阶段，企业等级标记为「区级培育」");
     setCultivateOpen(false);
+    setComment("");
+  };
+  const handleReject = () => {
+    toast.success("已驳回，企业将收到驳回通知并可修改后重新提交");
+    setRejectOpen(false);
     setComment("");
   };
 
