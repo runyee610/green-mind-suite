@@ -210,9 +210,23 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
         </aside>
 
         {/* 主区：对话 */}
-        <section className="flex min-h-0 flex-col rounded-lg border border-border bg-card">
-          <div className="flex items-start gap-3 border-b border-border px-4 py-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+        <section className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-card">
+          {/* tech grid background */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+              maskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+              WebkitMaskImage: "radial-gradient(ellipse at 30% 0%, #000 35%, transparent 80%)",
+            }}
+          />
+          <div className="pointer-events-none absolute -top-24 right-10 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-info/10 blur-3xl" />
+
+          <div className="relative flex items-start gap-3 border-b border-border px-4 py-3 bg-gradient-to-r from-transparent via-primary/[0.03] to-transparent">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-gradient-to-br from-primary/20 to-info/20 text-primary">
               <HeaderIcon className="h-4 w-4" />
             </div>
             <div className="min-w-0 flex-1">
@@ -226,15 +240,26 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
             </div>
           </div>
 
-          <ScrollArea className="flex-1 px-4 py-4">
+          <ScrollArea className="relative flex-1 px-4 py-4">
             <div className="mx-auto max-w-3xl space-y-4">
-              {messages.map((m) => (
-                <Bubble key={m.id} msg={m} navigate={navigate} />
-              ))}
+              {messages.map((m) =>
+                m.hero ? (
+                  <ChatHero
+                    key={m.id}
+                    title={meta.title}
+                    subtitle={m.text ?? meta.welcome}
+                    suggestions={meta.heroSuggestions}
+                    onPick={(s) => send(s)}
+                  />
+                ) : (
+                  <Bubble key={m.id} msg={m} navigate={navigate} />
+                )
+              )}
               {thinking && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/15">
-                    <Brain className="h-3.5 w-3.5 text-primary" />
+                  <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-primary/15">
+                    <span className="absolute inset-0 rounded-full bg-primary/20 blur-md animate-pulse" />
+                    <Brain className="relative h-3.5 w-3.5 text-primary" />
                   </span>
                   <span className="inline-flex items-center gap-1">
                     智能体正在根据数据源生成结果
@@ -250,7 +275,7 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
             </div>
           </ScrollArea>
 
-          <div className="border-t border-border p-3">
+          <div className="relative border-t border-border p-3">
             <div className="mb-2 flex flex-wrap gap-1.5">
               {meta.quicks.map((q) => (
                 <button
