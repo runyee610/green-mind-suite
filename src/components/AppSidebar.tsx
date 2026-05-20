@@ -21,6 +21,7 @@ import {
   Workflow,
   CircleDollarSign,
   FileSearch,
+  Compass,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
