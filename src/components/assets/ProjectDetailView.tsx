@@ -253,6 +253,55 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               })()}
             </section>
 
+            {/* 项目附件 */}
+            <section id="attachments" className="scroll-mt-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <Paperclip className="h-4 w-4 text-primary" />项目附件
+                  <Badge variant="outline" className="ml-1 border-primary/30 bg-primary/5 text-primary">{attachments.length}</Badge>
+                </h3>
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    className="hidden"
+                    onChange={(e) => handleFiles(e.target.files)}
+                  />
+                  <Button size="sm" variant="outline" className="gap-1" onClick={handleUploadClick}>
+                    <Upload className="h-3.5 w-3.5" />上传附件
+                  </Button>
+                </div>
+              </div>
+              <div className="rounded-md border border-border/60">
+                {attachments.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-muted-foreground">暂无附件，点击右上角"上传附件"添加 PDF / DOC / DOCX 文件</div>
+                ) : (
+                  <ul className="divide-y divide-border/60">
+                    {attachments.map((att, idx) => (
+                      <li key={`${att.name}-${idx}`} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <FileText className="h-4 w-4 shrink-0 text-primary" />
+                          <span className="truncate">{att.name}</span>
+                          <Badge variant="outline" className="shrink-0 uppercase">{att.type}</Badge>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
+                          <span>{att.size}</span>
+                          <span>{att.uploadedAt}</span>
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleRemove(idx)} aria-label="删除附件">
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="border-t border-border/60 px-3 py-2 text-[11px] text-muted-foreground">
+                  仅支持 PDF / DOC / DOCX 格式，支持多份同时上传
+                </div>
+              </div>
+            </section>
 
             {/* 项目信息 */}
             <section id="project" className="scroll-mt-4">
@@ -262,14 +311,9 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <Field label="开工日期" value={project.startDate} mono />
                 <Field label="竣工日期" value={project.endDate} mono />
-                <Field label="投资总额" value={`${fmt(project.investment, 0)} 万元`} mono />
                 <Field label="项目类型" value={<Badge variant="secondary">{project.projectType}</Badge>} />
                 <Field label="项目状态" value={<Badge variant="outline">建设中</Badge>} />
-                <Field label="是否已申请补贴" value={<Badge variant="outline">否</Badge>} />
-                <Field label="项目联系人" value={`${project.projectContact.name} · ${project.projectContact.phone}`} />
-                <Field label="项目联系邮箱" value={project.projectContact.email} />
-                <Field label="节能审查批复时间及文号" value={project.energyReviewDoc} span={2} />
-                <Field label="环评审批批复时间及文号" value={project.eiaReviewDoc} span={2} />
+                <Field label="节能审查批复时间及文号" value={project.energyReviewDoc} span={3} />
                 <Field label="备注" value={project.remark} span={3} />
               </div>
             </section>
