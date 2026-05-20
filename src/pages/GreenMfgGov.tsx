@@ -341,7 +341,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                 </TableHeader>
                 <TableBody>
                   {declarations.map((r) => {
-                    const dyn = MOCK_DYNAMIC.find((d) => d.enterpriseName === r.enterpriseName);
                     return (
                     <TableRow key={r.id} className="h-12 border-border/40 group">
                       <TableCell className="whitespace-nowrap">
@@ -359,10 +358,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs px-[9px] text-center">
-                        {dyn?.energyConsumption != null ? dyn.energyConsumption.toLocaleString() : <span className="text-muted-foreground">—</span>}
-                      </TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.outputValue.toLocaleString()}</TableCell>
                       <TableCell className="text-center whitespace-nowrap">
                         <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
                       </TableCell>
@@ -376,7 +371,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     );
                   })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家审核推荐</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家审核推荐</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
