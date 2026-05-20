@@ -485,6 +485,63 @@ function CardView({ card, navigate }: { card: Card; navigate: ReturnType<typeof 
     );
   }
 
+  if (card.kind === "kpi-grid") {
+    const toneCls = (t?: string) =>
+      t === "success" ? "text-success" : t === "warning" ? "text-warning" : t === "info" ? "text-info" : "text-primary";
+    return (
+      <div className="rounded-md border border-border bg-card p-3">
+        {card.title && (
+          <div className="mb-2 flex items-center gap-2">
+            <BarChart3 className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs font-semibold text-foreground">{card.title}</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">智能体按所选周期聚合</span>
+          </div>
+        )}
+        <div className={cn("grid gap-2", card.cells.length >= 4 ? "grid-cols-4" : "grid-cols-3")}>
+          {card.cells.map((c) => (
+            <div key={c.label} className="rounded-md bg-muted/30 p-2 text-center">
+              <div className="text-[10px] text-muted-foreground">{c.label}</div>
+              <div className={cn("mt-0.5 font-mono text-base font-semibold", toneCls(c.tone))}>{c.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (card.kind === "disburse-list") {
+    return (
+      <div className="space-y-1.5">
+        {card.ids.map((id) => {
+          const d = disbursements.find((x) => x.id === id);
+          if (!d) return null;
+          const p = findPolicy(d.policyId);
+          const e = findEnterprise(d.enterpriseId);
+          const stageColor = d.stage === "已到账" ? "text-success" : d.stage === "财政划拨中" ? "text-warning" : "text-info";
+          return (
+            <button
+              key={id}
+              onClick={() => navigate("/direct-benefit/gov/disburse")}
+              className="flex w-full items-center gap-3 rounded-md border border-border bg-card p-2.5 text-left transition hover:border-primary/40"
+            >
+              <Wallet className="h-4 w-4 shrink-0 text-warning" />
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-medium text-foreground line-clamp-1">{e?.name} · {p?.name}</div>
+                <div className="mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground">
+                  <span className={cn("font-medium", stageColor)}>{d.stage}</span>
+                  <span>·</span>
+                  <span className="font-mono">{d.timeline[d.timeline.length - 1].time}</span>
+                  {d.certificateId && (<><span>·</span><span className="font-mono">证书 {d.certificateId}</span></>)}
+                </div>
+              </div>
+              <span className="font-mono text-sm font-semibold text-warning">{d.amount} 万</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
   return null;
 }
 
