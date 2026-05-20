@@ -458,7 +458,7 @@ export const certificates: DataCertificate[] = [
       { key: "data_quality", label: "数据完整率", value: "98.2%", source: "能耗监测平台", collectedAt: "2026-05-18", fieldPath: "能耗监测.completeness" },
       { key: "no_violation", label: "近 3 年节能违法", value: "无", source: "市场监管局处罚库", collectedAt: "2026-05-01", fieldPath: "市监.penalty_count" },
       { key: "ghg", label: "温室气体排放", value: "1.23 万 tCO₂e（同比 -8%）", source: "温室气体排放报告", collectedAt: "2026-03-31", fieldPath: "温室气体.total_emission" },
-      { key: "green_factory", label: "绿色工厂自评", value: "已通过 / 87 分", source: "绿色工厂自我评价", collectedAt: "2026-02-20", fieldPath: "绿色工厂.self_score" },
+      { key: "green_factory", label: "绿色工厂审核推荐", value: "已通过 / 87 分", source: "绿色工厂审核推荐", collectedAt: "2026-02-20", fieldPath: "绿色工厂.self_score" },
       { key: "district", label: "注册地", value: "浦东新区", source: "企业基础档案", collectedAt: "2026-04-30", fieldPath: "企业基础档案.district" },
       { key: "saving", label: "年节能量（区级）", value: "186 吨标准煤", source: "节能技改项目信息", collectedAt: "2026-05-15", fieldPath: "节能技改.saving_tce" },
     ],
