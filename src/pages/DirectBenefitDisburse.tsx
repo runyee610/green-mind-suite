@@ -151,10 +151,9 @@ export default function DirectBenefitDisburse() {
             {list.length === 0 && (
               <div className="rounded-lg border border-dashed border-border bg-muted/20 p-12 text-center text-sm text-muted-foreground">
                 暂无拨付记录
+              </div>
+            )}
           </div>
-        </div>
-          </div>
-        )}
       </div>
     </AppLayout>
   );
