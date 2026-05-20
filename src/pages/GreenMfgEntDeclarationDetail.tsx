@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, ChevronRight, Sparkles, UserCheck } from "lucide-react";
+import { ArrowLeft, ChevronRight, Sparkles, Undo2, UserCheck } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,7 +64,17 @@ export default function GreenMfgEntDeclarationDetail() {
       }
     >
       {/* 返回按钮：与副标题底部对齐 */}
-      <div className="-mt-16 mb-3 flex items-center justify-end gap-3">
+      <div className="-mt-16 mb-3 flex items-center justify-end gap-2">
+        {detail.stage === "待审核" && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+            onClick={() => toast.success("已撤回，状态变更为「填写中」")}
+          >
+            <Undo2 className="mr-1 h-4 w-4" />撤回
+          </Button>
+        )}
         <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
           <ArrowLeft className="mr-1 h-4 w-4" />返回
         </Button>
