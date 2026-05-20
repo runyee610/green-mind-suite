@@ -178,27 +178,64 @@ export default function Assets() {
               </div>
             </div>
 
-            <div className="mt-3 grid gap-2 lg:grid-cols-[1fr_220px_200px_auto]">
-              <div className="relative">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <div className="relative min-w-[260px] flex-1">
                 <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="项目名称 / 单位名称模糊搜索" className="h-9 pl-9" />
               </div>
-              <Input value={creditCode} onChange={(e) => setCreditCode(e.target.value)} placeholder="统一社会信用代码（精准）" className="h-9 font-mono" />
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 justify-start gap-1">
-                    <Users className="h-3.5 w-3.5" />
-                    对口人 {contactFilter.length > 0 && <Badge variant="secondary" className="ml-auto h-5 px-1.5">{contactFilter.length}</Badge>}
+                  <Button variant="outline" size="sm" className="h-9 gap-1">
+                    <MapPin className="h-3.5 w-3.5" />所属区
+                    {districtFilter.length > 0 && <Badge variant="secondary" className="ml-1 h-5 px-1.5">{districtFilter.length}</Badge>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-52 p-2" align="start">
-                  <div className="mb-1 px-2 py-1 text-xs text-muted-foreground">多选后将按对口人临近排序</div>
-                  {contacts.map((c) => {
-                    const checked = contactFilter.includes(c);
+                <PopoverContent className="w-44 p-2" align="start">
+                  {districts.map((d) => {
+                    const checked = districtFilter.includes(d);
                     return (
-                      <label key={c} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
-                        <Checkbox checked={checked} onCheckedChange={(v) => setContactFilter((arr) => v ? [...arr, c] : arr.filter((x) => x !== c))} />
-                        <span>{c}</span>
+                      <label key={d} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                        <Checkbox checked={checked} onCheckedChange={(v) => setDistrictFilter((arr) => v ? [...arr, d] : arr.filter((x) => x !== d))} />
+                        <span>{d}</span>
+                      </label>
+                    );
+                  })}
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9 gap-1">
+                    <Activity className="h-3.5 w-3.5" />状态
+                    {statusFilter.length > 0 && <Badge variant="secondary" className="ml-1 h-5 px-1.5">{statusFilter.length}</Badge>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 p-2" align="start">
+                  {ALL_STATUSES.map((s) => {
+                    const checked = statusFilter.includes(s);
+                    return (
+                      <label key={s} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                        <Checkbox checked={checked} onCheckedChange={(v) => setStatusFilter((arr) => v ? [...arr, s] : arr.filter((x) => x !== s))} />
+                        <span>{s}</span>
+                      </label>
+                    );
+                  })}
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9 gap-1">
+                    <Factory className="h-3.5 w-3.5" />关联企业行业
+                    {industryFilter.length > 0 && <Badge variant="secondary" className="ml-1 h-5 px-1.5">{industryFilter.length}</Badge>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-72 p-2" align="start">
+                  <div className="mb-1 px-2 py-1 text-[11px] text-muted-foreground">仅在有关联企业的项目中筛选</div>
+                  {linkedIndustries.map((ind) => {
+                    const checked = industryFilter.includes(ind);
+                    return (
+                      <label key={ind} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                        <Checkbox checked={checked} onCheckedChange={(v) => setIndustryFilter((arr) => v ? [...arr, ind] : arr.filter((x) => x !== ind))} />
+                        <span className="truncate">{ind}</span>
                       </label>
                     );
                   })}
@@ -219,29 +256,44 @@ export default function Assets() {
                     <TableHead className="min-w-[260px] px-3 pr-1">项目名称</TableHead>
                     <TableHead className="min-w-[200px] px-1">所属单位</TableHead>
                     <TableHead className="w-24 pl-1 pr-3">所属区</TableHead>
+                    <TableHead className="w-24 px-3">状态</TableHead>
                     <TableHead className="w-32 px-3 text-right">批复能耗</TableHead>
                     <TableHead className="w-32 px-3 text-right">采集能耗</TableHead>
+                    <TableHead className="w-32 px-3 text-right">同期采集占比</TableHead>
                     <TableHead className="w-24 px-3 text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.map((p, i) => {
                     const over = p.collectedEnergy > p.approvedEnergy && p.collectedEnergy > 0;
+                    const ratio = computeYtdRatio(p);
+                    const ratioWarn = ratio > 110;
+                    const ratioMid = ratio >= 90 && ratio <= 110;
                     return (
                       <TableRow key={p.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetail(p)}>
                         <TableCell className="px-3 font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</TableCell>
                         <TableCell className="px-3 pr-1">
                           <div className="font-medium text-foreground">{p.name}</div>
-                          <div className="mt-0.5 font-mono text-[11px] text-muted-foreground">{p.id}</div>
                         </TableCell>
                         <TableCell className="px-1 text-xs text-muted-foreground">{p.unitName}</TableCell>
                         <TableCell className="pl-1 pr-3 text-xs">{p.district}</TableCell>
+                        <TableCell className="px-3">
+                          <Badge variant="outline" className={cn(statusBadgeStyle[p.status])}>{p.status}</Badge>
+                        </TableCell>
                         <TableCell className="px-3 text-right font-mono text-sm tabular-nums">{fmt(p.approvedEnergy)}</TableCell>
                         <TableCell className={cn("px-3 text-right font-mono text-sm tabular-nums", over && "text-destructive font-semibold")}>
                           <div className="flex items-center justify-end gap-1">
                             {over && <AlertTriangle className="h-3.5 w-3.5" />}
                             {fmt(p.collectedEnergy)}
                           </div>
+                        </TableCell>
+                        <TableCell className={cn(
+                          "px-3 text-right font-mono text-sm tabular-nums",
+                          p.collectedEnergy === 0 && "text-muted-foreground",
+                          p.collectedEnergy > 0 && ratioMid && "text-warning font-semibold",
+                          p.collectedEnergy > 0 && ratioWarn && "text-destructive font-semibold",
+                        )}>
+                          {p.collectedEnergy > 0 ? `${ratio.toFixed(1)}%` : "—"}
                         </TableCell>
                         <TableCell className="px-3 text-right">
                           <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={(e) => { e.stopPropagation(); setDetail(p); }}>
@@ -252,7 +304,7 @@ export default function Assets() {
                     );
                   })}
                   {filtered.length === 0 && (
-                    <TableRow><TableCell colSpan={7} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={9} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
