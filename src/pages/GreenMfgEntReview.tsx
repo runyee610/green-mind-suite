@@ -28,12 +28,6 @@ export default function GreenMfgEntReview() {
                 可直接引用最近一次模拟自我评价数据，或重新填报。先由专家审核，通过后完成评定；不通过将自动进入梯度培育。
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="outline" className={stageBadgeClass(myDeclaration.stage)}>{myDeclaration.stage}</Badge>
-              <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/review/new")}>
-                <Plus className="mr-1 h-4 w-4" />自我评价
-              </Button>
-            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
