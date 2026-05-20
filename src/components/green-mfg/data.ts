@@ -128,7 +128,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     manualScore: 94,
     level: "市级绿色工厂",
     reviewer: "王主任",
-    comment: "各项指标均超基准线，颁发市级绿色工厂证书。",
+    comment: "各项指标均超基准线，审核通过，认定为市级绿色工厂。",
   },
   {
     id: "GF-2025-004",
