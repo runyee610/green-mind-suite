@@ -28,8 +28,8 @@ export default function DirectBenefitDisburse() {
   const { role } = useRole();
   if (role === "gov") return <GovChatConsole topic="disburse" />;
   const list = useMemo(
-    () => (role === "gov" ? disbursements : getEntDisbursements(CURRENT_ENTERPRISE_ID)),
-    [role],
+    () => getEntDisbursements(CURRENT_ENTERPRISE_ID),
+    [],
   );
 
   const totalAmount = list.reduce((s, d) => s + d.amount, 0);
@@ -40,14 +40,8 @@ export default function DirectBenefitDisburse() {
     <AppLayout hideHeader>
       <div className="space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">
-            {role === "gov" ? "资金拨付" : "资金到账"}
-          </h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {role === "gov"
-              ? "跟踪企业确认后的财政直达拨付流程，全程留痕。"
-              : "查看您已确认申领的资金拨付进度与到账凭证。"}
-          </p>
+          <h1 className="text-xl font-semibold text-foreground">资金到账</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">查看您已确认申领的资金拨付进度与到账凭证。</p>
         </div>
 
         {/* 概览 */}
