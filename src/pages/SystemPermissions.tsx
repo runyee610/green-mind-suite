@@ -83,7 +83,7 @@ const PAGES: PageItem[] = [
   {
     id: "p_report_monthly",
     name: "节能月报",
-    desc: "企业月度能耗与碳排上报",
+    desc: "企业月度能耗与碳排通过",
     actions: [
       { id: "a_rm_view", name: "查看", kind: "view", desc: "查看月报数据" },
       {

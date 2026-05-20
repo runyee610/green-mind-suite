@@ -107,7 +107,7 @@ export const MOCK_ARCHIVES: GreenArchive[] = [
     timeline: [
       { date: "2025-09-15", type: "预警", title: "碳排放强度高于行业基准 8.4%", source: "AI 系统", result: "整改中" },
       { date: "2025-09-12", type: "自评价", title: "提交 2025 年第二批自评价", source: "企业", result: "提交", score: 86 },
-      { date: "2025-09-15", type: "评价", title: "区级审批通过，建议上报市级", source: "区生态局", result: "通过", score: 88 },
+      { date: "2025-09-15", type: "评价", title: "专家审核通过，建议通过", source: "区生态局", result: "通过", score: 88 },
     ],
   },
   {
