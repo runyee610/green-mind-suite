@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Eye, Plus, Send, Sparkles } from "lucide-react";
+import { ClipboardList, Eye, Plus, Send, Sparkles, Undo2 } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,9 +63,16 @@ export default function GreenMfgEntReview() {
                     <TableCell className="text-center"><Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge></TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">{r.submitDate}</TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${r.id}`)}>
-                        <Eye className="mr-1 h-3 w-3" />查看
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${r.id}`)}>
+                          <Eye className="mr-1 h-3 w-3" />查看
+                        </Button>
+                        {r.stage === "待审核" && (
+                          <Button size="sm" variant="outline" className="h-7" onClick={() => toast.success(`已撤回提交批次 ${r.batch}`)}>
+                            <Undo2 className="mr-1 h-3 w-3" />撤回
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
