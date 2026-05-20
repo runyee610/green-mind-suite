@@ -101,6 +101,14 @@ export default function GreenMfgGovDeclarationDetail() {
                 <Clock className="mr-1 h-4 w-4" />进入培育
               </Button>
               <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setRejectOpen(true)}
+                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <XCircle className="mr-1 h-4 w-4" />驳回
+              </Button>
+              <Button
                 size="sm"
                 onClick={() => setApproveOpen(true)}
                 className="bg-success text-success-foreground hover:bg-success/90"
