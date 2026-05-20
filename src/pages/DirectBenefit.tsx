@@ -101,7 +101,7 @@ export default function DirectBenefit() {
           {/* 会话列表 */}
           <div className="rounded-lg border border-border bg-card">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">
-              <div className="text-[11px] font-semibold text-foreground">会话</div>
+              <div className="font-semibold text-foreground text-base">功能</div>
               <button className="text-muted-foreground hover:text-foreground"><Plus className="h-3.5 w-3.5" /></button>
             </div>
             <div className="px-1.5 py-1.5">
@@ -120,7 +120,7 @@ export default function DirectBenefit() {
 
           {/* 能力面板 */}
           <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card">
-            <div className="border-b border-border px-3 py-2 text-[11px] font-semibold text-foreground">
+            <div className="border-b border-border px-3 py-2 font-semibold text-foreground text-base">
               智能体能力面板
             </div>
             <div className="space-y-2 p-2.5">
