@@ -58,11 +58,15 @@ import {
   INITIAL_MEMBERSHIPS,
   INITIAL_GROUPS,
   INITIAL_GROUP_MEMBERSHIPS,
+  INITIAL_ENTERPRISES,
+  INITIAL_ENTERPRISE_MEMBERSHIPS,
   ROLE_META,
   type RoleId,
   type Account,
   type Membership,
+  type EnterpriseMembership,
 } from "@/components/system/orgTreeData";
+
 
 import { OrgFilterPicker } from "@/components/system/OrgFilterPicker";
 
