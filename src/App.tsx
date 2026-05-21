@@ -17,7 +17,13 @@ const HomeRoute = () => {
 
 const SystemUsersRoute = () => {
   const { role } = useRole();
-  return role === "gov" ? <SystemAccounts /> : <SystemUsers />;
+  if (role === "ent") return <Navigate to="/" replace />;
+  return <SystemAccounts />;
+};
+const GovOnlyRoute = ({ children }: { children: JSX.Element }) => {
+  const { role } = useRole();
+  if (role === "ent") return <Navigate to="/" replace />;
+  return children;
 };
 import NotFound from "./pages/NotFound.tsx";
 import ReportMonthly from "./pages/ReportMonthly.tsx";
