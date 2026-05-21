@@ -418,6 +418,8 @@ export default function SystemAccounts() {
                     <TableHead>UID</TableHead>
                     <TableHead>手机号</TableHead>
                     <TableHead>组织身份</TableHead>
+                    <TableHead>关联企业</TableHead>
+
                     <TableHead>状态</TableHead>
                     <TableHead>创建时间</TableHead>
                     <TableHead className="text-right">操作</TableHead>
