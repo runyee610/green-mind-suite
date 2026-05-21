@@ -87,20 +87,16 @@ const ORGS_BY_LEVEL = {
 
 // ===== 主页面 =====
 export default function SystemAccounts() {
-  const [tab, setTab] = useState<"accounts" | "memberships">("accounts");
   const [accounts, setAccounts] = useState<Account[]>(INITIAL_ACCOUNTS);
   const [memberships, setMemberships] = useState<Membership[]>(INITIAL_MEMBERSHIPS);
   const [entMemberships, setEntMemberships] = useState<EnterpriseMembership[]>(INITIAL_ENTERPRISE_MEMBERSHIPS);
 
-
   // —— 账号筛选
   const [aKeyword, setAKeyword] = useState("");
   const [aOrg, setAOrg] = useState<string>("all");
+  const [aType, setAType] = useState<"all" | "gov" | "enterprise">("all");
+  const [aRole, setARole] = useState<string>("all");
 
-  // —— 身份筛选
-  const [mKeyword, setMKeyword] = useState("");
-  const [mOrg, setMOrg] = useState<string>("all");
-  const [mRole, setMRole] = useState<string>("all");
 
   // 对话框
   const [accountDlg, setAccountDlg] = useState<{ open: boolean; editing: Account | null }>({ open: false, editing: null });
