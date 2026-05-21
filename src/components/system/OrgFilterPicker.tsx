@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   INITIAL_ORG_FOREST,
   INITIAL_GROUPS,
+  INITIAL_ENTERPRISES,
   flattenForest,
 } from "@/components/system/orgTreeData";
 
@@ -13,9 +14,10 @@ const ORGS = flattenForest(INITIAL_ORG_FOREST);
 const byId = (id: string) => ORGS.find((o) => o.id === id);
 
 export interface OrgFilterValue {
-  type: "all" | "org" | "group";
+  type: "all" | "org" | "group" | "enterprise";
   id?: string;
 }
+
 
 interface ParentItem {
   key: string;            // unique
@@ -31,7 +33,7 @@ interface Section {
   items: ParentItem[];
 }
 
-function buildSections(includeGroups: boolean): Section[] {
+function buildSections(includeGroups: boolean, includeEnterprises: boolean): Section[] {
   const city = ORGS.filter((o) => o.level === "city");
   const dept = ORGS.filter((o) => o.level === "dept");
   const districts = ORGS.filter((o) => o.level === "district");
@@ -101,23 +103,60 @@ function buildSections(includeGroups: boolean): Section[] {
     });
   }
 
+  // 企业（按所属区/园区父级分组）
+  if (includeEnterprises && INITIAL_ENTERPRISES.length > 0) {
+    const enterprisesByDistrict = new Map<string, typeof INITIAL_ENTERPRISES>();
+    INITIAL_ENTERPRISES.forEach((e) => {
+      if (!e.orgId) return;
+      const park = ORGS.find((o) => o.id === e.orgId);
+      // 找到所属区(park 的父级)
+      const district = districts.find((d) => d.children?.some((c) => c.id === park?.id));
+      const dKey = district?.id ?? "_other";
+      if (!enterprisesByDistrict.has(dKey)) enterprisesByDistrict.set(dKey, []);
+      enterprisesByDistrict.get(dKey)!.push(e);
+    });
+    const items: ParentItem[] = [];
+    enterprisesByDistrict.forEach((list, dId) => {
+      const d = districts.find((x) => x.id === dId);
+      items.push({
+        key: `ent-${dId}`,
+        label: d?.name ?? "其他",
+        value: { type: "all" },
+        childrenLabel: `${d?.name ?? "其他"} · 企业`,
+        children: list.map((e) => ({
+          key: e.id,
+          label: e.name,
+          value: { type: "enterprise", id: e.id } as OrgFilterValue,
+        })),
+      });
+    });
+    sections.push({
+      title: "企业",
+      accent: "text-sky-600 dark:text-sky-400",
+      items,
+    });
+  }
+
   return sections;
 }
 
 function valueLabel(v: OrgFilterValue): string {
   if (v.type === "all") return "全部组织";
   if (v.type === "group") return INITIAL_GROUPS.find((g) => g.id === v.id)?.name ?? "全部组织";
+  if (v.type === "enterprise") return INITIAL_ENTERPRISES.find((e) => e.id === v.id)?.name ?? "全部组织";
   return byId(v.id ?? "")?.name ?? "全部组织";
 }
 
 export function encodeOrgFilter(v: OrgFilterValue): string {
   if (v.type === "all") return "all";
   if (v.type === "group") return `group:${v.id}`;
+  if (v.type === "enterprise") return `ent:${v.id}`;
   return v.id ?? "all";
 }
 export function decodeOrgFilter(s: string): OrgFilterValue {
   if (!s || s === "all") return { type: "all" };
   if (s.startsWith("group:")) return { type: "group", id: s.slice(6) };
+  if (s.startsWith("ent:")) return { type: "enterprise", id: s.slice(4) };
   return { type: "org", id: s };
 }
 
@@ -125,13 +164,15 @@ interface Props {
   value: string;
   onChange: (v: string) => void;
   includeGroups?: boolean;
+  includeEnterprises?: boolean;
   className?: string;
   triggerClassName?: string;
 }
 
-export function OrgFilterPicker({ value, onChange, includeGroups = true, className, triggerClassName }: Props) {
+export function OrgFilterPicker({ value, onChange, includeGroups = true, includeEnterprises = false, className, triggerClassName }: Props) {
+
   const [open, setOpen] = useState(false);
-  const sections = useMemo(() => buildSections(includeGroups), [includeGroups]);
+  const sections = useMemo(() => buildSections(includeGroups, includeEnterprises), [includeGroups, includeEnterprises]);
   const current = decodeOrgFilter(value);
   const [activeKey, setActiveKey] = useState<string | null>(() => {
     for (const s of sections) for (const it of s.items) {
@@ -223,9 +264,11 @@ export function OrgFilterPicker({ value, onChange, includeGroups = true, classNa
                           sec.title === "市级" && "bg-primary",
                           sec.title === "区划" && "bg-emerald-500",
                           sec.title === "集团" && "bg-amber-500",
+                          sec.title === "企业" && "bg-sky-500",
                         )} />
                         <span className="truncate">{it.label}</span>
                       </span>
+
                       {it.children && <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
                     </button>
                   );

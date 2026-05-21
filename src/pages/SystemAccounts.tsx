@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import {
+  Building2,
   KeyRound,
   Lock,
   Pencil,
@@ -13,6 +14,7 @@ import {
   PlusCircle,
   RefreshCw,
 } from "lucide-react";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -58,17 +60,22 @@ import {
   INITIAL_MEMBERSHIPS,
   INITIAL_GROUPS,
   INITIAL_GROUP_MEMBERSHIPS,
+  INITIAL_ENTERPRISES,
+  INITIAL_ENTERPRISE_MEMBERSHIPS,
   ROLE_META,
   type RoleId,
   type Account,
   type Membership,
+  type EnterpriseMembership,
 } from "@/components/system/orgTreeData";
+
 
 import { OrgFilterPicker } from "@/components/system/OrgFilterPicker";
 
 // ===== mock 数据 =====
 const ORGS = flattenForest(INITIAL_ORG_FOREST);
 const orgById = (id: string) => ORGS.find((o) => o.id === id);
+const entById = (id: string) => INITIAL_ENTERPRISES.find((e) => e.id === id);
 
 // 按层级分组（用于下拉父子分组）
 const ORGS_BY_LEVEL = {
@@ -83,6 +90,8 @@ export default function SystemAccounts() {
   const [tab, setTab] = useState<"accounts" | "memberships">("accounts");
   const [accounts, setAccounts] = useState<Account[]>(INITIAL_ACCOUNTS);
   const [memberships, setMemberships] = useState<Membership[]>(INITIAL_MEMBERSHIPS);
+  const [entMemberships, setEntMemberships] = useState<EnterpriseMembership[]>(INITIAL_ENTERPRISE_MEMBERSHIPS);
+
 
   // —— 账号筛选
   const [aKeyword, setAKeyword] = useState("");
@@ -103,6 +112,9 @@ export default function SystemAccounts() {
   const [fPhone, setFPhone] = useState("");
   const [fUid, setFUid] = useState("");
   const [fStatus, setFStatus] = useState<"启用" | "停用">("启用");
+  const [fEnts, setFEnts] = useState<string[]>([]);
+  const [fEntKeyword, setFEntKeyword] = useState("");
+
 
   const [fmAccount, setFmAccount] = useState("");
   const [fmOrg, setFmOrg] = useState("");
@@ -129,6 +141,10 @@ export default function SystemAccounts() {
           const gid = aOrg.slice(6);
           const hasGroup = INITIAL_GROUP_MEMBERSHIPS.some((m) => m.accountId === a.id && m.groupId === gid);
           if (!hasGroup) return false;
+        } else if (aOrg.startsWith("ent:")) {
+          const eid = aOrg.slice(4);
+          const hasEnt = entMemberships.some((m) => m.accountId === a.id && m.enterpriseId === eid);
+          if (!hasEnt) return false;
         } else {
           const hasOrg = memberships.some((m) => m.accountId === a.id && m.orgId === aOrg);
           if (!hasOrg) return false;
@@ -138,7 +154,8 @@ export default function SystemAccounts() {
       if (!q) return true;
       return [a.name, a.phone, a.uid].some((s) => s.toLowerCase().includes(q));
     });
-  }, [accounts, aKeyword, aOrg, memberships]);
+  }, [accounts, aKeyword, aOrg, memberships, entMemberships]);
+
 
   const filteredMemberships = useMemo(() => {
     return memberships.filter((m) => {
@@ -157,11 +174,31 @@ export default function SystemAccounts() {
   // ===== 账号 CRUD =====
   const openCreateAccount = () => {
     setFName(""); setFPhone(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
+    setFEnts([]); setFEntKeyword("");
     setAccountDlg({ open: true, editing: null });
   };
   const openEditAccount = (a: Account) => {
     setFName(a.name); setFPhone(a.phone); setFUid(a.uid); setFStatus(a.status);
+    setFEnts(entMemberships.filter((m) => m.accountId === a.id).map((m) => m.enterpriseId));
+    setFEntKeyword("");
     setAccountDlg({ open: true, editing: a });
+  };
+  const syncEnterpriseBindings = (accountId: string, enterpriseIds: string[]) => {
+    setEntMemberships((arr) => {
+      const others = arr.filter((m) => m.accountId !== accountId);
+      const existing = arr.filter((m) => m.accountId === accountId);
+      const next: EnterpriseMembership[] = [...others];
+      enterpriseIds.forEach((eid, idx) => {
+        const old = existing.find((m) => m.enterpriseId === eid);
+        next.push(old ?? {
+          id: `EM${Date.now().toString(36)}${idx}`,
+          accountId,
+          enterpriseId: eid,
+          role: "user",
+        });
+      });
+      return next;
+    });
   };
   const submitAccount = () => {
     if (!fName.trim()) return toast({ title: "姓名不能为空", variant: "destructive" });
@@ -169,14 +206,17 @@ export default function SystemAccounts() {
     if (accountDlg.editing) {
       setAccounts((arr) => arr.map((x) => x.id === accountDlg.editing!.id
         ? { ...x, name: fName.trim(), phone: fPhone, uid: fUid, status: fStatus } : x));
+      syncEnterpriseBindings(accountDlg.editing.id, fEnts);
       toast({ title: "已更新账号" });
     } else {
       const id = `A${String(accounts.length + 1).padStart(3, "0")}`;
       setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, uid: fUid, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
+      syncEnterpriseBindings(id, fEnts);
       toast({ title: "已新增账号", description: `默认密码已通过短信发送至 ${fPhone}` });
     }
     setAccountDlg({ open: false, editing: null });
   };
+
   const deleteAccount = (a: Account) => {
     const cnt = membershipCountByAccount[a.id] ?? 0;
     if (cnt > 0) return toast({ title: "无法删除", description: `该账号仍绑定 ${cnt} 个组织身份，请先解绑`, variant: "destructive" });
@@ -343,7 +383,7 @@ export default function SystemAccounts() {
                   <Input value={aKeyword} onChange={(e) => setAKeyword(e.target.value)}
                     placeholder="搜索姓名 / 手机号 / UID" className="h-8 w-64 pl-8 text-xs" />
                 </div>
-                <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups />
+                <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups includeEnterprises />
 
                 <div className="ml-auto flex items-center gap-2">
                   {selected.size > 0 && (
@@ -378,6 +418,8 @@ export default function SystemAccounts() {
                     <TableHead>UID</TableHead>
                     <TableHead>手机号</TableHead>
                     <TableHead>组织身份</TableHead>
+                    <TableHead>关联企业</TableHead>
+
                     <TableHead>状态</TableHead>
                     <TableHead>创建时间</TableHead>
                     <TableHead className="text-right">操作</TableHead>
@@ -386,7 +428,9 @@ export default function SystemAccounts() {
                 <TableBody>
                   {filteredAccounts.map((a) => {
                     const mbs = memberships.filter((m) => m.accountId === a.id);
+                    const ents = entMemberships.filter((m) => m.accountId === a.id);
                     return (
+
                       <TableRow key={a.id} data-state={selected.has(a.id) ? "selected" : undefined}>
                         <TableCell>
                           <Checkbox
@@ -415,6 +459,32 @@ export default function SystemAccounts() {
                           )}
                         </TableCell>
                         <TableCell>
+                          {ents.length === 0 ? (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          ) : (
+                            <div className="flex flex-wrap gap-1 max-w-[260px]">
+                              {ents.slice(0, 2).map((m) => {
+                                const e = entById(m.enterpriseId);
+                                return (
+                                  <Badge
+                                    key={m.id}
+                                    variant="outline"
+                                    className="text-[10px] font-normal border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 gap-1"
+                                    title={`${e?.name} · ${ROLE_META[m.role].label}`}
+                                  >
+                                    <Building2 className="h-2.5 w-2.5" />
+                                    <span className="truncate max-w-[140px]">{e?.name}</span>
+                                  </Badge>
+                                );
+                              })}
+                              {ents.length > 2 && (
+                                <Badge variant="outline" className="text-[10px]">+{ents.length - 2}</Badge>
+                              )}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+
                           <Badge variant="outline" className={cn("text-[10px]",
                             a.status === "启用" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
                               : "border-muted-foreground/30 bg-muted/40 text-muted-foreground")}>
@@ -561,7 +631,89 @@ export default function SystemAccounts() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="col-span-2">
+              <Label className="text-xs flex items-center gap-1.5">
+                <Building2 className="h-3 w-3" />
+                关联企业（企业账号）
+                <span className="ml-auto text-[10px] font-normal text-muted-foreground">
+                  已选 {fEnts.length} / {INITIAL_ENTERPRISES.length}
+                </span>
+              </Label>
+              <div className="mt-1 rounded-md border border-border">
+                <div className="border-b border-border p-2">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                    <Input
+                      value={fEntKeyword}
+                      onChange={(e) => setFEntKeyword(e.target.value)}
+                      placeholder="搜索企业名称 / 统一信用代码"
+                      className="h-7 pl-7 text-xs"
+                    />
+                  </div>
+                </div>
+                {fEnts.length > 0 && (
+                  <div className="flex flex-wrap gap-1 border-b border-border p-2">
+                    {fEnts.map((eid) => {
+                      const e = entById(eid);
+                      return (
+                        <Badge
+                          key={eid}
+                          variant="outline"
+                          className="border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 text-[10px] gap-1"
+                        >
+                          {e?.name}
+                          <button
+                            type="button"
+                            className="ml-0.5 hover:text-foreground"
+                            onClick={() => setFEnts((s) => s.filter((x) => x !== eid))}
+                          >×</button>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="max-h-44 overflow-y-auto p-1">
+                  {INITIAL_ENTERPRISES
+                    .filter((e) => {
+                      const q = fEntKeyword.trim().toLowerCase();
+                      if (!q) return true;
+                      return e.name.toLowerCase().includes(q) || e.creditCode.toLowerCase().includes(q);
+                    })
+                    .map((e) => {
+                      const checked = fEnts.includes(e.id);
+                      const org = orgById(e.orgId ?? "");
+                      return (
+                        <label
+                          key={e.id}
+                          className={cn(
+                            "flex cursor-pointer items-start gap-2 rounded-sm px-2 py-1.5 text-xs hover:bg-muted/50",
+                            checked && "bg-primary/5",
+                          )}
+                        >
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={(v) =>
+                              setFEnts((s) => (v ? [...s, e.id] : s.filter((x) => x !== e.id)))
+                            }
+                            className="mt-0.5"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{e.name}</div>
+                            <div className="text-[10px] text-muted-foreground font-mono truncate">
+                              {e.creditCode}{org ? ` · ${org.name}` : ""}
+                            </div>
+                          </div>
+                        </label>
+                      );
+                    })}
+                </div>
+              </div>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                勾选后该账号将成为对应企业的账号；企业信息在「企业管理」维护
+              </p>
+            </div>
           </div>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setAccountDlg({ open: false, editing: null })}>取消</Button>
             <Button onClick={submitAccount}>保存</Button>

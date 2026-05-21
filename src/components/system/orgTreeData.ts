@@ -263,3 +263,24 @@ export const INITIAL_MEMBERSHIPS: Membership[] = [
   { id: "M008", accountId: "A008", orgId: "p-zhangjiang", role: "admin" },
   { id: "M009", accountId: "A007", orgId: "p-zhangjiang", role: "user" },
 ];
+
+// ===== 企业账号绑定（账号 ↔ 企业，多对多）=====
+export interface EnterpriseMembership {
+  id: string;
+  accountId: string;
+  enterpriseId: string;
+  role: RoleId;
+}
+
+export const INITIAL_ENTERPRISE_MEMBERSHIPS: EnterpriseMembership[] = [
+  { id: "EM01", accountId: "A001", enterpriseId: "E001", role: "admin" },
+  { id: "EM02", accountId: "A004", enterpriseId: "E001", role: "user" },
+  { id: "EM03", accountId: "A002", enterpriseId: "E002", role: "admin" },
+  { id: "EM04", accountId: "A003", enterpriseId: "E003", role: "admin" },
+  { id: "EM05", accountId: "A005", enterpriseId: "E004", role: "admin" },
+  { id: "EM06", accountId: "A006", enterpriseId: "E008", role: "admin" },
+  { id: "EM07", accountId: "A007", enterpriseId: "E010", role: "deputy" },
+  { id: "EM08", accountId: "A008", enterpriseId: "E001", role: "user" },
+  { id: "EM09", accountId: "A008", enterpriseId: "E005", role: "deputy" },
+];
+
