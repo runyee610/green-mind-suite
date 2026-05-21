@@ -135,7 +135,7 @@ export default function SystemAccounts() {
 
   const filteredAccounts = useMemo(() => {
     return accounts.filter((a) => {
-      if (aType !== "all" && a.type !== aType) return false;
+      if (a.type !== aType) return false;
       if (aOrg !== "all") {
         if (aOrg.startsWith("group:")) {
           const gid = aOrg.slice(6);
