@@ -30,7 +30,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-// ===== 角色 =====
+// ===== 角色（与账号管理保持一致：3 种统一角色 × 组织层级范围）=====
 type Role = {
   id: string;
   name: string;
@@ -39,14 +39,21 @@ type Role = {
   desc: string;
 };
 
+// 与 orgTreeData 中 RoleId(admin/deputy/user) × OrgLevel(city/dept/district/park) 对应
 const ROLES: Role[] = [
-  { id: "city_admin", name: "市管理员", scope: "市级", userCount: 4, desc: "市级管理与全域查看" },
-  { id: "liaison", name: "对口人", scope: "跨级", userCount: 12, desc: "对口企业沟通与数据复核" },
-  { id: "district_admin", name: "区管理员", scope: "区级", userCount: 8, desc: "本区行政范围管理" },
-  { id: "park_admin", name: "园区管理员", scope: "园区", userCount: 16, desc: "园区企业及设施管理" },
-  { id: "group_admin", name: "集团管理员", scope: "集团", userCount: 6, desc: "本集团下属企业管理" },
-  { id: "enterprise_admin", name: "企业管理员", scope: "企业", userCount: 320, desc: "本企业自助管理" },
+  { id: "city_admin",     name: "市级中心 · 管理员",   scope: "市级", userCount: 1, desc: "市级唯一,拥有该中心全部权限" },
+  { id: "city_deputy",    name: "市级中心 · 副管理员", scope: "市级", userCount: 3, desc: "协助市级管理员,可有多人" },
+  { id: "dept_admin",     name: "内设科室 · 管理员",   scope: "科室", userCount: 5, desc: "科室唯一,负责本科室业务条线" },
+  { id: "dept_user",      name: "内设科室 · 普通用户", scope: "科室", userCount: 12, desc: "科室日常使用者" },
+  { id: "district_admin", name: "区级 · 管理员",       scope: "区级", userCount: 8, desc: "本区唯一,负责区级行政范围" },
+  { id: "district_user",  name: "区级 · 普通用户",     scope: "区级", userCount: 14, desc: "区级日常使用者" },
+  { id: "park_admin",     name: "园区 · 管理员",       scope: "园区", userCount: 16, desc: "园区唯一,管理园区企业与设施" },
+  { id: "park_user",      name: "园区 · 普通用户",     scope: "园区", userCount: 28, desc: "园区日常使用者" },
+  { id: "group_admin",    name: "集团 · 管理员",       scope: "集团", userCount: 6, desc: "集团下属企业管理(独立于行政架构)" },
+  { id: "enterprise_admin", name: "企业 · 管理员",     scope: "企业", userCount: 320, desc: "本企业自助管理" },
+  { id: "enterprise_user",  name: "企业 · 普通用户",   scope: "企业", userCount: 1280, desc: "企业日常填报与查询" },
 ];
+
 
 // ===== 资源（页面 → 操作 → 字段） =====
 type ActionItem = {
