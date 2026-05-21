@@ -135,6 +135,7 @@ export default function SystemAccounts() {
 
   const filteredAccounts = useMemo(() => {
     return accounts.filter((a) => {
+      if (aType !== "all" && a.type !== aType) return false;
       if (aOrg !== "all") {
         if (aOrg.startsWith("group:")) {
           const gid = aOrg.slice(6);
@@ -149,51 +150,46 @@ export default function SystemAccounts() {
           if (!hasOrg) return false;
         }
       }
+      if (aRole !== "all") {
+        if (a.type === "gov") {
+          if (!memberships.some((m) => m.accountId === a.id && m.role === aRole)) return false;
+        } else {
+          if (!entMemberships.some((m) => m.accountId === a.id && m.role === aRole)) return false;
+        }
+      }
       const q = aKeyword.trim().toLowerCase();
       if (!q) return true;
       return [a.name, a.phone, a.uid].some((s) => s.toLowerCase().includes(q));
     });
-  }, [accounts, aKeyword, aOrg, memberships, entMemberships]);
-
-
-  const filteredMemberships = useMemo(() => {
-    return memberships.filter((m) => {
-      if (mOrg !== "all" && m.orgId !== mOrg) return false;
-      if (mRole !== "all" && m.role !== mRole) return false;
-      const q = mKeyword.trim().toLowerCase();
-      if (!q) return true;
-      const acc = accountById(m.accountId);
-      const org = orgById(m.orgId);
-      return [acc?.name, acc?.phone, acc?.uid, org?.name]
-        .filter(Boolean)
-        .some((s) => s!.toLowerCase().includes(q));
-    });
-  }, [memberships, mOrg, mRole, mKeyword, accounts]);
+  }, [accounts, aKeyword, aOrg, aType, aRole, memberships, entMemberships]);
 
   // ===== 账号 CRUD =====
   const openCreateAccount = () => {
     setFName(""); setFPhone(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
-    setFEnts([]); setFEntKeyword("");
+    setFType("gov"); setFEnts([]); setFEntRole("user"); setFEntKeyword("");
     setAccountDlg({ open: true, editing: null });
   };
   const openEditAccount = (a: Account) => {
     setFName(a.name); setFPhone(a.phone); setFUid(a.uid); setFStatus(a.status);
-    setFEnts(entMemberships.filter((m) => m.accountId === a.id).map((m) => m.enterpriseId));
+    setFType(a.type);
+    const ents = entMemberships.filter((m) => m.accountId === a.id);
+    setFEnts(ents.map((m) => m.enterpriseId));
+    setFEntRole(ents[0]?.role ?? "user");
     setFEntKeyword("");
     setAccountDlg({ open: true, editing: a });
   };
-  const syncEnterpriseBindings = (accountId: string, enterpriseIds: string[]) => {
+  const syncEnterpriseBindings = (accountId: string, enterpriseIds: string[], role: RoleId) => {
     setEntMemberships((arr) => {
       const others = arr.filter((m) => m.accountId !== accountId);
       const existing = arr.filter((m) => m.accountId === accountId);
       const next: EnterpriseMembership[] = [...others];
       enterpriseIds.forEach((eid, idx) => {
         const old = existing.find((m) => m.enterpriseId === eid);
-        next.push(old ?? {
-          id: `EM${Date.now().toString(36)}${idx}`,
+        next.push({
+          id: old?.id ?? `EM${Date.now().toString(36)}${idx}`,
           accountId,
           enterpriseId: eid,
-          role: "user",
+          role,
         });
       });
       return next;
@@ -202,19 +198,29 @@ export default function SystemAccounts() {
   const submitAccount = () => {
     if (!fName.trim()) return toast({ title: "姓名不能为空", variant: "destructive" });
     if (!/^1[3-9]\d{9}$/.test(fPhone)) return toast({ title: "手机号格式不正确", variant: "destructive" });
+    if (fType === "enterprise" && fEnts.length === 0) {
+      return toast({ title: "企业账号必须至少关联一家企业", variant: "destructive" });
+    }
+    const entRoleToUse: RoleId = fType === "enterprise" ? fEntRole : "user";
     if (accountDlg.editing) {
+      const wasType = accountDlg.editing.type;
       setAccounts((arr) => arr.map((x) => x.id === accountDlg.editing!.id
-        ? { ...x, name: fName.trim(), phone: fPhone, uid: fUid, status: fStatus } : x));
-      syncEnterpriseBindings(accountDlg.editing.id, fEnts);
+        ? { ...x, name: fName.trim(), phone: fPhone, uid: fUid, type: fType, status: fStatus } : x));
+      syncEnterpriseBindings(accountDlg.editing.id, fEnts, entRoleToUse);
+      // 切换为企业账号时移除政府组织身份
+      if (wasType === "gov" && fType === "enterprise") {
+        setMemberships((arr) => arr.filter((m) => m.accountId !== accountDlg.editing!.id));
+      }
       toast({ title: "已更新账号" });
     } else {
       const id = `A${String(accounts.length + 1).padStart(3, "0")}`;
-      setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, uid: fUid, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
-      syncEnterpriseBindings(id, fEnts);
+      setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, uid: fUid, type: fType, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
+      syncEnterpriseBindings(id, fEnts, entRoleToUse);
       toast({ title: "已新增账号", description: `默认密码已通过短信发送至 ${fPhone}` });
     }
     setAccountDlg({ open: false, editing: null });
   };
+
 
   const deleteAccount = (a: Account) => {
     const cnt = membershipCountByAccount[a.id] ?? 0;
