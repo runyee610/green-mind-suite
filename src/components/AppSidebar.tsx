@@ -114,9 +114,7 @@ const systemItemsByRole: Record<"gov" | "ent", NavItem[]> = {
     { title: "组织架构管理", url: "/system/org-structure", icon: Network },
     { title: "权限配置中心", url: "/system/permissions", icon: KeyRound },
   ],
-  ent: [
-    { title: "账号管理", url: "/system/users", icon: Users },
-  ],
+  ent: [],
 };
 const systemItems: NavItem[] = systemItemsByRole.gov;
 
