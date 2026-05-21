@@ -141,6 +141,10 @@ export default function SystemAccounts() {
           const gid = aOrg.slice(6);
           const hasGroup = INITIAL_GROUP_MEMBERSHIPS.some((m) => m.accountId === a.id && m.groupId === gid);
           if (!hasGroup) return false;
+        } else if (aOrg.startsWith("ent:")) {
+          const eid = aOrg.slice(4);
+          const hasEnt = entMemberships.some((m) => m.accountId === a.id && m.enterpriseId === eid);
+          if (!hasEnt) return false;
         } else {
           const hasOrg = memberships.some((m) => m.accountId === a.id && m.orgId === aOrg);
           if (!hasOrg) return false;
@@ -150,7 +154,8 @@ export default function SystemAccounts() {
       if (!q) return true;
       return [a.name, a.phone, a.uid].some((s) => s.toLowerCase().includes(q));
     });
-  }, [accounts, aKeyword, aOrg, memberships]);
+  }, [accounts, aKeyword, aOrg, memberships, entMemberships]);
+
 
   const filteredMemberships = useMemo(() => {
     return memberships.filter((m) => {
