@@ -147,10 +147,61 @@ export interface OrgGroup {
   enterpriseCount: number;
 }
 export const INITIAL_GROUPS: OrgGroup[] = [
-  { id: "G001", name: "上海电气集团", industry: "高端装备", address: "上海市浦东新区世纪大道1568号", enterpriseCount: 18 },
-  { id: "G002", name: "宝武钢铁集团", industry: "钢铁冶金", address: "上海市宝山区盘古路887号", enterpriseCount: 25 },
-  { id: "G003", name: "上海华谊集团", industry: "化工新材料", address: "上海市浦东新区张杨路501号", enterpriseCount: 12 },
-  { id: "G004", name: "光明食品集团", industry: "食品制造", address: "上海市黄浦区马当路388号", enterpriseCount: 9 },
+  { id: "G001", name: "上海电气集团", industry: "高端装备", address: "上海市浦东新区世纪大道1568号", enterpriseCount: 4 },
+  { id: "G002", name: "宝武钢铁集团", industry: "钢铁冶金", address: "上海市宝山区盘古路887号", enterpriseCount: 3 },
+  { id: "G003", name: "上海华谊集团", industry: "化工新材料", address: "上海市浦东新区张杨路501号", enterpriseCount: 1 },
+  { id: "G004", name: "光明食品集团", industry: "食品制造", address: "上海市黄浦区马当路388号", enterpriseCount: 2 },
+];
+
+// ===== 企业(行政归属 orgId + 集团归属 groupId)=====
+export interface Enterprise {
+  id: string;
+  creditCode: string;          // 统一社会信用代码
+  name: string;
+  contact: string;             // 联系人
+  phone: string;               // 电话
+  liaison: string;             // 对口人(政府侧)
+  orgId?: string;              // 行政归属(区/园区)
+  groupId?: string;            // 集团归属
+}
+
+export const INITIAL_ENTERPRISES: Enterprise[] = [
+  { id: "E001", creditCode: "91310000MA1FL12345", name: "上海电气智能装备有限公司", contact: "陈伟",   phone: "021-58880001", liaison: "张明远", orgId: "p-zhangjiang", groupId: "G001" },
+  { id: "E002", creditCode: "91310000MA1FL12346", name: "张江生物医药科技股份",     contact: "王晓璐", phone: "021-58880002", liaison: "李静怡", orgId: "p-zhangjiang" },
+  { id: "E003", creditCode: "91310000MA1FL12347", name: "华谊新材料(张江)有限公司", contact: "刘强",   phone: "021-58880003", liaison: "王思源", orgId: "p-zhangjiang", groupId: "G003" },
+  { id: "E004", creditCode: "91310000MA1FL12348", name: "上海电气重工(金桥)厂",     contact: "赵建华", phone: "021-58880004", liaison: "李静怡", orgId: "p-jinqiao",   groupId: "G001" },
+  { id: "E005", creditCode: "91310000MA1FL12349", name: "金桥智能制造有限公司",     contact: "孙磊",   phone: "021-58880005", liaison: "王思源", orgId: "p-jinqiao" },
+  { id: "E006", creditCode: "91310000MA1FL12350", name: "临港宝武特钢厂",           contact: "周敏",   phone: "021-58880006", liaison: "张明远", orgId: "p-lingang",   groupId: "G002" },
+  { id: "E007", creditCode: "91310000MA1FL12351", name: "临港新能源汽车产业园",     contact: "黄海洋", phone: "021-58880007", liaison: "陈雨涵", orgId: "p-lingang" },
+  { id: "E008", creditCode: "91310000MA1FL12352", name: "光明乳业(外滩)总部",       contact: "吴丹",   phone: "021-58880008", liaison: "周建国", orgId: "p-bund",      groupId: "G004" },
+  { id: "E009", creditCode: "91310000MA1FL12353", name: "外滩金融服务有限公司",     contact: "郑文",   phone: "021-58880009", liaison: "周建国", orgId: "p-bund" },
+  { id: "E010", creditCode: "91310000MA1FL12354", name: "光明食品(豫园)分公司",     contact: "马琳",   phone: "021-58880010", liaison: "刘晓燕", orgId: "p-yuyuan",    groupId: "G004" },
+  { id: "E011", creditCode: "91310000MA1FL12355", name: "漕河泾电子科技集团",       contact: "韩涛",   phone: "021-58880011", liaison: "张明远", orgId: "p-caohejing" },
+  { id: "E012", creditCode: "91310000MA1FL12356", name: "宝武不锈钢(徐汇)研究院",   contact: "钱昊",   phone: "021-58880012", liaison: "李静怡", orgId: "p-caohejing", groupId: "G002" },
+  { id: "E013", creditCode: "91310000MA1FL12357", name: "徐汇滨江数字传媒园",       contact: "高雪",   phone: "021-58880013", liaison: "陈雨涵", orgId: "p-xhbinjiang" },
+  { id: "E014", creditCode: "91310000MA1FL12358", name: "上海电气(虹桥)能源服务",   contact: "梁博",   phone: "021-58880014", liaison: "王思源", orgId: "p-hongqiao",  groupId: "G001" },
+  { id: "E015", creditCode: "91310000MA1FL12359", name: "市北高新数据中心",         contact: "徐颖",   phone: "021-58880015", liaison: "孙云飞", orgId: "p-shibei" },
+  { id: "E016", creditCode: "91310000MA1FL12360", name: "桃浦智创城新能源公司",     contact: "夏阳",   phone: "021-58880016", liaison: "黄志勇", orgId: "p-taopu" },
+  { id: "E017", creditCode: "91310000MA1FL12361", name: "长兴岛海洋装备厂",         contact: "蒋宁",   phone: "021-58880017", liaison: "张明远", orgId: "p-changxing", groupId: "G001" },
+  { id: "E018", creditCode: "91310000MA1FL12362", name: "宝武特钢长兴基地",         contact: "邵华",   phone: "021-58880018", liaison: "李静怡", orgId: "p-changxing", groupId: "G002" },
+];
+
+// ===== 集团账号(独立于行政归属)=====
+export interface GroupMembership {
+  id: string;
+  accountId: string;
+  groupId: string;
+  role: RoleId;
+}
+export const INITIAL_GROUP_MEMBERSHIPS: GroupMembership[] = [
+  { id: "GM01", accountId: "A001", groupId: "G001", role: "admin" },
+  { id: "GM02", accountId: "A004", groupId: "G001", role: "deputy" },
+  { id: "GM03", accountId: "A008", groupId: "G001", role: "user" },
+  { id: "GM04", accountId: "A002", groupId: "G002", role: "admin" },
+  { id: "GM05", accountId: "A005", groupId: "G002", role: "user" },
+  { id: "GM06", accountId: "A003", groupId: "G003", role: "admin" },
+  { id: "GM07", accountId: "A006", groupId: "G004", role: "admin" },
+  { id: "GM08", accountId: "A007", groupId: "G004", role: "user" },
 ];
 
 // ===== 账号 & 组织身份（统一数据源）=====

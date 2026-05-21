@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Building2,
   ChevronDown,
@@ -13,6 +14,7 @@ import {
   UserCircle2,
   Network as NetworkIcon,
   Layers,
+  ExternalLink,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +39,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
@@ -44,6 +47,8 @@ import {
   INITIAL_ACCOUNTS,
   INITIAL_MEMBERSHIPS,
   INITIAL_GROUPS,
+  INITIAL_ENTERPRISES,
+  INITIAL_GROUP_MEMBERSHIPS,
   LEVEL_BADGE_CLASS,
   LEVEL_LABEL,
   OrgGroup,
@@ -118,6 +123,35 @@ export default function SystemOrgStructure() {
   const [gAddress, setGAddress] = useState("");
   const [gRemark, setGRemark] = useState("");
   const [gCount, setGCount] = useState<number>(0);
+
+  // —— 集团抽屉(下属企业 + 账号信息)
+  const [groupSheet, setGroupSheet] = useState<OrgGroup | null>(null);
+
+  // —— 企业(按 orgId / groupId 索引)
+  const enterprises = INITIAL_ENTERPRISES;
+  const entByOrg = useMemo(() => {
+    const m: Record<string, typeof enterprises> = {};
+    enterprises.forEach((e) => { if (e.orgId) (m[e.orgId] ||= []).push(e); });
+    return m;
+  }, [enterprises]);
+  const entByGroup = useMemo(() => {
+    const m: Record<string, typeof enterprises> = {};
+    enterprises.forEach((e) => { if (e.groupId) (m[e.groupId] ||= []).push(e); });
+    return m;
+  }, [enterprises]);
+
+  // —— 集团账号
+  const groupAccountStats = useMemo(() => {
+    const map: Record<string, { admin: number; deputy: number; user: number; total: number; rows: { acc: typeof accounts[number]; role: RoleId }[] }> = {};
+    INITIAL_GROUP_MEMBERSHIPS.forEach((m) => {
+      const slot = (map[m.groupId] ||= { admin: 0, deputy: 0, user: 0, total: 0, rows: [] });
+      slot[m.role] += 1;
+      slot.total += 1;
+      const acc = accounts.find((a) => a.id === m.accountId);
+      if (acc) slot.rows.push({ acc, role: m.role });
+    });
+    return map;
+  }, [accounts]);
 
   const selected = useMemo(() => findInForest(forest, selectedId) ?? forest[0], [forest, selectedId]);
 
@@ -430,6 +464,42 @@ export default function SystemOrgStructure() {
                     </div>
                   )}
                 </div>
+
+                {/* 下属企业(仅区/园区) */}
+                {(selected.level === "district" || selected.level === "park") && (
+                  <div className="mt-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-semibold">下属企业</span>
+                        <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">{entByOrg[selected.id]?.length ?? 0}</Badge>
+                      </div>
+                    </div>
+                    {entByOrg[selected.id]?.length ? (
+                      <div className="rounded-md border border-border/60 divide-y divide-border/60 max-h-56 overflow-auto">
+                        {entByOrg[selected.id].map((e) => (
+                          <div key={e.id} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-muted/30">
+                            <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <Link to={`/enterprises/${e.id}`} className="font-medium text-primary hover:underline truncate inline-flex items-center gap-1">
+                                {e.name}<ExternalLink className="h-3 w-3" />
+                              </Link>
+                              <div className="font-mono text-[10px] text-muted-foreground truncate">{e.creditCode}</div>
+                            </div>
+                            <div className="text-right text-[10px] text-muted-foreground shrink-0">
+                              <div>{e.contact} · {e.phone}</div>
+                              <div>对口:{e.liaison}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground text-center py-4 rounded-md bg-muted/30">
+                        该{LEVEL_LABEL[selected.level]}尚无企业归属
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -455,37 +525,66 @@ export default function SystemOrgStructure() {
                     <TableHead>集团名称</TableHead>
                     <TableHead>所属行业</TableHead>
                     <TableHead>下属企业数</TableHead>
+                    <TableHead>账号</TableHead>
                     <TableHead>地址</TableHead>
                     <TableHead>备注</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {groups.map((g) => (
-                    <TableRow key={g.id}>
-                      <TableCell className="font-medium">{g.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-[10px]">{g.industry}</Badge>
-                      </TableCell>
-                      <TableCell className="tabular-nums">{g.enterpriseCount}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{g.address || "—"}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{g.remark || "—"}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="inline-flex gap-1">
-                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEditGroup(g)}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button
-                            size="icon" variant="ghost"
-                            className="h-7 w-7 text-destructive hover:text-destructive"
-                            onClick={() => deleteGroup(g)}
+                  {groups.map((g) => {
+                    const gStat = groupAccountStats[g.id];
+                    const entCount = entByGroup[g.id]?.length ?? g.enterpriseCount;
+                    return (
+                      <TableRow key={g.id}>
+                        <TableCell className="font-medium">{g.name}</TableCell>
+                        <TableCell><Badge variant="outline" className="text-[10px]">{g.industry}</Badge></TableCell>
+                        <TableCell className="tabular-nums">
+                          <button
+                            type="button"
+                            onClick={() => setGroupSheet(g)}
+                            className="text-primary hover:underline inline-flex items-center gap-1 font-semibold"
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                            {entCount}
+                            <ExternalLink className="h-3 w-3" />
+                          </button>
+                        </TableCell>
+                        <TableCell>
+                          <button
+                            type="button"
+                            onClick={() => setGroupSheet(g)}
+                            className="inline-flex items-center gap-1 text-xs hover:text-primary"
+                          >
+                            <UserCircle2 className="h-3.5 w-3.5" />
+                            <span className="font-semibold tabular-nums">{gStat?.total ?? 0}</span>
+                            {gStat && (
+                              <span className="text-muted-foreground">
+                                ({gStat.admin > 0 && `管${gStat.admin}`}
+                                {gStat.deputy > 0 && `${gStat.admin > 0 ? "·" : ""}副${gStat.deputy}`}
+                                {gStat.user > 0 && `${(gStat.admin + gStat.deputy) > 0 ? "·" : ""}员${gStat.user}`})
+                              </span>
+                            )}
+                          </button>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{g.address || "—"}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{g.remark || "—"}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="inline-flex gap-1">
+                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEditGroup(g)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              size="icon" variant="ghost"
+                              className="h-7 w-7 text-destructive hover:text-destructive"
+                              onClick={() => deleteGroup(g)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -577,6 +676,103 @@ export default function SystemOrgStructure() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* —— 集团详情抽屉（下属企业 + 账号信息）—— */}
+      <Sheet open={!!groupSheet} onOpenChange={(o) => !o && setGroupSheet(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+          {groupSheet && (() => {
+            const list = entByGroup[groupSheet.id] ?? [];
+            const gStat = groupAccountStats[groupSheet.id];
+            return (
+              <>
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <Layers className="h-4 w-4 text-primary" />
+                    {groupSheet.name}
+                    <Badge variant="outline" className="text-[10px]">{groupSheet.industry}</Badge>
+                  </SheetTitle>
+                  <SheetDescription>{groupSheet.address || "—"}</SheetDescription>
+                </SheetHeader>
+
+                <Tabs defaultValue="enterprises" className="mt-4">
+                  <TabsList>
+                    <TabsTrigger value="enterprises">
+                      <Building2 className="h-3.5 w-3.5 mr-1" />下属企业
+                      <Badge variant="secondary" className="ml-1.5 h-4 px-1.5 text-[10px]">{list.length}</Badge>
+                    </TabsTrigger>
+                    <TabsTrigger value="accounts">
+                      <UserCircle2 className="h-3.5 w-3.5 mr-1" />账号信息
+                      <Badge variant="secondary" className="ml-1.5 h-4 px-1.5 text-[10px]">{gStat?.total ?? 0}</Badge>
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="enterprises" className="mt-3">
+                    {list.length ? (
+                      <div className="rounded-md border border-border/60 overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="text-xs">统一社会信用代码</TableHead>
+                              <TableHead className="text-xs">企业名称</TableHead>
+                              <TableHead className="text-xs">联系人</TableHead>
+                              <TableHead className="text-xs">电话</TableHead>
+                              <TableHead className="text-xs">对口人</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {list.map((e) => (
+                              <TableRow key={e.id}>
+                                <TableCell className="font-mono text-[11px] text-muted-foreground">{e.creditCode}</TableCell>
+                                <TableCell>
+                                  <Link to={`/enterprises/${e.id}`} onClick={() => setGroupSheet(null)} className="text-primary hover:underline inline-flex items-center gap-1 text-xs font-medium">
+                                    {e.name}<ExternalLink className="h-3 w-3" />
+                                  </Link>
+                                </TableCell>
+                                <TableCell className="text-xs">{e.contact}</TableCell>
+                                <TableCell className="font-mono text-[11px]">{e.phone}</TableCell>
+                                <TableCell className="text-xs">{e.liaison}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground text-center py-8 rounded-md bg-muted/30">该集团暂无下属企业</div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="accounts" className="mt-3">
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      {(["admin", "deputy", "user"] as RoleId[]).map((r) => (
+                        <div key={r} className={cn("rounded-md border p-2 text-center", ROLE_META[r].cls)}>
+                          <div className="text-[10px] opacity-80">{ROLE_META[r].label}</div>
+                          <div className="text-lg font-bold tabular-nums">{gStat?.[r] ?? 0}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {gStat && gStat.rows.length > 0 ? (
+                      <div className="rounded-md border border-border/60 divide-y divide-border/60">
+                        {gStat.rows.map(({ acc, role }) => (
+                          <div key={`${acc.id}-${role}`} className="flex items-center gap-2 px-3 py-2 text-xs">
+                            <UserCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="font-medium">{acc.name}</span>
+                            <span className="font-mono text-[10px] text-muted-foreground">{acc.phone}</span>
+                            <Badge variant="outline" className={cn("ml-auto text-[10px]", ROLE_META[role].cls)}>
+                              {ROLE_META[role].label}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground text-center py-8 rounded-md bg-muted/30">该集团暂无账号绑定</div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </>
+            );
+          })()}
+        </SheetContent>
+      </Sheet>
     </AppLayout>
   );
 }

@@ -43,6 +43,7 @@ import SystemUsers from "./pages/SystemUsers.tsx";
 import SystemAccounts from "./pages/SystemAccounts.tsx";
 import SystemOrgStructure from "./pages/SystemOrgStructure.tsx";
 import SystemPermissions from "./pages/SystemPermissions.tsx";
+import EnterpriseDetail from "./pages/EnterpriseDetail.tsx";
 import PolicyAgent from "./pages/PolicyAgent.tsx";
 import GreenMfgAgent from "./pages/GreenMfgAgent.tsx";
 import DirectBenefit from "./pages/DirectBenefit.tsx";
@@ -97,6 +98,7 @@ const App = () => (
           <Route path="/system/users" element={<SystemUsersRoute />} />
           <Route path="/system/org-structure" element={<SystemOrgStructure />} />
           <Route path="/system/permissions" element={<SystemPermissions />} />
+          <Route path="/enterprises/:id" element={<EnterpriseDetail />} />
           <Route path="/policy-agent" element={<PolicyAgent />} />
           <Route path="/green-mfg-agent" element={<GreenMfgAgent />} />
           {/* 免审即享 */}
