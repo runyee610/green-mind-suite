@@ -72,7 +72,7 @@ export default function SystemAccounts() {
 
   // —— 账号筛选
   const [aKeyword, setAKeyword] = useState("");
-  const [aStatus, setAStatus] = useState<string>("all");
+  const [aOrg, setAOrg] = useState<string>("all");
 
   // —— 身份筛选
   const [mKeyword, setMKeyword] = useState("");
@@ -110,12 +110,15 @@ export default function SystemAccounts() {
 
   const filteredAccounts = useMemo(() => {
     return accounts.filter((a) => {
-      if (aStatus !== "all" && a.status !== aStatus) return false;
+      if (aOrg !== "all") {
+        const hasOrg = memberships.some((m) => m.accountId === a.id && m.orgId === aOrg);
+        if (!hasOrg) return false;
+      }
       const q = aKeyword.trim().toLowerCase();
       if (!q) return true;
       return [a.name, a.phone, a.uid].some((s) => s.toLowerCase().includes(q));
     });
-  }, [accounts, aKeyword, aStatus]);
+  }, [accounts, aKeyword, aOrg, memberships]);
 
   const filteredMemberships = useMemo(() => {
     return memberships.filter((m) => {
@@ -320,12 +323,13 @@ export default function SystemAccounts() {
                   <Input value={aKeyword} onChange={(e) => setAKeyword(e.target.value)}
                     placeholder="搜索姓名 / 手机号 / UID" className="h-8 w-64 pl-8 text-xs" />
                 </div>
-                <Select value={aStatus} onValueChange={setAStatus}>
-                  <SelectTrigger className="h-8 w-28 text-xs"><SelectValue /></SelectTrigger>
+                <Select value={aOrg} onValueChange={setAOrg}>
+                  <SelectTrigger className="h-8 w-40 text-xs"><SelectValue placeholder="全部组织" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">全部状态</SelectItem>
-                    <SelectItem value="启用">启用</SelectItem>
-                    <SelectItem value="停用">停用</SelectItem>
+                    <SelectItem value="all">全部组织</SelectItem>
+                    {ORGS.map((o) => (
+                      <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <div className="ml-auto flex items-center gap-2">
