@@ -613,35 +613,103 @@ export default function SystemAccounts() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{accountDlg.editing ? "编辑账号" : "新增账号"}</DialogTitle>
-            <DialogDescription>账号仅记录自然人的基本身份信息，组织与角色在「组织身份」中维护</DialogDescription>
+            <DialogDescription>
+              先选择账号类型，再填写基础信息与归属关系
+            </DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2"><Label className="text-xs">姓名</Label><Input value={fName} onChange={(e) => setFName(e.target.value)} className="mt-1" /></div>
-            <div><Label className="text-xs">手机号</Label><Input value={fPhone} onChange={(e) => setFPhone(e.target.value)} className="mt-1 font-mono" /></div>
+          <div className="space-y-4">
+            {/* 账号类型 */}
             <div>
-              <Label className="text-xs">UID</Label>
-              <Input value={fUid} className="mt-1 font-mono bg-muted/40" readOnly disabled />
-              <p className="mt-1 text-[10px] text-muted-foreground">{accountDlg.editing ? "UID 创建后不可修改" : "系统自动生成，保存后生效"}</p>
+              <Label className="text-xs">账号类型</Label>
+              <div className="mt-1 grid grid-cols-2 gap-2">
+                {([
+                  { v: "gov" as const, label: "政府账号", desc: "归属市/区/园区，组织身份在表格行内/独立弹窗维护", icon: ShieldCheck, color: "primary" },
+                  { v: "enterprise" as const, label: "企业账号", desc: "代表企业本身（管理员/副管/员工），关联到具体企业", icon: Building2, color: "sky" },
+                ]).map(({ v, label, desc, icon: Icon, color }) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setFType(v)}
+                    className={cn(
+                      "rounded-md border p-2.5 text-left transition-colors",
+                      fType === v
+                        ? color === "sky"
+                          ? "border-sky-500 bg-sky-500/5"
+                          : "border-primary bg-primary/5"
+                        : "border-border hover:bg-muted/40",
+                    )}
+                  >
+                    <div className="flex items-center gap-1.5 text-sm font-medium">
+                      <Icon className={cn("h-3.5 w-3.5", color === "sky" ? "text-sky-500" : "text-primary")} />
+                      {label}
+                    </div>
+                    <div className="mt-1 text-[11px] text-muted-foreground leading-snug">{desc}</div>
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="col-span-2">
-              <Label className="text-xs">状态</Label>
-              <Select value={fStatus} onValueChange={(v) => setFStatus(v as "启用" | "停用")}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="启用">启用</SelectItem>
-                  <SelectItem value="停用">停用</SelectItem>
-                </SelectContent>
-              </Select>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <Label className="text-xs">姓名</Label>
+                <Input value={fName} onChange={(e) => setFName(e.target.value)} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">手机号</Label>
+                <Input value={fPhone} onChange={(e) => setFPhone(e.target.value)} className="mt-1 font-mono" />
+              </div>
+              <div>
+                <Label className="text-xs">UID</Label>
+                <Input value={fUid} className="mt-1 font-mono bg-muted/40" readOnly disabled />
+                <p className="mt-1 text-[10px] text-muted-foreground">{accountDlg.editing ? "UID 创建后不可修改" : "系统自动生成"}</p>
+              </div>
+              <div className="col-span-2">
+                <Label className="text-xs">状态</Label>
+                <Select value={fStatus} onValueChange={(v) => setFStatus(v as "启用" | "停用")}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="启用">启用</SelectItem>
+                    <SelectItem value="停用">停用</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="col-span-2">
+
+            {/* 企业关联区：政府=对口企业(无角色)；企业账号=所属企业+角色 */}
+            <div>
               <Label className="text-xs flex items-center gap-1.5">
                 <Building2 className="h-3 w-3" />
-                关联企业（企业账号）
+                {fType === "enterprise" ? "所属企业（账号将成为该企业的账号）" : "对口企业（联络/对接，可选）"}
                 <span className="ml-auto text-[10px] font-normal text-muted-foreground">
                   已选 {fEnts.length} / {INITIAL_ENTERPRISES.length}
                 </span>
               </Label>
-              <div className="mt-1 rounded-md border border-border">
+
+              {fType === "enterprise" && (
+                <div className="mt-1.5">
+                  <Label className="text-[11px] text-muted-foreground">在企业中的角色</Label>
+                  <div className="mt-1 grid grid-cols-3 gap-2">
+                    {(Object.keys(ROLE_META) as RoleId[]).map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setFEntRole(r)}
+                        className={cn(
+                          "rounded-md border p-2 text-left transition-colors",
+                          fEntRole === r ? "border-sky-500 bg-sky-500/5" : "border-border hover:bg-muted/40",
+                        )}
+                      >
+                        <Badge variant="outline" className={cn("text-[10px]", ROLE_META[r].cls)}>
+                          {ROLE_META[r].label}
+                        </Badge>
+                        <div className="mt-1 text-[10px] text-muted-foreground leading-snug">{ROLE_META[r].desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-2 rounded-md border border-border">
                 <div className="border-b border-border p-2">
                   <div className="relative">
                     <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
@@ -674,7 +742,7 @@ export default function SystemAccounts() {
                     })}
                   </div>
                 )}
-                <div className="max-h-44 overflow-y-auto p-1">
+                <div className="max-h-40 overflow-y-auto p-1">
                   {INITIAL_ENTERPRISES
                     .filter((e) => {
                       const q = fEntKeyword.trim().toLowerCase();
@@ -689,7 +757,7 @@ export default function SystemAccounts() {
                           key={e.id}
                           className={cn(
                             "flex cursor-pointer items-start gap-2 rounded-sm px-2 py-1.5 text-xs hover:bg-muted/50",
-                            checked && "bg-primary/5",
+                            checked && (fType === "enterprise" ? "bg-sky-500/5" : "bg-primary/5"),
                           )}
                         >
                           <Checkbox
@@ -711,10 +779,14 @@ export default function SystemAccounts() {
                 </div>
               </div>
               <p className="mt-1 text-[10px] text-muted-foreground">
-                勾选后该账号将成为对应企业的账号；企业信息在「企业管理」维护
+                {fType === "enterprise"
+                  ? "企业账号必须至少关联一家企业；如有多家则共用同一角色，可在表格行中单独调整"
+                  : "政府账号此处仅记录联络/对接关系，不分配企业角色"}
               </p>
             </div>
           </div>
+
+
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAccountDlg({ open: false, editing: null })}>取消</Button>
