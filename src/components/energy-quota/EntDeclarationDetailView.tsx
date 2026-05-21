@@ -832,47 +832,21 @@ export function EntDeclarationDetailView({ detail, onBack, mode = "edit" }: Prop
 
               {readOnly && (
                 <div className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3">
-                  <div className="mb-2 flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
                       <Target className="h-4 w-4 text-primary" />
                       <span className="text-sm font-semibold text-primary">节约量测算</span>
                       <Badge variant="outline" className="h-5 border-primary/40 bg-primary/10 text-[10px] text-primary">仅政府侧可见</Badge>
                     </div>
-                    <span className="font-mono text-[11px] text-muted-foreground">节约量 = |计算值 − 先进值| × 自来水总制水量</span>
+                    <span className="font-mono text-[11px] text-muted-foreground hidden sm:inline">节约量 = |计算值 − 先进值| × 自来水总制水量</span>
                   </div>
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/40 hover:bg-muted/40">
-                        <TableHead className="w-14 text-center">序号</TableHead>
-                        <TableHead>自来水厂名称</TableHead>
-                        <TableHead className="text-right">计算值(kWh/km³)</TableHead>
-                        <TableHead className="text-right">先进值(kWh/km³)</TableHead>
-                        <TableHead className="text-right">总制水量(km³)</TableHead>
-                        <TableHead className="text-right">节约量(kWh)</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {summary.map((s) => {
-                        const saving = Math.abs(s.calc - s.advance) * s.water;
-                        return (
-                          <TableRow key={`save-${s.idx}`}>
-                            <TableCell className="text-center font-mono text-xs">{s.idx}</TableCell>
-                            <TableCell className="text-sm font-medium">{s.name}</TableCell>
-                            <TableCell className="text-right font-mono text-xs">{fmt(s.calc)}</TableCell>
-                            <TableCell className="text-right font-mono text-xs">{fmt(s.advance)}</TableCell>
-                            <TableCell className="text-right font-mono text-xs">{fmt(s.water)}</TableCell>
-                            <TableCell className="text-right font-mono text-xs font-semibold text-primary">{fmt(saving)}</TableCell>
-                          </TableRow>
-                        );
-                      })}
-                      <TableRow className="bg-muted/30">
-                        <TableCell colSpan={5} className="text-right text-sm font-semibold">合计节约量</TableCell>
-                        <TableCell className="text-right font-mono text-sm font-bold text-primary">
-                          {fmt(summary.reduce((acc, s) => acc + Math.abs(s.calc - s.advance) * s.water, 0))} kWh
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
+                  <div className="mt-2 flex items-center justify-between rounded bg-background/60 px-3 py-2">
+                    <span className="text-sm text-muted-foreground">合计节约量</span>
+                    <span className="font-mono text-lg font-bold text-primary">
+                      {fmt(summary.reduce((acc, s) => acc + Math.abs(s.calc - s.advance) * s.water, 0))}
+                      <span className="ml-1 text-xs font-normal text-muted-foreground">kWh</span>
+                    </span>
+                  </div>
                 </div>
               )}
             </CardContent>
