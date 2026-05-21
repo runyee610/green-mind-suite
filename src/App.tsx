@@ -100,10 +100,10 @@ const App = () => (
           <Route path="/green-mfg/ent/declaration/new" element={<GreenMfgEntDeclarationNew />} />
           <Route path="/green-mfg/ent/declaration/:id" element={<GreenMfgEntDeclarationDetail />} />
           <Route path="/green-mfg/ent/dynamic/:id" element={<GreenMfgEntDynamicEdit />} />
-          <Route path="/system" element={<System />} />
+          <Route path="/system" element={<GovOnlyRoute><System /></GovOnlyRoute>} />
           <Route path="/system/users" element={<SystemUsersRoute />} />
-          <Route path="/system/org-structure" element={<SystemOrgStructure />} />
-          <Route path="/system/permissions" element={<SystemPermissions />} />
+          <Route path="/system/org-structure" element={<GovOnlyRoute><SystemOrgStructure /></GovOnlyRoute>} />
+          <Route path="/system/permissions" element={<GovOnlyRoute><SystemPermissions /></GovOnlyRoute>} />
           <Route path="/enterprises/:id" element={<EnterpriseDetail />} />
           <Route path="/policy-agent" element={<PolicyAgent />} />
           <Route path="/green-mfg-agent" element={<GreenMfgAgent />} />
