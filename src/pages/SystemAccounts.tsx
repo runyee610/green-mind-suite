@@ -111,9 +111,12 @@ export default function SystemAccounts() {
   const [fName, setFName] = useState("");
   const [fPhone, setFPhone] = useState("");
   const [fUid, setFUid] = useState("");
+  const [fType, setFType] = useState<"gov" | "enterprise">("gov");
   const [fStatus, setFStatus] = useState<"启用" | "停用">("启用");
   const [fEnts, setFEnts] = useState<string[]>([]);
+  const [fEntRole, setFEntRole] = useState<RoleId>("user");
   const [fEntKeyword, setFEntKeyword] = useState("");
+
 
 
   const [fmAccount, setFmAccount] = useState("");
