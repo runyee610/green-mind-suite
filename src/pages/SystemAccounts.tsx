@@ -448,39 +448,93 @@ export default function SystemAccounts() {
               </TableRow>
             </TableHeader>
 
-                    <TableHead>手机号</TableHead>
-                    <TableHead>组织身份</TableHead>
-                    <TableHead>关联企业</TableHead>
-
-                    <TableHead>状态</TableHead>
-                    <TableHead>创建时间</TableHead>
-                    <TableHead className="text-right">操作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredAccounts.map((a) => {
-                    const mbs = memberships.filter((m) => m.accountId === a.id);
-                    const ents = entMemberships.filter((m) => m.accountId === a.id);
-                    return (
-
-                      <TableRow key={a.id} data-state={selected.has(a.id) ? "selected" : undefined}>
-                        <TableCell>
-                          <Checkbox
-                            checked={selected.has(a.id)}
-                            onCheckedChange={(v) => toggleOne(a.id, !!v)}
-                            aria-label={`选择 ${a.name}`}
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">{a.name}</TableCell>
-                        <TableCell className="font-mono text-xs text-muted-foreground">{a.uid}</TableCell>
-                        <TableCell className="font-mono text-xs">{a.phone}</TableCell>
-                        <TableCell>
+            <TableBody>
+              {filteredAccounts.map((a) => {
+                const mbs = memberships.filter((m) => m.accountId === a.id);
+                const ents = entMemberships.filter((m) => m.accountId === a.id);
+                const isEnt = a.type === "enterprise";
+                return (
+                  <TableRow key={a.id} data-state={selected.has(a.id) ? "selected" : undefined}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selected.has(a.id)}
+                        onCheckedChange={(v) => toggleOne(a.id, !!v)}
+                        aria-label={`选择 ${a.name}`}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={cn(
+                            "flex h-7 w-7 shrink-0 items-center justify-center rounded-md",
+                            isEnt
+                              ? "bg-sky-500/10 text-sky-600 dark:text-sky-300"
+                              : "bg-primary/10 text-primary",
+                          )}
+                        >
+                          {isEnt ? <Building2 className="h-3.5 w-3.5" /> : <UserCircle2 className="h-3.5 w-3.5" />}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-medium text-sm">{a.name}</div>
+                          <div className="text-[10px] text-muted-foreground font-mono">
+                            {a.phone} · {a.uid}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[10px] gap-1",
+                          isEnt
+                            ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+                            : "border-primary/40 bg-primary/10 text-primary",
+                        )}
+                      >
+                        {isEnt ? <Building2 className="h-2.5 w-2.5" /> : <ShieldCheck className="h-2.5 w-2.5" />}
+                        {isEnt ? "企业账号" : "政府账号"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {isEnt ? (
+                        ents.length === 0 ? (
+                          <span className="text-xs text-destructive">未关联企业</span>
+                        ) : (
+                          <div className="flex flex-col gap-1 max-w-[360px]">
+                            {ents.slice(0, 3).map((m) => {
+                              const e = entById(m.enterpriseId);
+                              return (
+                                <div key={m.id} className="flex items-center gap-1.5 text-xs">
+                                  <Building2 className="h-3 w-3 text-sky-500 shrink-0" />
+                                  <span className="font-medium truncate" title={e?.name}>{e?.name}</span>
+                                  <Badge
+                                    variant="outline"
+                                    className={cn("text-[10px] font-normal h-4 px-1.5", ROLE_META[m.role].cls)}
+                                  >
+                                    {ROLE_META[m.role].label}
+                                  </Badge>
+                                </div>
+                              );
+                            })}
+                            {ents.length > 3 && (
+                              <span className="text-[10px] text-muted-foreground">还有 {ents.length - 3} 家企业…</span>
+                            )}
+                          </div>
+                        )
+                      ) : (
+                        <div className="flex flex-col gap-1 max-w-[360px]">
                           {mbs.length === 0 ? (
-                            <span className="text-xs text-muted-foreground">未绑定</span>
+                            <span className="text-xs text-muted-foreground">未绑定组织</span>
                           ) : (
                             <div className="flex flex-wrap gap-1">
                               {mbs.slice(0, 3).map((m) => (
-                                <Badge key={m.id} variant="outline" className={cn("text-[10px] font-normal", ROLE_META[m.role].cls)}>
+                                <Badge
+                                  key={m.id}
+                                  variant="outline"
+                                  className={cn("text-[10px] font-normal", ROLE_META[m.role].cls)}
+                                  title={`${orgById(m.orgId)?.name} · ${ROLE_META[m.role].label}`}
+                                >
                                   {orgById(m.orgId)?.name} · {ROLE_META[m.role].label}
                                 </Badge>
                               ))}
@@ -489,23 +543,20 @@ export default function SystemAccounts() {
                               )}
                             </div>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          {ents.length === 0 ? (
-                            <span className="text-xs text-muted-foreground">—</span>
-                          ) : (
-                            <div className="flex flex-wrap gap-1 max-w-[260px]">
+                          {ents.length > 0 && (
+                            <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                              <span className="text-[10px] text-muted-foreground">对口企业：</span>
                               {ents.slice(0, 2).map((m) => {
                                 const e = entById(m.enterpriseId);
                                 return (
                                   <Badge
                                     key={m.id}
                                     variant="outline"
-                                    className="text-[10px] font-normal border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 gap-1"
-                                    title={`${e?.name} · ${ROLE_META[m.role].label}`}
+                                    className="text-[10px] font-normal border-sky-500/30 bg-sky-500/5 text-sky-700 dark:text-sky-300 gap-0.5"
+                                    title={e?.name}
                                   >
                                     <Building2 className="h-2.5 w-2.5" />
-                                    <span className="truncate max-w-[140px]">{e?.name}</span>
+                                    <span className="truncate max-w-[120px]">{e?.name}</span>
                                   </Badge>
                                 );
                               })}
@@ -514,129 +565,48 @@ export default function SystemAccounts() {
                               )}
                             </div>
                           )}
-                        </TableCell>
-                        <TableCell>
-
-                          <Badge variant="outline" className={cn("text-[10px]",
-                            a.status === "启用" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
-                              : "border-muted-foreground/30 bg-muted/40 text-muted-foreground")}>
-                            {a.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{a.createdAt}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="inline-flex gap-1">
-                            <Button size="icon" variant="ghost" className="h-7 w-7" title="绑定组织"
-                              onClick={() => { setTab("memberships"); openCreateMembership(a.id); }}>
-                              <Link2 className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码"
-                              onClick={() => setPwdDlg({ open: true, target: a.phone })}>
-                              <KeyRound className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7" title="编辑"
-                              onClick={() => openEditAccount(a)}>
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" title="删除"
-                              onClick={() => deleteAccount(a)}>
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ===== 身份 ===== */}
-        <TabsContent value="memberships" className="mt-4">
-          <Card className="border-border/60">
-            <CardContent className="p-0">
-              <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input value={mKeyword} onChange={(e) => setMKeyword(e.target.value)}
-                    placeholder="搜索账号 / 组织" className="h-8 w-56 pl-8 text-xs" />
-                </div>
-                <OrgFilterPicker value={mOrg} onChange={setMOrg} includeGroups={false} />
-
-                <Select value={mRole} onValueChange={setMRole}>
-                  <SelectTrigger className="h-8 w-32 text-xs"><SelectValue placeholder="角色" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">全部角色</SelectItem>
-                    <SelectItem value="admin">管理员</SelectItem>
-                    <SelectItem value="deputy">副管理员</SelectItem>
-                    <SelectItem value="user">普通用户</SelectItem>
-                  </SelectContent>
-                </Select>
-                <div className="ml-auto">
-                  <Button size="sm" className="h-8" onClick={() => openCreateMembership()}>
-                    <Plus className="h-3.5 w-3.5 mr-1" />新增身份
-                  </Button>
-                </div>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>账号</TableHead>
-                    <TableHead>所属组织</TableHead>
-                    <TableHead>层级</TableHead>
-                    <TableHead>角色</TableHead>
-                    <TableHead className="text-right">操作</TableHead>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={cn("text-[10px]",
+                        a.status === "启用" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+                          : "border-muted-foreground/30 bg-muted/40 text-muted-foreground")}>
+                        {a.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{a.createdAt}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="inline-flex gap-1">
+                        {!isEnt && (
+                          <Button size="icon" variant="ghost" className="h-7 w-7" title="新增组织身份"
+                            onClick={() => openCreateMembership(a.id)}>
+                            <Link2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                        <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码"
+                          onClick={() => setPwdDlg({ open: true, target: a.phone })}>
+                          <KeyRound className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" title="编辑"
+                          onClick={() => openEditAccount(a)}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" title="删除"
+                          onClick={() => deleteAccount(a)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredMemberships.map((m) => {
-                    const acc = accountById(m.accountId);
-                    const org = orgById(m.orgId);
-                    return (
-                      <TableRow key={m.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <UserCircle2 className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                              <div className="font-medium text-sm">{acc?.name}</div>
-                              <div className="text-[11px] text-muted-foreground font-mono">{acc?.phone}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">{org?.name}</TableCell>
-                        <TableCell>
-                          {org && (
-                            <Badge variant="outline" className={cn("text-[10px]", LEVEL_BADGE_CLASS[org.level])}>
-                              {LEVEL_LABEL[org.level]}
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={cn("text-[10px]", ROLE_META[m.role].cls)}>
-                            {ROLE_META[m.role].label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="inline-flex gap-1">
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEditMembership(m)}>
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteMembership(m)}>
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+
 
       {/* —— 账号对话框 —— */}
       <Dialog open={accountDlg.open} onOpenChange={(o) => setAccountDlg((s) => ({ ...s, open: o }))}>
