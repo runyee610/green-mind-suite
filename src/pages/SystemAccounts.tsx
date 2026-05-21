@@ -616,6 +616,60 @@ export default function SystemAccounts() {
         </DialogContent>
       </Dialog>
 
+      {/* —— 批量身份对话框 —— */}
+      <Dialog open={bulkDlg.open} onOpenChange={(o) => setBulkDlg((s) => ({ ...s, open: o }))}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {bulkDlg.mode === "add" ? "批量新增组织身份" : "批量修改组织身份"}
+              <Badge variant="secondary" className="ml-2 text-[10px]">已选 {selected.size}</Badge>
+            </DialogTitle>
+            <DialogDescription>
+              {bulkDlg.mode === "add"
+                ? "为所选账号在指定组织下创建身份。若账号在该组织已有身份将自动跳过。"
+                : "更新所选账号在指定组织下的角色。账号在该组织无身份则跳过。"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">目标组织</Label>
+              <Select value={bulkOrg} onValueChange={setBulkOrg}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder="选择组织" /></SelectTrigger>
+                <SelectContent>
+                  {ORGS.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>[{LEVEL_LABEL[o.level]}] {o.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">角色</Label>
+              <div className="mt-1 grid grid-cols-3 gap-2">
+                {(Object.keys(ROLE_META) as RoleId[]).map((r) => (
+                  <button key={r} type="button" onClick={() => setBulkRole(r)}
+                    className={cn(
+                      "rounded-md border p-2.5 text-left transition-colors",
+                      bulkRole === r ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40",
+                    )}>
+                    <Badge variant="outline" className={cn("text-[10px]", ROLE_META[r].cls)}>
+                      {ROLE_META[r].label}
+                    </Badge>
+                    <div className="mt-1 text-[11px] text-muted-foreground leading-snug">{ROLE_META[r].desc}</div>
+                  </button>
+                ))}
+              </div>
+              {bulkRole === "admin" && selected.size > 1 && (
+                <p className="mt-2 text-[11px] text-destructive">管理员每组织唯一，无法对多账号批量赋予。</p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBulkDlg((s) => ({ ...s, open: false }))}>取消</Button>
+            <Button onClick={submitBulk} disabled={bulkRole === "admin" && selected.size > 1}>确认</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* —— 重置密码 —— */}
       <Dialog open={pwdDlg.open} onOpenChange={(o) => setPwdDlg((s) => ({ ...s, open: o }))}>
         <DialogContent>
