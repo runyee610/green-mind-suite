@@ -110,12 +110,15 @@ export default function SystemAccounts() {
 
   const filteredAccounts = useMemo(() => {
     return accounts.filter((a) => {
-      if (aStatus !== "all" && a.status !== aStatus) return false;
+      if (aOrg !== "all") {
+        const hasOrg = memberships.some((m) => m.accountId === a.id && m.orgId === aOrg);
+        if (!hasOrg) return false;
+      }
       const q = aKeyword.trim().toLowerCase();
       if (!q) return true;
       return [a.name, a.phone, a.uid].some((s) => s.toLowerCase().includes(q));
     });
-  }, [accounts, aKeyword, aStatus]);
+  }, [accounts, aKeyword, aOrg, memberships]);
 
   const filteredMemberships = useMemo(() => {
     return memberships.filter((m) => {
