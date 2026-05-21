@@ -68,6 +68,14 @@ import {
 const ORGS = flattenForest(INITIAL_ORG_FOREST);
 const orgById = (id: string) => ORGS.find((o) => o.id === id);
 
+// 按层级分组（用于下拉父子分组）
+const ORGS_BY_LEVEL = {
+  city: ORGS.filter((o) => o.level === "city"),
+  dept: ORGS.filter((o) => o.level === "dept"),
+  district: ORGS.filter((o) => o.level === "district"),
+  park: ORGS.filter((o) => o.level === "park"),
+};
+
 // ===== 主页面 =====
 export default function SystemAccounts() {
   const [tab, setTab] = useState<"accounts" | "memberships">("accounts");
