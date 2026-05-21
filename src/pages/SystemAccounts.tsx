@@ -361,53 +361,93 @@ export default function SystemAccounts() {
       </Card>
 
       {/* —— 单一账号列表（已合并原"组织身份"Tab 的能力） —— */}
-      {(() => null)()}
+      <Card className="border-border/60">
+        <CardContent className="p-0">
+          <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input value={aKeyword} onChange={(e) => setAKeyword(e.target.value)}
+                placeholder="搜索姓名 / 手机号 / UID" className="h-8 w-64 pl-8 text-xs" />
+            </div>
 
-
-
-        {/* ===== 账号 ===== */}
-        <TabsContent value="accounts" className="mt-4">
-          <Card className="border-border/60">
-            <CardContent className="p-0">
-              <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input value={aKeyword} onChange={(e) => setAKeyword(e.target.value)}
-                    placeholder="搜索姓名 / 手机号 / UID" className="h-8 w-64 pl-8 text-xs" />
-                </div>
-                <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups includeEnterprises />
-
-                <div className="ml-auto flex items-center gap-2">
-                  {selected.size > 0 && (
-                    <>
-                      <span className="text-xs text-muted-foreground">已选 <b className="text-foreground">{selected.size}</b></span>
-                      <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("add")}>
-                        <PlusCircle className="h-3.5 w-3.5 mr-1" />批量新增组织身份
-                      </Button>
-                      <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("update")}>
-                        <RefreshCw className="h-3.5 w-3.5 mr-1" />批量修改组织身份
-                      </Button>
-                      <Button size="sm" variant="ghost" className="h-8" onClick={() => setSelected(new Set())}>清除</Button>
-                      <span className="mx-1 h-5 w-px bg-border" />
-                    </>
+            {/* 账号类型分段筛选 */}
+            <div className="inline-flex items-center rounded-md border border-input bg-background p-0.5 text-xs">
+              {([
+                { v: "all", label: "全部", icon: null },
+                { v: "gov", label: "政府账号", icon: <ShieldCheck className="h-3 w-3" /> },
+                { v: "enterprise", label: "企业账号", icon: <Building2 className="h-3 w-3" /> },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.v}
+                  type="button"
+                  onClick={() => setAType(opt.v)}
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded px-2.5 py-1 transition-colors",
+                    aType === opt.v
+                      ? opt.v === "enterprise"
+                        ? "bg-sky-500/15 text-sky-700 dark:text-sky-300 font-medium"
+                        : opt.v === "gov"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "bg-muted text-foreground font-medium"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
-                  <Button size="sm" className="h-8" onClick={openCreateAccount}>
-                    <Plus className="h-3.5 w-3.5 mr-1" />新增账号
+                >
+                  {opt.icon}
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups includeEnterprises />
+
+            <Select value={aRole} onValueChange={setARole}>
+              <SelectTrigger className="h-8 w-28 text-xs"><SelectValue placeholder="角色" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全部角色</SelectItem>
+                <SelectItem value="admin">管理员</SelectItem>
+                <SelectItem value="deputy">副管理员</SelectItem>
+                <SelectItem value="user">普通用户</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="ml-auto flex items-center gap-2">
+              {selected.size > 0 && (
+                <>
+                  <span className="text-xs text-muted-foreground">已选 <b className="text-foreground">{selected.size}</b></span>
+                  <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("add")}>
+                    <PlusCircle className="h-3.5 w-3.5 mr-1" />批量新增组织身份
                   </Button>
-                </div>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-10">
-                      <Checkbox
-                        checked={filteredAccounts.length > 0 && filteredAccounts.every((a) => selected.has(a.id))}
-                        onCheckedChange={(v) => toggleAllOnPage(!!v)}
-                        aria-label="全选"
-                      />
-                    </TableHead>
-                    <TableHead>姓名</TableHead>
-                    <TableHead>UID</TableHead>
+                  <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("update")}>
+                    <RefreshCw className="h-3.5 w-3.5 mr-1" />批量修改组织身份
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8" onClick={() => setSelected(new Set())}>清除</Button>
+                  <span className="mx-1 h-5 w-px bg-border" />
+                </>
+              )}
+              <Button size="sm" className="h-8" onClick={openCreateAccount}>
+                <Plus className="h-3.5 w-3.5 mr-1" />新增账号
+              </Button>
+            </div>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={filteredAccounts.length > 0 && filteredAccounts.every((a) => selected.has(a.id))}
+                    onCheckedChange={(v) => toggleAllOnPage(!!v)}
+                    aria-label="全选"
+                  />
+                </TableHead>
+                <TableHead>账号</TableHead>
+                <TableHead>类型</TableHead>
+                <TableHead>身份与归属</TableHead>
+                <TableHead>状态</TableHead>
+                <TableHead>创建时间</TableHead>
+                <TableHead className="text-right">操作</TableHead>
+              </TableRow>
+            </TableHeader>
+
                     <TableHead>手机号</TableHead>
                     <TableHead>组织身份</TableHead>
                     <TableHead>关联企业</TableHead>
