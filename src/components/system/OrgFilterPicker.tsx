@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   INITIAL_ORG_FOREST,
   INITIAL_GROUPS,
+  INITIAL_ENTERPRISES,
   flattenForest,
 } from "@/components/system/orgTreeData";
 
@@ -13,9 +14,10 @@ const ORGS = flattenForest(INITIAL_ORG_FOREST);
 const byId = (id: string) => ORGS.find((o) => o.id === id);
 
 export interface OrgFilterValue {
-  type: "all" | "org" | "group";
+  type: "all" | "org" | "group" | "enterprise";
   id?: string;
 }
+
 
 interface ParentItem {
   key: string;            // unique
