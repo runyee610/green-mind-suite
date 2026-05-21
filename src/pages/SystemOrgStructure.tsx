@@ -124,6 +124,35 @@ export default function SystemOrgStructure() {
   const [gRemark, setGRemark] = useState("");
   const [gCount, setGCount] = useState<number>(0);
 
+  // —— 集团抽屉(下属企业 + 账号信息)
+  const [groupSheet, setGroupSheet] = useState<OrgGroup | null>(null);
+
+  // —— 企业(按 orgId / groupId 索引)
+  const enterprises = INITIAL_ENTERPRISES;
+  const entByOrg = useMemo(() => {
+    const m: Record<string, typeof enterprises> = {};
+    enterprises.forEach((e) => { if (e.orgId) (m[e.orgId] ||= []).push(e); });
+    return m;
+  }, [enterprises]);
+  const entByGroup = useMemo(() => {
+    const m: Record<string, typeof enterprises> = {};
+    enterprises.forEach((e) => { if (e.groupId) (m[e.groupId] ||= []).push(e); });
+    return m;
+  }, [enterprises]);
+
+  // —— 集团账号
+  const groupAccountStats = useMemo(() => {
+    const map: Record<string, { admin: number; deputy: number; user: number; total: number; rows: { acc: typeof accounts[number]; role: RoleId }[] }> = {};
+    INITIAL_GROUP_MEMBERSHIPS.forEach((m) => {
+      const slot = (map[m.groupId] ||= { admin: 0, deputy: 0, user: 0, total: 0, rows: [] });
+      slot[m.role] += 1;
+      slot.total += 1;
+      const acc = accounts.find((a) => a.id === m.accountId);
+      if (acc) slot.rows.push({ acc, role: m.role });
+    });
+    return map;
+  }, [accounts]);
+
   const selected = useMemo(() => findInForest(forest, selectedId) ?? forest[0], [forest, selectedId]);
 
   // 账号统计 by orgId
