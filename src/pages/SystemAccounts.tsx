@@ -383,7 +383,7 @@ export default function SystemAccounts() {
                   <Input value={aKeyword} onChange={(e) => setAKeyword(e.target.value)}
                     placeholder="搜索姓名 / 手机号 / UID" className="h-8 w-64 pl-8 text-xs" />
                 </div>
-                <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups />
+                <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups includeEnterprises />
 
                 <div className="ml-auto flex items-center gap-2">
                   {selected.size > 0 && (
