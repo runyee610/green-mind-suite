@@ -441,7 +441,11 @@ export default function SystemAccounts() {
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2"><Label className="text-xs">姓名</Label><Input value={fName} onChange={(e) => setFName(e.target.value)} className="mt-1" /></div>
             <div><Label className="text-xs">手机号</Label><Input value={fPhone} onChange={(e) => setFPhone(e.target.value)} className="mt-1 font-mono" /></div>
-            <div><Label className="text-xs">UID</Label><Input value={fUid} onChange={(e) => setFUid(e.target.value)} className="mt-1 font-mono" disabled={!!accountDlg.editing} /></div>
+            <div>
+              <Label className="text-xs">UID</Label>
+              <Input value={fUid} className="mt-1 font-mono bg-muted/40" readOnly disabled />
+              <p className="mt-1 text-[10px] text-muted-foreground">{accountDlg.editing ? "UID 创建后不可修改" : "系统自动生成，保存后生效"}</p>
+            </div>
             <div className="col-span-2">
               <Label className="text-xs">状态</Label>
               <Select value={fStatus} onValueChange={(v) => setFStatus(v as "启用" | "停用")}>
