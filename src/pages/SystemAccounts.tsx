@@ -341,42 +341,29 @@ export default function SystemAccounts() {
 
   // ===== 渲染 =====
   return (
-    <AppLayout title="账号管理" subtitle="账号 · 组织身份 · 角色 三者解耦的统一管理">
+    <AppLayout title="账号管理" subtitle="政府账号 / 企业账号 统一管理：身份、归属、角色一站式维护">
       {/* 模型说明 */}
       <Card className="mb-4 border-border/60 bg-muted/20">
-        <CardContent className="py-3 px-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+        <CardContent className="py-3 px-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
           <div className="flex items-center gap-1.5">
-            <UserCircle2 className="h-3.5 w-3.5 text-primary" />
-            <span className="font-medium">自然人账号</span>
-            <span className="text-muted-foreground">（手机号 / UID）</span>
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+            <span className="font-medium">政府账号</span>
+            <span className="text-muted-foreground">归属市/区/园区组织，可对口若干企业</span>
           </div>
-          <span className="text-muted-foreground">—— 映射绑定 ——</span>
+          <span className="text-muted-foreground">|</span>
           <div className="flex items-center gap-1.5">
-            <Link2 className="h-3.5 w-3.5 text-blue-500" />
-            <span className="font-medium">组织身份</span>
-            <span className="text-muted-foreground">（Membership）</span>
+            <Building2 className="h-3.5 w-3.5 text-sky-500" />
+            <span className="font-medium">企业账号</span>
+            <span className="text-muted-foreground">归属企业本身，担任管理员/副管/普通员工</span>
           </div>
-          <span className="text-muted-foreground">—— 赋予 ——</span>
-          <div className="flex items-center gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5 text-amber-500" />
-            <span className="font-medium">角色</span>
-            <span className="text-muted-foreground">管理员 / 副管理员 / 普通用户</span>
-          </div>
-          <span className="ml-auto text-muted-foreground">一个自然人可在多个组织中持有不同身份与角色</span>
+          <span className="ml-auto text-muted-foreground">同一手机号仅对应一个账号</span>
         </CardContent>
       </Card>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-        <TabsList>
-          <TabsTrigger value="accounts">
-            <UserCircle2 className="h-3.5 w-3.5 mr-1" />
-            账号 <Badge variant="secondary" className="ml-1.5 h-4 px-1.5 text-[10px]">{accounts.length}</Badge>
-          </TabsTrigger>
-          <TabsTrigger value="memberships">
-            <UsersRound className="h-3.5 w-3.5 mr-1" />
-            组织身份 <Badge variant="secondary" className="ml-1.5 h-4 px-1.5 text-[10px]">{memberships.length}</Badge>
-          </TabsTrigger>
-        </TabsList>
+      {/* —— 单一账号列表（已合并原"组织身份"Tab 的能力） —— */}
+      {(() => null)()}
+
+
 
         {/* ===== 账号 ===== */}
         <TabsContent value="accounts" className="mt-4">
