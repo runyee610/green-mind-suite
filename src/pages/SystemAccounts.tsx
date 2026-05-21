@@ -428,7 +428,9 @@ export default function SystemAccounts() {
                 <TableBody>
                   {filteredAccounts.map((a) => {
                     const mbs = memberships.filter((m) => m.accountId === a.id);
+                    const ents = entMemberships.filter((m) => m.accountId === a.id);
                     return (
+
                       <TableRow key={a.id} data-state={selected.has(a.id) ? "selected" : undefined}>
                         <TableCell>
                           <Checkbox
