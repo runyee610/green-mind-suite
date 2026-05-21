@@ -172,7 +172,7 @@ interface Props {
 export function OrgFilterPicker({ value, onChange, includeGroups = true, includeEnterprises = false, className, triggerClassName }: Props) {
 
   const [open, setOpen] = useState(false);
-  const sections = useMemo(() => buildSections(includeGroups), [includeGroups]);
+  const sections = useMemo(() => buildSections(includeGroups, includeEnterprises), [includeGroups, includeEnterprises]);
   const current = decodeOrgFilter(value);
   const [activeKey, setActiveKey] = useState<string | null>(() => {
     for (const s of sections) for (const it of s.items) {
