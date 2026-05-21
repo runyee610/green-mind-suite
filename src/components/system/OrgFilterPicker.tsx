@@ -264,9 +264,11 @@ export function OrgFilterPicker({ value, onChange, includeGroups = true, include
                           sec.title === "市级" && "bg-primary",
                           sec.title === "区划" && "bg-emerald-500",
                           sec.title === "集团" && "bg-amber-500",
+                          sec.title === "企业" && "bg-sky-500",
                         )} />
                         <span className="truncate">{it.label}</span>
                       </span>
+
                       {it.children && <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
                     </button>
                   );
