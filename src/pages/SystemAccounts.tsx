@@ -174,11 +174,31 @@ export default function SystemAccounts() {
   // ===== 账号 CRUD =====
   const openCreateAccount = () => {
     setFName(""); setFPhone(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
+    setFEnts([]); setFEntKeyword("");
     setAccountDlg({ open: true, editing: null });
   };
   const openEditAccount = (a: Account) => {
     setFName(a.name); setFPhone(a.phone); setFUid(a.uid); setFStatus(a.status);
+    setFEnts(entMemberships.filter((m) => m.accountId === a.id).map((m) => m.enterpriseId));
+    setFEntKeyword("");
     setAccountDlg({ open: true, editing: a });
+  };
+  const syncEnterpriseBindings = (accountId: string, enterpriseIds: string[]) => {
+    setEntMemberships((arr) => {
+      const others = arr.filter((m) => m.accountId !== accountId);
+      const existing = arr.filter((m) => m.accountId === accountId);
+      const next: EnterpriseMembership[] = [...others];
+      enterpriseIds.forEach((eid, idx) => {
+        const old = existing.find((m) => m.enterpriseId === eid);
+        next.push(old ?? {
+          id: `EM${Date.now().toString(36)}${idx}`,
+          accountId,
+          enterpriseId: eid,
+          role: "user",
+        });
+      });
+      return next;
+    });
   };
   const submitAccount = () => {
     if (!fName.trim()) return toast({ title: "姓名不能为空", variant: "destructive" });
@@ -186,14 +206,17 @@ export default function SystemAccounts() {
     if (accountDlg.editing) {
       setAccounts((arr) => arr.map((x) => x.id === accountDlg.editing!.id
         ? { ...x, name: fName.trim(), phone: fPhone, uid: fUid, status: fStatus } : x));
+      syncEnterpriseBindings(accountDlg.editing.id, fEnts);
       toast({ title: "已更新账号" });
     } else {
       const id = `A${String(accounts.length + 1).padStart(3, "0")}`;
       setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, uid: fUid, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
+      syncEnterpriseBindings(id, fEnts);
       toast({ title: "已新增账号", description: `默认密码已通过短信发送至 ${fPhone}` });
     }
     setAccountDlg({ open: false, editing: null });
   };
+
   const deleteAccount = (a: Account) => {
     const cnt = membershipCountByAccount[a.id] ?? 0;
     if (cnt > 0) return toast({ title: "无法删除", description: `该账号仍绑定 ${cnt} 个组织身份，请先解绑`, variant: "destructive" });
