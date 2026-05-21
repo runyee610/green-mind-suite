@@ -459,6 +459,31 @@ export default function SystemAccounts() {
                           )}
                         </TableCell>
                         <TableCell>
+                          {ents.length === 0 ? (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          ) : (
+                            <div className="flex flex-wrap gap-1 max-w-[260px]">
+                              {ents.slice(0, 2).map((m) => {
+                                const e = entById(m.enterpriseId);
+                                return (
+                                  <Badge
+                                    key={m.id}
+                                    variant="outline"
+                                    className="text-[10px] font-normal border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 gap-1"
+                                    title={`${e?.name} · ${ROLE_META[m.role].label}`}
+                                  >
+                                    <Building2 className="h-2.5 w-2.5" />
+                                    <span className="truncate max-w-[140px]">{e?.name}</span>
+                                  </Badge>
+                                );
+                              })}
+                              {ents.length > 2 && (
+                                <Badge variant="outline" className="text-[10px]">+{ents.length - 2}</Badge>
+                              )}
+                            </div>
+                          )}
+
+                        <TableCell>
                           <Badge variant="outline" className={cn("text-[10px]",
                             a.status === "启用" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
                               : "border-muted-foreground/30 bg-muted/40 text-muted-foreground")}>
