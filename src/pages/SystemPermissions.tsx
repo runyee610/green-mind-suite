@@ -185,11 +185,16 @@ function collectActionIds(a: ActionItem): string[] {
 
 const DEFAULT_PERMS: Record<string, string[]> = {
   city_admin: collectAllIds(),
+  city_deputy: ["p_dashboard","a_dashboard_view","f_dashboard_carbon","f_dashboard_alarm","a_dashboard_export","p_report_monthly","a_rm_view","a_rm_export","a_rm_audit","p_report_yearly","a_ry_view","a_ry_export","p_quota","a_q_view","a_q_audit","p_archives","a_ar_view","p_enterprise","a_e_view"],
+  dept_admin: ["p_dashboard","a_dashboard_view","f_dashboard_alarm","p_report_monthly","a_rm_view","a_rm_export","a_rm_audit","p_quota","a_q_view","a_q_audit","p_enterprise","a_e_view"],
+  dept_user: ["p_dashboard","a_dashboard_view","p_report_monthly","a_rm_view","p_enterprise","a_e_view"],
   district_admin: ["p_dashboard","a_dashboard_view","f_dashboard_carbon","f_dashboard_alarm","p_report_monthly","a_rm_view","a_rm_export","a_rm_audit","p_report_yearly","a_ry_view","a_ry_export","p_quota","a_q_view","a_q_audit","p_enterprise","a_e_view"],
+  district_user: ["p_dashboard","a_dashboard_view","p_report_monthly","a_rm_view","p_enterprise","a_e_view"],
   park_admin: ["p_dashboard","a_dashboard_view","f_dashboard_alarm","p_report_monthly","a_rm_view","a_rm_export","p_enterprise","a_e_view"],
+  park_user: ["p_dashboard","a_dashboard_view","p_report_monthly","a_rm_view","p_enterprise","a_e_view"],
   group_admin: ["p_dashboard","a_dashboard_view","f_dashboard_carbon","p_report_monthly","a_rm_view","a_rm_export","p_report_yearly","a_ry_view","p_enterprise","a_e_view"],
-  enterprise_admin: ["p_report_monthly","a_rm_view","a_rm_edit","f_rm_remark","p_report_yearly","a_ry_view","p_enterprise","a_e_view"],
-  liaison: ["p_report_monthly","a_rm_view","a_rm_audit","p_enterprise","a_e_view"],
+  enterprise_admin: ["p_report_monthly","a_rm_view","a_rm_edit","f_rm_remark","p_report_yearly","a_ry_view","p_enterprise","a_e_view","a_e_edit","p_archives","a_ar_view","a_ar_upload","p_quota","a_q_view","a_q_declare"],
+  enterprise_user: ["p_report_monthly","a_rm_view","a_rm_edit","f_rm_remark","p_report_yearly","a_ry_view","p_enterprise","a_e_view","p_archives","a_ar_view","p_quota","a_q_view","a_q_declare"],
 };
 
 const ACTION_STYLES: Record<ActionItem["kind"], { icon: any; cls: string; activeCls: string }> = {
