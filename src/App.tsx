@@ -98,6 +98,7 @@ const App = () => (
           <Route path="/system/users" element={<SystemUsersRoute />} />
           <Route path="/system/org-structure" element={<SystemOrgStructure />} />
           <Route path="/system/permissions" element={<SystemPermissions />} />
+          <Route path="/enterprises/:id" element={<EnterpriseDetail />} />
           <Route path="/policy-agent" element={<PolicyAgent />} />
           <Route path="/green-mfg-agent" element={<GreenMfgAgent />} />
           {/* 免审即享 */}
