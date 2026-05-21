@@ -360,174 +360,111 @@ export default function SystemAccounts() {
         </CardContent>
       </Card>
 
-      {/* —— 单一账号列表（已合并原"组织身份"Tab 的能力） —— */}
+      {/* —— 账号列表（按类型分两个 Tab）—— */}
       <Card className="border-border/60">
         <CardContent className="p-0">
-          <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input value={aKeyword} onChange={(e) => setAKeyword(e.target.value)}
-                placeholder="搜索姓名 / 手机号 / UID" className="h-8 w-64 pl-8 text-xs" />
-            </div>
+          <Tabs value={aType} onValueChange={(v) => { setAType(v as "gov" | "enterprise"); setSelected(new Set()); }}>
+            <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
+              <TabsList className="h-8">
+                <TabsTrigger value="gov" className="text-xs gap-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                  <ShieldCheck className="h-3 w-3" />政府账号
+                </TabsTrigger>
+                <TabsTrigger value="enterprise" className="text-xs gap-1 data-[state=active]:bg-sky-500/15 data-[state=active]:text-sky-700 dark:data-[state=active]:text-sky-300">
+                  <Building2 className="h-3 w-3" />企业账号
+                </TabsTrigger>
+              </TabsList>
 
-            {/* 账号类型分段筛选 */}
-            <div className="inline-flex items-center rounded-md border border-input bg-background p-0.5 text-xs">
-              {([
-                { v: "all", label: "全部", icon: null },
-                { v: "gov", label: "政府账号", icon: <ShieldCheck className="h-3 w-3" /> },
-                { v: "enterprise", label: "企业账号", icon: <Building2 className="h-3 w-3" /> },
-              ] as const).map((opt) => (
-                <button
-                  key={opt.v}
-                  type="button"
-                  onClick={() => setAType(opt.v)}
-                  className={cn(
-                    "inline-flex items-center gap-1 rounded px-2.5 py-1 transition-colors",
-                    aType === opt.v
-                      ? opt.v === "enterprise"
-                        ? "bg-sky-500/15 text-sky-700 dark:text-sky-300 font-medium"
-                        : opt.v === "gov"
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "bg-muted text-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {opt.icon}
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input value={aKeyword} onChange={(e) => setAKeyword(e.target.value)}
+                  placeholder="搜索姓名 / 手机号 / UID" className="h-8 w-64 pl-8 text-xs" />
+              </div>
 
-            <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups includeEnterprises />
-
-            <Select value={aRole} onValueChange={setARole}>
-              <SelectTrigger className="h-8 w-28 text-xs"><SelectValue placeholder="角色" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">全部角色</SelectItem>
-                <SelectItem value="admin">管理员</SelectItem>
-                <SelectItem value="deputy">副管理员</SelectItem>
-                <SelectItem value="user">普通用户</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div className="ml-auto flex items-center gap-2">
-              {selected.size > 0 && (
-                <>
-                  <span className="text-xs text-muted-foreground">已选 <b className="text-foreground">{selected.size}</b></span>
-                  <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("add")}>
-                    <PlusCircle className="h-3.5 w-3.5 mr-1" />批量新增组织身份
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("update")}>
-                    <RefreshCw className="h-3.5 w-3.5 mr-1" />批量修改组织身份
-                  </Button>
-                  <Button size="sm" variant="ghost" className="h-8" onClick={() => setSelected(new Set())}>清除</Button>
-                  <span className="mx-1 h-5 w-px bg-border" />
-                </>
+              {aType === "gov" ? (
+                <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups includeEnterprises />
+              ) : (
+                <OrgFilterPicker value={aOrg} onChange={setAOrg} includeGroups={false} includeEnterprises />
               )}
-              <Button size="sm" className="h-8" onClick={openCreateAccount}>
-                <Plus className="h-3.5 w-3.5 mr-1" />新增账号
-              </Button>
-            </div>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-10">
-                  <Checkbox
-                    checked={filteredAccounts.length > 0 && filteredAccounts.every((a) => selected.has(a.id))}
-                    onCheckedChange={(v) => toggleAllOnPage(!!v)}
-                    aria-label="全选"
-                  />
-                </TableHead>
-                <TableHead>账号</TableHead>
-                <TableHead>类型</TableHead>
-                <TableHead>身份与归属</TableHead>
-                <TableHead>状态</TableHead>
-                <TableHead>创建时间</TableHead>
-                <TableHead className="text-right">操作</TableHead>
-              </TableRow>
-            </TableHeader>
 
-            <TableBody>
-              {filteredAccounts.map((a) => {
-                const mbs = memberships.filter((m) => m.accountId === a.id);
-                const ents = entMemberships.filter((m) => m.accountId === a.id);
-                const isEnt = a.type === "enterprise";
-                return (
-                  <TableRow key={a.id} data-state={selected.has(a.id) ? "selected" : undefined}>
-                    <TableCell>
+              <Select value={aRole} onValueChange={setARole}>
+                <SelectTrigger className="h-8 w-28 text-xs"><SelectValue placeholder="角色" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全部角色</SelectItem>
+                  <SelectItem value="admin">管理员</SelectItem>
+                  <SelectItem value="deputy">副管理员</SelectItem>
+                  <SelectItem value="user">普通用户</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="ml-auto flex items-center gap-2">
+                {selected.size > 0 && aType === "gov" && (
+                  <>
+                    <span className="text-xs text-muted-foreground">已选 <b className="text-foreground">{selected.size}</b></span>
+                    <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("add")}>
+                      <PlusCircle className="h-3.5 w-3.5 mr-1" />批量新增组织身份
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("update")}>
+                      <RefreshCw className="h-3.5 w-3.5 mr-1" />批量修改组织身份
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-8" onClick={() => setSelected(new Set())}>清除</Button>
+                    <span className="mx-1 h-5 w-px bg-border" />
+                  </>
+                )}
+                <Button size="sm" className="h-8" onClick={openCreateAccount}>
+                  <Plus className="h-3.5 w-3.5 mr-1" />新增账号
+                </Button>
+              </div>
+            </div>
+
+            {/* 政府账号表 */}
+            <TabsContent value="gov" className="m-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-10">
                       <Checkbox
-                        checked={selected.has(a.id)}
-                        onCheckedChange={(v) => toggleOne(a.id, !!v)}
-                        aria-label={`选择 ${a.name}`}
+                        checked={filteredAccounts.length > 0 && filteredAccounts.every((a) => selected.has(a.id))}
+                        onCheckedChange={(v) => toggleAllOnPage(!!v)}
+                        aria-label="全选"
                       />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={cn(
-                            "flex h-7 w-7 shrink-0 items-center justify-center rounded-md",
-                            isEnt
-                              ? "bg-sky-500/10 text-sky-600 dark:text-sky-300"
-                              : "bg-primary/10 text-primary",
-                          )}
-                        >
-                          {isEnt ? <Building2 className="h-3.5 w-3.5" /> : <UserCircle2 className="h-3.5 w-3.5" />}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="font-medium text-sm">{a.name}</div>
-                          <div className="text-[10px] text-muted-foreground font-mono">
-                            {a.phone} · {a.uid}
+                    </TableHead>
+                    <TableHead>账号</TableHead>
+                    <TableHead>组织身份</TableHead>
+                    <TableHead>对口企业</TableHead>
+                    <TableHead>状态</TableHead>
+                    <TableHead>创建时间</TableHead>
+                    <TableHead className="text-right">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredAccounts.map((a) => {
+                    const mbs = memberships.filter((m) => m.accountId === a.id);
+                    const ents = entMemberships.filter((m) => m.accountId === a.id);
+                    return (
+                      <TableRow key={a.id} data-state={selected.has(a.id) ? "selected" : undefined}>
+                        <TableCell>
+                          <Checkbox
+                            checked={selected.has(a.id)}
+                            onCheckedChange={(v) => toggleOne(a.id, !!v)}
+                            aria-label={`选择 ${a.name}`}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                              <UserCircle2 className="h-3.5 w-3.5" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="font-medium text-sm">{a.name}</div>
+                              <div className="text-[10px] text-muted-foreground font-mono">{a.phone} · {a.uid}</div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "text-[10px] gap-1",
-                          isEnt
-                            ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300"
-                            : "border-primary/40 bg-primary/10 text-primary",
-                        )}
-                      >
-                        {isEnt ? <Building2 className="h-2.5 w-2.5" /> : <ShieldCheck className="h-2.5 w-2.5" />}
-                        {isEnt ? "企业账号" : "政府账号"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {isEnt ? (
-                        ents.length === 0 ? (
-                          <span className="text-xs text-destructive">未关联企业</span>
-                        ) : (
-                          <div className="flex flex-col gap-1 max-w-[360px]">
-                            {ents.slice(0, 3).map((m) => {
-                              const e = entById(m.enterpriseId);
-                              return (
-                                <div key={m.id} className="flex items-center gap-1.5 text-xs">
-                                  <Building2 className="h-3 w-3 text-sky-500 shrink-0" />
-                                  <span className="font-medium truncate" title={e?.name}>{e?.name}</span>
-                                  <Badge
-                                    variant="outline"
-                                    className={cn("text-[10px] font-normal h-4 px-1.5", ROLE_META[m.role].cls)}
-                                  >
-                                    {ROLE_META[m.role].label}
-                                  </Badge>
-                                </div>
-                              );
-                            })}
-                            {ents.length > 3 && (
-                              <span className="text-[10px] text-muted-foreground">还有 {ents.length - 3} 家企业…</span>
-                            )}
-                          </div>
-                        )
-                      ) : (
-                        <div className="flex flex-col gap-1 max-w-[360px]">
+                        </TableCell>
+                        <TableCell>
                           {mbs.length === 0 ? (
                             <span className="text-xs text-muted-foreground">未绑定组织</span>
                           ) : (
-                            <div className="flex flex-wrap gap-1">
+                            <div className="flex flex-wrap gap-1 max-w-[320px]">
                               {mbs.slice(0, 3).map((m) => (
                                 <Badge
                                   key={m.id}
@@ -543,10 +480,13 @@ export default function SystemAccounts() {
                               )}
                             </div>
                           )}
-                          {ents.length > 0 && (
-                            <div className="flex flex-wrap items-center gap-1 pt-0.5">
-                              <span className="text-[10px] text-muted-foreground">对口企业：</span>
-                              {ents.slice(0, 2).map((m) => {
+                        </TableCell>
+                        <TableCell>
+                          {ents.length === 0 ? (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          ) : (
+                            <div className="flex flex-wrap gap-1 max-w-[280px]">
+                              {ents.slice(0, 3).map((m) => {
                                 const e = entById(m.enterpriseId);
                                 return (
                                   <Badge
@@ -556,55 +496,174 @@ export default function SystemAccounts() {
                                     title={e?.name}
                                   >
                                     <Building2 className="h-2.5 w-2.5" />
-                                    <span className="truncate max-w-[120px]">{e?.name}</span>
+                                    <span className="truncate max-w-[140px]">{e?.name}</span>
                                   </Badge>
                                 );
                               })}
-                              {ents.length > 2 && (
-                                <Badge variant="outline" className="text-[10px]">+{ents.length - 2}</Badge>
+                              {ents.length > 3 && (
+                                <Badge variant="outline" className="text-[10px]">+{ents.length - 3}</Badge>
                               )}
                             </div>
                           )}
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={cn("text-[10px]",
-                        a.status === "启用" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
-                          : "border-muted-foreground/30 bg-muted/40 text-muted-foreground")}>
-                        {a.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{a.createdAt}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="inline-flex gap-1">
-                        {!isEnt && (
-                          <Button size="icon" variant="ghost" className="h-7 w-7" title="新增组织身份"
-                            onClick={() => openCreateMembership(a.id)}>
-                            <Link2 className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                        <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码"
-                          onClick={() => setPwdDlg({ open: true, target: a.phone })}>
-                          <KeyRound className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" title="编辑"
-                          onClick={() => openEditAccount(a)}>
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" title="删除"
-                          onClick={() => deleteAccount(a)}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={cn("text-[10px]",
+                            a.status === "启用" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+                              : "border-muted-foreground/30 bg-muted/40 text-muted-foreground")}>
+                            {a.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{a.createdAt}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="inline-flex gap-1">
+                            <Button size="icon" variant="ghost" className="h-7 w-7" title="新增组织身份"
+                              onClick={() => openCreateMembership(a.id)}>
+                              <Link2 className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码"
+                              onClick={() => setPwdDlg({ open: true, target: a.phone })}>
+                              <KeyRound className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" title="编辑"
+                              onClick={() => openEditAccount(a)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" title="删除"
+                              onClick={() => deleteAccount(a)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  {filteredAccounts.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">暂无政府账号</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TabsContent>
+
+            {/* 企业账号表 */}
+            <TabsContent value="enterprise" className="m-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>账号</TableHead>
+                    <TableHead>所属企业</TableHead>
+                    <TableHead>统一社会信用代码</TableHead>
+                    <TableHead>角色</TableHead>
+                    <TableHead>状态</TableHead>
+                    <TableHead>创建时间</TableHead>
+                    <TableHead className="text-right">操作</TableHead>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredAccounts.map((a) => {
+                    const ents = entMemberships.filter((m) => m.accountId === a.id);
+                    return (
+                      <TableRow key={a.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-500/10 text-sky-600 dark:text-sky-300">
+                              <Building2 className="h-3.5 w-3.5" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="font-medium text-sm">{a.name}</div>
+                              <div className="text-[10px] text-muted-foreground font-mono">{a.phone}</div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {ents.length === 0 ? (
+                            <span className="text-xs text-destructive">未关联企业</span>
+                          ) : (
+                            <div className="flex flex-col gap-0.5 max-w-[260px]">
+                              {ents.map((m) => {
+                                const e = entById(m.enterpriseId);
+                                return (
+                                  <div key={m.id} className="text-xs font-medium truncate" title={e?.name}>
+                                    {e?.name}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {ents.length === 0 ? (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          ) : (
+                            <div className="flex flex-col gap-0.5">
+                              {ents.map((m) => {
+                                const e = entById(m.enterpriseId);
+                                return (
+                                  <div key={m.id} className="text-[11px] text-muted-foreground font-mono">
+                                    {e?.creditCode}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {ents.length === 0 ? (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          ) : (
+                            <div className="flex flex-col gap-0.5">
+                              {ents.map((m) => (
+                                <Badge
+                                  key={m.id}
+                                  variant="outline"
+                                  className={cn("text-[10px] font-normal w-fit", ROLE_META[m.role].cls)}
+                                >
+                                  {ROLE_META[m.role].label}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={cn("text-[10px]",
+                            a.status === "启用" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+                              : "border-muted-foreground/30 bg-muted/40 text-muted-foreground")}>
+                            {a.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{a.createdAt}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="inline-flex gap-1">
+                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码"
+                              onClick={() => setPwdDlg({ open: true, target: a.phone })}>
+                              <KeyRound className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" title="编辑"
+                              onClick={() => openEditAccount(a)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" title="删除"
+                              onClick={() => deleteAccount(a)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  {filteredAccounts.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">暂无企业账号</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
+
 
 
 
