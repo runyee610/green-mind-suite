@@ -671,92 +671,116 @@ export default function SystemAccounts() {
 
       {/* —— 账号对话框 —— */}
       <Dialog open={accountDlg.open} onOpenChange={(o) => setAccountDlg((s) => ({ ...s, open: o }))}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{accountDlg.editing ? "编辑账号" : "新增账号"}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-2xl p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-7 py-5 border-b border-border space-y-1">
+            <DialogTitle className="text-lg">{accountDlg.editing ? "编辑账号" : "新增账号"}</DialogTitle>
+            <DialogDescription className="text-xs">
               先选择账号类型，再填写基础信息与归属关系
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+
+          <div className="px-7 py-6 space-y-7 overflow-y-auto max-h-[70vh]">
             {/* 账号类型 */}
-            <div>
-              <Label className="text-xs">账号类型</Label>
-              <div className="mt-1 grid grid-cols-2 gap-2">
-                {([
-                  { v: "gov" as const, label: "政府账号", desc: "归属市/区/园区，组织身份在表格行内/独立弹窗维护", icon: ShieldCheck, color: "primary" },
-                  { v: "enterprise" as const, label: "企业账号", desc: "代表企业本身（管理员/副管/员工），关联到具体企业", icon: Building2, color: "sky" },
-                ]).map(({ v, label, desc, icon: Icon, color }) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setFType(v)}
-                    className={cn(
-                      "rounded-md border p-2.5 text-left transition-colors",
-                      fType === v
-                        ? color === "sky"
-                          ? "border-sky-500 bg-sky-500/5"
-                          : "border-primary bg-primary/5"
-                        : "border-border hover:bg-muted/40",
-                    )}
-                  >
-                    <div className="flex items-center gap-1.5 text-sm font-medium">
-                      <Icon className={cn("h-3.5 w-3.5", color === "sky" ? "text-sky-500" : "text-primary")} />
-                      {label}
-                    </div>
-                    <div className="mt-1 text-[11px] text-muted-foreground leading-snug">{desc}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="col-span-2">
-                <Label className="text-xs">姓名</Label>
-                <Input value={fName} onChange={(e) => setFName(e.target.value)} className="mt-1" />
-              </div>
-              <div>
-                <Label className="text-xs">手机号</Label>
-                <Input value={fPhone} onChange={(e) => setFPhone(e.target.value)} className="mt-1 font-mono" />
-              </div>
-              <div>
-                <Label className="text-xs">UID</Label>
-                <Input value={fUid} className="mt-1 font-mono bg-muted/40" readOnly disabled />
-                <p className="mt-1 text-[10px] text-muted-foreground">{accountDlg.editing ? "UID 创建后不可修改" : "系统自动生成"}</p>
-              </div>
-              <div className="col-span-2">
-                <Label className="text-xs">状态</Label>
-                <Select value={fStatus} onValueChange={(v) => setFStatus(v as "启用" | "停用")}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="启用">启用</SelectItem>
-                    <SelectItem value="停用">停用</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* 企业关联区：政府=对口企业(无角色)；企业账号=所属企业+角色 */}
-            <div>
-              <Label className="text-xs flex items-center gap-1.5">
-                <Building2 className="h-3 w-3" />
-                {fType === "enterprise" ? "所属企业（账号将成为该企业的账号）" : "对口企业（联络/对接，可选）"}
-                <span className="ml-auto text-[10px] font-normal text-muted-foreground">
-                  已选 {fEnts.length} / {INITIAL_ENTERPRISES.length}
-                </span>
+            <section className="space-y-3">
+              <Label className="text-xs font-medium flex items-center gap-2">
+                <span className={cn("w-1 h-3.5 rounded-full", fType === "enterprise" ? "bg-sky-500" : "bg-primary")} />
+                账号类型
               </Label>
+              <div className="grid grid-cols-2 gap-3">
+                {([
+                  { v: "gov" as const, label: "政府账号", desc: "归属市/区/园区，组织身份在表格行内/独立弹窗维护", icon: ShieldCheck, accent: "primary" as const },
+                  { v: "enterprise" as const, label: "企业账号", desc: "代表企业本身（管理员/副管/员工），关联到具体企业", icon: Building2, accent: "sky" as const },
+                ]).map(({ v, label, desc, icon: Icon, accent }) => {
+                  const active = fType === v;
+                  const accentRing = accent === "sky" ? "border-sky-500 bg-sky-500/5 ring-2 ring-sky-500/15" : "border-primary bg-primary/5 ring-2 ring-primary/15";
+                  const accentIconBg = accent === "sky" ? "bg-sky-500 text-white" : "bg-primary text-primary-foreground";
+                  const dotActive = accent === "sky" ? "border-sky-500" : "border-primary";
+                  return (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setFType(v)}
+                      className={cn(
+                        "flex flex-col p-4 rounded-xl text-left transition-all border",
+                        active ? accentRing : "border-border hover:border-muted-foreground/30 hover:bg-muted/40",
+                      )}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className={cn("p-2 rounded-lg transition-colors", active ? accentIconBg : "bg-muted text-muted-foreground")}>
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div className={cn(
+                          "w-4 h-4 rounded-full border bg-background transition-all",
+                          active ? cn("border-[5px]", dotActive) : "border-border",
+                        )} />
+                      </div>
+                      <div className="text-sm font-semibold">{label}</div>
+                      <div className="mt-1 text-[11px] text-muted-foreground leading-relaxed">{desc}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* 基础信息 */}
+            <section className="p-5 bg-muted/40 rounded-xl border border-border">
+              <div className="grid grid-cols-2 gap-x-5 gap-y-4">
+                <div className="col-span-2 space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">姓名</Label>
+                  <Input value={fName} onChange={(e) => setFName(e.target.value)} placeholder="请输入姓名" className="bg-background" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">手机号</Label>
+                  <Input value={fPhone} onChange={(e) => setFPhone(e.target.value)} placeholder="请输入手机号" className="bg-background font-mono" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground flex items-center justify-between">
+                    UID
+                    <span className="text-[10px] font-normal text-muted-foreground/70">
+                      {accountDlg.editing ? "不可修改" : "自动生成"}
+                    </span>
+                  </Label>
+                  <Input value={fUid} readOnly disabled className="font-mono bg-muted/60 cursor-not-allowed" />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">状态</Label>
+                  <Select value={fStatus} onValueChange={(v) => setFStatus(v as "启用" | "停用")}>
+                    <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="启用">启用</SelectItem>
+                      <SelectItem value="停用">停用</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </section>
+
+            {/* 企业关联区 */}
+            <section className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-medium flex items-center gap-2">
+                  <span className={cn("w-1 h-3.5 rounded-full", fType === "enterprise" ? "bg-sky-500" : "bg-primary")} />
+                  {fType === "enterprise" ? "所属企业" : "对口企业"}
+                  <span className="text-[11px] font-normal text-muted-foreground ml-0.5">
+                    {fType === "enterprise" ? "（账号将成为该企业的账号）" : "（联络/对接，可选）"}
+                  </span>
+                </Label>
+                <span className="text-[11px] text-muted-foreground">
+                  已选 <span className={cn("font-semibold", fType === "enterprise" ? "text-sky-600" : "text-primary")}>{fEnts.length}</span> / {INITIAL_ENTERPRISES.length}
+                </span>
+              </div>
 
               {fType === "enterprise" && (
-                <div className="mt-1.5">
+                <div className="space-y-2">
                   <Label className="text-[11px] text-muted-foreground">在企业中的角色</Label>
-                  <div className="mt-1 grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {(Object.keys(ROLE_META) as RoleId[]).map((r) => (
                       <button
                         key={r}
                         type="button"
                         onClick={() => setFEntRole(r)}
                         className={cn(
-                          "rounded-md border p-2 text-left transition-colors",
+                          "rounded-lg border p-2.5 text-left transition-colors",
                           fEntRole === r ? "border-sky-500 bg-sky-500/5" : "border-border hover:bg-muted/40",
                         )}
                       >
@@ -770,32 +794,36 @@ export default function SystemAccounts() {
                 </div>
               )}
 
-              <div className="mt-2 rounded-md border border-border">
-                <div className="border-b border-border p-2">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                    <Input
-                      value={fEntKeyword}
-                      onChange={(e) => setFEntKeyword(e.target.value)}
-                      placeholder="搜索企业名称 / 统一信用代码"
-                      className="h-7 pl-7 text-xs"
-                    />
-                  </div>
+              <div className="space-y-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input
+                    value={fEntKeyword}
+                    onChange={(e) => setFEntKeyword(e.target.value)}
+                    placeholder="搜索企业名称 / 统一信用代码"
+                    className="pl-9 text-xs"
+                  />
                 </div>
+
                 {fEnts.length > 0 && (
-                  <div className="flex flex-wrap gap-1 border-b border-border p-2">
+                  <div className="flex flex-wrap gap-1.5 rounded-lg border border-border bg-muted/30 p-2">
                     {fEnts.map((eid) => {
                       const e = entById(eid);
                       return (
                         <Badge
                           key={eid}
                           variant="outline"
-                          className="border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 text-[10px] gap-1"
+                          className={cn(
+                            "text-[10px] gap-1 pl-2 pr-1 py-0.5",
+                            fType === "enterprise"
+                              ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+                              : "border-primary/40 bg-primary/10 text-primary",
+                          )}
                         >
                           {e?.name}
                           <button
                             type="button"
-                            className="ml-0.5 hover:text-foreground"
+                            className="ml-0.5 rounded hover:bg-foreground/10 px-1"
                             onClick={() => setFEnts((s) => s.filter((x) => x !== eid))}
                           >×</button>
                         </Badge>
@@ -803,58 +831,66 @@ export default function SystemAccounts() {
                     })}
                   </div>
                 )}
-                <div className="max-h-40 overflow-y-auto p-1">
-                  {INITIAL_ENTERPRISES
-                    .filter((e) => {
-                      const q = fEntKeyword.trim().toLowerCase();
-                      if (!q) return true;
-                      return e.name.toLowerCase().includes(q) || e.creditCode.toLowerCase().includes(q);
-                    })
-                    .map((e) => {
-                      const checked = fEnts.includes(e.id);
-                      const org = orgById(e.orgId ?? "");
-                      return (
-                        <label
-                          key={e.id}
-                          className={cn(
-                            "flex cursor-pointer items-start gap-2 rounded-sm px-2 py-1.5 text-xs hover:bg-muted/50",
-                            checked && (fType === "enterprise" ? "bg-sky-500/5" : "bg-primary/5"),
-                          )}
-                        >
-                          <Checkbox
-                            checked={checked}
-                            onCheckedChange={(v) =>
-                              setFEnts((s) => (v ? [...s, e.id] : s.filter((x) => x !== e.id)))
-                            }
-                            className="mt-0.5"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate">{e.name}</div>
-                            <div className="text-[10px] text-muted-foreground font-mono truncate">
-                              {e.creditCode}{org ? ` · ${org.name}` : ""}
+
+                <div className="border border-border rounded-lg overflow-hidden">
+                  <div className="max-h-44 overflow-y-auto divide-y divide-border/60">
+                    {INITIAL_ENTERPRISES
+                      .filter((e) => {
+                        const q = fEntKeyword.trim().toLowerCase();
+                        if (!q) return true;
+                        return e.name.toLowerCase().includes(q) || e.creditCode.toLowerCase().includes(q);
+                      })
+                      .map((e) => {
+                        const checked = fEnts.includes(e.id);
+                        const org = orgById(e.orgId ?? "");
+                        return (
+                          <label
+                            key={e.id}
+                            className={cn(
+                              "flex items-start gap-3 p-2.5 hover:bg-muted/50 transition-colors cursor-pointer",
+                              checked && (fType === "enterprise" ? "bg-sky-500/5" : "bg-primary/5"),
+                            )}
+                          >
+                            <Checkbox
+                              checked={checked}
+                              onCheckedChange={(v) =>
+                                setFEnts((s) => (v ? [...s, e.id] : s.filter((x) => x !== e.id)))
+                              }
+                              className="mt-0.5"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium truncate">{e.name}</div>
+                              <div className="text-[11px] text-muted-foreground mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                <span className="font-mono">{e.creditCode}</span>
+                                {org && (
+                                  <span className="flex items-center gap-0.5">
+                                    <Building2 className="h-3 w-3" />
+                                    {org.name}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </label>
-                      );
-                    })}
+                          </label>
+                        );
+                      })}
+                  </div>
                 </div>
+                <p className="text-[11px] text-muted-foreground text-center pt-1">
+                  {fType === "enterprise"
+                    ? "企业账号必须至少关联一家企业；如有多家则共用同一角色"
+                    : "政府账号此处仅记录联络/对接关系，不分配企业角色"}
+                </p>
               </div>
-              <p className="mt-1 text-[10px] text-muted-foreground">
-                {fType === "enterprise"
-                  ? "企业账号必须至少关联一家企业；如有多家则共用同一角色，可在表格行中单独调整"
-                  : "政府账号此处仅记录联络/对接关系，不分配企业角色"}
-              </p>
-            </div>
+            </section>
           </div>
 
-
-
-          <DialogFooter>
+          <DialogFooter className="px-7 py-4 bg-muted/40 border-t border-border">
             <Button variant="outline" onClick={() => setAccountDlg({ open: false, editing: null })}>取消</Button>
             <Button onClick={submitAccount}>保存</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
 
       {/* —— 身份对话框 —— */}
       <Dialog open={membershipDlg.open} onOpenChange={(o) => setMembershipDlg((s) => ({ ...s, open: o }))}>
