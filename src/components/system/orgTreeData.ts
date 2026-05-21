@@ -230,6 +230,7 @@ export interface Account {
   uid: string;
   phone: string;
   name: string;
+  type: "gov" | "enterprise";
   status: "启用" | "停用";
   createdAt: string;
 }
@@ -242,15 +243,20 @@ export interface Membership {
 }
 
 export const INITIAL_ACCOUNTS: Account[] = [
-  { id: "A001", uid: "U10001", phone: "13800000001", name: "张明远", status: "启用", createdAt: "2024-08-12" },
-  { id: "A002", uid: "U10002", phone: "13800000002", name: "李静怡", status: "启用", createdAt: "2024-08-14" },
-  { id: "A003", uid: "U10003", phone: "13800000003", name: "王思源", status: "启用", createdAt: "2024-09-01" },
-  { id: "A004", uid: "U10004", phone: "13800000004", name: "陈雨涵", status: "启用", createdAt: "2024-09-10" },
-  { id: "A005", uid: "U10005", phone: "13800000005", name: "刘晓燕", status: "启用", createdAt: "2024-10-02" },
-  { id: "A006", uid: "U10006", phone: "13800000006", name: "周建国", status: "启用", createdAt: "2024-10-18" },
-  { id: "A007", uid: "U10007", phone: "13800000007", name: "黄志勇", status: "停用", createdAt: "2024-11-03" },
-  { id: "A008", uid: "U10008", phone: "13800000008", name: "孙云飞", status: "启用", createdAt: "2024-11-12" },
+  { id: "A001", uid: "U10001", phone: "13800000001", name: "张明远", type: "gov", status: "启用", createdAt: "2024-08-12" },
+  { id: "A002", uid: "U10002", phone: "13800000002", name: "李静怡", type: "gov", status: "启用", createdAt: "2024-08-14" },
+  { id: "A003", uid: "U10003", phone: "13800000003", name: "王思源", type: "gov", status: "启用", createdAt: "2024-09-01" },
+  { id: "A004", uid: "U10004", phone: "13800000004", name: "陈雨涵", type: "gov", status: "启用", createdAt: "2024-09-10" },
+  { id: "A005", uid: "U10005", phone: "13800000005", name: "刘晓燕", type: "gov", status: "启用", createdAt: "2024-10-02" },
+  { id: "A006", uid: "U10006", phone: "13800000006", name: "周建国", type: "gov", status: "启用", createdAt: "2024-10-18" },
+  { id: "A007", uid: "U10007", phone: "13800000007", name: "黄志勇", type: "gov", status: "停用", createdAt: "2024-11-03" },
+  { id: "A008", uid: "U10008", phone: "13800000008", name: "孙云飞", type: "gov", status: "启用", createdAt: "2024-11-12" },
+  { id: "A009", uid: "U10009", phone: "13900000001", name: "钱卫国", type: "enterprise", status: "启用", createdAt: "2025-01-08" },
+  { id: "A010", uid: "U10010", phone: "13900000002", name: "罗婷婷", type: "enterprise", status: "启用", createdAt: "2025-01-15" },
+  { id: "A011", uid: "U10011", phone: "13900000003", name: "林峰",   type: "enterprise", status: "启用", createdAt: "2025-02-03" },
+  { id: "A012", uid: "U10012", phone: "13900000004", name: "夏婉清", type: "enterprise", status: "停用", createdAt: "2025-02-21" },
 ];
+
 
 export const INITIAL_MEMBERSHIPS: Membership[] = [
   { id: "M001", accountId: "A001", orgId: "city", role: "admin" },
