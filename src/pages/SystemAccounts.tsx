@@ -328,7 +328,20 @@ export default function SystemAccounts() {
                     <SelectItem value="停用">停用</SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-2">
+                  {selected.size > 0 && (
+                    <>
+                      <span className="text-xs text-muted-foreground">已选 <b className="text-foreground">{selected.size}</b></span>
+                      <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("add")}>
+                        <PlusCircle className="h-3.5 w-3.5 mr-1" />批量新增组织身份
+                      </Button>
+                      <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("update")}>
+                        <RefreshCw className="h-3.5 w-3.5 mr-1" />批量修改组织身份
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-8" onClick={() => setSelected(new Set())}>清除</Button>
+                      <span className="mx-1 h-5 w-px bg-border" />
+                    </>
+                  )}
                   <Button size="sm" className="h-8" onClick={openCreateAccount}>
                     <Plus className="h-3.5 w-3.5 mr-1" />新增账号
                   </Button>
@@ -337,6 +350,13 @@ export default function SystemAccounts() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <Checkbox
+                        checked={filteredAccounts.length > 0 && filteredAccounts.every((a) => selected.has(a.id))}
+                        onCheckedChange={(v) => toggleAllOnPage(!!v)}
+                        aria-label="全选"
+                      />
+                    </TableHead>
                     <TableHead>姓名</TableHead>
                     <TableHead>UID</TableHead>
                     <TableHead>手机号</TableHead>
@@ -350,7 +370,14 @@ export default function SystemAccounts() {
                   {filteredAccounts.map((a) => {
                     const mbs = memberships.filter((m) => m.accountId === a.id);
                     return (
-                      <TableRow key={a.id}>
+                      <TableRow key={a.id} data-state={selected.has(a.id) ? "selected" : undefined}>
+                        <TableCell>
+                          <Checkbox
+                            checked={selected.has(a.id)}
+                            onCheckedChange={(v) => toggleOne(a.id, !!v)}
+                            aria-label={`选择 ${a.name}`}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium">{a.name}</TableCell>
                         <TableCell className="font-mono text-xs text-muted-foreground">{a.uid}</TableCell>
                         <TableCell className="font-mono text-xs">{a.phone}</TableCell>
