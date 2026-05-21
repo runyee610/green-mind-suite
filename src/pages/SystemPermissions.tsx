@@ -152,7 +152,7 @@ const PAGES: PageItem[] = [
     name: "系统管理",
     desc: "用户与权限管理",
     actions: [
-      { id: "a_s_users", name: "用户管理", kind: "edit", desc: "管理系统账号" },
+      { id: "a_s_users", name: "账号管理", kind: "edit", desc: "管理系统账号" },
       { id: "a_s_perm", name: "权限配置", kind: "edit", desc: "配置角色权限" },
     ],
   },

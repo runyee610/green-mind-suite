@@ -8,7 +8,7 @@ export default function System() {
       subtitle="账户、权限、字典、日志与系统参数配置"
       icon={Settings}
       features={[
-        "用户与角色管理",
+        "账号与角色管理",
         "菜单与权限分配",
         "数据字典维护",
         "操作日志与审计",
