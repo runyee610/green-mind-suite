@@ -525,37 +525,66 @@ export default function SystemOrgStructure() {
                     <TableHead>集团名称</TableHead>
                     <TableHead>所属行业</TableHead>
                     <TableHead>下属企业数</TableHead>
+                    <TableHead>账号</TableHead>
                     <TableHead>地址</TableHead>
                     <TableHead>备注</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {groups.map((g) => (
-                    <TableRow key={g.id}>
-                      <TableCell className="font-medium">{g.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-[10px]">{g.industry}</Badge>
-                      </TableCell>
-                      <TableCell className="tabular-nums">{g.enterpriseCount}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{g.address || "—"}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{g.remark || "—"}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="inline-flex gap-1">
-                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEditGroup(g)}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button
-                            size="icon" variant="ghost"
-                            className="h-7 w-7 text-destructive hover:text-destructive"
-                            onClick={() => deleteGroup(g)}
+                  {groups.map((g) => {
+                    const gStat = groupAccountStats[g.id];
+                    const entCount = entByGroup[g.id]?.length ?? g.enterpriseCount;
+                    return (
+                      <TableRow key={g.id}>
+                        <TableCell className="font-medium">{g.name}</TableCell>
+                        <TableCell><Badge variant="outline" className="text-[10px]">{g.industry}</Badge></TableCell>
+                        <TableCell className="tabular-nums">
+                          <button
+                            type="button"
+                            onClick={() => setGroupSheet(g)}
+                            className="text-primary hover:underline inline-flex items-center gap-1 font-semibold"
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                            {entCount}
+                            <ExternalLink className="h-3 w-3" />
+                          </button>
+                        </TableCell>
+                        <TableCell>
+                          <button
+                            type="button"
+                            onClick={() => setGroupSheet(g)}
+                            className="inline-flex items-center gap-1 text-xs hover:text-primary"
+                          >
+                            <UserCircle2 className="h-3.5 w-3.5" />
+                            <span className="font-semibold tabular-nums">{gStat?.total ?? 0}</span>
+                            {gStat && (
+                              <span className="text-muted-foreground">
+                                ({gStat.admin > 0 && `管${gStat.admin}`}
+                                {gStat.deputy > 0 && `${gStat.admin > 0 ? "·" : ""}副${gStat.deputy}`}
+                                {gStat.user > 0 && `${(gStat.admin + gStat.deputy) > 0 ? "·" : ""}员${gStat.user}`})
+                              </span>
+                            )}
+                          </button>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{g.address || "—"}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{g.remark || "—"}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="inline-flex gap-1">
+                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEditGroup(g)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              size="icon" variant="ghost"
+                              className="h-7 w-7 text-destructive hover:text-destructive"
+                              onClick={() => deleteGroup(g)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
