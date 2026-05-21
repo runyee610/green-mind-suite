@@ -464,6 +464,42 @@ export default function SystemOrgStructure() {
                     </div>
                   )}
                 </div>
+
+                {/* 下属企业(仅区/园区) */}
+                {(selected.level === "district" || selected.level === "park") && (
+                  <div className="mt-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-semibold">下属企业</span>
+                        <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">{entByOrg[selected.id]?.length ?? 0}</Badge>
+                      </div>
+                    </div>
+                    {entByOrg[selected.id]?.length ? (
+                      <div className="rounded-md border border-border/60 divide-y divide-border/60 max-h-56 overflow-auto">
+                        {entByOrg[selected.id].map((e) => (
+                          <div key={e.id} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-muted/30">
+                            <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <Link to={`/enterprises/${e.id}`} className="font-medium text-primary hover:underline truncate inline-flex items-center gap-1">
+                                {e.name}<ExternalLink className="h-3 w-3" />
+                              </Link>
+                              <div className="font-mono text-[10px] text-muted-foreground truncate">{e.creditCode}</div>
+                            </div>
+                            <div className="text-right text-[10px] text-muted-foreground shrink-0">
+                              <div>{e.contact} · {e.phone}</div>
+                              <div>对口:{e.liaison}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground text-center py-4 rounded-md bg-muted/30">
+                        该{LEVEL_LABEL[selected.level]}尚无企业归属
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
