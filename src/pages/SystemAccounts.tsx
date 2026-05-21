@@ -44,77 +44,22 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
-  INITIAL_ORG_TREE,
+  INITIAL_ORG_FOREST,
   LEVEL_BADGE_CLASS,
   LEVEL_LABEL,
   OrgNode,
-  flattenOrg,
+  flattenForest,
+  INITIAL_ACCOUNTS,
+  INITIAL_MEMBERSHIPS,
+  ROLE_META,
+  type RoleId,
+  type Account,
+  type Membership,
 } from "@/components/system/orgTreeData";
 
-// ===== 解耦模型 =====
-// Account（自然人账号）—— Membership（组织身份 + 角色）—— Org（组织）
-export type RoleId = "admin" | "deputy" | "user";
-
-const ROLE_META: Record<RoleId, { label: string; cls: string; desc: string }> = {
-  admin: {
-    label: "管理员",
-    cls: "border-primary/40 bg-primary/10 text-primary",
-    desc: "每个组织唯一，拥有该组织全部权限",
-  },
-  deputy: {
-    label: "副管理员",
-    cls: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-    desc: "协助管理员，可有多人",
-  },
-  user: {
-    label: "普通用户",
-    cls: "border-muted-foreground/30 bg-muted/40 text-muted-foreground",
-    desc: "组织内日常使用者",
-  },
-};
-
-interface Account {
-  id: string;
-  uid: string; // 自然人 UID
-  phone: string;
-  name: string;
-  status: "启用" | "停用";
-  createdAt: string;
-}
-
-interface Membership {
-  id: string;
-  accountId: string;
-  orgId: string;
-  role: RoleId;
-}
-
-// ===== 初始 mock 数据 =====
-const ORGS = flattenOrg(INITIAL_ORG_TREE);
+// ===== mock 数据 =====
+const ORGS = flattenForest(INITIAL_ORG_FOREST);
 const orgById = (id: string) => ORGS.find((o) => o.id === id);
-
-const INITIAL_ACCOUNTS: Account[] = [
-  { id: "A001", uid: "U10001", phone: "13800000001", name: "张明远", status: "启用", createdAt: "2024-08-12" },
-  { id: "A002", uid: "U10002", phone: "13800000002", name: "李静怡", status: "启用", createdAt: "2024-08-14" },
-  { id: "A003", uid: "U10003", phone: "13800000003", name: "王思源", status: "启用", createdAt: "2024-09-01" },
-  { id: "A004", uid: "U10004", phone: "13800000004", name: "陈雨涵", status: "启用", createdAt: "2024-09-10" },
-  { id: "A005", uid: "U10005", phone: "13800000005", name: "刘晓燕", status: "启用", createdAt: "2024-10-02" },
-  { id: "A006", uid: "U10006", phone: "13800000006", name: "周建国", status: "启用", createdAt: "2024-10-18" },
-  { id: "A007", uid: "U10007", phone: "13800000007", name: "黄志勇", status: "停用", createdAt: "2024-11-03" },
-  { id: "A008", uid: "U10008", phone: "13800000008", name: "孙云飞", status: "启用", createdAt: "2024-11-12" },
-];
-
-const INITIAL_MEMBERSHIPS: Membership[] = [
-  { id: "M001", accountId: "A001", orgId: "city", role: "admin" },
-  { id: "M002", accountId: "A002", orgId: "city", role: "deputy" },
-  { id: "M003", accountId: "A003", orgId: "dept-monitor", role: "admin" },
-  { id: "M004", accountId: "A004", orgId: "dept-monitor", role: "user" },
-  { id: "M005", accountId: "A003", orgId: "dept-inspect", role: "deputy" }, // 一人多身份
-  { id: "M006", accountId: "A005", orgId: "d-pudong", role: "admin" },
-  { id: "M007", accountId: "A006", orgId: "d-huangpu", role: "admin" },
-  { id: "M008", accountId: "A008", orgId: "p-zhangjiang", role: "admin" },
-  { id: "M009", accountId: "A007", orgId: "p-zhangjiang", role: "user" },
-];
 
 // ===== 主页面 =====
 export default function SystemAccounts() {
