@@ -210,6 +210,67 @@ export default function SystemAccounts() {
     toast({ title: "已解除身份" });
   };
 
+  // ===== 批量身份 =====
+  const openBulk = (mode: "add" | "update") => {
+    if (selected.size === 0) return toast({ title: "请先选择账号", variant: "destructive" });
+    setBulkOrg(ORGS[0]?.id ?? "");
+    setBulkRole("user");
+    setBulkDlg({ open: true, mode });
+  };
+  const submitBulk = () => {
+    if (!bulkOrg) return toast({ title: "请选择组织", variant: "destructive" });
+    const ids = Array.from(selected);
+    const mode = bulkDlg.mode;
+
+    if (bulkRole === "admin") {
+      if (ids.length > 1) return toast({ title: "管理员唯一", description: "每个组织只能有一名管理员，请单独操作", variant: "destructive" });
+      const existing = memberships.find((m) => m.orgId === bulkOrg && m.role === "admin" && !ids.includes(m.accountId));
+      if (existing) {
+        const occ = accountById(existing.accountId);
+        return toast({ title: "该组织已有管理员", description: `当前管理员为 ${occ?.name}`, variant: "destructive" });
+      }
+    }
+
+    let added = 0, updated = 0, skipped = 0;
+    let next = [...memberships];
+    let counter = next.length;
+    ids.forEach((accId) => {
+      const idx = next.findIndex((m) => m.accountId === accId && m.orgId === bulkOrg);
+      if (mode === "add") {
+        if (idx >= 0) { skipped++; return; }
+        counter++;
+        next.push({ id: `M${String(counter).padStart(3, "0")}`, accountId: accId, orgId: bulkOrg, role: bulkRole });
+        added++;
+      } else {
+        if (idx < 0) { skipped++; return; }
+        if (next[idx].role === bulkRole) { skipped++; return; }
+        next[idx] = { ...next[idx], role: bulkRole };
+        updated++;
+      }
+    });
+    setMemberships(next);
+    setBulkDlg({ open: false, mode });
+    setSelected(new Set());
+    toast({
+      title: mode === "add" ? "批量新增完成" : "批量修改完成",
+      description: `${mode === "add" ? `新增 ${added}` : `更新 ${updated}`}，跳过 ${skipped}`,
+    });
+  };
+
+  const toggleAllOnPage = (checked: boolean) => {
+    if (checked) setSelected(new Set(filteredAccounts.map((a) => a.id)));
+    else setSelected(new Set());
+  };
+  const toggleOne = (id: string, checked: boolean) => {
+    setSelected((s) => {
+      const n = new Set(s);
+      if (checked) n.add(id); else n.delete(id);
+      return n;
+    });
+  };
+
+
+
   // ===== 渲染 =====
   return (
     <AppLayout title="账号管理" subtitle="账号 · 组织身份 · 角色 三者解耦的统一管理">
