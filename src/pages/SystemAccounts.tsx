@@ -10,7 +10,10 @@ import {
   UserCircle2,
   UsersRound,
   Link2,
+  PlusCircle,
+  RefreshCw,
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,6 +93,12 @@ export default function SystemAccounts() {
   const [fmAccount, setFmAccount] = useState("");
   const [fmOrg, setFmOrg] = useState("");
   const [fmRole, setFmRole] = useState<RoleId>("user");
+
+  // —— 批量
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkDlg, setBulkDlg] = useState<{ open: boolean; mode: "add" | "update" }>({ open: false, mode: "add" });
+  const [bulkOrg, setBulkOrg] = useState<string>("");
+  const [bulkRole, setBulkRole] = useState<RoleId>("user");
 
   // ===== 衍生 =====
   const accountById = (id: string) => accounts.find((a) => a.id === id);
@@ -201,6 +210,67 @@ export default function SystemAccounts() {
     toast({ title: "已解除身份" });
   };
 
+  // ===== 批量身份 =====
+  const openBulk = (mode: "add" | "update") => {
+    if (selected.size === 0) return toast({ title: "请先选择账号", variant: "destructive" });
+    setBulkOrg(ORGS[0]?.id ?? "");
+    setBulkRole("user");
+    setBulkDlg({ open: true, mode });
+  };
+  const submitBulk = () => {
+    if (!bulkOrg) return toast({ title: "请选择组织", variant: "destructive" });
+    const ids = Array.from(selected);
+    const mode = bulkDlg.mode;
+
+    if (bulkRole === "admin") {
+      if (ids.length > 1) return toast({ title: "管理员唯一", description: "每个组织只能有一名管理员，请单独操作", variant: "destructive" });
+      const existing = memberships.find((m) => m.orgId === bulkOrg && m.role === "admin" && !ids.includes(m.accountId));
+      if (existing) {
+        const occ = accountById(existing.accountId);
+        return toast({ title: "该组织已有管理员", description: `当前管理员为 ${occ?.name}`, variant: "destructive" });
+      }
+    }
+
+    let added = 0, updated = 0, skipped = 0;
+    let next = [...memberships];
+    let counter = next.length;
+    ids.forEach((accId) => {
+      const idx = next.findIndex((m) => m.accountId === accId && m.orgId === bulkOrg);
+      if (mode === "add") {
+        if (idx >= 0) { skipped++; return; }
+        counter++;
+        next.push({ id: `M${String(counter).padStart(3, "0")}`, accountId: accId, orgId: bulkOrg, role: bulkRole });
+        added++;
+      } else {
+        if (idx < 0) { skipped++; return; }
+        if (next[idx].role === bulkRole) { skipped++; return; }
+        next[idx] = { ...next[idx], role: bulkRole };
+        updated++;
+      }
+    });
+    setMemberships(next);
+    setBulkDlg({ open: false, mode });
+    setSelected(new Set());
+    toast({
+      title: mode === "add" ? "批量新增完成" : "批量修改完成",
+      description: `${mode === "add" ? `新增 ${added}` : `更新 ${updated}`}，跳过 ${skipped}`,
+    });
+  };
+
+  const toggleAllOnPage = (checked: boolean) => {
+    if (checked) setSelected(new Set(filteredAccounts.map((a) => a.id)));
+    else setSelected(new Set());
+  };
+  const toggleOne = (id: string, checked: boolean) => {
+    setSelected((s) => {
+      const n = new Set(s);
+      if (checked) n.add(id); else n.delete(id);
+      return n;
+    });
+  };
+
+
+
   // ===== 渲染 =====
   return (
     <AppLayout title="账号管理" subtitle="账号 · 组织身份 · 角色 三者解耦的统一管理">
@@ -258,7 +328,20 @@ export default function SystemAccounts() {
                     <SelectItem value="停用">停用</SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-2">
+                  {selected.size > 0 && (
+                    <>
+                      <span className="text-xs text-muted-foreground">已选 <b className="text-foreground">{selected.size}</b></span>
+                      <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("add")}>
+                        <PlusCircle className="h-3.5 w-3.5 mr-1" />批量新增组织身份
+                      </Button>
+                      <Button size="sm" variant="outline" className="h-8" onClick={() => openBulk("update")}>
+                        <RefreshCw className="h-3.5 w-3.5 mr-1" />批量修改组织身份
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-8" onClick={() => setSelected(new Set())}>清除</Button>
+                      <span className="mx-1 h-5 w-px bg-border" />
+                    </>
+                  )}
                   <Button size="sm" className="h-8" onClick={openCreateAccount}>
                     <Plus className="h-3.5 w-3.5 mr-1" />新增账号
                   </Button>
@@ -267,6 +350,13 @@ export default function SystemAccounts() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <Checkbox
+                        checked={filteredAccounts.length > 0 && filteredAccounts.every((a) => selected.has(a.id))}
+                        onCheckedChange={(v) => toggleAllOnPage(!!v)}
+                        aria-label="全选"
+                      />
+                    </TableHead>
                     <TableHead>姓名</TableHead>
                     <TableHead>UID</TableHead>
                     <TableHead>手机号</TableHead>
@@ -280,7 +370,14 @@ export default function SystemAccounts() {
                   {filteredAccounts.map((a) => {
                     const mbs = memberships.filter((m) => m.accountId === a.id);
                     return (
-                      <TableRow key={a.id}>
+                      <TableRow key={a.id} data-state={selected.has(a.id) ? "selected" : undefined}>
+                        <TableCell>
+                          <Checkbox
+                            checked={selected.has(a.id)}
+                            onCheckedChange={(v) => toggleOne(a.id, !!v)}
+                            aria-label={`选择 ${a.name}`}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium">{a.name}</TableCell>
                         <TableCell className="font-mono text-xs text-muted-foreground">{a.uid}</TableCell>
                         <TableCell className="font-mono text-xs">{a.phone}</TableCell>
@@ -515,6 +612,60 @@ export default function SystemAccounts() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setMembershipDlg({ open: false, editing: null })}>取消</Button>
             <Button onClick={submitMembership}>保存</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* —— 批量身份对话框 —— */}
+      <Dialog open={bulkDlg.open} onOpenChange={(o) => setBulkDlg((s) => ({ ...s, open: o }))}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {bulkDlg.mode === "add" ? "批量新增组织身份" : "批量修改组织身份"}
+              <Badge variant="secondary" className="ml-2 text-[10px]">已选 {selected.size}</Badge>
+            </DialogTitle>
+            <DialogDescription>
+              {bulkDlg.mode === "add"
+                ? "为所选账号在指定组织下创建身份。若账号在该组织已有身份将自动跳过。"
+                : "更新所选账号在指定组织下的角色。账号在该组织无身份则跳过。"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">目标组织</Label>
+              <Select value={bulkOrg} onValueChange={setBulkOrg}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder="选择组织" /></SelectTrigger>
+                <SelectContent>
+                  {ORGS.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>[{LEVEL_LABEL[o.level]}] {o.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">角色</Label>
+              <div className="mt-1 grid grid-cols-3 gap-2">
+                {(Object.keys(ROLE_META) as RoleId[]).map((r) => (
+                  <button key={r} type="button" onClick={() => setBulkRole(r)}
+                    className={cn(
+                      "rounded-md border p-2.5 text-left transition-colors",
+                      bulkRole === r ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40",
+                    )}>
+                    <Badge variant="outline" className={cn("text-[10px]", ROLE_META[r].cls)}>
+                      {ROLE_META[r].label}
+                    </Badge>
+                    <div className="mt-1 text-[11px] text-muted-foreground leading-snug">{ROLE_META[r].desc}</div>
+                  </button>
+                ))}
+              </div>
+              {bulkRole === "admin" && selected.size > 1 && (
+                <p className="mt-2 text-[11px] text-destructive">管理员每组织唯一，无法对多账号批量赋予。</p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBulkDlg((s) => ({ ...s, open: false }))}>取消</Button>
+            <Button onClick={submitBulk} disabled={bulkRole === "admin" && selected.size > 1}>确认</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
