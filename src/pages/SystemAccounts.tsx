@@ -94,6 +94,12 @@ export default function SystemAccounts() {
   const [fmOrg, setFmOrg] = useState("");
   const [fmRole, setFmRole] = useState<RoleId>("user");
 
+  // —— 批量
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkDlg, setBulkDlg] = useState<{ open: boolean; mode: "add" | "update" }>({ open: false, mode: "add" });
+  const [bulkOrg, setBulkOrg] = useState<string>("");
+  const [bulkRole, setBulkRole] = useState<RoleId>("user");
+
   // ===== 衍生 =====
   const accountById = (id: string) => accounts.find((a) => a.id === id);
   const membershipCountByAccount = useMemo(() => {
