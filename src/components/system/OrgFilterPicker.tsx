@@ -33,7 +33,7 @@ interface Section {
   items: ParentItem[];
 }
 
-function buildSections(includeGroups: boolean): Section[] {
+function buildSections(includeGroups: boolean, includeEnterprises: boolean): Section[] {
   const city = ORGS.filter((o) => o.level === "city");
   const dept = ORGS.filter((o) => o.level === "dept");
   const districts = ORGS.filter((o) => o.level === "district");
