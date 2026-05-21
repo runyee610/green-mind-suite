@@ -75,6 +75,7 @@ import { OrgFilterPicker } from "@/components/system/OrgFilterPicker";
 // ===== mock 数据 =====
 const ORGS = flattenForest(INITIAL_ORG_FOREST);
 const orgById = (id: string) => ORGS.find((o) => o.id === id);
+const entById = (id: string) => INITIAL_ENTERPRISES.find((e) => e.id === id);
 
 // 按层级分组（用于下拉父子分组）
 const ORGS_BY_LEVEL = {
@@ -89,6 +90,8 @@ export default function SystemAccounts() {
   const [tab, setTab] = useState<"accounts" | "memberships">("accounts");
   const [accounts, setAccounts] = useState<Account[]>(INITIAL_ACCOUNTS);
   const [memberships, setMemberships] = useState<Membership[]>(INITIAL_MEMBERSHIPS);
+  const [entMemberships, setEntMemberships] = useState<EnterpriseMembership[]>(INITIAL_ENTERPRISE_MEMBERSHIPS);
+
 
   // —— 账号筛选
   const [aKeyword, setAKeyword] = useState("");
