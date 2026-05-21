@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Building2,
   ChevronDown,
@@ -13,6 +14,7 @@ import {
   UserCircle2,
   Network as NetworkIcon,
   Layers,
+  ExternalLink,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +39,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
@@ -44,6 +47,8 @@ import {
   INITIAL_ACCOUNTS,
   INITIAL_MEMBERSHIPS,
   INITIAL_GROUPS,
+  INITIAL_ENTERPRISES,
+  INITIAL_GROUP_MEMBERSHIPS,
   LEVEL_BADGE_CLASS,
   LEVEL_LABEL,
   OrgGroup,
