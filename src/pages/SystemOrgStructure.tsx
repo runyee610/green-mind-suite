@@ -676,6 +676,103 @@ export default function SystemOrgStructure() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* —— 集团详情抽屉（下属企业 + 账号信息）—— */}
+      <Sheet open={!!groupSheet} onOpenChange={(o) => !o && setGroupSheet(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+          {groupSheet && (() => {
+            const list = entByGroup[groupSheet.id] ?? [];
+            const gStat = groupAccountStats[groupSheet.id];
+            return (
+              <>
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <Layers className="h-4 w-4 text-primary" />
+                    {groupSheet.name}
+                    <Badge variant="outline" className="text-[10px]">{groupSheet.industry}</Badge>
+                  </SheetTitle>
+                  <SheetDescription>{groupSheet.address || "—"}</SheetDescription>
+                </SheetHeader>
+
+                <Tabs defaultValue="enterprises" className="mt-4">
+                  <TabsList>
+                    <TabsTrigger value="enterprises">
+                      <Building2 className="h-3.5 w-3.5 mr-1" />下属企业
+                      <Badge variant="secondary" className="ml-1.5 h-4 px-1.5 text-[10px]">{list.length}</Badge>
+                    </TabsTrigger>
+                    <TabsTrigger value="accounts">
+                      <UserCircle2 className="h-3.5 w-3.5 mr-1" />账号信息
+                      <Badge variant="secondary" className="ml-1.5 h-4 px-1.5 text-[10px]">{gStat?.total ?? 0}</Badge>
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="enterprises" className="mt-3">
+                    {list.length ? (
+                      <div className="rounded-md border border-border/60 overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="text-xs">统一社会信用代码</TableHead>
+                              <TableHead className="text-xs">企业名称</TableHead>
+                              <TableHead className="text-xs">联系人</TableHead>
+                              <TableHead className="text-xs">电话</TableHead>
+                              <TableHead className="text-xs">对口人</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {list.map((e) => (
+                              <TableRow key={e.id}>
+                                <TableCell className="font-mono text-[11px] text-muted-foreground">{e.creditCode}</TableCell>
+                                <TableCell>
+                                  <Link to={`/enterprises/${e.id}`} onClick={() => setGroupSheet(null)} className="text-primary hover:underline inline-flex items-center gap-1 text-xs font-medium">
+                                    {e.name}<ExternalLink className="h-3 w-3" />
+                                  </Link>
+                                </TableCell>
+                                <TableCell className="text-xs">{e.contact}</TableCell>
+                                <TableCell className="font-mono text-[11px]">{e.phone}</TableCell>
+                                <TableCell className="text-xs">{e.liaison}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground text-center py-8 rounded-md bg-muted/30">该集团暂无下属企业</div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="accounts" className="mt-3">
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      {(["admin", "deputy", "user"] as RoleId[]).map((r) => (
+                        <div key={r} className={cn("rounded-md border p-2 text-center", ROLE_META[r].cls)}>
+                          <div className="text-[10px] opacity-80">{ROLE_META[r].label}</div>
+                          <div className="text-lg font-bold tabular-nums">{gStat?.[r] ?? 0}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {gStat && gStat.rows.length > 0 ? (
+                      <div className="rounded-md border border-border/60 divide-y divide-border/60">
+                        {gStat.rows.map(({ acc, role }) => (
+                          <div key={`${acc.id}-${role}`} className="flex items-center gap-2 px-3 py-2 text-xs">
+                            <UserCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="font-medium">{acc.name}</span>
+                            <span className="font-mono text-[10px] text-muted-foreground">{acc.phone}</span>
+                            <Badge variant="outline" className={cn("ml-auto text-[10px]", ROLE_META[role].cls)}>
+                              {ROLE_META[role].label}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground text-center py-8 rounded-md bg-muted/30">该集团暂无账号绑定</div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </>
+            );
+          })()}
+        </SheetContent>
+      </Sheet>
     </AppLayout>
   );
 }
