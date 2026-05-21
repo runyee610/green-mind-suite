@@ -631,7 +631,89 @@ export default function SystemAccounts() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="col-span-2">
+              <Label className="text-xs flex items-center gap-1.5">
+                <Building2 className="h-3 w-3" />
+                关联企业（企业账号）
+                <span className="ml-auto text-[10px] font-normal text-muted-foreground">
+                  已选 {fEnts.length} / {INITIAL_ENTERPRISES.length}
+                </span>
+              </Label>
+              <div className="mt-1 rounded-md border border-border">
+                <div className="border-b border-border p-2">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                    <Input
+                      value={fEntKeyword}
+                      onChange={(e) => setFEntKeyword(e.target.value)}
+                      placeholder="搜索企业名称 / 统一信用代码"
+                      className="h-7 pl-7 text-xs"
+                    />
+                  </div>
+                </div>
+                {fEnts.length > 0 && (
+                  <div className="flex flex-wrap gap-1 border-b border-border p-2">
+                    {fEnts.map((eid) => {
+                      const e = entById(eid);
+                      return (
+                        <Badge
+                          key={eid}
+                          variant="outline"
+                          className="border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 text-[10px] gap-1"
+                        >
+                          {e?.name}
+                          <button
+                            type="button"
+                            className="ml-0.5 hover:text-foreground"
+                            onClick={() => setFEnts((s) => s.filter((x) => x !== eid))}
+                          >×</button>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="max-h-44 overflow-y-auto p-1">
+                  {INITIAL_ENTERPRISES
+                    .filter((e) => {
+                      const q = fEntKeyword.trim().toLowerCase();
+                      if (!q) return true;
+                      return e.name.toLowerCase().includes(q) || e.creditCode.toLowerCase().includes(q);
+                    })
+                    .map((e) => {
+                      const checked = fEnts.includes(e.id);
+                      const org = orgById(e.orgId ?? "");
+                      return (
+                        <label
+                          key={e.id}
+                          className={cn(
+                            "flex cursor-pointer items-start gap-2 rounded-sm px-2 py-1.5 text-xs hover:bg-muted/50",
+                            checked && "bg-primary/5",
+                          )}
+                        >
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={(v) =>
+                              setFEnts((s) => (v ? [...s, e.id] : s.filter((x) => x !== e.id)))
+                            }
+                            className="mt-0.5"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{e.name}</div>
+                            <div className="text-[10px] text-muted-foreground font-mono truncate">
+                              {e.creditCode}{org ? ` · ${org.name}` : ""}
+                            </div>
+                          </div>
+                        </label>
+                      );
+                    })}
+                </div>
+              </div>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                勾选后该账号将成为对应企业的账号；企业信息在「企业管理」维护
+              </p>
+            </div>
           </div>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setAccountDlg({ open: false, editing: null })}>取消</Button>
             <Button onClick={submitAccount}>保存</Button>
