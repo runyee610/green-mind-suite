@@ -459,44 +459,8 @@ export default function SystemAccounts() {
                   <Input value={mKeyword} onChange={(e) => setMKeyword(e.target.value)}
                     placeholder="搜索账号 / 组织" className="h-8 w-56 pl-8 text-xs" />
                 </div>
-                <Select value={mOrg} onValueChange={setMOrg}>
-                  <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="组织" /></SelectTrigger>
-                  <SelectContent className="max-h-80">
-                    <SelectItem value="all">全部组织</SelectItem>
-                    {ORGS_BY_LEVEL.city.length > 0 && (
-                      <SelectGroup>
-                        <SelectLabel className="text-[10px] text-muted-foreground">市级中心</SelectLabel>
-                        {ORGS_BY_LEVEL.city.map((o) => (
-                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )}
-                    {ORGS_BY_LEVEL.dept.length > 0 && (
-                      <SelectGroup>
-                        <SelectLabel className="text-[10px] text-muted-foreground">市 · 内设科室</SelectLabel>
-                        {ORGS_BY_LEVEL.dept.map((o) => (
-                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )}
-                    {ORGS_BY_LEVEL.district.length > 0 && (
-                      <SelectGroup>
-                        <SelectLabel className="text-[10px] text-muted-foreground">区 · 各区划</SelectLabel>
-                        {ORGS_BY_LEVEL.district.map((o) => (
-                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )}
-                    {ORGS_BY_LEVEL.park.length > 0 && (
-                      <SelectGroup>
-                        <SelectLabel className="text-[10px] text-muted-foreground">园区 · 各园区</SelectLabel>
-                        {ORGS_BY_LEVEL.park.map((o) => (
-                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )}
-                  </SelectContent>
-                </Select>
+                <OrgFilterPicker value={mOrg} onChange={setMOrg} includeGroups={false} />
+
                 <Select value={mRole} onValueChange={setMRole}>
                   <SelectTrigger className="h-8 w-32 text-xs"><SelectValue placeholder="角色" /></SelectTrigger>
                   <SelectContent>
