@@ -14,6 +14,11 @@ const HomeRoute = () => {
   if (role === "ent") return <Navigate to="/green-mfg/ent" replace />;
   return <Index />;
 };
+
+const SystemUsersRoute = () => {
+  const { role } = useRole();
+  return role === "gov" ? <SystemAccounts /> : <SystemUsers />;
+};
 import NotFound from "./pages/NotFound.tsx";
 import ReportMonthly from "./pages/ReportMonthly.tsx";
 import ReportMonthlyFilling from "./pages/ReportMonthlyFilling.tsx";
@@ -35,6 +40,8 @@ import GreenMfgEntZeroCarbon from "./pages/GreenMfgEntZeroCarbon.tsx";
 import GreenMfgGovZeroCarbon from "./pages/GreenMfgGovZeroCarbon.tsx";
 import System from "./pages/System.tsx";
 import SystemUsers from "./pages/SystemUsers.tsx";
+import SystemAccounts from "./pages/SystemAccounts.tsx";
+import SystemOrgStructure from "./pages/SystemOrgStructure.tsx";
 import SystemPermissions from "./pages/SystemPermissions.tsx";
 import PolicyAgent from "./pages/PolicyAgent.tsx";
 import GreenMfgAgent from "./pages/GreenMfgAgent.tsx";
@@ -87,7 +94,8 @@ const App = () => (
           <Route path="/green-mfg/ent/declaration/:id" element={<GreenMfgEntDeclarationDetail />} />
           <Route path="/green-mfg/ent/dynamic/:id" element={<GreenMfgEntDynamicEdit />} />
           <Route path="/system" element={<System />} />
-          <Route path="/system/users" element={<SystemUsers />} />
+          <Route path="/system/users" element={<SystemUsersRoute />} />
+          <Route path="/system/org-structure" element={<SystemOrgStructure />} />
           <Route path="/system/permissions" element={<SystemPermissions />} />
           <Route path="/policy-agent" element={<PolicyAgent />} />
           <Route path="/green-mfg-agent" element={<GreenMfgAgent />} />

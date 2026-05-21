@@ -22,6 +22,7 @@ import {
   CircleDollarSign,
   FileSearch,
   Compass,
+  Network,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
@@ -109,11 +110,12 @@ const directBenefitItemsByRole: Record<"gov" | "ent", NavItem[]> = {
 
 const systemItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
-    { title: "用户管理", url: "/system/users", icon: Users },
+    { title: "账号管理", url: "/system/users", icon: Users },
+    { title: "组织架构管理", url: "/system/org-structure", icon: Network },
     { title: "权限配置中心", url: "/system/permissions", icon: KeyRound },
   ],
   ent: [
-    { title: "用户管理", url: "/system/users", icon: Users },
+    { title: "账号管理", url: "/system/users", icon: Users },
   ],
 };
 const systemItems: NavItem[] = systemItemsByRole.gov;
