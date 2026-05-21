@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import {
+  Building2,
   KeyRound,
   Lock,
   Pencil,
@@ -13,6 +14,7 @@ import {
   PlusCircle,
   RefreshCw,
 } from "lucide-react";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
