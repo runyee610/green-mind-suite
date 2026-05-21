@@ -482,8 +482,9 @@ export default function SystemAccounts() {
                               )}
                             </div>
                           )}
-
+                        </TableCell>
                         <TableCell>
+
                           <Badge variant="outline" className={cn("text-[10px]",
                             a.status === "启用" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
                               : "border-muted-foreground/30 bg-muted/40 text-muted-foreground")}>
