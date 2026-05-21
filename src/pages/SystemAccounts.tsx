@@ -123,8 +123,14 @@ export default function SystemAccounts() {
   const filteredAccounts = useMemo(() => {
     return accounts.filter((a) => {
       if (aOrg !== "all") {
-        const hasOrg = memberships.some((m) => m.accountId === a.id && m.orgId === aOrg);
-        if (!hasOrg) return false;
+        if (aOrg.startsWith("group:")) {
+          const gid = aOrg.slice(6);
+          const hasGroup = INITIAL_GROUP_MEMBERSHIPS.some((m) => m.accountId === a.id && m.groupId === gid);
+          if (!hasGroup) return false;
+        } else {
+          const hasOrg = memberships.some((m) => m.accountId === a.id && m.orgId === aOrg);
+          if (!hasOrg) return false;
+        }
       }
       const q = aKeyword.trim().toLowerCase();
       if (!q) return true;
