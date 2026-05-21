@@ -72,7 +72,7 @@ export default function SystemAccounts() {
 
   // —— 账号筛选
   const [aKeyword, setAKeyword] = useState("");
-  const [aStatus, setAStatus] = useState<string>("all");
+  const [aOrg, setAOrg] = useState<string>("all");
 
   // —— 身份筛选
   const [mKeyword, setMKeyword] = useState("");
