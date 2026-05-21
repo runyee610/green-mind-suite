@@ -94,7 +94,7 @@ export default function SystemAccounts() {
   // —— 账号筛选
   const [aKeyword, setAKeyword] = useState("");
   const [aOrg, setAOrg] = useState<string>("all");
-  const [aType, setAType] = useState<"all" | "gov" | "enterprise">("all");
+  const [aType, setAType] = useState<"gov" | "enterprise">("gov");
   const [aRole, setARole] = useState<string>("all");
 
 
