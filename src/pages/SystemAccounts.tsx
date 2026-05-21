@@ -23,7 +23,9 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -54,6 +56,8 @@ import {
   flattenForest,
   INITIAL_ACCOUNTS,
   INITIAL_MEMBERSHIPS,
+  INITIAL_GROUPS,
+  INITIAL_GROUP_MEMBERSHIPS,
   ROLE_META,
   type RoleId,
   type Account,
@@ -63,6 +67,14 @@ import {
 // ===== mock 数据 =====
 const ORGS = flattenForest(INITIAL_ORG_FOREST);
 const orgById = (id: string) => ORGS.find((o) => o.id === id);
+
+// 按层级分组（用于下拉父子分组）
+const ORGS_BY_LEVEL = {
+  city: ORGS.filter((o) => o.level === "city"),
+  dept: ORGS.filter((o) => o.level === "dept"),
+  district: ORGS.filter((o) => o.level === "district"),
+  park: ORGS.filter((o) => o.level === "park"),
+};
 
 // ===== 主页面 =====
 export default function SystemAccounts() {
@@ -111,8 +123,14 @@ export default function SystemAccounts() {
   const filteredAccounts = useMemo(() => {
     return accounts.filter((a) => {
       if (aOrg !== "all") {
-        const hasOrg = memberships.some((m) => m.accountId === a.id && m.orgId === aOrg);
-        if (!hasOrg) return false;
+        if (aOrg.startsWith("group:")) {
+          const gid = aOrg.slice(6);
+          const hasGroup = INITIAL_GROUP_MEMBERSHIPS.some((m) => m.accountId === a.id && m.groupId === gid);
+          if (!hasGroup) return false;
+        } else {
+          const hasOrg = memberships.some((m) => m.accountId === a.id && m.orgId === aOrg);
+          if (!hasOrg) return false;
+        }
       }
       const q = aKeyword.trim().toLowerCase();
       if (!q) return true;
@@ -324,12 +342,49 @@ export default function SystemAccounts() {
                     placeholder="搜索姓名 / 手机号 / UID" className="h-8 w-64 pl-8 text-xs" />
                 </div>
                 <Select value={aOrg} onValueChange={setAOrg}>
-                  <SelectTrigger className="h-8 w-40 text-xs"><SelectValue placeholder="全部组织" /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="全部组织" /></SelectTrigger>
+                  <SelectContent className="max-h-80">
                     <SelectItem value="all">全部组织</SelectItem>
-                    {ORGS.map((o) => (
-                      <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-                    ))}
+                    {ORGS_BY_LEVEL.city.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">市级中心</SelectLabel>
+                        {ORGS_BY_LEVEL.city.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
+                    {ORGS_BY_LEVEL.dept.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">市 · 内设科室</SelectLabel>
+                        {ORGS_BY_LEVEL.dept.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
+                    {ORGS_BY_LEVEL.district.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">区 · 各区划</SelectLabel>
+                        {ORGS_BY_LEVEL.district.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
+                    {ORGS_BY_LEVEL.park.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">园区 · 各园区</SelectLabel>
+                        {ORGS_BY_LEVEL.park.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
+                    {INITIAL_GROUPS.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">集团</SelectLabel>
+                        {INITIAL_GROUPS.map((g) => (
+                          <SelectItem key={g.id} value={`group:${g.id}`}>{g.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
                   </SelectContent>
                 </Select>
                 <div className="ml-auto flex items-center gap-2">
@@ -450,13 +505,40 @@ export default function SystemAccounts() {
                 </div>
                 <Select value={mOrg} onValueChange={setMOrg}>
                   <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="组织" /></SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-80">
                     <SelectItem value="all">全部组织</SelectItem>
-                    {ORGS.map((o) => (
-                      <SelectItem key={o.id} value={o.id}>
-                        [{LEVEL_LABEL[o.level]}] {o.name}
-                      </SelectItem>
-                    ))}
+                    {ORGS_BY_LEVEL.city.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">市级中心</SelectLabel>
+                        {ORGS_BY_LEVEL.city.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
+                    {ORGS_BY_LEVEL.dept.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">市 · 内设科室</SelectLabel>
+                        {ORGS_BY_LEVEL.dept.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
+                    {ORGS_BY_LEVEL.district.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">区 · 各区划</SelectLabel>
+                        {ORGS_BY_LEVEL.district.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
+                    {ORGS_BY_LEVEL.park.length > 0 && (
+                      <SelectGroup>
+                        <SelectLabel className="text-[10px] text-muted-foreground">园区 · 各园区</SelectLabel>
+                        {ORGS_BY_LEVEL.park.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )}
                   </SelectContent>
                 </Select>
                 <Select value={mRole} onValueChange={setMRole}>
