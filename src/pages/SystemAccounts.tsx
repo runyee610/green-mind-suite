@@ -56,6 +56,8 @@ import {
   flattenForest,
   INITIAL_ACCOUNTS,
   INITIAL_MEMBERSHIPS,
+  INITIAL_GROUPS,
+  INITIAL_GROUP_MEMBERSHIPS,
   ROLE_META,
   type RoleId,
   type Account,
