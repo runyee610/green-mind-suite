@@ -488,7 +488,7 @@ export default function SystemUsers() {
 
 
   return (
-    <AppLayout title="用户管理" subtitle="多级账户体系下的账号、角色与权限管理">
+    <AppLayout title="账号管理" subtitle="多级账户体系下的账号、角色与权限管理">
       {/* 角色切换演示器 */}
       <Card className="mb-4 border-border/60">
         <CardContent className="py-3 px-4 flex flex-wrap items-center gap-3">
