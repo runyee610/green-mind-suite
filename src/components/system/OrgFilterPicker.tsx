@@ -160,24 +160,17 @@ export function decodeOrgFilter(s: string): OrgFilterValue {
   return { type: "org", id: s };
 }
 
-  if (v.type === "group") return `group:${v.id}`;
-  return v.id ?? "all";
-}
-export function decodeOrgFilter(s: string): OrgFilterValue {
-  if (!s || s === "all") return { type: "all" };
-  if (s.startsWith("group:")) return { type: "group", id: s.slice(6) };
-  return { type: "org", id: s };
-}
-
 interface Props {
   value: string;
   onChange: (v: string) => void;
   includeGroups?: boolean;
+  includeEnterprises?: boolean;
   className?: string;
   triggerClassName?: string;
 }
 
-export function OrgFilterPicker({ value, onChange, includeGroups = true, className, triggerClassName }: Props) {
+export function OrgFilterPicker({ value, onChange, includeGroups = true, includeEnterprises = false, className, triggerClassName }: Props) {
+
   const [open, setOpen] = useState(false);
   const sections = useMemo(() => buildSections(includeGroups), [includeGroups]);
   const current = decodeOrgFilter(value);
