@@ -4,7 +4,9 @@ import {
   Brain, Send, Sparkles, Activity, Plus, FileSearch, Workflow, Users,
   ChevronRight, MessageSquare, BarChart3, ShieldCheck, Building2, Wand2,
   TrendingUp, MapPin, Layers, GitCompare, CircleDollarSign, Wallet, Compass,
+  Pencil, Check, X,
 } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
