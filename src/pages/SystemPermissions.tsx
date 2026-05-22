@@ -267,12 +267,6 @@ export default function SystemPermissions() {
   };
 
   const [permsByRole, setPermsByRole] = useState<Record<string, Set<string>>>({});
-  if (!permsByRole[activeRole]) {
-    // 懒加载：首次访问该组合时用默认权限初始化
-    permsByRole[activeRole] = new Set(defaultsFor(scope, role));
-  }
-
-
 
   const filteredPages = useMemo(() => {
     const q = resourceQuery.trim().toLowerCase();
@@ -287,22 +281,33 @@ export default function SystemPermissions() {
     });
   }, [resourceQuery]);
 
-  const currentRole = ROLES.find((r) => r.id === activeRole)!;
-  const currentPerms = permsByRole[activeRole];
+  const currentRole = {
+    name: `${orgName || SCOPE_LABEL[scope]} · ${ROLE_META[role].label}`,
+    scope: SCOPE_LABEL[scope],
+  };
+  const currentPerms = permsByRole[activeRole] ?? new Set(defaultsFor(scope, role));
   const totalCount = collectAllIds().length;
 
-  const switchRole = (id: string) => {
+  const guardSwitch = (apply: () => void) => {
     if (dirty) {
       const ok = window.confirm("当前角色有未保存的改动，切换将丢失。继续？");
       if (!ok) return;
     }
-    setActiveRole(id);
+    apply();
     setDirty(false);
   };
+  const onScopeChange = (s: OrgScope) =>
+    guardSwitch(() => {
+      setScope(s);
+      setOrgId(SCOPE_OPTIONS[s][0]?.id ?? "");
+    });
+  const onOrgChange = (id: string) => guardSwitch(() => setOrgId(id));
+  const onRoleChange = (r: RoleId) => guardSwitch(() => setRole(r));
 
   const toggleIds = (ids: string[], checked: boolean) => {
     setPermsByRole((prev) => {
-      const next = new Set(prev[activeRole]);
+      const base = prev[activeRole] ?? new Set(defaultsFor(scope, role));
+      const next = new Set(base);
       if (checked) ids.forEach((i) => next.add(i));
       else ids.forEach((i) => next.delete(i));
       return { ...prev, [activeRole]: next };
@@ -339,9 +344,11 @@ export default function SystemPermissions() {
     setDirty(true);
   };
   const handleResetDefault = () => {
-    setPermsByRole((prev) => ({ ...prev, [activeRole]: new Set(DEFAULT_PERMS[activeRole] ?? []) }));
+    setPermsByRole((prev) => ({ ...prev, [activeRole]: new Set(defaultsFor(scope, role)) }));
     setDirty(true);
   };
+
+
 
   const handleSave = () => {
     toast({
