@@ -661,7 +661,7 @@ export default function SystemAccounts() {
                   })}
                   {filteredAccounts.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">暂无企业账号</TableCell>
+                      <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-8">暂无企业账号</TableCell>
                     </TableRow>
                   )}
                 </TableBody>
