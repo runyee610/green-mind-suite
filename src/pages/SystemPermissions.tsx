@@ -60,6 +60,23 @@ const SCOPE_OPTIONS: Record<OrgScope, { id: string; name: string }[]> = {
 
 const ROLE_OPTIONS: RoleId[] = ["admin", "deputy", "user"];
 
+type RoleDef = { id: string; name: string; scope: string; desc: string; userCount: number };
+const ROLES: RoleDef[] = [
+  { id: "city_admin", name: "市级管理员", scope: "市级", desc: "市级最高权限，负责全市数据与配置", userCount: 3 },
+  { id: "city_deputy", name: "市级副管理员", scope: "市级", desc: "协助市级管理员，无删除/危险操作权限", userCount: 5 },
+  { id: "dept_admin", name: "部门管理员", scope: "市级", desc: "市级业务部门管理员", userCount: 6 },
+  { id: "dept_user", name: "部门普通用户", scope: "市级", desc: "市级业务部门普通用户", userCount: 12 },
+  { id: "district_admin", name: "区级管理员", scope: "区级", desc: "区级数据与审批权限", userCount: 8 },
+  { id: "district_user", name: "区级普通用户", scope: "区级", desc: "区级查看与填报权限", userCount: 15 },
+  { id: "park_admin", name: "园区管理员", scope: "园区", desc: "园区企业管理权限", userCount: 6 },
+  { id: "park_user", name: "园区普通用户", scope: "园区", desc: "园区查看与填报权限", userCount: 10 },
+  { id: "group_admin", name: "集团管理员", scope: "集团", desc: "集团及下属企业数据权限", userCount: 4 },
+  { id: "enterprise_admin", name: "企业管理员", scope: "企业", desc: "企业内部数据与人员管理", userCount: 28 },
+  { id: "enterprise_user", name: "企业普通用户", scope: "企业", desc: "企业内部填报与查看", userCount: 64 },
+];
+
+
+
 
 
 // ===== 资源（页面 → 操作 → 字段） =====
