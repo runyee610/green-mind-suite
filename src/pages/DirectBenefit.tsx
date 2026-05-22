@@ -511,7 +511,7 @@ function buildInitial(role: "gov" | "ent"): ChatMessage[] {
       {
         id: "m3", role: "agent", time: NOW,
         cards: [
-          { kind: "agent-action", title: "智能撮合 · 高置信 4 条", confidence: 0.92, detail: "已结合企业数据确权证书生成撮合证据，请优先复核以下两条。" },
+          { kind: "agent-action", title: "智能匹配 · 高置信 4 条", confidence: 0.92, detail: "已结合企业数据确权证书生成匹配证据，请优先复核以下两条。" },
           { kind: "match-table", ids: ["M001", "M002"] },
         ],
       },
@@ -569,11 +569,11 @@ function buildReply(role: "gov" | "ent", text: string): ChatMessage {
       cards: [{ kind: "policy-list", ids: policies.map((p) => p.id) }],
     };
   }
-  if (text.includes("撮合") || text.includes("匹配") || text.includes("适用")) {
+  if (text.includes("匹配") || text.includes("匹配") || text.includes("适用")) {
     const ids = role === "gov" ? matches.map((m) => m.id) : getEntMatches(CURRENT_ENTERPRISE_ID).map((m) => m.id);
     return {
       id: `a-${Date.now()}`, role: "agent", time: NOW,
-      text: "已为您准备撮合明细：",
+      text: "已为您准备匹配明细：",
       cards: [{ kind: "match-table", ids }],
     };
   }
@@ -594,6 +594,6 @@ function buildReply(role: "gov" | "ent", text: string): ChatMessage {
   }
   return {
     id: `a-${Date.now()}`, role: "agent", time: NOW,
-    text: "我可以帮您查看政策、撮合、数据确权证书、资金拨付等。试试下方快捷指令或直接输入关键词。",
+    text: "我可以帮您查看政策、匹配、数据确权证书、资金拨付等。试试下方快捷指令或直接输入关键词。",
   };
 }

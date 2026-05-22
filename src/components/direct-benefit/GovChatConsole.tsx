@@ -799,9 +799,9 @@ function buildReply(topic: Topic, text: string): Msg {
       const ids = matches.filter((m) => m.confidence >= 0.9).map((m) => m.id);
       return {
         id, role: "agent", time: t,
-        text: `本期置信度 ≥ 90% 的撮合共 ${ids.length} 条，建议优先公示：`,
+        text: `本期置信度 ≥ 90% 的匹配共 ${ids.length} 条，建议优先公示：`,
         cards: [
-          { kind: "action", title: "高置信撮合", confidence: 0.95, detail: "条件命中证据均来自数据确权证书，可直接进入公示流程。" },
+          { kind: "action", title: "高置信匹配", confidence: 0.95, detail: "条件命中证据均来自数据确权证书，可直接进入公示流程。" },
           { kind: "match-table", ids },
         ],
       };
@@ -810,29 +810,29 @@ function buildReply(topic: Topic, text: string): Msg {
       const groups = groupBy(matches, (m) => m.status);
       return {
         id, role: "agent", time: t,
-        text: "撮合按状态聚合：",
+        text: "匹配按状态聚合：",
         cards: [{
-          kind: "group-bar", title: "撮合状态分布",
+          kind: "group-bar", title: "匹配状态分布",
           rows: groups.map(([k, v]) => ({ label: k, value: v.length, tone: k === "已拨付" ? "success" as const : "primary" as const })),
         }],
       };
     }
     if (text.includes("top") || text.includes("金额") || text.includes("最高")) {
       const ids = [...matches].sort((a, b) => b.estimatedFunding - a.estimatedFunding).slice(0, 5).map((m) => m.id);
-      return { id, role: "agent", time: t, text: "估算金额 Top 5 的撮合：", cards: [{ kind: "match-table", ids }] };
+      return { id, role: "agent", time: t, text: "估算金额 Top 5 的匹配：", cards: [{ kind: "match-table", ids }] };
     }
     if (text.includes("待公示")) {
       const ids = matches.filter((m) => m.status === "待公示").map((m) => m.id);
-      return { id, role: "agent", time: t, text: `待公示的撮合共 ${ids.length} 条：`, cards: [{ kind: "match-table", ids }] };
+      return { id, role: "agent", time: t, text: `待公示的匹配共 ${ids.length} 条：`, cards: [{ kind: "match-table", ids }] };
     }
     const hit = enterprises.find((e) => text.includes(e.name) || text.includes(e.id));
     if (hit) {
       const ids = matches.filter((m) => m.enterpriseId === hit.id).map((m) => m.id);
-      return { id, role: "agent", time: t, text: `${hit.name} 的全部撮合记录（${ids.length} 条）：`, cards: [{ kind: "match-table", ids }] };
+      return { id, role: "agent", time: t, text: `${hit.name} 的全部匹配记录（${ids.length} 条）：`, cards: [{ kind: "match-table", ids }] };
     }
     return {
       id, role: "agent", time: t,
-      text: "已列出全部撮合。可继续问：「高置信撮合」「金额 Top 5」「待公示」「按状态分布」「<企业名> 的撮合」。",
+      text: "已列出全部匹配。可继续问：「高置信匹配」「金额 Top 5」「待公示」「按状态分布」「<企业名> 的匹配」。",
       cards: [{ kind: "match-table", ids: matches.map((m) => m.id) }],
     };
   }
