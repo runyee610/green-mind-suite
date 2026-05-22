@@ -69,7 +69,7 @@ export default function DirectBenefit() {
   }, [messages.length, thinking]);
 
   const quicks = role === "gov"
-    ? ["今日新增政策", "本周高置信撮合", "拨付进度", "配置数据源"]
+    ? ["今日新增政策", "本周高置信匹配", "拨付进度", "配置数据源"]
     : ["我适用哪些政策", "我的数据确权证书", "我的资金到账"];
 
   const sendUser = (text: string) => {
@@ -133,7 +133,7 @@ export default function DirectBenefit() {
                 {[
                   { label: "政策图谱", desc: "政策抓取/解析/对比", icon: FileSearch, to: "/direct-benefit/gov/policies" },
                   { label: "企业画像", desc: "画像 / 数据确权证书", icon: Database, to: "/direct-benefit/gov/entprofile" },
-                  { label: "撮合名单", desc: "智能撮合 / 公示流程", icon: Workflow, to: "/direct-benefit/gov/matches" },
+                  { label: "匹配名单", desc: "智能匹配 / 公示流程", icon: Workflow, to: "/direct-benefit/gov/matches" },
                   { label: "资金拨付", desc: "金额核定 / 拨付看板", icon: CircleDollarSign, to: "/direct-benefit/gov/disburse" },
                 ].map((f) => (
                   <button
@@ -249,7 +249,7 @@ export default function DirectBenefit() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={role === "gov" ? "向智能体提问，例如：今天有哪些待审核的撮合？" : "向智能体提问，例如：我现在有哪些可领的资金？"}
+                placeholder={role === "gov" ? "向智能体提问，例如：今天有哪些待审核的匹配？" : "向智能体提问，例如：我现在有哪些可领的资金？"}
                 className="h-10 text-xs"
               />
               <Button type="submit" size="sm" className="h-10 px-3" disabled={!input.trim()}>
@@ -315,7 +315,7 @@ function CardRenderer({ card, navigate }: { card: CardKind; navigate: ReturnType
     const arrived = disbursements.filter((d) => d.stage === "已到账").reduce((s, d) => s + d.amount, 0);
     const cells = [
       { label: "在库政策", v: policies.length },
-      { label: "撮合数", v: matches.length },
+      { label: "匹配数", v: matches.length },
       { label: "拨付笔数", v: disbursements.length },
       { label: "已到账", v: `${arrived} 万` },
     ];
@@ -511,7 +511,7 @@ function buildInitial(role: "gov" | "ent"): ChatMessage[] {
       {
         id: "m3", role: "agent", time: NOW,
         cards: [
-          { kind: "agent-action", title: "智能撮合 · 高置信 4 条", confidence: 0.92, detail: "已结合企业数据确权证书生成撮合证据，请优先复核以下两条。" },
+          { kind: "agent-action", title: "智能匹配 · 高置信 4 条", confidence: 0.92, detail: "已结合企业数据确权证书生成匹配证据，请优先复核以下两条。" },
           { kind: "match-table", ids: ["M001", "M002"] },
         ],
       },
@@ -569,11 +569,11 @@ function buildReply(role: "gov" | "ent", text: string): ChatMessage {
       cards: [{ kind: "policy-list", ids: policies.map((p) => p.id) }],
     };
   }
-  if (text.includes("撮合") || text.includes("匹配") || text.includes("适用")) {
+  if (text.includes("匹配") || text.includes("匹配") || text.includes("适用")) {
     const ids = role === "gov" ? matches.map((m) => m.id) : getEntMatches(CURRENT_ENTERPRISE_ID).map((m) => m.id);
     return {
       id: `a-${Date.now()}`, role: "agent", time: NOW,
-      text: "已为您准备撮合明细：",
+      text: "已为您准备匹配明细：",
       cards: [{ kind: "match-table", ids }],
     };
   }
@@ -594,6 +594,6 @@ function buildReply(role: "gov" | "ent", text: string): ChatMessage {
   }
   return {
     id: `a-${Date.now()}`, role: "agent", time: NOW,
-    text: "我可以帮您查看政策、撮合、数据确权证书、资金拨付等。试试下方快捷指令或直接输入关键词。",
+    text: "我可以帮您查看政策、匹配、数据确权证书、资金拨付等。试试下方快捷指令或直接输入关键词。",
   };
 }

@@ -735,7 +735,7 @@ function buildReply(topic: EntTopic, text: string, favorites: string[], policyId
       const ms = getEntMatches(CURRENT_ENTERPRISE_ID);
       const top = ms.sort((a, b) => b.confidence - a.confidence)[0];
       const p = top ? findPolicy(top.policyId) : null;
-      if (!p) return { id, role: "agent", time: t, text: "暂无可申报的撮合记录。" };
+      if (!p) return { id, role: "agent", time: t, text: "暂无可申报的匹配记录。" };
       return {
         id, role: "agent", time: t,
         text: `建议优先推进《${p.name}》。申报路径如下：\n${p.guideSteps.map((s, i) => `${i + 1}. ${s}`).join("\n")}`,
