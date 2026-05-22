@@ -108,6 +108,7 @@ export default function SystemAccounts() {
   // —— 表单态
   const [fName, setFName] = useState("");
   const [fPhone, setFPhone] = useState("");
+  const [fEmail, setFEmail] = useState("");
   const [fUid, setFUid] = useState("");
   const [fType, setFType] = useState<"gov" | "enterprise">("gov");
   const [fStatus, setFStatus] = useState<"启用" | "停用">("启用");
@@ -167,12 +168,12 @@ export default function SystemAccounts() {
 
   // ===== 账号 CRUD =====
   const openCreateAccount = () => {
-    setFName(""); setFPhone(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
+    setFName(""); setFPhone(""); setFEmail(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
     setFType("gov"); setFEnts([]); setFEntRole("user"); setFEntKeyword("");
     setAccountDlg({ open: true, editing: null });
   };
   const openEditAccount = (a: Account) => {
-    setFName(a.name); setFPhone(a.phone); setFUid(a.uid); setFStatus(a.status);
+    setFName(a.name); setFPhone(a.phone); setFEmail(a.email); setFUid(a.uid); setFStatus(a.status);
     setFType(a.type);
     const ents = entMemberships.filter((m) => m.accountId === a.id);
     setFEnts(ents.map((m) => m.enterpriseId));
@@ -200,6 +201,7 @@ export default function SystemAccounts() {
   const submitAccount = () => {
     if (!fName.trim()) return toast({ title: "姓名不能为空", variant: "destructive" });
     if (!/^1[3-9]\d{9}$/.test(fPhone)) return toast({ title: "手机号格式不正确", variant: "destructive" });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fEmail)) return toast({ title: "邮箱格式不正确", variant: "destructive" });
     if (fType === "enterprise" && fEnts.length === 0) {
       return toast({ title: "企业账号必须至少关联一家企业", variant: "destructive" });
     }
@@ -207,18 +209,17 @@ export default function SystemAccounts() {
     if (accountDlg.editing) {
       const wasType = accountDlg.editing.type;
       setAccounts((arr) => arr.map((x) => x.id === accountDlg.editing!.id
-        ? { ...x, name: fName.trim(), phone: fPhone, uid: fUid, type: fType, status: fStatus } : x));
+        ? { ...x, name: fName.trim(), phone: fPhone, email: fEmail.trim(), uid: fUid, type: fType, status: fStatus } : x));
       syncEnterpriseBindings(accountDlg.editing.id, fEnts, entRoleToUse);
-      // 切换为企业账号时移除政府组织身份
       if (wasType === "gov" && fType === "enterprise") {
         setMemberships((arr) => arr.filter((m) => m.accountId !== accountDlg.editing!.id));
       }
       toast({ title: "已更新账号" });
     } else {
       const id = `A${String(accounts.length + 1).padStart(3, "0")}`;
-      setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, uid: fUid, type: fType, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
+      setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, email: fEmail.trim(), uid: fUid, type: fType, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
       syncEnterpriseBindings(id, fEnts, entRoleToUse);
-      toast({ title: "已新增账号", description: `默认密码已通过短信发送至 ${fPhone}` });
+      toast({ title: "已新增账号", description: `初始密码设置链接已发送至 ${fEmail}` });
     }
     setAccountDlg({ open: false, editing: null });
   };
@@ -431,6 +432,7 @@ export default function SystemAccounts() {
                       />
                     </TableHead>
                     <TableHead>账号</TableHead>
+                    <TableHead>邮箱</TableHead>
                     <TableHead>组织身份</TableHead>
                     <TableHead>对口企业</TableHead>
                     <TableHead>状态</TableHead>
@@ -462,6 +464,7 @@ export default function SystemAccounts() {
                             </div>
                           </div>
                         </TableCell>
+                        <TableCell className="text-xs text-muted-foreground font-mono">{a.email}</TableCell>
                         <TableCell>
                           {mbs.length === 0 ? (
                             <span className="text-xs text-muted-foreground">未绑定组织</span>
@@ -522,8 +525,8 @@ export default function SystemAccounts() {
                               onClick={() => openCreateMembership(a.id)}>
                               <Link2 className="h-3.5 w-3.5" />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码"
-                              onClick={() => setPwdDlg({ open: true, target: a.phone })}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码（发送邮件链接）"
+                              onClick={() => setPwdDlg({ open: true, target: a.email })}>
                               <KeyRound className="h-3.5 w-3.5" />
                             </Button>
                             <Button size="icon" variant="ghost" className="h-7 w-7" title="编辑"
@@ -541,7 +544,7 @@ export default function SystemAccounts() {
                   })}
                   {filteredAccounts.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">暂无政府账号</TableCell>
+                      <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-8">暂无政府账号</TableCell>
                     </TableRow>
                   )}
                 </TableBody>
@@ -554,6 +557,7 @@ export default function SystemAccounts() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>账号</TableHead>
+                    <TableHead>邮箱</TableHead>
                     <TableHead>所属企业</TableHead>
                     <TableHead>统一社会信用代码</TableHead>
                     <TableHead>角色</TableHead>
@@ -578,6 +582,7 @@ export default function SystemAccounts() {
                             </div>
                           </div>
                         </TableCell>
+                        <TableCell className="text-xs text-muted-foreground font-mono">{a.email}</TableCell>
                         <TableCell>
                           {ents.length === 0 ? (
                             <span className="text-xs text-destructive">未关联企业</span>
@@ -637,8 +642,8 @@ export default function SystemAccounts() {
                         <TableCell className="text-xs text-muted-foreground">{a.createdAt}</TableCell>
                         <TableCell className="text-right">
                           <div className="inline-flex gap-1">
-                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码"
-                              onClick={() => setPwdDlg({ open: true, target: a.phone })}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码（发送邮件链接）"
+                              onClick={() => setPwdDlg({ open: true, target: a.email })}>
                               <KeyRound className="h-3.5 w-3.5" />
                             </Button>
                             <Button size="icon" variant="ghost" className="h-7 w-7" title="编辑"
@@ -656,7 +661,7 @@ export default function SystemAccounts() {
                   })}
                   {filteredAccounts.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">暂无企业账号</TableCell>
+                      <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-8">暂无企业账号</TableCell>
                     </TableRow>
                   )}
                 </TableBody>
@@ -741,6 +746,19 @@ export default function SystemAccounts() {
                     </span>
                   </Label>
                   <Input value={fUid} readOnly disabled className="font-mono bg-muted/60 cursor-not-allowed" />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">
+                    邮箱
+                    <span className="ml-1 text-[10px] font-normal text-muted-foreground/70">（用于接收密码重置等系统邮件）</span>
+                  </Label>
+                  <Input
+                    type="email"
+                    value={fEmail}
+                    onChange={(e) => setFEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="bg-background font-mono"
+                  />
                 </div>
                 <div className="col-span-2 space-y-1.5">
                   <Label className="text-xs font-medium text-muted-foreground">状态</Label>
@@ -1001,15 +1019,56 @@ export default function SystemAccounts() {
         </DialogContent>
       </Dialog>
 
-      {/* —— 重置密码 —— */}
+      {/* —— 重置密码（邮件链接式） —— */}
       <Dialog open={pwdDlg.open} onOpenChange={(o) => setPwdDlg((s) => ({ ...s, open: o }))}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle><Lock className="mr-2 inline h-4 w-4" />重置密码</DialogTitle>
-            <DialogDescription>已向 {pwdDlg.target} 发送随机临时密码，登录后请尽快修改。</DialogDescription>
+            <DialogTitle><Lock className="mr-2 inline h-4 w-4" />发送密码重置链接</DialogTitle>
+            <DialogDescription>
+              系统将向账号邮箱发送一封包含安全验证链接的邮件，用户点击后即可设置新密码。
+            </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button onClick={() => { toast({ title: "已发送临时密码" }); setPwdDlg({ open: false, target: "" }); }}>确定</Button>
+          <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 h-8 w-8 shrink-0 rounded-full bg-primary/10 text-primary inline-flex items-center justify-center">
+                <KeyRound className="h-4 w-4" />
+              </div>
+              <div className="space-y-1 text-sm flex-1 min-w-0">
+                <div className="text-xs text-muted-foreground">收件邮箱</div>
+                <div className="font-mono break-all">{pwdDlg.target}</div>
+              </div>
+            </div>
+            <ol className="space-y-1.5 pl-4 text-xs text-muted-foreground list-decimal">
+              <li>点击「发送邮件」后，系统会向上述邮箱发送一个一次性验证链接（有效期 30 分钟）。</li>
+              <li>用户在邮件中点击链接 → 跳转到平台的「设置新密码」页面，输入新密码与确认密码。</li>
+              <li>提交成功后回到登录页，使用新密码重新登录即可。</li>
+            </ol>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setPwdDlg({ open: false, target: "" })}>取消</Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const token = `demo-${Date.now().toString(36)}`;
+                window.open(
+                  `/reset-password?token=${token}&email=${encodeURIComponent(pwdDlg.target)}`,
+                  "_blank",
+                );
+              }}
+            >
+              预览重置页面
+            </Button>
+            <Button
+              onClick={() => {
+                toast({
+                  title: "重置链接已发送",
+                  description: `请提醒用户前往 ${pwdDlg.target} 查收邮件，30 分钟内完成设置。`,
+                });
+                setPwdDlg({ open: false, target: "" });
+              }}
+            >
+              发送邮件
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

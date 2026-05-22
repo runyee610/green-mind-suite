@@ -49,6 +49,7 @@ import SystemUsers from "./pages/SystemUsers.tsx";
 import SystemAccounts from "./pages/SystemAccounts.tsx";
 import SystemOrgStructure from "./pages/SystemOrgStructure.tsx";
 import SystemPermissions from "./pages/SystemPermissions.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import EnterpriseDetail from "./pages/EnterpriseDetail.tsx";
 import PolicyAgent from "./pages/PolicyAgent.tsx";
 import GreenMfgAgent from "./pages/GreenMfgAgent.tsx";
@@ -77,6 +78,7 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomeRoute />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/report-monthly" element={<ReportMonthly />} />
           <Route path="/report-monthly/filling" element={<ReportMonthlyFilling />} />
           <Route path="/energy-quota" element={<EnergyQuota />} />

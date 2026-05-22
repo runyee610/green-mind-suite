@@ -325,13 +325,15 @@ export default function SystemOrgStructure() {
   };
   const submitGroup = () => {
     if (!gName.trim()) return toast({ title: "集团名称不能为空", variant: "destructive" });
+    const id = groupDlg.editing?.id ?? `G${String(groups.length + 1).padStart(3, "0")}`;
+    const autoCount = entByGroup[id]?.length ?? groupDlg.editing?.enterpriseCount ?? 0;
     const payload: OrgGroup = {
-      id: groupDlg.editing?.id ?? `G${String(groups.length + 1).padStart(3, "0")}`,
+      id,
       name: gName.trim(),
       industry: gIndustry.trim() || "未分类",
       address: gAddress.trim(),
       remark: gRemark.trim(),
-      enterpriseCount: Math.max(0, Number(gCount) || 0),
+      enterpriseCount: autoCount,
     };
     if (groupDlg.editing) {
       setGroups((arr) => arr.map((x) => x.id === payload.id ? payload : x));
@@ -666,7 +668,20 @@ export default function SystemOrgStructure() {
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2"><Label className="text-xs">集团名称</Label><Input value={gName} onChange={(e) => setGName(e.target.value)} className="mt-1" /></div>
             <div><Label className="text-xs">所属行业</Label><Input value={gIndustry} onChange={(e) => setGIndustry(e.target.value)} className="mt-1" placeholder="如 钢铁冶金" /></div>
-            <div><Label className="text-xs">下属企业数</Label><Input type="number" value={gCount} onChange={(e) => setGCount(Number(e.target.value))} className="mt-1" /></div>
+            <div>
+              <Label className="text-xs flex items-center justify-between">
+                下属企业数
+                <span className="text-[10px] font-normal text-muted-foreground">不可编辑 · 自动统计</span>
+              </Label>
+              <Input
+                value={groupDlg.editing ? (entByGroup[groupDlg.editing.id]?.length ?? 0) : 0}
+                readOnly disabled
+                className="mt-1 font-mono bg-muted/60 cursor-not-allowed"
+              />
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                根据平台「关联企业 → 所属集团」的数据自动统计，请在企业管理处维护归属关系。
+              </p>
+            </div>
             <div className="col-span-2"><Label className="text-xs">地址</Label><Input value={gAddress} onChange={(e) => setGAddress(e.target.value)} className="mt-1" /></div>
             <div className="col-span-2"><Label className="text-xs">备注</Label><Input value={gRemark} onChange={(e) => setGRemark(e.target.value)} className="mt-1" /></div>
           </div>
