@@ -27,7 +27,7 @@ type DeltaBucket = "neg" | "0-1000" | "1000+";
 type OnSiteBucket = "yes" | "no";
 const RATIO_OPTIONS: { v: RatioBucket; label: string }[] = [
   { v: "0-90", label: "0-90%" },
-  { v: "90-110", label: "90-110%（标黄）" },
+  { v: "90-110", label: "90-110%" },
   { v: "110+", label: ">110%（标红）" },
 ];
 const DELTA_OPTIONS: { v: DeltaBucket; label: string }[] = [
