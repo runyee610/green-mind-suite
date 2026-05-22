@@ -748,6 +748,19 @@ export default function SystemAccounts() {
                   <Input value={fUid} readOnly disabled className="font-mono bg-muted/60 cursor-not-allowed" />
                 </div>
                 <div className="col-span-2 space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">
+                    邮箱
+                    <span className="ml-1 text-[10px] font-normal text-muted-foreground/70">（用于接收密码重置等系统邮件）</span>
+                  </Label>
+                  <Input
+                    type="email"
+                    value={fEmail}
+                    onChange={(e) => setFEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="bg-background font-mono"
+                  />
+                </div>
+                <div className="col-span-2 space-y-1.5">
                   <Label className="text-xs font-medium text-muted-foreground">状态</Label>
                   <Select value={fStatus} onValueChange={(v) => setFStatus(v as "启用" | "停用")}>
                     <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
