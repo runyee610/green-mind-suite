@@ -57,8 +57,13 @@ export default function DirectBenefit() {
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const lastRoleRef = useRef(role);
 
-  useEffect(() => setMessages(initial), [initial]);
+  useEffect(() => {
+    if (lastRoleRef.current === role) return;
+    lastRoleRef.current = role;
+    setMessages(initial);
+  }, [role, initial]);
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length, thinking]);

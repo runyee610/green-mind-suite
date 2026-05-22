@@ -105,8 +105,14 @@ export function EntChatConsole({ topic, initialPolicyId, initialQuery }: { topic
   const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef(false);
+  const lastKeyRef = useRef(`${topic}|${policyId ?? ""}`);
 
-  useEffect(() => setMessages(buildInitial(topic, favorites, policyId)), [topic, policyId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const k = `${topic}|${policyId ?? ""}`;
+    if (lastKeyRef.current === k) return;
+    lastKeyRef.current = k;
+    setMessages(buildInitial(topic, favorites, policyId));
+  }, [topic, policyId]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length, thinking]);
