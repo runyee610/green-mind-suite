@@ -325,13 +325,15 @@ export default function SystemOrgStructure() {
   };
   const submitGroup = () => {
     if (!gName.trim()) return toast({ title: "集团名称不能为空", variant: "destructive" });
+    const id = groupDlg.editing?.id ?? `G${String(groups.length + 1).padStart(3, "0")}`;
+    const autoCount = entByGroup[id]?.length ?? groupDlg.editing?.enterpriseCount ?? 0;
     const payload: OrgGroup = {
-      id: groupDlg.editing?.id ?? `G${String(groups.length + 1).padStart(3, "0")}`,
+      id,
       name: gName.trim(),
       industry: gIndustry.trim() || "未分类",
       address: gAddress.trim(),
       remark: gRemark.trim(),
-      enterpriseCount: Math.max(0, Number(gCount) || 0),
+      enterpriseCount: autoCount,
     };
     if (groupDlg.editing) {
       setGroups((arr) => arr.map((x) => x.id === payload.id ? payload : x));
