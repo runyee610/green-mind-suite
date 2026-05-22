@@ -473,6 +473,7 @@ export default function Assets() {
                     <TableHead className="w-32 px-3 text-right">批复能耗</TableHead>
                     <TableHead className="w-32 px-3 text-right">采集能耗</TableHead>
                     <TableHead className="w-32 px-3 text-right">同期采集占比</TableHead>
+                    <TableHead className="w-36 px-3 text-right">同期采集增量</TableHead>
                     <TableHead className="w-24 px-3 text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -482,6 +483,8 @@ export default function Assets() {
                     const ratio = computeYtdRatio(p);
                     const ratioWarn = ratio > 110;
                     const ratioMid = ratio >= 90 && ratio <= 110;
+                    const delta = computeDelta(p);
+                    const deltaBucket = deltaBucketOf(delta);
                     return (
                       <TableRow key={p.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetail(p)}>
                         <TableCell className="px-3 font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</TableCell>
@@ -508,6 +511,14 @@ export default function Assets() {
                         )}>
                           {p.collectedEnergy > 0 ? `${ratio.toFixed(1)}%` : "—"}
                         </TableCell>
+                        <TableCell className={cn(
+                          "px-3 text-right font-mono text-sm tabular-nums",
+                          p.collectedEnergy === 0 && "text-muted-foreground",
+                          p.collectedEnergy > 0 && deltaBucket === "0-1000" && "text-warning font-semibold",
+                          p.collectedEnergy > 0 && deltaBucket === "1000+" && "text-destructive font-semibold",
+                        )}>
+                          {p.collectedEnergy > 0 ? `${delta > 0 ? "+" : ""}${fmt(delta, 0)}` : "—"}
+                        </TableCell>
                         <TableCell className="px-3 text-right">
                           <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={(e) => { e.stopPropagation(); setDetail(p); }}>
                             <Eye className="h-3.5 w-3.5" />查看
@@ -517,7 +528,7 @@ export default function Assets() {
                     );
                   })}
                   {filtered.length === 0 && (
-                    <TableRow><TableCell colSpan={9} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={10} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
