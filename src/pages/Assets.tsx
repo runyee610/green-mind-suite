@@ -140,7 +140,7 @@ export default function Assets() {
     ];
   }, []);
 
-  const reset = () => { setKeyword(""); setDistrictFilter([]); setStatusFilter([]); setIndustryFilter([]); };
+  const reset = () => { setKeyword(""); setDistrictFilter([]); setStatusFilter([]); setIndustryFilter([]); setRatioFilter([]); setDeltaFilter([]); setOnSiteFilter([]); };
   const openLink = (p: InvestmentProject) => { setLinkTarget(p); setLinkOpen(true); };
 
   const toneClass = (tone: "primary" | "warning" | "success") => {
