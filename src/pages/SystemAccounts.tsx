@@ -464,6 +464,7 @@ export default function SystemAccounts() {
                             </div>
                           </div>
                         </TableCell>
+                        <TableCell className="text-xs text-muted-foreground font-mono">{a.email}</TableCell>
                         <TableCell>
                           {mbs.length === 0 ? (
                             <span className="text-xs text-muted-foreground">未绑定组织</span>
