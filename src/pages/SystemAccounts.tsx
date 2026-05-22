@@ -432,6 +432,7 @@ export default function SystemAccounts() {
                       />
                     </TableHead>
                     <TableHead>账号</TableHead>
+                    <TableHead>邮箱</TableHead>
                     <TableHead>组织身份</TableHead>
                     <TableHead>对口企业</TableHead>
                     <TableHead>状态</TableHead>
