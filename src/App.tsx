@@ -49,6 +49,7 @@ import SystemUsers from "./pages/SystemUsers.tsx";
 import SystemAccounts from "./pages/SystemAccounts.tsx";
 import SystemOrgStructure from "./pages/SystemOrgStructure.tsx";
 import SystemPermissions from "./pages/SystemPermissions.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import EnterpriseDetail from "./pages/EnterpriseDetail.tsx";
 import PolicyAgent from "./pages/PolicyAgent.tsx";
 import GreenMfgAgent from "./pages/GreenMfgAgent.tsx";
