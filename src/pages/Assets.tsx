@@ -129,12 +129,12 @@ export default function Assets() {
       <AppLayout hideHeader>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Button variant="ghost" size="sm" className="gap-1" onClick={() => setDetail(null)}>
-              <ArrowLeft className="h-4 w-4" />返回项目列表
-            </Button>
             <div className="text-xs text-muted-foreground">
               当前查看：<span className="text-foreground">{detail.name}</span>
             </div>
+            <Button variant="ghost" size="sm" className="gap-1" onClick={() => setDetail(null)}>
+              <ArrowLeft className="h-4 w-4" />返回项目列表
+            </Button>
           </div>
           <ProjectDetailView project={detail} onLink={() => openLink(detail)} />
         </div>
