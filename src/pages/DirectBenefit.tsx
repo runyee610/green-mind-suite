@@ -118,41 +118,67 @@ export default function DirectBenefit() {
             </div>
           </div>
 
-          {/* 能力面板 */}
-          <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card">
-            <div className="border-b border-border px-3 py-2 font-semibold text-foreground text-base">
-              智能体能力面板
-            </div>
-            <div className="space-y-2 p-2.5">
-              {workflowSteps.map((s) => {
-                const Icon = stepIcon[s.key];
-                return (
-                  <div key={s.key} className="rounded-md border border-border/60 bg-muted/20 p-2">
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <Icon className="h-3 w-3 text-primary" />
-                      <span className="text-[11px] font-medium text-foreground">{s.name}</span>
-                      <span className={cn("ml-auto h-1.5 w-1.5 rounded-full", s.confidence >= 0.9 ? "bg-success" : "bg-warning")} />
+          {/* 智能体能力面板 — 政府侧四大子能力入口 */}
+          {role === "gov" && (
+            <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card">
+              <div className="border-b border-border px-3 py-2 font-semibold text-foreground text-base">
+                智能体能力面板
+              </div>
+              <div className="space-y-1.5 p-2">
+                {[
+                  { label: "政策图谱", desc: "政策抓取/解析/对比", icon: FileSearch, to: "/direct-benefit/gov/policies" },
+                  { label: "企业画像", desc: "画像 / 数据确权证书", icon: Database, to: "/direct-benefit/gov/entprofile" },
+                  { label: "撮合名单", desc: "智能撮合 / 公示流程", icon: Workflow, to: "/direct-benefit/gov/matches" },
+                  { label: "资金拨付", desc: "金额核定 / 拨付看板", icon: CircleDollarSign, to: "/direct-benefit/gov/disburse" },
+                ].map((f) => (
+                  <button
+                    key={f.label}
+                    onClick={() => navigate(f.to)}
+                    className="group flex w-full items-center gap-2.5 rounded-md border border-border/60 bg-muted/20 px-2.5 py-2 text-left transition hover:border-primary/40 hover:bg-primary/5"
+                  >
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
+                      <f.icon className="h-4 w-4" />
                     </div>
-                    <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
-                      <span>置信度</span>
-                      <span className="font-mono text-foreground">{(s.confidence * 100).toFixed(0)}%</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-semibold text-foreground">{f.label}</div>
+                      <div className="text-[10px] text-muted-foreground line-clamp-1">{f.desc}</div>
                     </div>
-                  </div>
-                );
-              })}
-              <div className="rounded-md border border-border/60 bg-muted/20 p-2">
-                <div className="flex items-center gap-1.5 text-xs">
-                  <Database className="h-3 w-3 text-primary" />
-                  <span className="text-[11px] font-medium text-foreground">数据源</span>
-                  <span className="ml-auto font-mono text-[10px] text-foreground">{dataSources.length}</span>
-                </div>
-                <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
-                  <span>异常</span>
-                  <span className="font-mono text-destructive">{dataSources.filter(d => d.status === "异常").length}</span>
-                </div>
+                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition group-hover:text-primary" />
+                  </button>
+                ))}
+              </div>
+              <div className="border-t border-border px-3 py-2 text-[10px] text-muted-foreground">
+                所有子能力均由智能体编排 · 数据源实时同步
               </div>
             </div>
-          </div>
+          )}
+
+          {/* 企业侧保留原工作流面板 */}
+          {role === "ent" && (
+            <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card">
+              <div className="border-b border-border px-3 py-2 font-semibold text-foreground text-base">
+                智能体能力面板
+              </div>
+              <div className="space-y-2 p-2.5">
+                {workflowSteps.map((s) => {
+                  const Icon = stepIcon[s.key];
+                  return (
+                    <div key={s.key} className="rounded-md border border-border/60 bg-muted/20 p-2">
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <Icon className="h-3 w-3 text-primary" />
+                        <span className="text-[11px] font-medium text-foreground">{s.name}</span>
+                        <span className={cn("ml-auto h-1.5 w-1.5 rounded-full", s.confidence >= 0.9 ? "bg-success" : "bg-warning")} />
+                      </div>
+                      <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
+                        <span>置信度</span>
+                        <span className="font-mono text-foreground">{(s.confidence * 100).toFixed(0)}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </aside>
 
         {/* 主区：对话 */}
