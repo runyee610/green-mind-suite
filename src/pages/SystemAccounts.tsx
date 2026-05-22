@@ -525,8 +525,8 @@ export default function SystemAccounts() {
                               onClick={() => openCreateMembership(a.id)}>
                               <Link2 className="h-3.5 w-3.5" />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码"
-                              onClick={() => setPwdDlg({ open: true, target: a.phone })}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" title="重置密码（发送邮件链接）"
+                              onClick={() => setPwdDlg({ open: true, target: a.email })}>
                               <KeyRound className="h-3.5 w-3.5" />
                             </Button>
                             <Button size="icon" variant="ghost" className="h-7 w-7" title="编辑"
