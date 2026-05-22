@@ -131,7 +131,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                     if (!target) return;
                     const viewport = target.closest("[data-radix-scroll-area-viewport]") as HTMLElement | null;
                     if (viewport && viewport.scrollHeight > viewport.clientHeight) {
-                      const top = target.getBoundingClientRect().top - viewport.getBoundingClientRect().top + viewport.scrollTop - 12;
+                      const top = target.getBoundingClientRect().top - viewport.getBoundingClientRect().top + viewport.scrollTop - 16;
                       viewport.scrollTo({ top, behavior: "smooth" });
                     } else {
                       target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -150,7 +150,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
         <ScrollArea className="flex-1">
           <CardContent className="space-y-5 p-4">
             {/* 重点信息 */}
-            <section id="key" className="scroll-mt-4">
+            <section id="key" className="scroll-mt-6">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                 <Target className="h-4 w-4 text-primary" />重点信息
               </h3>
@@ -183,7 +183,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
             </section>
 
             {/* 能耗数据 */}
-            <section id="energy" className="scroll-mt-4">
+            <section id="energy" className="scroll-mt-6">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                 <Gauge className="h-4 w-4 text-primary" />能耗数据
                 <Badge variant="outline" className="ml-1 border-primary/40 bg-primary/10 text-primary">核心指标</Badge>
@@ -254,7 +254,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
             </section>
 
             {/* 项目附件 */}
-            <section id="attachments" className="scroll-mt-4">
+            <section id="attachments" className="scroll-mt-6">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="flex items-center gap-2 text-sm font-semibold">
                   <Paperclip className="h-4 w-4 text-primary" />项目附件
@@ -307,7 +307,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
             </section>
 
             {/* 项目信息 */}
-            <section id="project" className="scroll-mt-4">
+            <section id="project" className="scroll-mt-6">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                 <FileText className="h-4 w-4 text-primary" />项目信息
               </h3>
@@ -322,7 +322,7 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
             </section>
 
             {/* 单位信息 */}
-            <section id="unit" className="scroll-mt-4">
+            <section id="unit" className="scroll-mt-6">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                 <Building2 className="h-4 w-4 text-primary" />单位信息
               </h3>
