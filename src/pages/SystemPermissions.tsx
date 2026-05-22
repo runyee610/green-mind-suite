@@ -26,9 +26,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+
 import {
   INITIAL_ORG_FOREST,
   INITIAL_GROUPS,
@@ -60,20 +62,35 @@ const SCOPE_OPTIONS: Record<OrgScope, { id: string; name: string }[]> = {
 
 const ROLE_OPTIONS: RoleId[] = ["admin", "deputy", "user"];
 
-type RoleDef = { id: string; name: string; scope: string; desc: string; userCount: number };
-const ROLES: RoleDef[] = [
-  { id: "city_admin", name: "市级管理员", scope: "市级", desc: "市级最高权限，负责全市数据与配置", userCount: 3 },
-  { id: "city_deputy", name: "市级副管理员", scope: "市级", desc: "协助市级管理员，无删除/危险操作权限", userCount: 5 },
-  { id: "dept_admin", name: "部门管理员", scope: "市级", desc: "市级业务部门管理员", userCount: 6 },
-  { id: "dept_user", name: "部门普通用户", scope: "市级", desc: "市级业务部门普通用户", userCount: 12 },
-  { id: "district_admin", name: "区级管理员", scope: "区级", desc: "区级数据与审批权限", userCount: 8 },
-  { id: "district_user", name: "区级普通用户", scope: "区级", desc: "区级查看与填报权限", userCount: 15 },
-  { id: "park_admin", name: "园区管理员", scope: "园区", desc: "园区企业管理权限", userCount: 6 },
-  { id: "park_user", name: "园区普通用户", scope: "园区", desc: "园区查看与填报权限", userCount: 10 },
-  { id: "group_admin", name: "集团管理员", scope: "集团", desc: "集团及下属企业数据权限", userCount: 4 },
-  { id: "enterprise_admin", name: "企业管理员", scope: "企业", desc: "企业内部数据与人员管理", userCount: 28 },
-  { id: "enterprise_user", name: "企业普通用户", scope: "企业", desc: "企业内部填报与查看", userCount: 64 },
-];
+const SCOPE_ROLE_DEFAULTS: Record<OrgScope, Record<RoleId, string[]>> = {
+  city: {
+    admin: ["city_admin"],
+    deputy: ["city_deputy"],
+    user: ["dept_user"],
+  },
+  district: {
+    admin: ["district_admin"],
+    deputy: ["district_admin"],
+    user: ["district_user"],
+  },
+  park: {
+    admin: ["park_admin"],
+    deputy: ["park_admin"],
+    user: ["park_user"],
+  },
+  group: {
+    admin: ["group_admin"],
+    deputy: ["group_admin"],
+    user: ["group_admin"],
+  },
+  enterprise: {
+    admin: ["enterprise_admin"],
+    deputy: ["enterprise_admin"],
+    user: ["enterprise_user"],
+  },
+};
+
+
 
 
 
@@ -231,22 +248,25 @@ const ACTION_STYLES: Record<ActionItem["kind"], { icon: any; cls: string; active
 };
 
 export default function SystemPermissions() {
-  const [activeRole, setActiveRole] = useState<string>(ROLES[0].id);
-  const [roleQuery, setRoleQuery] = useState("");
+  // 第 1 步：组织类型 → 具体组织 → 角色 级联选择
+  const [scope, setScope] = useState<OrgScope>("city");
+  const [orgId, setOrgId] = useState<string>(SCOPE_OPTIONS.city[0]?.id ?? "");
+  const [role, setRole] = useState<RoleId>("admin");
+  const activeRole = `${scope}__${orgId}__${role}`;
+  const orgName = SCOPE_OPTIONS[scope].find((o) => o.id === orgId)?.name ?? "";
+
   const [resourceQuery, setResourceQuery] = useState("");
   const [expandedFields, setExpandedFields] = useState<Set<string>>(new Set());
   const [dirty, setDirty] = useState(false);
 
-  const [permsByRole, setPermsByRole] = useState<Record<string, Set<string>>>(() => {
-    const init: Record<string, Set<string>> = {};
-    ROLES.forEach((r) => (init[r.id] = new Set(DEFAULT_PERMS[r.id] ?? [])));
-    return init;
-  });
+  const defaultsFor = (s: OrgScope, r: RoleId): string[] => {
+    const keys = SCOPE_ROLE_DEFAULTS[s][r];
+    const merged = new Set<string>();
+    keys.forEach((k) => DEFAULT_PERMS[k]?.forEach((id) => merged.add(id)));
+    return Array.from(merged);
+  };
 
-  const filteredRoles = useMemo(
-    () => ROLES.filter((r) => r.name.toLowerCase().includes(roleQuery.toLowerCase())),
-    [roleQuery],
-  );
+  const [permsByRole, setPermsByRole] = useState<Record<string, Set<string>>>({});
 
   const filteredPages = useMemo(() => {
     const q = resourceQuery.trim().toLowerCase();
@@ -261,22 +281,33 @@ export default function SystemPermissions() {
     });
   }, [resourceQuery]);
 
-  const currentRole = ROLES.find((r) => r.id === activeRole)!;
-  const currentPerms = permsByRole[activeRole];
+  const currentRole = {
+    name: `${orgName || SCOPE_LABEL[scope]} · ${ROLE_META[role].label}`,
+    scope: SCOPE_LABEL[scope],
+  };
+  const currentPerms = permsByRole[activeRole] ?? new Set(defaultsFor(scope, role));
   const totalCount = collectAllIds().length;
 
-  const switchRole = (id: string) => {
+  const guardSwitch = (apply: () => void) => {
     if (dirty) {
       const ok = window.confirm("当前角色有未保存的改动，切换将丢失。继续？");
       if (!ok) return;
     }
-    setActiveRole(id);
+    apply();
     setDirty(false);
   };
+  const onScopeChange = (s: OrgScope) =>
+    guardSwitch(() => {
+      setScope(s);
+      setOrgId(SCOPE_OPTIONS[s][0]?.id ?? "");
+    });
+  const onOrgChange = (id: string) => guardSwitch(() => setOrgId(id));
+  const onRoleChange = (r: RoleId) => guardSwitch(() => setRole(r));
 
   const toggleIds = (ids: string[], checked: boolean) => {
     setPermsByRole((prev) => {
-      const next = new Set(prev[activeRole]);
+      const base = prev[activeRole] ?? new Set(defaultsFor(scope, role));
+      const next = new Set(base);
       if (checked) ids.forEach((i) => next.add(i));
       else ids.forEach((i) => next.delete(i));
       return { ...prev, [activeRole]: next };
@@ -313,9 +344,11 @@ export default function SystemPermissions() {
     setDirty(true);
   };
   const handleResetDefault = () => {
-    setPermsByRole((prev) => ({ ...prev, [activeRole]: new Set(DEFAULT_PERMS[activeRole] ?? []) }));
+    setPermsByRole((prev) => ({ ...prev, [activeRole]: new Set(defaultsFor(scope, role)) }));
     setDirty(true);
   };
+
+
 
   const handleSave = () => {
     toast({
@@ -338,7 +371,7 @@ export default function SystemPermissions() {
         {/* 步骤引导 */}
         <div className="mb-4 flex items-center gap-2 text-xs">
           {[
-            { n: 1, t: "选择角色" },
+            { n: 1, t: "选择组织与角色" },
             { n: 2, t: "勾选权限" },
             { n: 3, t: "保存生效" },
           ].map((s, i) => (
@@ -359,70 +392,105 @@ export default function SystemPermissions() {
         </div>
 
         <div className="grid grid-cols-12 gap-4">
-          {/* 左侧：角色 */}
+          {/* 左侧：组织 + 角色 级联选择 */}
           <Card className="col-span-12 lg:col-span-3">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2 mb-3">
+            <CardContent className="p-3 space-y-4">
+              <div className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-primary" />
-                <h3 className="text-sm font-semibold">第 1 步 · 选择角色</h3>
+                <h3 className="text-sm font-semibold">第 1 步 · 选择组织与角色</h3>
               </div>
-              <div className="relative mb-3">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                <Input
-                  value={roleQuery}
-                  onChange={(e) => setRoleQuery(e.target.value)}
-                  placeholder="搜索角色"
-                  className="h-8 pl-8 text-xs"
-                />
+
+              {/* 1) 组织层级 */}
+              <div>
+                <div className="text-[11px] text-muted-foreground mb-1.5">① 组织层级</div>
+                <div className="grid grid-cols-5 gap-1">
+                  {(Object.keys(SCOPE_LABEL) as OrgScope[]).map((s, idx, arr) => (
+                    <div key={s} className="flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => onScopeChange(s)}
+                        className={cn(
+                          "flex-1 h-7 rounded-md border text-[11px] font-medium transition",
+                          scope === s
+                            ? "border-primary/60 bg-primary/10 text-primary"
+                            : "border-border/60 text-muted-foreground hover:bg-muted/40",
+                        )}
+                      >
+                        {SCOPE_LABEL[s]}
+                      </button>
+                      {idx < arr.length - 1 && (
+                        <ChevronRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <ScrollArea className="h-[600px] pr-2">
-                <ul className="space-y-1.5">
-                  {filteredRoles.map((r) => {
-                    const active = r.id === activeRole;
-                    const cnt = permsByRole[r.id]?.size ?? 0;
+
+              {/* 2) 具体组织 */}
+              <div>
+                <div className="text-[11px] text-muted-foreground mb-1.5">
+                  ② 选择{SCOPE_LABEL[scope]}组织
+                </div>
+                <Select value={orgId} onValueChange={onOrgChange}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder={`请选择${SCOPE_LABEL[scope]}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SCOPE_OPTIONS[scope].map((o) => (
+                      <SelectItem key={o.id} value={o.id} className="text-xs">
+                        {o.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 3) 角色 */}
+              <div>
+                <div className="text-[11px] text-muted-foreground mb-1.5">③ 选择角色</div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {ROLE_OPTIONS.map((r) => {
+                    const active = r === role;
+                    const meta = ROLE_META[r];
                     return (
-                      <li key={r.id}>
-                        <button
-                          type="button"
-                          onClick={() => switchRole(r.id)}
-                          className={cn(
-                            "w-full text-left rounded-lg border p-2.5 transition",
-                            active
-                              ? "border-primary/60 bg-primary/10 shadow-sm"
-                              : "border-border/60 hover:bg-muted/40",
-                          )}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={cn(
-                                "h-1.5 w-1.5 rounded-full",
-                                active ? "bg-primary" : "bg-muted-foreground/40",
-                              )}
-                            />
-                            <span className="text-sm font-medium">{r.name}</span>
-                            <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 h-4">
-                              {r.scope}
-                            </Badge>
-                          </div>
-                          <div className="mt-1 ml-3.5 text-[11px] text-muted-foreground line-clamp-1">
-                            {r.desc}
-                          </div>
-                          <div className="mt-1.5 ml-3.5 flex items-center gap-3 text-[10px] text-muted-foreground">
-                            <span className="inline-flex items-center gap-1">
-                              <UsersIcon className="h-3 w-3" />
-                              {r.userCount} 账号
-                            </span>
-                            <span className="inline-flex items-center gap-1">
-                              <CheckSquare className="h-3 w-3" />
-                              {cnt} 项权限
-                            </span>
-                          </div>
-                        </button>
-                      </li>
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => onRoleChange(r)}
+                        className={cn(
+                          "h-8 rounded-md border text-xs font-medium transition",
+                          active
+                            ? "border-primary/60 bg-primary/10 text-primary shadow-sm"
+                            : "border-border/60 text-foreground/80 hover:bg-muted/40",
+                        )}
+                      >
+                        {meta.label}
+                      </button>
                     );
                   })}
-                </ul>
-              </ScrollArea>
+                </div>
+                <div className="mt-2 text-[10px] text-muted-foreground line-clamp-2">
+                  {ROLE_META[role].desc}
+                </div>
+              </div>
+
+              {/* 选中结果摘要 */}
+              <div className="rounded-lg border border-primary/40 bg-primary/5 p-2.5">
+                <div className="text-[10px] text-muted-foreground mb-1">当前配置对象</div>
+                <div className="text-sm font-semibold">{orgName || "—"}</div>
+                <div className="mt-1 flex items-center gap-2">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
+                    {SCOPE_LABEL[scope]}
+                  </Badge>
+                  <Badge className="text-[10px] px-1.5 py-0 h-4 bg-primary/15 text-primary border-0">
+                    {ROLE_META[role].label}
+                  </Badge>
+                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <CheckSquare className="h-3 w-3" />
+                    {currentPerms.size} 项
+                  </span>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
