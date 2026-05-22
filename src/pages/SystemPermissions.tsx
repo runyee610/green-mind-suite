@@ -371,7 +371,7 @@ export default function SystemPermissions() {
         {/* 步骤引导 */}
         <div className="mb-4 flex items-center gap-2 text-xs">
           {[
-            { n: 1, t: "选择角色" },
+            { n: 1, t: "选择组织与角色" },
             { n: 2, t: "勾选权限" },
             { n: 3, t: "保存生效" },
           ].map((s, i) => (
