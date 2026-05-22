@@ -4,7 +4,9 @@ import {
   Brain, Send, Sparkles, Activity, Plus, FileSearch, Workflow, Users,
   ChevronRight, MessageSquare, BarChart3, ShieldCheck, Building2, Wand2,
   TrendingUp, MapPin, Layers, GitCompare, CircleDollarSign, Wallet, Compass,
+  Pencil, Check, X,
 } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -572,34 +574,121 @@ function CardView({ card, navigate }: { card: Card; navigate: ReturnType<typeof 
         {card.ids.map((id) => {
           const d = disbursements.find((x) => x.id === id);
           if (!d) return null;
-          const p = findPolicy(d.policyId);
-          const e = findEnterprise(d.enterpriseId);
-          const stageColor = d.stage === "已到账" ? "text-success" : d.stage === "财政划拨中" ? "text-warning" : "text-info";
-          return (
-            <button
-              key={id}
-              onClick={() => navigate("/direct-benefit/gov/disburse")}
-              className="flex w-full items-center gap-3 rounded-md border border-border bg-card p-2.5 text-left transition hover:border-primary/40"
-            >
-              <Wallet className="h-4 w-4 shrink-0 text-warning" />
-              <div className="min-w-0 flex-1">
-                <div className="text-xs font-medium text-foreground line-clamp-1">{e?.name} · {p?.name}</div>
-                <div className="mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground">
-                  <span className={cn("font-medium", stageColor)}>{d.stage}</span>
-                  <span>·</span>
-                  <span className="font-mono">{d.timeline[d.timeline.length - 1].time}</span>
-                  {d.certificateId && (<><span>·</span><span className="font-mono">证书 {d.certificateId}</span></>)}
-                </div>
-              </div>
-              <span className="font-mono text-sm font-semibold text-warning">{d.amount} 万</span>
-            </button>
-          );
+          return <DisburseRow key={id} d={d} navigate={navigate} />;
         })}
       </div>
     );
   }
 
   return null;
+}
+
+// 政府侧 · 可编辑 + 人工确认金额
+function DisburseRow({ d, navigate }: { d: Disbursement; navigate: ReturnType<typeof useNavigate> }) {
+  const p = findPolicy(d.policyId);
+  const e = findEnterprise(d.enterpriseId);
+  const stageColor = d.stage === "已到账" ? "text-success" : d.stage === "财政划拨中" ? "text-warning" : "text-info";
+
+  const [amount, setAmount] = useState(d.amount);
+  const [draft, setDraft] = useState(String(d.amount));
+  const [editing, setEditing] = useState(false);
+  const [confirmed, setConfirmed] = useState(d.stage !== "已核准");
+
+  const startEdit = (ev: React.MouseEvent) => {
+    ev.stopPropagation();
+    setDraft(String(amount));
+    setEditing(true);
+  };
+  const cancelEdit = (ev: React.MouseEvent) => {
+    ev.stopPropagation();
+    setEditing(false);
+  };
+  const saveEdit = (ev: React.MouseEvent) => {
+    ev.stopPropagation();
+    const n = Number(draft);
+    if (!Number.isFinite(n) || n <= 0) {
+      toast.error("金额需为正数");
+      return;
+    }
+    setAmount(n);
+    setEditing(false);
+    setConfirmed(false);
+    toast.success(`金额已修改为 ${n} 万，请确认`);
+  };
+  const confirmAmount = (ev: React.MouseEvent) => {
+    ev.stopPropagation();
+    setConfirmed(true);
+    toast.success(`${e?.name} · ${p?.name} 拨付金额 ${amount} 万已确认`);
+  };
+
+  return (
+    <div
+      onClick={() => navigate("/direct-benefit/gov/disburse")}
+      className="flex w-full cursor-pointer items-center gap-3 rounded-md border border-border bg-card p-2.5 text-left transition hover:border-primary/40"
+    >
+      <Wallet className="h-4 w-4 shrink-0 text-warning" />
+      <div className="min-w-0 flex-1">
+        <div className="text-xs font-medium text-foreground line-clamp-1">{e?.name} · {p?.name}</div>
+        <div className="mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground">
+          <span className={cn("font-medium", stageColor)}>{d.stage}</span>
+          <span>·</span>
+          <span className="font-mono">{d.timeline[d.timeline.length - 1].time}</span>
+          {d.certificateId && (<><span>·</span><span className="font-mono">证书 {d.certificateId}</span></>)}
+          {confirmed ? (
+            <Badge variant="outline" className="ml-1 border-success/40 bg-success/10 text-success text-[10px]">
+              <Check className="mr-0.5 h-2.5 w-2.5" />金额已确认
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="ml-1 border-warning/40 bg-warning/10 text-warning text-[10px]">
+              待人工确认
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {editing ? (
+        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          <Input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            className="h-7 w-20 text-right font-mono text-xs"
+            type="number"
+            min={0}
+          />
+          <span className="text-[10px] text-muted-foreground">万</span>
+          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-success" onClick={saveEdit} title="保存">
+            <Check className="h-3.5 w-3.5" />
+          </Button>
+          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground" onClick={cancelEdit} title="取消">
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-sm font-semibold text-warning">{amount} 万</span>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-primary"
+            onClick={startEdit}
+            title="修改金额"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          {!confirmed && (
+            <Button
+              size="sm"
+              className="h-7 px-2 text-[11px]"
+              onClick={confirmAmount}
+              title="确认金额"
+            >
+              <Check className="mr-0.5 h-3 w-3" />确认
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ---------- 初始对话脚本 ----------

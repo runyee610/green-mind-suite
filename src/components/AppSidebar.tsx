@@ -93,10 +93,6 @@ const assetsItems: NavItem[] = assetsItemsByRole.gov;
 const directBenefitItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
     { title: "智能体工作台", url: "/direct-benefit/gov", icon: Brain },
-    { title: "政策图谱", url: "/direct-benefit/gov/policies", icon: FileSearch },
-    { title: "企业画像", url: "/direct-benefit/gov/entprofile", icon: Users },
-    { title: "撮合名单", url: "/direct-benefit/gov/matches", icon: Workflow },
-    { title: "资金拨付", url: "/direct-benefit/gov/disburse", icon: CircleDollarSign },
     { title: "全部政策", url: "/direct-benefit/gov/all-policies", icon: Compass },
     { title: "数据源配置", url: "/direct-benefit/gov/sources", icon: Settings },
   ],
