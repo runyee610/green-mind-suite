@@ -168,12 +168,12 @@ export default function SystemAccounts() {
 
   // ===== 账号 CRUD =====
   const openCreateAccount = () => {
-    setFName(""); setFPhone(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
+    setFName(""); setFPhone(""); setFEmail(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
     setFType("gov"); setFEnts([]); setFEntRole("user"); setFEntKeyword("");
     setAccountDlg({ open: true, editing: null });
   };
   const openEditAccount = (a: Account) => {
-    setFName(a.name); setFPhone(a.phone); setFUid(a.uid); setFStatus(a.status);
+    setFName(a.name); setFPhone(a.phone); setFEmail(a.email); setFUid(a.uid); setFStatus(a.status);
     setFType(a.type);
     const ents = entMemberships.filter((m) => m.accountId === a.id);
     setFEnts(ents.map((m) => m.enterpriseId));
@@ -201,6 +201,7 @@ export default function SystemAccounts() {
   const submitAccount = () => {
     if (!fName.trim()) return toast({ title: "姓名不能为空", variant: "destructive" });
     if (!/^1[3-9]\d{9}$/.test(fPhone)) return toast({ title: "手机号格式不正确", variant: "destructive" });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fEmail)) return toast({ title: "邮箱格式不正确", variant: "destructive" });
     if (fType === "enterprise" && fEnts.length === 0) {
       return toast({ title: "企业账号必须至少关联一家企业", variant: "destructive" });
     }
@@ -208,18 +209,17 @@ export default function SystemAccounts() {
     if (accountDlg.editing) {
       const wasType = accountDlg.editing.type;
       setAccounts((arr) => arr.map((x) => x.id === accountDlg.editing!.id
-        ? { ...x, name: fName.trim(), phone: fPhone, uid: fUid, type: fType, status: fStatus } : x));
+        ? { ...x, name: fName.trim(), phone: fPhone, email: fEmail.trim(), uid: fUid, type: fType, status: fStatus } : x));
       syncEnterpriseBindings(accountDlg.editing.id, fEnts, entRoleToUse);
-      // 切换为企业账号时移除政府组织身份
       if (wasType === "gov" && fType === "enterprise") {
         setMemberships((arr) => arr.filter((m) => m.accountId !== accountDlg.editing!.id));
       }
       toast({ title: "已更新账号" });
     } else {
       const id = `A${String(accounts.length + 1).padStart(3, "0")}`;
-      setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, uid: fUid, type: fType, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
+      setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, email: fEmail.trim(), uid: fUid, type: fType, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
       syncEnterpriseBindings(id, fEnts, entRoleToUse);
-      toast({ title: "已新增账号", description: `默认密码已通过短信发送至 ${fPhone}` });
+      toast({ title: "已新增账号", description: `初始密码设置链接已发送至 ${fEmail}` });
     }
     setAccountDlg({ open: false, editing: null });
   };
