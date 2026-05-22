@@ -71,6 +71,9 @@ export default function Assets() {
   const [districtFilter, setDistrictFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<ProjectStatus[]>([]);
   const [industryFilter, setIndustryFilter] = useState<string[]>([]);
+  const [ratioFilter, setRatioFilter] = useState<RatioBucket[]>([]);
+  const [deltaFilter, setDeltaFilter] = useState<DeltaBucket[]>([]);
+  const [onSiteFilter, setOnSiteFilter] = useState<OnSiteBucket[]>([]);
   const [importOpen, setImportOpen] = useState(false);
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkTarget, setLinkTarget] = useState<InvestmentProject | null>(null);
@@ -87,19 +90,25 @@ export default function Assets() {
       const dt = districtFilter.length === 0 || districtFilter.includes(p.district);
       const st = statusFilter.length === 0 || statusFilter.includes(p.status);
       const ind = industryFilter.length === 0 || (!!p.linkedEnterpriseName && industryFilter.includes(p.industry));
-      return kw && dt && st && ind;
+      const rt = ratioFilter.length === 0 || (p.collectedEnergy > 0 && ratioFilter.includes(ratioBucketOf(computeYtdRatio(p))));
+      const dl = deltaFilter.length === 0 || (p.collectedEnergy > 0 && deltaFilter.includes(deltaBucketOf(computeDelta(p))));
+      const os = onSiteFilter.length === 0 || onSiteFilter.includes(p.onSiteCheck ? "yes" : "no");
+      return kw && dt && st && ind && rt && dl && os;
     });
-  }, [keyword, districtFilter, statusFilter, industryFilter]);
+  }, [keyword, districtFilter, statusFilter, industryFilter, ratioFilter, deltaFilter, onSiteFilter]);
 
-  const totalActive = districtFilter.length + statusFilter.length + industryFilter.length;
+  const totalActive = districtFilter.length + statusFilter.length + industryFilter.length + ratioFilter.length + deltaFilter.length + onSiteFilter.length;
   const [filtersOpen, setFiltersOpen] = useState(false);
   const activeChips = useMemo(() => {
     const chips: { key: string; label: string; value: string; remove: () => void }[] = [];
     districtFilter.forEach((d) => chips.push({ key: `d-${d}`, label: "区", value: d, remove: () => setDistrictFilter((arr) => arr.filter((x) => x !== d)) }));
     statusFilter.forEach((s) => chips.push({ key: `s-${s}`, label: "状态", value: s, remove: () => setStatusFilter((arr) => arr.filter((x) => x !== s)) }));
     industryFilter.forEach((i) => chips.push({ key: `i-${i}`, label: "行业", value: i, remove: () => setIndustryFilter((arr) => arr.filter((x) => x !== i)) }));
+    ratioFilter.forEach((r) => chips.push({ key: `r-${r}`, label: "占比", value: RATIO_OPTIONS.find((o) => o.v === r)!.label, remove: () => setRatioFilter((arr) => arr.filter((x) => x !== r)) }));
+    deltaFilter.forEach((d) => chips.push({ key: `dl-${d}`, label: "增量", value: DELTA_OPTIONS.find((o) => o.v === d)!.label, remove: () => setDeltaFilter((arr) => arr.filter((x) => x !== d)) }));
+    onSiteFilter.forEach((o) => chips.push({ key: `os-${o}`, label: "现场检查", value: o === "yes" ? "已检查" : "未检查", remove: () => setOnSiteFilter((arr) => arr.filter((x) => x !== o)) }));
     return chips;
-  }, [districtFilter, statusFilter, industryFilter]);
+  }, [districtFilter, statusFilter, industryFilter, ratioFilter, deltaFilter, onSiteFilter]);
 
   const stats = useMemo(() => {
     const total = projects.length;
