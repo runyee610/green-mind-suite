@@ -108,6 +108,7 @@ export default function SystemAccounts() {
   // —— 表单态
   const [fName, setFName] = useState("");
   const [fPhone, setFPhone] = useState("");
+  const [fEmail, setFEmail] = useState("");
   const [fUid, setFUid] = useState("");
   const [fType, setFType] = useState<"gov" | "enterprise">("gov");
   const [fStatus, setFStatus] = useState<"启用" | "停用">("启用");
