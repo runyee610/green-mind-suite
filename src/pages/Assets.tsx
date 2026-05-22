@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, ArrowLeft, Boxes, ChevronDown, Download, Eye, Flame, Leaf, Search, Upload, MapPin, Activity, Factory, FilterX, SlidersHorizontal, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Boxes, ChevronDown, Download, Eye, Flame, Leaf, Search, Upload, MapPin, Activity, Factory, FilterX, SlidersHorizontal, X, Percent, TrendingUp, ClipboardCheck } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { ImportDialog } from "@/components/assets/ImportDialog";
 import { LinkEnterpriseDialog } from "@/components/assets/LinkEnterpriseDialog";
@@ -22,15 +22,45 @@ const statusBadgeStyle: Record<ProjectStatus, string> = {
   已暂停: "border-destructive/40 bg-destructive/10 text-destructive",
 };
 
-function computeYtdRatio(p: InvestmentProject) {
+type RatioBucket = "0-90" | "90-110" | "110+";
+type DeltaBucket = "neg" | "0-1000" | "1000+";
+type OnSiteBucket = "yes" | "no";
+const RATIO_OPTIONS: { v: RatioBucket; label: string }[] = [
+  { v: "0-90", label: "0-90%" },
+  { v: "90-110", label: "90-110%（标黄）" },
+  { v: "110+", label: ">110%（标红）" },
+];
+const DELTA_OPTIONS: { v: DeltaBucket; label: string }[] = [
+  { v: "neg", label: "<0 吨标煤" },
+  { v: "0-1000", label: "0-1000 吨标煤（标黄）" },
+  { v: "1000+", label: ">1000 吨标煤（标红）" },
+];
+
+function computeYtdApproved(p: InvestmentProject) {
   const updated = new Date(p.collectedUpdatedAt);
   const year = updated.getFullYear();
   const start = new Date(year, 0, 1);
   const end = new Date(year, 11, 31);
   const daysInYear = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
   const dayOfYear = Math.round((updated.getTime() - start.getTime()) / 86400000) + 1;
-  const ytdApproved = p.approvedEnergy * (dayOfYear / daysInYear);
+  return p.approvedEnergy * (dayOfYear / daysInYear);
+}
+function computeYtdRatio(p: InvestmentProject) {
+  const ytdApproved = computeYtdApproved(p);
   return ytdApproved > 0 ? (p.collectedEnergy / ytdApproved) * 100 : 0;
+}
+function computeDelta(p: InvestmentProject) {
+  return p.collectedEnergy - computeYtdApproved(p);
+}
+function ratioBucketOf(r: number): RatioBucket {
+  if (r > 110) return "110+";
+  if (r >= 90) return "90-110";
+  return "0-90";
+}
+function deltaBucketOf(d: number): DeltaBucket {
+  if (d < 0) return "neg";
+  if (d <= 1000) return "0-1000";
+  return "1000+";
 }
 
 const fmt = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });
@@ -41,6 +71,9 @@ export default function Assets() {
   const [districtFilter, setDistrictFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<ProjectStatus[]>([]);
   const [industryFilter, setIndustryFilter] = useState<string[]>([]);
+  const [ratioFilter, setRatioFilter] = useState<RatioBucket[]>([]);
+  const [deltaFilter, setDeltaFilter] = useState<DeltaBucket[]>([]);
+  const [onSiteFilter, setOnSiteFilter] = useState<OnSiteBucket[]>([]);
   const [importOpen, setImportOpen] = useState(false);
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkTarget, setLinkTarget] = useState<InvestmentProject | null>(null);
@@ -57,19 +90,25 @@ export default function Assets() {
       const dt = districtFilter.length === 0 || districtFilter.includes(p.district);
       const st = statusFilter.length === 0 || statusFilter.includes(p.status);
       const ind = industryFilter.length === 0 || (!!p.linkedEnterpriseName && industryFilter.includes(p.industry));
-      return kw && dt && st && ind;
+      const rt = ratioFilter.length === 0 || (p.collectedEnergy > 0 && ratioFilter.includes(ratioBucketOf(computeYtdRatio(p))));
+      const dl = deltaFilter.length === 0 || (p.collectedEnergy > 0 && deltaFilter.includes(deltaBucketOf(computeDelta(p))));
+      const os = onSiteFilter.length === 0 || onSiteFilter.includes(p.onSiteCheck ? "yes" : "no");
+      return kw && dt && st && ind && rt && dl && os;
     });
-  }, [keyword, districtFilter, statusFilter, industryFilter]);
+  }, [keyword, districtFilter, statusFilter, industryFilter, ratioFilter, deltaFilter, onSiteFilter]);
 
-  const totalActive = districtFilter.length + statusFilter.length + industryFilter.length;
+  const totalActive = districtFilter.length + statusFilter.length + industryFilter.length + ratioFilter.length + deltaFilter.length + onSiteFilter.length;
   const [filtersOpen, setFiltersOpen] = useState(false);
   const activeChips = useMemo(() => {
     const chips: { key: string; label: string; value: string; remove: () => void }[] = [];
     districtFilter.forEach((d) => chips.push({ key: `d-${d}`, label: "区", value: d, remove: () => setDistrictFilter((arr) => arr.filter((x) => x !== d)) }));
     statusFilter.forEach((s) => chips.push({ key: `s-${s}`, label: "状态", value: s, remove: () => setStatusFilter((arr) => arr.filter((x) => x !== s)) }));
     industryFilter.forEach((i) => chips.push({ key: `i-${i}`, label: "行业", value: i, remove: () => setIndustryFilter((arr) => arr.filter((x) => x !== i)) }));
+    ratioFilter.forEach((r) => chips.push({ key: `r-${r}`, label: "占比", value: RATIO_OPTIONS.find((o) => o.v === r)!.label, remove: () => setRatioFilter((arr) => arr.filter((x) => x !== r)) }));
+    deltaFilter.forEach((d) => chips.push({ key: `dl-${d}`, label: "增量", value: DELTA_OPTIONS.find((o) => o.v === d)!.label, remove: () => setDeltaFilter((arr) => arr.filter((x) => x !== d)) }));
+    onSiteFilter.forEach((o) => chips.push({ key: `os-${o}`, label: "现场检查", value: o === "yes" ? "已检查" : "未检查", remove: () => setOnSiteFilter((arr) => arr.filter((x) => x !== o)) }));
     return chips;
-  }, [districtFilter, statusFilter, industryFilter]);
+  }, [districtFilter, statusFilter, industryFilter, ratioFilter, deltaFilter, onSiteFilter]);
 
   const stats = useMemo(() => {
     const total = projects.length;
@@ -101,7 +140,7 @@ export default function Assets() {
     ];
   }, []);
 
-  const reset = () => { setKeyword(""); setDistrictFilter([]); setStatusFilter([]); setIndustryFilter([]); };
+  const reset = () => { setKeyword(""); setDistrictFilter([]); setStatusFilter([]); setIndustryFilter([]); setRatioFilter([]); setDeltaFilter([]); setOnSiteFilter([]); };
   const openLink = (p: InvestmentProject) => { setLinkTarget(p); setLinkOpen(true); };
 
   const toneClass = (tone: "primary" | "warning" | "success") => {
@@ -332,6 +371,90 @@ export default function Assets() {
                       </PopoverContent>
                     </Popover>
                   </div>
+
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">同期采集占比</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2">
+                            <Percent className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className={cn(ratioFilter.length === 0 && "text-muted-foreground")}>
+                              {ratioFilter.length === 0 ? "全部区间" : `已选 ${ratioFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 p-2" align="start">
+                        {RATIO_OPTIONS.map((o) => {
+                          const checked = ratioFilter.includes(o.v);
+                          return (
+                            <label key={o.v} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setRatioFilter((arr) => v ? [...arr, o.v] : arr.filter((x) => x !== o.v))} />
+                              <span>{o.label}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">同期采集增量</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2">
+                            <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className={cn(deltaFilter.length === 0 && "text-muted-foreground")}>
+                              {deltaFilter.length === 0 ? "全部区间" : `已选 ${deltaFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-2" align="start">
+                        {DELTA_OPTIONS.map((o) => {
+                          const checked = deltaFilter.includes(o.v);
+                          return (
+                            <label key={o.v} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setDeltaFilter((arr) => v ? [...arr, o.v] : arr.filter((x) => x !== o.v))} />
+                              <span>{o.label}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">是否现场检查</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2">
+                            <ClipboardCheck className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className={cn(onSiteFilter.length === 0 && "text-muted-foreground")}>
+                              {onSiteFilter.length === 0 ? "全部" : `已选 ${onSiteFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-40 p-2" align="start">
+                        {([{ v: "yes" as OnSiteBucket, label: "已现场检查" }, { v: "no" as OnSiteBucket, label: "未现场检查" }]).map((o) => {
+                          const checked = onSiteFilter.includes(o.v);
+                          return (
+                            <label key={o.v} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setOnSiteFilter((arr) => v ? [...arr, o.v] : arr.filter((x) => x !== o.v))} />
+                              <span>{o.label}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
               )}
             </div>
@@ -350,6 +473,7 @@ export default function Assets() {
                     <TableHead className="w-32 px-3 text-right">批复能耗</TableHead>
                     <TableHead className="w-32 px-3 text-right">采集能耗</TableHead>
                     <TableHead className="w-32 px-3 text-right">同期采集占比</TableHead>
+                    <TableHead className="w-36 px-3 text-right">同期采集增量</TableHead>
                     <TableHead className="w-24 px-3 text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -359,6 +483,8 @@ export default function Assets() {
                     const ratio = computeYtdRatio(p);
                     const ratioWarn = ratio > 110;
                     const ratioMid = ratio >= 90 && ratio <= 110;
+                    const delta = computeDelta(p);
+                    const deltaBucket = deltaBucketOf(delta);
                     return (
                       <TableRow key={p.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetail(p)}>
                         <TableCell className="px-3 font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</TableCell>
@@ -385,6 +511,14 @@ export default function Assets() {
                         )}>
                           {p.collectedEnergy > 0 ? `${ratio.toFixed(1)}%` : "—"}
                         </TableCell>
+                        <TableCell className={cn(
+                          "px-3 text-right font-mono text-sm tabular-nums",
+                          p.collectedEnergy === 0 && "text-muted-foreground",
+                          p.collectedEnergy > 0 && deltaBucket === "0-1000" && "text-warning font-semibold",
+                          p.collectedEnergy > 0 && deltaBucket === "1000+" && "text-destructive font-semibold",
+                        )}>
+                          {p.collectedEnergy > 0 ? `${delta > 0 ? "+" : ""}${fmt(delta, 0)}` : "—"}
+                        </TableCell>
                         <TableCell className="px-3 text-right">
                           <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={(e) => { e.stopPropagation(); setDetail(p); }}>
                             <Eye className="h-3.5 w-3.5" />查看
@@ -394,7 +528,7 @@ export default function Assets() {
                     );
                   })}
                   {filtered.length === 0 && (
-                    <TableRow><TableCell colSpan={9} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={10} className="h-32 text-center text-sm text-muted-foreground">暂无匹配项目</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
