@@ -371,6 +371,90 @@ export default function Assets() {
                       </PopoverContent>
                     </Popover>
                   </div>
+
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">同期采集占比</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2">
+                            <Percent className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className={cn(ratioFilter.length === 0 && "text-muted-foreground")}>
+                              {ratioFilter.length === 0 ? "全部区间" : `已选 ${ratioFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 p-2" align="start">
+                        {RATIO_OPTIONS.map((o) => {
+                          const checked = ratioFilter.includes(o.v);
+                          return (
+                            <label key={o.v} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setRatioFilter((arr) => v ? [...arr, o.v] : arr.filter((x) => x !== o.v))} />
+                              <span>{o.label}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">同期采集增量</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2">
+                            <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className={cn(deltaFilter.length === 0 && "text-muted-foreground")}>
+                              {deltaFilter.length === 0 ? "全部区间" : `已选 ${deltaFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-2" align="start">
+                        {DELTA_OPTIONS.map((o) => {
+                          const checked = deltaFilter.includes(o.v);
+                          return (
+                            <label key={o.v} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setDeltaFilter((arr) => v ? [...arr, o.v] : arr.filter((x) => x !== o.v))} />
+                              <span>{o.label}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="ml-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">是否现场检查</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="h-10 w-full justify-between bg-background font-normal">
+                          <span className="flex items-center gap-2">
+                            <ClipboardCheck className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className={cn(onSiteFilter.length === 0 && "text-muted-foreground")}>
+                              {onSiteFilter.length === 0 ? "全部" : `已选 ${onSiteFilter.length} 项`}
+                            </span>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-40 p-2" align="start">
+                        {([{ v: "yes" as OnSiteBucket, label: "已现场检查" }, { v: "no" as OnSiteBucket, label: "未现场检查" }]).map((o) => {
+                          const checked = onSiteFilter.includes(o.v);
+                          return (
+                            <label key={o.v} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted/50">
+                              <Checkbox checked={checked} onCheckedChange={(v) => setOnSiteFilter((arr) => v ? [...arr, o.v] : arr.filter((x) => x !== o.v))} />
+                              <span>{o.label}</span>
+                            </label>
+                          );
+                        })}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
               )}
             </div>
