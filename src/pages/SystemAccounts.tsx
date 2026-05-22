@@ -1019,15 +1019,56 @@ export default function SystemAccounts() {
         </DialogContent>
       </Dialog>
 
-      {/* —— 重置密码 —— */}
+      {/* —— 重置密码（邮件链接式） —— */}
       <Dialog open={pwdDlg.open} onOpenChange={(o) => setPwdDlg((s) => ({ ...s, open: o }))}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle><Lock className="mr-2 inline h-4 w-4" />重置密码</DialogTitle>
-            <DialogDescription>已向 {pwdDlg.target} 发送随机临时密码，登录后请尽快修改。</DialogDescription>
+            <DialogTitle><Lock className="mr-2 inline h-4 w-4" />发送密码重置链接</DialogTitle>
+            <DialogDescription>
+              系统将向账号邮箱发送一封包含安全验证链接的邮件，用户点击后即可设置新密码。
+            </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button onClick={() => { toast({ title: "已发送临时密码" }); setPwdDlg({ open: false, target: "" }); }}>确定</Button>
+          <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 h-8 w-8 shrink-0 rounded-full bg-primary/10 text-primary inline-flex items-center justify-center">
+                <KeyRound className="h-4 w-4" />
+              </div>
+              <div className="space-y-1 text-sm flex-1 min-w-0">
+                <div className="text-xs text-muted-foreground">收件邮箱</div>
+                <div className="font-mono break-all">{pwdDlg.target}</div>
+              </div>
+            </div>
+            <ol className="space-y-1.5 pl-4 text-xs text-muted-foreground list-decimal">
+              <li>点击「发送邮件」后，系统会向上述邮箱发送一个一次性验证链接（有效期 30 分钟）。</li>
+              <li>用户在邮件中点击链接 → 跳转到平台的「设置新密码」页面，输入新密码与确认密码。</li>
+              <li>提交成功后回到登录页，使用新密码重新登录即可。</li>
+            </ol>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setPwdDlg({ open: false, target: "" })}>取消</Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const token = `demo-${Date.now().toString(36)}`;
+                window.open(
+                  `/reset-password?token=${token}&email=${encodeURIComponent(pwdDlg.target)}`,
+                  "_blank",
+                );
+              }}
+            >
+              预览重置页面
+            </Button>
+            <Button
+              onClick={() => {
+                toast({
+                  title: "重置链接已发送",
+                  description: `请提醒用户前往 ${pwdDlg.target} 查收邮件，30 分钟内完成设置。`,
+                });
+                setPwdDlg({ open: false, target: "" });
+              }}
+            >
+              发送邮件
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
