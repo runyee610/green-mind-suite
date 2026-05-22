@@ -107,9 +107,6 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                 <Link2 className="h-3.5 w-3.5" />去关联企业
               </Button>
             )}
-            <Button size="sm" variant="outline" className="gap-1">
-              <Paperclip className="h-3.5 w-3.5" />附件下载
-            </Button>
           </div>
         </div>
 
@@ -260,7 +257,10 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                   <Paperclip className="h-4 w-4 text-primary" />项目附件
                   <Badge variant="outline" className="ml-1 border-primary/30 bg-primary/5 text-primary">{attachments.length}</Badge>
                 </h3>
-                <div>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="outline" className="gap-1">
+                    <Paperclip className="h-3.5 w-3.5" />附件下载
+                  </Button>
                   <input
                     ref={fileInputRef}
                     type="file"
