@@ -557,6 +557,7 @@ export default function SystemAccounts() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>账号</TableHead>
+                    <TableHead>邮箱</TableHead>
                     <TableHead>所属企业</TableHead>
                     <TableHead>统一社会信用代码</TableHead>
                     <TableHead>角色</TableHead>
