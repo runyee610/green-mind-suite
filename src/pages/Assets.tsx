@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, ArrowLeft, Boxes, ChevronDown, Download, Eye, Flame, Leaf, Search, Upload, MapPin, Activity, Factory, FilterX, SlidersHorizontal, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Boxes, ChevronDown, Download, Eye, Flame, Leaf, Search, Upload, MapPin, Activity, Factory, FilterX, SlidersHorizontal, X, Percent, TrendingUp, ClipboardCheck } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { ImportDialog } from "@/components/assets/ImportDialog";
 import { LinkEnterpriseDialog } from "@/components/assets/LinkEnterpriseDialog";
@@ -22,15 +22,45 @@ const statusBadgeStyle: Record<ProjectStatus, string> = {
   已暂停: "border-destructive/40 bg-destructive/10 text-destructive",
 };
 
-function computeYtdRatio(p: InvestmentProject) {
+type RatioBucket = "0-90" | "90-110" | "110+";
+type DeltaBucket = "neg" | "0-1000" | "1000+";
+type OnSiteBucket = "yes" | "no";
+const RATIO_OPTIONS: { v: RatioBucket; label: string }[] = [
+  { v: "0-90", label: "0-90%" },
+  { v: "90-110", label: "90-110%（标黄）" },
+  { v: "110+", label: ">110%（标红）" },
+];
+const DELTA_OPTIONS: { v: DeltaBucket; label: string }[] = [
+  { v: "neg", label: "<0 吨标煤" },
+  { v: "0-1000", label: "0-1000 吨标煤（标黄）" },
+  { v: "1000+", label: ">1000 吨标煤（标红）" },
+];
+
+function computeYtdApproved(p: InvestmentProject) {
   const updated = new Date(p.collectedUpdatedAt);
   const year = updated.getFullYear();
   const start = new Date(year, 0, 1);
   const end = new Date(year, 11, 31);
   const daysInYear = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
   const dayOfYear = Math.round((updated.getTime() - start.getTime()) / 86400000) + 1;
-  const ytdApproved = p.approvedEnergy * (dayOfYear / daysInYear);
+  return p.approvedEnergy * (dayOfYear / daysInYear);
+}
+function computeYtdRatio(p: InvestmentProject) {
+  const ytdApproved = computeYtdApproved(p);
   return ytdApproved > 0 ? (p.collectedEnergy / ytdApproved) * 100 : 0;
+}
+function computeDelta(p: InvestmentProject) {
+  return p.collectedEnergy - computeYtdApproved(p);
+}
+function ratioBucketOf(r: number): RatioBucket {
+  if (r > 110) return "110+";
+  if (r >= 90) return "90-110";
+  return "0-90";
+}
+function deltaBucketOf(d: number): DeltaBucket {
+  if (d < 0) return "neg";
+  if (d <= 1000) return "0-1000";
+  return "1000+";
 }
 
 const fmt = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });
