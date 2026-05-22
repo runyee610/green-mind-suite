@@ -128,10 +128,13 @@ export function ProjectDetailView({ project, onLink }: { project: InvestmentProj
                   onClick={(e) => {
                     e.preventDefault();
                     const target = document.getElementById(s.id);
-                    const viewport = target?.closest("[data-radix-scroll-area-viewport]") as HTMLElement | null;
-                    if (target && viewport) {
+                    if (!target) return;
+                    const viewport = target.closest("[data-radix-scroll-area-viewport]") as HTMLElement | null;
+                    if (viewport && viewport.scrollHeight > viewport.clientHeight) {
                       const top = target.getBoundingClientRect().top - viewport.getBoundingClientRect().top + viewport.scrollTop - 12;
                       viewport.scrollTo({ top, behavior: "smooth" });
+                    } else {
+                      target.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                   }}
                   className="flex items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted/50 hover:text-foreground"
