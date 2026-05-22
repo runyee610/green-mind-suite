@@ -248,22 +248,31 @@ const ACTION_STYLES: Record<ActionItem["kind"], { icon: any; cls: string; active
 };
 
 export default function SystemPermissions() {
-  const [activeRole, setActiveRole] = useState<string>(ROLES[0].id);
-  const [roleQuery, setRoleQuery] = useState("");
+  // 第 1 步：组织类型 → 具体组织 → 角色 级联选择
+  const [scope, setScope] = useState<OrgScope>("city");
+  const [orgId, setOrgId] = useState<string>(SCOPE_OPTIONS.city[0]?.id ?? "");
+  const [role, setRole] = useState<RoleId>("admin");
+  const activeRole = `${scope}__${orgId}__${role}`;
+  const orgName = SCOPE_OPTIONS[scope].find((o) => o.id === orgId)?.name ?? "";
+
   const [resourceQuery, setResourceQuery] = useState("");
   const [expandedFields, setExpandedFields] = useState<Set<string>>(new Set());
   const [dirty, setDirty] = useState(false);
 
-  const [permsByRole, setPermsByRole] = useState<Record<string, Set<string>>>(() => {
-    const init: Record<string, Set<string>> = {};
-    ROLES.forEach((r) => (init[r.id] = new Set(DEFAULT_PERMS[r.id] ?? [])));
-    return init;
-  });
+  const defaultsFor = (s: OrgScope, r: RoleId): string[] => {
+    const keys = SCOPE_ROLE_DEFAULTS[s][r];
+    const merged = new Set<string>();
+    keys.forEach((k) => DEFAULT_PERMS[k]?.forEach((id) => merged.add(id)));
+    return Array.from(merged);
+  };
 
-  const filteredRoles = useMemo(
-    () => ROLES.filter((r) => r.name.toLowerCase().includes(roleQuery.toLowerCase())),
-    [roleQuery],
-  );
+  const [permsByRole, setPermsByRole] = useState<Record<string, Set<string>>>({});
+  if (!permsByRole[activeRole]) {
+    // 懒加载：首次访问该组合时用默认权限初始化
+    permsByRole[activeRole] = new Set(defaultsFor(scope, role));
+  }
+
+
 
   const filteredPages = useMemo(() => {
     const q = resourceQuery.trim().toLowerCase();
