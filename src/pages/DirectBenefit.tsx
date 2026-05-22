@@ -193,30 +193,6 @@ export default function DirectBenefit() {
             </Badge>
           </div>
 
-          {role === "gov" && (
-            <div className="grid grid-cols-4 gap-2 border-b border-border bg-muted/20 px-4 py-3">
-              {[
-                { label: "政策图谱", desc: "查询/对比政策", icon: FileSearch, to: "/direct-benefit/gov/policies" },
-                { label: "企业画像", desc: "确权证书 / 画像", icon: Database, to: "/direct-benefit/gov/entprofile" },
-                { label: "撮合名单", desc: "智能撮合 / 公示", icon: Workflow, to: "/direct-benefit/gov/matches" },
-                { label: "资金拨付", desc: "周期看板 / 报表", icon: CircleDollarSign, to: "/direct-benefit/gov/disburse" },
-              ].map((f) => (
-                <button
-                  key={f.label}
-                  onClick={() => navigate(f.to)}
-                  className="group flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-left transition hover:border-primary/40 hover:bg-primary/5"
-                >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground">
-                    <f.icon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-xs font-semibold text-foreground">{f.label}</div>
-                    <div className="text-[10px] text-muted-foreground line-clamp-1">{f.desc}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
 
 
           {/* 滚动区 */}
