@@ -29,30 +29,37 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import {
+  INITIAL_ORG_FOREST,
+  INITIAL_GROUPS,
+  INITIAL_ENTERPRISES,
+  flattenForest,
+  ROLE_META,
+  type RoleId,
+} from "@/components/system/orgTreeData";
 
-// ===== 角色（与账号管理保持一致：3 种统一角色 × 组织层级范围）=====
-type Role = {
-  id: string;
-  name: string;
-  scope: string;
-  userCount: number;
-  desc: string;
+// ===== 组织 + 角色 双选 =====
+type OrgScope = "city" | "district" | "park" | "group" | "enterprise";
+
+const SCOPE_LABEL: Record<OrgScope, string> = {
+  city: "市级",
+  district: "区级",
+  park: "园区",
+  group: "集团",
+  enterprise: "企业",
 };
 
-// 与 orgTreeData 中 RoleId(admin/deputy/user) × OrgLevel(city/dept/district/park) 对应
-const ROLES: Role[] = [
-  { id: "city_admin",     name: "市级中心 · 管理员",   scope: "市级", userCount: 1, desc: "市级唯一,拥有该中心全部权限" },
-  { id: "city_deputy",    name: "市级中心 · 副管理员", scope: "市级", userCount: 3, desc: "协助市级管理员,可有多人" },
-  { id: "dept_admin",     name: "内设科室 · 管理员",   scope: "科室", userCount: 5, desc: "科室唯一,负责本科室业务条线" },
-  { id: "dept_user",      name: "内设科室 · 普通用户", scope: "科室", userCount: 12, desc: "科室日常使用者" },
-  { id: "district_admin", name: "区级 · 管理员",       scope: "区级", userCount: 8, desc: "本区唯一,负责区级行政范围" },
-  { id: "district_user",  name: "区级 · 普通用户",     scope: "区级", userCount: 14, desc: "区级日常使用者" },
-  { id: "park_admin",     name: "园区 · 管理员",       scope: "园区", userCount: 16, desc: "园区唯一,管理园区企业与设施" },
-  { id: "park_user",      name: "园区 · 普通用户",     scope: "园区", userCount: 28, desc: "园区日常使用者" },
-  { id: "group_admin",    name: "集团 · 管理员",       scope: "集团", userCount: 6, desc: "集团下属企业管理(独立于行政架构)" },
-  { id: "enterprise_admin", name: "企业 · 管理员",     scope: "企业", userCount: 320, desc: "本企业自助管理" },
-  { id: "enterprise_user",  name: "企业 · 普通用户",   scope: "企业", userCount: 1280, desc: "企业日常填报与查询" },
-];
+const ORGS_FLAT = flattenForest(INITIAL_ORG_FOREST);
+const SCOPE_OPTIONS: Record<OrgScope, { id: string; name: string }[]> = {
+  city: ORGS_FLAT.filter((o) => o.level === "city").map((o) => ({ id: o.id, name: o.name })),
+  district: ORGS_FLAT.filter((o) => o.level === "district").map((o) => ({ id: o.id, name: o.name })),
+  park: ORGS_FLAT.filter((o) => o.level === "park").map((o) => ({ id: o.id, name: o.name })),
+  group: INITIAL_GROUPS.map((g) => ({ id: g.id, name: g.name })),
+  enterprise: INITIAL_ENTERPRISES.map((e) => ({ id: e.id, name: e.name })),
+};
+
+const ROLE_OPTIONS: RoleId[] = ["admin", "deputy", "user"];
+
 
 
 // ===== 资源（页面 → 操作 → 字段） =====
