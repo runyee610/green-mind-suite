@@ -78,6 +78,7 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomeRoute />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/report-monthly" element={<ReportMonthly />} />
           <Route path="/report-monthly/filling" element={<ReportMonthlyFilling />} />
           <Route path="/energy-quota" element={<EnergyQuota />} />
