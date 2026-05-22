@@ -117,8 +117,13 @@ export function GovChatConsole({ topic }: { topic: Topic }) {
   const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef(false);
+  const mountedTopicRef = useRef(topic);
 
-  useEffect(() => setMessages(buildInitial(topic)), [topic]);
+  useEffect(() => {
+    if (mountedTopicRef.current === topic) return;
+    mountedTopicRef.current = topic;
+    setMessages(buildInitial(topic));
+  }, [topic]);
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length, thinking]);
