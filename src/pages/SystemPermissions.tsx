@@ -264,7 +264,11 @@ export default function SystemPermissions() {
   const [dirty, setDirty] = useState(false);
 
   const defaultsFor = (s: OrgScope, r: RoleId): string[] => {
-    const keys = SCOPE_ROLE_DEFAULTS[s][r];
+    let keys = SCOPE_ROLE_DEFAULTS[s][r];
+    if (s === "city" && DEPT_IDS.has(orgId)) {
+      // 内设科室：使用科室角色默认权限
+      keys = r === "user" ? ["dept_user"] : ["dept_admin"];
+    }
     const merged = new Set<string>();
     keys.forEach((k) => DEFAULT_PERMS[k]?.forEach((id) => merged.add(id)));
     return Array.from(merged);
