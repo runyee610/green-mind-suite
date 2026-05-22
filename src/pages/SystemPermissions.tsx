@@ -52,8 +52,12 @@ const SCOPE_LABEL: Record<OrgScope, string> = {
 };
 
 const ORGS_FLAT = flattenForest(INITIAL_ORG_FOREST);
+const DEPT_IDS = new Set(ORGS_FLAT.filter((o) => o.level === "dept").map((o) => o.id));
 const SCOPE_OPTIONS: Record<OrgScope, { id: string; name: string }[]> = {
-  city: ORGS_FLAT.filter((o) => o.level === "city").map((o) => ({ id: o.id, name: o.name })),
+  city: [
+    ...ORGS_FLAT.filter((o) => o.level === "city").map((o) => ({ id: o.id, name: o.name })),
+    ...ORGS_FLAT.filter((o) => o.level === "dept").map((o) => ({ id: o.id, name: `└ ${o.name}` })),
+  ],
   district: ORGS_FLAT.filter((o) => o.level === "district").map((o) => ({ id: o.id, name: o.name })),
   park: ORGS_FLAT.filter((o) => o.level === "park").map((o) => ({ id: o.id, name: o.name })),
   group: INITIAL_GROUPS.map((g) => ({ id: g.id, name: g.name })),
@@ -260,7 +264,11 @@ export default function SystemPermissions() {
   const [dirty, setDirty] = useState(false);
 
   const defaultsFor = (s: OrgScope, r: RoleId): string[] => {
-    const keys = SCOPE_ROLE_DEFAULTS[s][r];
+    let keys = SCOPE_ROLE_DEFAULTS[s][r];
+    if (s === "city" && DEPT_IDS.has(orgId)) {
+      // 内设科室：使用科室角色默认权限
+      keys = r === "user" ? ["dept_user"] : ["dept_admin"];
+    }
     const merged = new Set<string>();
     keys.forEach((k) => DEFAULT_PERMS[k]?.forEach((id) => merged.add(id)));
     return Array.from(merged);
