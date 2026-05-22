@@ -32,7 +32,7 @@ const RATIO_OPTIONS: { v: RatioBucket; label: string }[] = [
 ];
 const DELTA_OPTIONS: { v: DeltaBucket; label: string }[] = [
   { v: "neg", label: "<0 吨标煤" },
-  { v: "0-1000", label: "0-1000 吨标煤（标黄）" },
+  { v: "0-1000", label: "0-1000 吨标煤" },
   { v: "1000+", label: ">1000 吨标煤（标红）" },
 ];
 
