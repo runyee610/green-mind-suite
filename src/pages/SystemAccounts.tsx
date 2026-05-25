@@ -115,6 +115,9 @@ export default function SystemAccounts() {
   const [fEnts, setFEnts] = useState<string[]>([]);
   const [fEntRole, setFEntRole] = useState<RoleId>("user");
   const [fEntKeyword, setFEntKeyword] = useState("");
+  const [fOrgs, setFOrgs] = useState<string[]>([]);
+  const [fOrgRole, setFOrgRole] = useState<RoleId>("user");
+  const [fOrgKeyword, setFOrgKeyword] = useState("");
 
 
 
@@ -170,6 +173,7 @@ export default function SystemAccounts() {
   const openCreateAccount = () => {
     setFName(""); setFPhone(""); setFEmail(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
     setFType("gov"); setFEnts([]); setFEntRole("user"); setFEntKeyword("");
+    setFOrgs([]); setFOrgRole("user"); setFOrgKeyword("");
     setAccountDlg({ open: true, editing: null });
   };
   const openEditAccount = (a: Account) => {
@@ -179,6 +183,10 @@ export default function SystemAccounts() {
     setFEnts(ents.map((m) => m.enterpriseId));
     setFEntRole(ents[0]?.role ?? "user");
     setFEntKeyword("");
+    const mbs = memberships.filter((m) => m.accountId === a.id);
+    setFOrgs(mbs.map((m) => m.orgId));
+    setFOrgRole(mbs[0]?.role ?? "user");
+    setFOrgKeyword("");
     setAccountDlg({ open: true, editing: a });
   };
   const syncEnterpriseBindings = (accountId: string, enterpriseIds: string[], role: RoleId) => {
@@ -198,6 +206,23 @@ export default function SystemAccounts() {
       return next;
     });
   };
+  const syncOrgBindings = (accountId: string, orgIds: string[], role: RoleId) => {
+    setMemberships((arr) => {
+      const others = arr.filter((m) => m.accountId !== accountId);
+      const existing = arr.filter((m) => m.accountId === accountId);
+      const next: Membership[] = [...others];
+      orgIds.forEach((oid, idx) => {
+        const old = existing.find((m) => m.orgId === oid);
+        next.push({
+          id: old?.id ?? `M${Date.now().toString(36)}${idx}`,
+          accountId,
+          orgId: oid,
+          role,
+        });
+      });
+      return next;
+    });
+  };
   const submitAccount = () => {
     if (!fName.trim()) return toast({ title: "姓名不能为空", variant: "destructive" });
     if (!/^1[3-9]\d{9}$/.test(fPhone)) return toast({ title: "手机号格式不正确", variant: "destructive" });
@@ -211,7 +236,9 @@ export default function SystemAccounts() {
       setAccounts((arr) => arr.map((x) => x.id === accountDlg.editing!.id
         ? { ...x, name: fName.trim(), phone: fPhone, email: fEmail.trim(), uid: fUid, type: fType, status: fStatus } : x));
       syncEnterpriseBindings(accountDlg.editing.id, fEnts, entRoleToUse);
-      if (wasType === "gov" && fType === "enterprise") {
+      if (fType === "gov") {
+        syncOrgBindings(accountDlg.editing.id, fOrgs, fOrgRole);
+      } else if (wasType === "gov") {
         setMemberships((arr) => arr.filter((m) => m.accountId !== accountDlg.editing!.id));
       }
       toast({ title: "已更新账号" });
@@ -219,6 +246,7 @@ export default function SystemAccounts() {
       const id = `A${String(accounts.length + 1).padStart(3, "0")}`;
       setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, email: fEmail.trim(), uid: fUid, type: fType, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
       syncEnterpriseBindings(id, fEnts, entRoleToUse);
+      if (fType === "gov") syncOrgBindings(id, fOrgs, fOrgRole);
       toast({ title: "已新增账号", description: `初始密码设置链接已发送至 ${fEmail}` });
     }
     setAccountDlg({ open: false, editing: null });
@@ -772,6 +800,119 @@ export default function SystemAccounts() {
                 </div>
               </div>
             </section>
+
+            {/* 政府组织归属区（仅政府账号） */}
+            {fType === "gov" && (
+              <section className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-medium flex items-center gap-2">
+                    <span className="w-1 h-3.5 rounded-full bg-primary" />
+                    所属组织
+                    <span className="text-[11px] font-normal text-muted-foreground ml-0.5">
+                      （市/区/园区/科室,可多选,共用同一角色）
+                    </span>
+                  </Label>
+                  <span className="text-[11px] text-muted-foreground">
+                    已选 <span className="font-semibold text-primary">{fOrgs.length}</span> / {ORGS.length}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[11px] text-muted-foreground">在组织中的角色</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(Object.keys(ROLE_META) as RoleId[]).map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setFOrgRole(r)}
+                        className={cn(
+                          "rounded-lg border p-2.5 text-left transition-colors",
+                          fOrgRole === r ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40",
+                        )}
+                      >
+                        <Badge variant="outline" className={cn("text-[10px]", ROLE_META[r].cls)}>
+                          {ROLE_META[r].label}
+                        </Badge>
+                        <div className="mt-1 text-[10px] text-muted-foreground leading-snug">{ROLE_META[r].desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      value={fOrgKeyword}
+                      onChange={(e) => setFOrgKeyword(e.target.value)}
+                      placeholder="搜索组织名称"
+                      className="pl-9 text-xs"
+                    />
+                  </div>
+
+                  {fOrgs.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 rounded-lg border border-border bg-muted/30 p-2">
+                      {fOrgs.map((oid) => {
+                        const o = orgById(oid);
+                        return (
+                          <Badge
+                            key={oid}
+                            variant="outline"
+                            className="text-[10px] gap-1 pl-2 pr-1 py-0.5 border-primary/40 bg-primary/10 text-primary"
+                          >
+                            {o?.name}
+                            <button
+                              type="button"
+                              className="ml-0.5 rounded hover:bg-foreground/10 px-1"
+                              onClick={() => setFOrgs((s) => s.filter((x) => x !== oid))}
+                            >×</button>
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    <div className="max-h-44 overflow-y-auto divide-y divide-border/60">
+                      {ORGS
+                        .filter((o) => {
+                          const q = fOrgKeyword.trim().toLowerCase();
+                          if (!q) return true;
+                          return o.name.toLowerCase().includes(q);
+                        })
+                        .map((o) => {
+                          const checked = fOrgs.includes(o.id);
+                          return (
+                            <label
+                              key={o.id}
+                              className={cn(
+                                "flex items-start gap-3 p-2.5 hover:bg-muted/50 transition-colors cursor-pointer",
+                                checked && "bg-primary/5",
+                              )}
+                            >
+                              <Checkbox
+                                checked={checked}
+                                onCheckedChange={(v) =>
+                                  setFOrgs((s) => (v ? [...s, o.id] : s.filter((x) => x !== o.id)))
+                                }
+                                className="mt-0.5"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-medium truncate">{o.name}</div>
+                                <div className="text-[11px] text-muted-foreground mt-0.5">
+                                  <Badge variant="outline" className={cn("text-[10px] font-normal", LEVEL_BADGE_CLASS[o.level])}>
+                                    {LEVEL_LABEL[o.level]}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </label>
+                          );
+                        })}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {/* 企业关联区 */}
             <section className="space-y-3">
