@@ -115,6 +115,9 @@ export default function SystemAccounts() {
   const [fEnts, setFEnts] = useState<string[]>([]);
   const [fEntRole, setFEntRole] = useState<RoleId>("user");
   const [fEntKeyword, setFEntKeyword] = useState("");
+  const [fOrgs, setFOrgs] = useState<string[]>([]);
+  const [fOrgRole, setFOrgRole] = useState<RoleId>("user");
+  const [fOrgKeyword, setFOrgKeyword] = useState("");
 
 
 
