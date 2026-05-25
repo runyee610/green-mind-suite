@@ -173,6 +173,7 @@ export default function SystemAccounts() {
   const openCreateAccount = () => {
     setFName(""); setFPhone(""); setFEmail(""); setFUid(`U${10000 + accounts.length + 1}`); setFStatus("启用");
     setFType("gov"); setFEnts([]); setFEntRole("user"); setFEntKeyword("");
+    setFOrgs([]); setFOrgRole("user"); setFOrgKeyword("");
     setAccountDlg({ open: true, editing: null });
   };
   const openEditAccount = (a: Account) => {
@@ -182,6 +183,10 @@ export default function SystemAccounts() {
     setFEnts(ents.map((m) => m.enterpriseId));
     setFEntRole(ents[0]?.role ?? "user");
     setFEntKeyword("");
+    const mbs = memberships.filter((m) => m.accountId === a.id);
+    setFOrgs(mbs.map((m) => m.orgId));
+    setFOrgRole(mbs[0]?.role ?? "user");
+    setFOrgKeyword("");
     setAccountDlg({ open: true, editing: a });
   };
   const syncEnterpriseBindings = (accountId: string, enterpriseIds: string[], role: RoleId) => {
@@ -201,6 +206,23 @@ export default function SystemAccounts() {
       return next;
     });
   };
+  const syncOrgBindings = (accountId: string, orgIds: string[], role: RoleId) => {
+    setMemberships((arr) => {
+      const others = arr.filter((m) => m.accountId !== accountId);
+      const existing = arr.filter((m) => m.accountId === accountId);
+      const next: Membership[] = [...others];
+      orgIds.forEach((oid, idx) => {
+        const old = existing.find((m) => m.orgId === oid);
+        next.push({
+          id: old?.id ?? `M${Date.now().toString(36)}${idx}`,
+          accountId,
+          orgId: oid,
+          role,
+        });
+      });
+      return next;
+    });
+  };
   const submitAccount = () => {
     if (!fName.trim()) return toast({ title: "姓名不能为空", variant: "destructive" });
     if (!/^1[3-9]\d{9}$/.test(fPhone)) return toast({ title: "手机号格式不正确", variant: "destructive" });
@@ -214,7 +236,9 @@ export default function SystemAccounts() {
       setAccounts((arr) => arr.map((x) => x.id === accountDlg.editing!.id
         ? { ...x, name: fName.trim(), phone: fPhone, email: fEmail.trim(), uid: fUid, type: fType, status: fStatus } : x));
       syncEnterpriseBindings(accountDlg.editing.id, fEnts, entRoleToUse);
-      if (wasType === "gov" && fType === "enterprise") {
+      if (fType === "gov") {
+        syncOrgBindings(accountDlg.editing.id, fOrgs, fOrgRole);
+      } else if (wasType === "gov") {
         setMemberships((arr) => arr.filter((m) => m.accountId !== accountDlg.editing!.id));
       }
       toast({ title: "已更新账号" });
@@ -222,6 +246,7 @@ export default function SystemAccounts() {
       const id = `A${String(accounts.length + 1).padStart(3, "0")}`;
       setAccounts((arr) => [...arr, { id, name: fName.trim(), phone: fPhone, email: fEmail.trim(), uid: fUid, type: fType, status: fStatus, createdAt: new Date().toISOString().slice(0, 10) }]);
       syncEnterpriseBindings(id, fEnts, entRoleToUse);
+      if (fType === "gov") syncOrgBindings(id, fOrgs, fOrgRole);
       toast({ title: "已新增账号", description: `初始密码设置链接已发送至 ${fEmail}` });
     }
     setAccountDlg({ open: false, editing: null });
