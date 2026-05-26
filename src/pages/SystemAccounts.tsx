@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import {
+  Ban,
   Building2,
   KeyRound,
   Lock,
@@ -8,6 +9,7 @@ import {
   Search,
   ShieldCheck,
   Trash2,
+  Unlock,
   UserCircle2,
   Link2,
 
@@ -253,12 +255,12 @@ export default function SystemAccounts() {
   };
 
 
-  const deleteAccount = (a: Account) => {
-    const cnt = membershipCountByAccount[a.id] ?? 0;
-    if (cnt > 0) return toast({ title: "无法删除", description: `该账号仍绑定 ${cnt} 个组织身份，请先解绑`, variant: "destructive" });
-    if (!window.confirm(`确认删除账号「${a.name}」？`)) return;
-    setAccounts((arr) => arr.filter((x) => x.id !== a.id));
-    toast({ title: "已删除账号" });
+  const toggleAccountStatus = (a: Account) => {
+    const nextStatus = a.status === "启用" ? "停用" : "启用";
+    const action = nextStatus === "启用" ? "启用" : "禁用";
+    if (!window.confirm(`确认${action}账号「${a.name}」？`)) return;
+    setAccounts((arr) => arr.map((x) => x.id === a.id ? { ...x, status: nextStatus } : x));
+    toast({ title: `已${action}账号`, description: `「${a.name}」已${action}` });
   };
 
   // ===== 身份 CRUD =====
@@ -561,9 +563,9 @@ export default function SystemAccounts() {
                               onClick={() => openEditAccount(a)}>
                               <Pencil className="h-3.5 w-3.5" />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" title="删除"
-                              onClick={() => deleteAccount(a)}>
-                              <Trash2 className="h-3.5 w-3.5" />
+                            <Button size="icon" variant="ghost" className={cn("h-7 w-7", a.status === "启用" ? "text-destructive hover:text-destructive" : "text-emerald-600 hover:text-emerald-600")} title={a.status === "启用" ? "禁用" : "启用"}
+                              onClick={() => toggleAccountStatus(a)}>
+                              {a.status === "启用" ? <Ban className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
                             </Button>
                           </div>
                         </TableCell>
@@ -678,9 +680,9 @@ export default function SystemAccounts() {
                               onClick={() => openEditAccount(a)}>
                               <Pencil className="h-3.5 w-3.5" />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" title="删除"
-                              onClick={() => deleteAccount(a)}>
-                              <Trash2 className="h-3.5 w-3.5" />
+                            <Button size="icon" variant="ghost" className={cn("h-7 w-7", a.status === "启用" ? "text-destructive hover:text-destructive" : "text-emerald-600 hover:text-emerald-600")} title={a.status === "启用" ? "禁用" : "启用"}
+                              onClick={() => toggleAccountStatus(a)}>
+                              {a.status === "启用" ? <Ban className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
                             </Button>
                           </div>
                         </TableCell>
