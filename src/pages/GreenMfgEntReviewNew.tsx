@@ -159,6 +159,11 @@ export default function GreenMfgEntReviewNew() {
       toast.error("该批次已存在评价记录，请选择其他批次");
       return;
     }
+    if (!attestation?.confirmed) {
+      toast.warning("请先在「数据确权」步骤完成承诺");
+      setCurrentStep("data-attestation");
+      return;
+    }
     toast.success("自我评价已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent/review"), 600);
