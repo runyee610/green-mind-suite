@@ -129,6 +129,7 @@ export default function GreenMfgEntDeclarationNew() {
         proofs: it.proofs,
       })),
       savedAt,
+      attestation,
     };
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
