@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,8 +22,28 @@ import {
   Zap,
   Radar,
   ShieldCheck,
+  AlertTriangle,
+  Upload,
+  Lightbulb,
 } from "lucide-react";
+import { SCORE_DIMENSIONS } from "./data";
 import { cn } from "@/lib/utils";
+
+const WEAK_THRESHOLD = 0.9;
+
+function suggestionFor(name: string): string {
+  if (/能耗|能源消耗/.test(name)) return "建议补充能源审计报告、节能改造方案，或上传节能技术应用记录。";
+  if (/碳排|碳足迹|可再生|清洁能源/.test(name)) return "建议加入光伏 / 绿电采购证明，更新碳核查报告与减排技术说明。";
+  if (/水|取水/.test(name)) return "建议补充中水回用、节水设备运行记录及节水技术改造证明。";
+  if (/固废|污染|排放浓度/.test(name)) return "建议补充污染物在线监测数据、固废综合利用台账与处置合同。";
+  if (/绿色设计|绿色产品|产品/.test(name)) return "建议上传绿色设计自评报告、产品碳足迹核算与第三方认证证书。";
+  if (/工艺|设备|改造/.test(name)) return "建议补充先进工艺设备清单、绿色低碳改造前后对比数据。";
+  if (/管理|平台|系统/.test(name)) return "建议完善能碳管理平台功能截图、管理体系认证证书。";
+  if (/土地|用地/.test(name)) return "建议补充土地产出率核算依据与厂区集约用地说明。";
+  return "建议补充对应证明材料，或引入相关节能 / 减排技术以提高得分。";
+}
+
+
 
 type StepStatus = "pending" | "running" | "done";
 
