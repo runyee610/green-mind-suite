@@ -167,7 +167,7 @@ export default function GreenMfgGovDeclarationDetail() {
         <TabsContent value="data-attestation" className="mt-0">
           <DataAttestationPanel
             mode="gov"
-            defaultSigner={`${detail.contact ?? "张明"}（法定代表人）`}
+            defaultSigner="张明（法定代表人）"
             defaultSignedAt={detail.submitDate}
           />
         </TabsContent>
