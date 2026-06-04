@@ -141,6 +141,11 @@ export default function GreenMfgEntDeclarationNew() {
   };
 
   const handleSubmit = () => {
+    if (!attestation?.confirmed) {
+      toast.warning("请先在「数据确权」步骤完成承诺");
+      setCurrentStep("data-attestation");
+      return;
+    }
     toast.success("自我评价已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent"), 600);
