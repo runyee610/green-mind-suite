@@ -149,7 +149,7 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-export function AIScoringAgentPanel({ initialFinished = false }: { initialFinished?: boolean } = {}) {
+export function AIScoringAgentPanel({ initialFinished = false, hideSupplementButton = false }: { initialFinished?: boolean; hideSupplementButton?: boolean } = {}) {
   const [running, setRunning] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(initialFinished ? STEPS.length : -1);
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
