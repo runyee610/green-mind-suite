@@ -9,13 +9,11 @@ import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
   EvaluationIndicatorCard,
-  AuthenticityCommitmentCard,
   EMPTY_ENTERPRISE_BASIC,
   buildEmptyBasicRequirements,
   buildEmptyIndicators,
   type EnterpriseBasicInfo,
   type BasicRequirementItem,
-  type AuthenticityCommitmentValue,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
@@ -30,7 +28,6 @@ const ANCHORS = [
   { href: "basic-info", label: "企业基本信息表" },
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
-  { href: "authenticity-commitment", label: "真实性承诺" },
   { href: "ai-scoring", label: "AI 打分智能体" },
 ];
 
@@ -65,7 +62,7 @@ export default function GreenMfgEntDeclarationNew() {
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
-  const [commitment, setCommitment] = useState<AuthenticityCommitmentValue>({});
+  
 
   // 恢复草稿
   useEffect(() => {
