@@ -15,6 +15,7 @@ import {
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
+import { DataAttestationPanel } from "@/components/green-mfg/DataAttestationPanel";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
