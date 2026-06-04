@@ -271,8 +271,9 @@ export function AIScoringAgentPanel({ initialFinished = false }: { initialFinish
               ) : (
                 <>
                   <Play className="mr-1 h-3.5 w-3.5" />
-                  {finished ? "重新运行" : "启动 AI 打分"}
+                  启动 AI 打分
                 </>
+
               )}
             </Button>
           </div>
