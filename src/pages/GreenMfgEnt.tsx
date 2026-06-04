@@ -25,11 +25,12 @@ interface SelfAssessRecord {
   date: string;
   aiScore: number;
   note?: string;
+  attested?: boolean;
 }
 const MOCK_SELF_ASSESS: SelfAssessRecord[] = [
-  { id: "SA-2025-003", date: "2025-09-20", aiScore: 78, note: "新增 3 项绿色产品后再评" },
+  { id: "SA-2025-003", date: "2025-09-20", aiScore: 78, note: "新增 3 项绿色产品后再评", attested: true },
   { id: "SA-2025-002", date: "2025-08-12", aiScore: 72 },
-  { id: "SA-2025-001", date: "2025-06-04", aiScore: 65, note: "首次试评" },
+  { id: "SA-2025-001", date: "2025-06-04", aiScore: 65, note: "首次试评", attested: true },
 ];
 
 export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
