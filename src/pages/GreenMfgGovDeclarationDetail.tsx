@@ -229,9 +229,6 @@ export default function GreenMfgGovDeclarationDetail() {
         <TabsContent value="basic-requirements" className="mt-0">
           <BasicRequirementsCard />
         </TabsContent>
-        <TabsContent value="authenticity-commitment" className="mt-0">
-          <AuthenticityCommitmentCard defaultSignedFileName="真实性承诺函-签章扫描件.pdf" />
-        </TabsContent>
         <TabsContent value="evaluation-indicator" className="mt-0">
           <EvaluationIndicatorCard mode="gov" data={indicators} onChange={setIndicators} />
         </TabsContent>
