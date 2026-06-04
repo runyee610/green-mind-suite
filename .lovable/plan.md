@@ -1,43 +1,39 @@
 ## 目标
 
-在企业侧填报/复评流程中，"AI 打分智能体"之后新增一步 **数据确权**：企业必须勾选承诺后方可提交审核；政府侧详情页同步展示该确权结果（只读）。
+对完成「数据确权」的记录，在列表中追加一个绿色 `已确权` 徽标；未确权行保持原样、不加任何标识。
 
-## 实施
+## 改动
 
-### 1. 新组件 `src/components/green-mfg/DataAttestationPanel.tsx`
+### 1. 企业侧：`src/pages/GreenMfgEnt.tsx` —— 模拟自我评价表
 
-可复用面板，两种模式：
+- 在 `SelfAssessRecord` 接口加可选字段 `attested?: boolean`。
+- 在 `MOCK_SELF_ASSESS` 中将最近一次（`SA-2025-003`）和 `SA-2025-001` 标为 `attested: true`，`SA-2025-002` 不加，呈现"部分已确权"效果。
+- 在表格"备注"列（或紧贴 AI 打分单元格）的内容中，当 `r.attested` 为 true 时追加一个小徽标：
+  ```tsx
+  {r.attested && (
+    <Badge variant="outline" className="ml-2 h-5 border-success/40 bg-success/10 text-success">
+      <CheckCircle2 className="mr-1 h-3 w-3" />已确权
+    </Badge>
+  )}
+  ```
+- 放在 AI 打分单元格末尾或单独新增一列均可——采用"紧跟 AI 打分后的同一格"方案，避免新增列影响布局。
 
-- `mode="ent"`（默认）：可交互
-  - 顶部说明卡：标题"数据确权与法律责任承诺"，简述 AI 打分仅辅助、最终由企业认可。
-  - 承诺清单（4 项 Checkbox）：
-    1. 所提交的企业信息、指标数据、证明材料真实、完整、有效；
-    2. 已对各项证明材料进行核对，与系统填报内容一致；
-    3. 认可 AI 智能体的辅助打分结果，并以此作为本次自评依据；
-    4. 如有虚假填报或材料造假，自愿承担相应法律责任。
-  - 法定代表人 / 经办人姓名 + 确权日期（自动取今日，可改）。
-  - 底部"确认承诺"按钮，点击后写入 `localStorage`（key 同草稿，新增 `attestation` 字段），并 toast。
-  - 通过 `onConfirmedChange(confirmed: boolean)` 上抛状态，供父页控制"提交审核"按钮启用。
-- `mode="gov"`：只读
-  - 展示承诺人、确权时间、4 条承诺勾选状态（全部 ✅），以及"企业已完成数据确权"徽标。
-  - 若企业未确权（mock 中默认已确权），显示"待企业确权"。
+### 2. 政府侧：`src/pages/GreenMfgGov.tsx` —— 审核推荐列表
 
-### 2. 企业侧填报/复评页
+- 在 `MOCK_DECLARATIONS`（`src/components/green-mfg/data.ts`）中为 `DeclarationRecord` 新增可选字段 `attested?: boolean`。
+- 给已提交审核 / 已完成 / 培育中等若干典型记录打 `attested: true`（如 `GF-2025-001`、`GF-2025-003`、`GF-2025-004`），其余保持空。
+- 在表格"企业名称"单元格名称下方（信用代码同行右侧）或紧贴"流转状态"徽标处追加：
+  ```tsx
+  {r.attested && (
+    <Badge variant="outline" className="ml-1 h-5 border-success/40 bg-success/10 text-success">
+      <CheckCircle2 className="mr-0.5 h-3 w-3" />已确权
+    </Badge>
+  )}
+  ```
+- 选择放在「流转状态」徽标右侧（同一单元格内），与状态徽标并列，符合"行级标识"语义且不破坏列宽。
 
-`src/pages/GreenMfgEntDeclarationNew.tsx` 与 `src/pages/GreenMfgEntReviewNew.tsx`：
+## 不改动
 
-- `ANCHORS` 末尾新增 `{ href: "data-attestation", label: "数据确权" }`。
-- 渲染新 step：`<DataAttestationPanel mode="ent" onConfirmedChange={setAttestationConfirmed} initial={draft.attestation} />`。
-- 顶部和底部"提交审核"按钮在 `attestationConfirmed !== true` 时 `disabled`，并 tooltip/toast 提示"请先完成数据确权"。
-- 草稿 `DraftPayload` 增加 `attestation?: { confirmed; signer; signedAt; checks: boolean[] }` 字段，保存/恢复时一并处理。
-
-### 3. 政府侧详情页 `src/pages/GreenMfgGovDeclarationDetail.tsx`
-
-- `TABS` 在"AI 打分结果"之后新增 `{ value: "data-attestation", label: "数据确权" }`。
-- 对应 `<TabsContent>` 渲染 `<DataAttestationPanel mode="gov" />`（mock：已确权，签署人=detail 联系人，签署时间=detail.submitDate，4 项全勾）。
-
-### 4. 企业侧详情页 `src/pages/GreenMfgEntDeclarationDetail.tsx`
-
-- 同步新增"数据确权"Tab，以 `mode="gov"`（只读回显）展示，与政府侧一致。
-
-不改动 AI 打分组件、业务数据模型、路由。
+- `DataAttestationPanel`、详情页确权 Tab、提交逻辑均不变。
+- 不为未确权行加任何文字 / 徽标。
+- 不新增列、不改排序、不改筛选。

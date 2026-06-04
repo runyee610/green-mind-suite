@@ -20,6 +20,7 @@ export interface DeclarationRecord {
   level: DeclarationLevel;
   reviewer?: string;
   comment?: string;
+  attested?: boolean;
 }
 
 // 8 大重点行业及细分行业 + 非重点行业（通则）
@@ -96,6 +97,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     manualScore: 88,
     level: "自我评价中",
     reviewer: "李审核",
+    attested: true,
   },
   {
     id: "GF-2025-002",
@@ -129,6 +131,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     level: "市级绿色工厂",
     reviewer: "王主任",
     comment: "各项指标均超基准线，审核通过，认定为市级绿色工厂。",
+    attested: true,
   },
   {
     id: "GF-2025-004",
@@ -147,6 +150,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     level: "区级培育",
     reviewer: "区生态局",
     comment: "能耗及水耗指标未达标，进入培育阶段。",
+    attested: true,
   },
   {
     id: "GF-2025-005",
