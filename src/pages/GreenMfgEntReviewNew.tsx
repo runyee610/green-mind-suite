@@ -139,6 +139,7 @@ export default function GreenMfgEntReviewNew() {
         proofs: it.proofs,
       })),
       savedAt,
+      attestation,
     };
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
