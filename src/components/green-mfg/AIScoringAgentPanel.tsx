@@ -525,7 +525,7 @@ export function AIScoringAgentPanel({ initialFinished = false, hideSupplementBut
         )}
 
         {/* 薄弱指标提醒 */}
-        {finished && <WeakIndicatorsPanel />}
+        {finished && <WeakIndicatorsPanel hideButton={hideSupplementButton} />}
 
       </CardContent>
     </Card>
