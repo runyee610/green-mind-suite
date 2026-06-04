@@ -359,7 +359,14 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
                       <TableCell className="text-center whitespace-nowrap">
-                        <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
+                        <div className="inline-flex items-center gap-1">
+                          <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
+                          {r.attested && (
+                            <Badge variant="outline" className="h-5 border-success/40 bg-success/10 text-success">
+                              <CheckCircle2 className="mr-0.5 h-3 w-3" />已确权
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">{r.submitDate}</TableCell>
                       <TableCell className="sticky right-0 z-10 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))] group-hover:bg-muted/40">
