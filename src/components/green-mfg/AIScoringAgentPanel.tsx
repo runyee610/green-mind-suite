@@ -540,7 +540,7 @@ interface WeakItem {
   ratio: number;
 }
 
-function WeakIndicatorsPanel() {
+function WeakIndicatorsPanel({ hideButton = false }: { hideButton?: boolean } = {}) {
   const weak = useMemo<WeakItem[]>(() => {
     const items: WeakItem[] = [];
     SCORE_DIMENSIONS.forEach((l1) => {
