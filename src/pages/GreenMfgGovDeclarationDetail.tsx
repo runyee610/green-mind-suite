@@ -20,6 +20,7 @@ import {
 import { EVALUATION_INDICATORS, type IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
+import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
@@ -32,6 +33,7 @@ const TABS = [
   { value: "basic-info", label: "企业基本信息表" },
   { value: "basic-requirements", label: "基本要求" },
   { value: "audit-record", label: "审批记录" },
+  { value: "ai-scoring", label: "AI 打分结果" },
   { value: "smart-score", label: "智能打分" },
 ];
 
@@ -231,6 +233,9 @@ export default function GreenMfgGovDeclarationDetail() {
         </TabsContent>
         <TabsContent value="evaluation-indicator" className="mt-0">
           <EvaluationIndicatorCard mode="gov" data={indicators} onChange={setIndicators} />
+        </TabsContent>
+        <TabsContent value="ai-scoring" className="mt-0">
+          <AIScoringAgentPanel />
         </TabsContent>
       </Tabs>
 

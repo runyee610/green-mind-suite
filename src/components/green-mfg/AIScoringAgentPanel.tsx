@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,8 +22,28 @@ import {
   Zap,
   Radar,
   ShieldCheck,
+  AlertTriangle,
+  Upload,
+  Lightbulb,
 } from "lucide-react";
+import { SCORE_DIMENSIONS } from "./data";
 import { cn } from "@/lib/utils";
+
+const WEAK_THRESHOLD = 0.9;
+
+function suggestionFor(name: string): string {
+  if (/能耗|能源消耗/.test(name)) return "建议补充能源审计报告、节能改造方案，或上传节能技术应用记录。";
+  if (/碳排|碳足迹|可再生|清洁能源/.test(name)) return "建议加入光伏 / 绿电采购证明，更新碳核查报告与减排技术说明。";
+  if (/水|取水/.test(name)) return "建议补充中水回用、节水设备运行记录及节水技术改造证明。";
+  if (/固废|污染|排放浓度/.test(name)) return "建议补充污染物在线监测数据、固废综合利用台账与处置合同。";
+  if (/绿色设计|绿色产品|产品/.test(name)) return "建议上传绿色设计自评报告、产品碳足迹核算与第三方认证证书。";
+  if (/工艺|设备|改造/.test(name)) return "建议补充先进工艺设备清单、绿色低碳改造前后对比数据。";
+  if (/管理|平台|系统/.test(name)) return "建议完善能碳管理平台功能截图、管理体系认证证书。";
+  if (/土地|用地/.test(name)) return "建议补充土地产出率核算依据与厂区集约用地说明。";
+  return "建议补充对应证明材料，或引入相关节能 / 减排技术以提高得分。";
+}
+
+
 
 type StepStatus = "pending" | "running" | "done";
 
@@ -494,7 +515,117 @@ export function AIScoringAgentPanel() {
             </div>
           </div>
         )}
+
+        {/* 薄弱指标提醒 */}
+        {finished && <WeakIndicatorsPanel />}
+
       </CardContent>
     </Card>
+  );
+}
+
+interface WeakItem {
+  l1: string;
+  name: string;
+  score: number;
+  weight: number;
+  ratio: number;
+}
+
+function WeakIndicatorsPanel() {
+  const weak = useMemo<WeakItem[]>(() => {
+    const items: WeakItem[] = [];
+    SCORE_DIMENSIONS.forEach((l1) => {
+      l1.children.forEach((l2) => {
+        if (l2.weight > 0 && l2.score / l2.weight < WEAK_THRESHOLD) {
+          items.push({
+            l1: l1.name,
+            name: l2.name,
+            score: l2.score,
+            weight: l2.weight,
+            ratio: l2.score / l2.weight,
+          });
+        }
+      });
+    });
+    return items.sort((a, b) => a.ratio - b.ratio).slice(0, 6);
+  }, []);
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border border-warning/30 bg-gradient-to-br from-warning/10 via-card to-warning/5 p-4 animate-fade-in">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-warning/15 text-warning">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+          <span className="text-sm font-semibold text-foreground">薄弱指标提醒</span>
+          {weak.length > 0 && (
+            <Badge variant="outline" className="border-warning/40 bg-warning/10 font-mono text-[10px] text-warning">
+              共 {weak.length} 项
+            </Badge>
+          )}
+        </div>
+        <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+          <Lightbulb className="h-3 w-3" />
+          针对薄弱项完善证明材料或加入节能技术，可有效提升得分
+        </span>
+      </div>
+
+      {weak.length === 0 ? (
+        <div className="flex items-center gap-2 rounded-md border border-success/30 bg-success/10 px-3 py-2 text-sm text-success">
+          <CheckCircle2 className="h-4 w-4" />
+          所有指标均达到良好水平，暂无明显薄弱项。
+        </div>
+      ) : (
+        <div className="grid gap-2 md:grid-cols-2">
+          {weak.map((w) => {
+            const lost = Math.round((w.weight - w.score) * 10) / 10;
+            const pct = w.ratio * 100;
+            return (
+              <div
+                key={`${w.l1}-${w.name}`}
+                className="rounded-lg border border-warning/30 bg-background/70 p-3 backdrop-blur-sm"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <span>{w.l1}</span>
+                      <ChevronRight className="h-3 w-3" />
+                      <span className="text-sm font-semibold text-foreground">{w.name}</span>
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 font-mono text-[11px]">
+                      <span className="text-warning">
+                        {w.score} / {w.weight}
+                      </span>
+                      <span className="text-muted-foreground">失分 {lost} 分</span>
+                      <span className="text-muted-foreground">得分率 {pct.toFixed(0)}%</span>
+                    </div>
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-warning"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <p className="mt-2 text-[12px] leading-relaxed text-foreground/80">
+                      <Lightbulb className="mr-1 inline h-3 w-3 text-warning" />
+                      {suggestionFor(w.name)}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="shrink-0 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                    onClick={() => toast.info(`已为「${w.name}」打开补充材料入口`)}
+                  >
+                    <Upload className="mr-1 h-3 w-3" />
+                    补充材料
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
