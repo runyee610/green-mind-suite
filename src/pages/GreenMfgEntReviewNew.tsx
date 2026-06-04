@@ -258,7 +258,7 @@ export default function GreenMfgEntReviewNew() {
             <Save className="mr-1 h-4 w-4" />保存
           </Button>
           {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
-            <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
+            <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit} disabled={!attestation?.confirmed} title={!attestation?.confirmed ? "请先完成数据确权" : undefined}>
               <Send className="mr-1 h-4 w-4" />提交审核
             </Button>
           ) : (
