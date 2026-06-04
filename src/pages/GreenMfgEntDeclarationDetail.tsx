@@ -237,6 +237,9 @@ export default function GreenMfgEntDeclarationDetail() {
         <TabsContent value="evaluation-indicator" className="mt-0">
           <EvaluationIndicatorCard mode="view" />
         </TabsContent>
+        <TabsContent value="ai-scoring" className="mt-0">
+          <AIScoringAgentPanel />
+        </TabsContent>
       </Tabs>
     </AppLayout>
   );
