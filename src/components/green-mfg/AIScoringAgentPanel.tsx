@@ -149,11 +149,14 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-export function AIScoringAgentPanel() {
+export function AIScoringAgentPanel({ initialFinished = false }: { initialFinished?: boolean } = {}) {
   const [running, setRunning] = useState(false);
-  const [currentIdx, setCurrentIdx] = useState(-1);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [tick, setTick] = useState(0);
+  const [currentIdx, setCurrentIdx] = useState(initialFinished ? STEPS.length : -1);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(
+    initialFinished ? Object.fromEntries(STEPS.map((s) => [s.id, true])) : {},
+  );
+  const [tick, setTick] = useState(initialFinished ? 30 : 0);
+
 
   const finished = currentIdx >= STEPS.length;
   const progress = useMemo(() => {
@@ -268,8 +271,9 @@ export function AIScoringAgentPanel() {
               ) : (
                 <>
                   <Play className="mr-1 h-3.5 w-3.5" />
-                  {finished ? "重新运行" : "启动 AI 打分"}
+                  启动 AI 打分
                 </>
+
               )}
             </Button>
           </div>
