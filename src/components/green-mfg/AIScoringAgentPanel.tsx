@@ -453,9 +453,11 @@ export function AIScoringAgentPanel({ initialFinished = false, hideSupplementBut
             );
           })}
         </ol>
+        </>)}
 
         {/* 最终结果 */}
         {finished && (
+
           <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-cyan-500/10 p-4 animate-fade-in">
             <div
               className="pointer-events-none absolute inset-0 opacity-30"
