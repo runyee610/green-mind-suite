@@ -17,6 +17,7 @@ import {
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
+import { DataAttestationPanel, type AttestationState } from "@/components/green-mfg/DataAttestationPanel";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -29,6 +30,7 @@ const ANCHORS = [
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
   { href: "ai-scoring", label: "AI 打分智能体" },
+  { href: "data-attestation", label: "数据确权" },
 ];
 
 // 默认企业信息（登录企业），开始评价时自动带入，不可编辑
@@ -45,6 +47,7 @@ interface DraftPayload {
   basicInfo: EnterpriseBasicInfo;
   basicReqs: BasicRequirementItem[];
   indicators: IndicatorRow[];
+  attestation?: AttestationState | null;
   savedAt: string;
 }
 
@@ -62,6 +65,8 @@ export default function GreenMfgEntDeclarationNew() {
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
+  const [attestation, setAttestation] = useState<AttestationState | null>(null);
+
   
 
   // 恢复草稿
@@ -98,6 +103,7 @@ export default function GreenMfgEntDeclarationNew() {
           }),
         );
       }
+      if (draft.attestation) setAttestation(draft.attestation);
       setDraftSavedAt(draft.savedAt ?? null);
     } catch {
       /* ignore */
@@ -123,6 +129,7 @@ export default function GreenMfgEntDeclarationNew() {
         proofs: it.proofs,
       })),
       savedAt,
+      attestation,
     };
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
@@ -134,6 +141,11 @@ export default function GreenMfgEntDeclarationNew() {
   };
 
   const handleSubmit = () => {
+    if (!attestation?.confirmed) {
+      toast.warning("请先在「数据确权」步骤完成承诺");
+      setCurrentStep("data-attestation");
+      return;
+    }
     toast.success("自我评价已提交,等待区级审核");
     localStorage.removeItem(DRAFT_KEY);
     setTimeout(() => navigate("/green-mfg/ent"), 600);
@@ -179,7 +191,7 @@ export default function GreenMfgEntDeclarationNew() {
               <Button size="sm" variant="outline" onClick={handleSave}>
                 <Save className="mr-1 h-4 w-4" />保存
               </Button>
-              <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
+              <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit} disabled={!attestation?.confirmed} title={!attestation?.confirmed ? "请先完成数据确权" : undefined}>
                 <Send className="mr-1 h-4 w-4" />提交审核
               </Button>
             </div>
@@ -209,6 +221,13 @@ export default function GreenMfgEntDeclarationNew() {
           />
         )}
         {currentStep === ANCHORS[3].href && <AIScoringAgentPanel />}
+        {currentStep === ANCHORS[4].href && (
+          <DataAttestationPanel
+            mode="ent"
+            initial={attestation}
+            onConfirmedChange={setAttestation}
+          />
+        )}
       </StepTabs>
 
       <div className="mt-6 flex items-center justify-between gap-2">
@@ -227,7 +246,7 @@ export default function GreenMfgEntDeclarationNew() {
             <Save className="mr-1 h-4 w-4" />保存
           </Button>
           {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
-            <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit}>
+            <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit} disabled={!attestation?.confirmed} title={!attestation?.confirmed ? "请先完成数据确权" : undefined}>
               <Send className="mr-1 h-4 w-4" />提交审核
             </Button>
           ) : (

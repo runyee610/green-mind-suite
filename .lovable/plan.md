@@ -1,25 +1,43 @@
 ## 目标
 
-1. "AI 打分结果"子界面顶部直接展示 **AI 综合评分结果 + 薄弱指标提醒** 两块内容；移除"智能体执行进度"进度条与"证明材料解析 / 结构化数据提取 / 公式计算与归一化 / 标杆对照 / 维度打分"五段步骤时间轴。Header 上的"启动 AI 打分 / 重置"按钮保留。
-2. 政府侧详情页中"薄弱指标提醒"的「补充材料」按钮去掉（企业侧保留）。
+在企业侧填报/复评流程中，"AI 打分智能体"之后新增一步 **数据确权**：企业必须勾选承诺后方可提交审核；政府侧详情页同步展示该确权结果（只读）。
 
 ## 实施
 
-### 文件 `src/components/green-mfg/AIScoringAgentPanel.tsx`
+### 1. 新组件 `src/components/green-mfg/DataAttestationPanel.tsx`
 
-- 给 `AIScoringAgentPanel` 增加可选 prop `hideSupplementButton?: boolean`（透传给 `WeakIndicatorsPanel`）。
-- 复用现有 `initialFinished` 作为"精简结果视图"的开关（企业/政府详情页已在用）。当 `initialFinished` 为 true：
-  - 不渲染"总体进度"卡片（带进度条、阶段计数、shimmer 动效的 `<div>`）。
-  - 不渲染步骤时间轴 `<ol>`（5 个 STEP 卡片）。
-  - 仍渲染最终结果卡片（91/100 + 5 维度）与 `<WeakIndicatorsPanel />`。
-- `WeakIndicatorsPanel` 接收 `hideButton?: boolean`，为 true 时不渲染右上角的「补充材料」按钮。
+可复用面板，两种模式：
 
-> 影响：
-> - 企业侧详情页 (`GreenMfgEntDeclarationDetail.tsx`) 也使用 `initialFinished`，进度条与步骤同样会被去掉（与需求一致：放到顶部直接展示结果）；该侧继续显示「补充材料」按钮。
-> - 企业侧填报 / 复评页面 (`GreenMfgEntDeclarationNew.tsx`, `GreenMfgEntReviewNew.tsx`) 未传 `initialFinished`，依然展示完整的智能体执行流程，行为不变。
+- `mode="ent"`（默认）：可交互
+  - 顶部说明卡：标题"数据确权与法律责任承诺"，简述 AI 打分仅辅助、最终由企业认可。
+  - 承诺清单（4 项 Checkbox）：
+    1. 所提交的企业信息、指标数据、证明材料真实、完整、有效；
+    2. 已对各项证明材料进行核对，与系统填报内容一致；
+    3. 认可 AI 智能体的辅助打分结果，并以此作为本次自评依据；
+    4. 如有虚假填报或材料造假，自愿承担相应法律责任。
+  - 法定代表人 / 经办人姓名 + 确权日期（自动取今日，可改）。
+  - 底部"确认承诺"按钮，点击后写入 `localStorage`（key 同草稿，新增 `attestation` 字段），并 toast。
+  - 通过 `onConfirmedChange(confirmed: boolean)` 上抛状态，供父页控制"提交审核"按钮启用。
+- `mode="gov"`：只读
+  - 展示承诺人、确权时间、4 条承诺勾选状态（全部 ✅），以及"企业已完成数据确权"徽标。
+  - 若企业未确权（mock 中默认已确权），显示"待企业确权"。
 
-### 文件 `src/pages/GreenMfgGovDeclarationDetail.tsx`
+### 2. 企业侧填报/复评页
 
-- 将 `<AIScoringAgentPanel initialFinished />` 改为 `<AIScoringAgentPanel initialFinished hideSupplementButton />`。
+`src/pages/GreenMfgEntDeclarationNew.tsx` 与 `src/pages/GreenMfgEntReviewNew.tsx`：
 
-不改业务数据、路由、其他流程。
+- `ANCHORS` 末尾新增 `{ href: "data-attestation", label: "数据确权" }`。
+- 渲染新 step：`<DataAttestationPanel mode="ent" onConfirmedChange={setAttestationConfirmed} initial={draft.attestation} />`。
+- 顶部和底部"提交审核"按钮在 `attestationConfirmed !== true` 时 `disabled`，并 tooltip/toast 提示"请先完成数据确权"。
+- 草稿 `DraftPayload` 增加 `attestation?: { confirmed; signer; signedAt; checks: boolean[] }` 字段，保存/恢复时一并处理。
+
+### 3. 政府侧详情页 `src/pages/GreenMfgGovDeclarationDetail.tsx`
+
+- `TABS` 在"AI 打分结果"之后新增 `{ value: "data-attestation", label: "数据确权" }`。
+- 对应 `<TabsContent>` 渲染 `<DataAttestationPanel mode="gov" />`（mock：已确权，签署人=detail 联系人，签署时间=detail.submitDate，4 项全勾）。
+
+### 4. 企业侧详情页 `src/pages/GreenMfgEntDeclarationDetail.tsx`
+
+- 同步新增"数据确权"Tab，以 `mode="gov"`（只读回显）展示，与政府侧一致。
+
+不改动 AI 打分组件、业务数据模型、路由。
