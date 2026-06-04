@@ -35,7 +35,7 @@ const TABS = [
   { value: "basic-requirements", label: "基本要求" },
   { value: "audit-record", label: "审批记录" },
   { value: "ai-scoring", label: "AI 打分结果" },
-
+  { value: "data-attestation", label: "数据确权" },
 ];
 
 export default function GreenMfgGovDeclarationDetail() {
