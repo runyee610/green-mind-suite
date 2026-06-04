@@ -515,6 +515,10 @@ export function AIScoringAgentPanel() {
             </div>
           </div>
         )}
+
+        {/* 薄弱指标提醒 */}
+        {finished && <WeakIndicatorsPanel />}
+
       </CardContent>
     </Card>
   );
