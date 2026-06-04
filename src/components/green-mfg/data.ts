@@ -20,6 +20,7 @@ export interface DeclarationRecord {
   level: DeclarationLevel;
   reviewer?: string;
   comment?: string;
+  attested?: boolean;
 }
 
 // 8 大重点行业及细分行业 + 非重点行业（通则）
