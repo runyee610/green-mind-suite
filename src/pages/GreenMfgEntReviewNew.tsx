@@ -25,6 +25,7 @@ import {
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
+import { DataAttestationPanel, type AttestationState } from "@/components/green-mfg/DataAttestationPanel";
 import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import { toast } from "sonner";
 
@@ -33,6 +34,7 @@ const ANCHORS = [
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
   { href: "ai-scoring", label: "AI 打分智能体" },
+  { href: "data-attestation", label: "数据确权" },
 ];
 
 const DEFAULT_ENTERPRISE = {
