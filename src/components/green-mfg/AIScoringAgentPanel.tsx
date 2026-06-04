@@ -149,7 +149,7 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-export function AIScoringAgentPanel({ initialFinished = false }: { initialFinished?: boolean } = {}) {
+export function AIScoringAgentPanel({ initialFinished = false, hideSupplementButton = false }: { initialFinished?: boolean; hideSupplementButton?: boolean } = {}) {
   const [running, setRunning] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(initialFinished ? STEPS.length : -1);
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
@@ -284,6 +284,8 @@ export function AIScoringAgentPanel({ initialFinished = false }: { initialFinish
       </CardHeader>
 
       <CardContent className="relative space-y-4">
+        {!initialFinished && (<>
+
         {/* 总体进度 */}
         <div className="relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-cyan-500/5 p-3">
           <div className="mb-2 flex items-center justify-between text-xs">
@@ -451,9 +453,11 @@ export function AIScoringAgentPanel({ initialFinished = false }: { initialFinish
             );
           })}
         </ol>
+        </>)}
 
         {/* 最终结果 */}
         {finished && (
+
           <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-cyan-500/10 p-4 animate-fade-in">
             <div
               className="pointer-events-none absolute inset-0 opacity-30"
@@ -521,7 +525,7 @@ export function AIScoringAgentPanel({ initialFinished = false }: { initialFinish
         )}
 
         {/* 薄弱指标提醒 */}
-        {finished && <WeakIndicatorsPanel />}
+        {finished && <WeakIndicatorsPanel hideButton={hideSupplementButton} />}
 
       </CardContent>
     </Card>
@@ -536,7 +540,7 @@ interface WeakItem {
   ratio: number;
 }
 
-function WeakIndicatorsPanel() {
+function WeakIndicatorsPanel({ hideButton = false }: { hideButton?: boolean } = {}) {
   const weak = useMemo<WeakItem[]>(() => {
     const items: WeakItem[] = [];
     SCORE_DIMENSIONS.forEach((l1) => {
@@ -615,15 +619,18 @@ function WeakIndicatorsPanel() {
                       {suggestionFor(w.name)}
                     </p>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="shrink-0 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                    onClick={() => toast.info(`已为「${w.name}」打开补充材料入口`)}
-                  >
-                    <Upload className="mr-1 h-3 w-3" />
-                    补充材料
-                  </Button>
+                  {!hideButton && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="shrink-0 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                      onClick={() => toast.info(`已为「${w.name}」打开补充材料入口`)}
+                    >
+                      <Upload className="mr-1 h-3 w-3" />
+                      补充材料
+                    </Button>
+                  )}
+
                 </div>
               </div>
             );
