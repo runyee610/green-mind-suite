@@ -70,6 +70,8 @@ export default function GreenMfgEntReviewNew() {
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
+  const [attestation, setAttestation] = useState<AttestationState | null>(null);
+
   
 
   const usedBatches = useMemo(
