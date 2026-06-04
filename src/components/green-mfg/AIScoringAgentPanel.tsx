@@ -523,3 +523,109 @@ export function AIScoringAgentPanel() {
     </Card>
   );
 }
+
+interface WeakItem {
+  l1: string;
+  name: string;
+  score: number;
+  weight: number;
+  ratio: number;
+}
+
+function WeakIndicatorsPanel() {
+  const weak = useMemo<WeakItem[]>(() => {
+    const items: WeakItem[] = [];
+    SCORE_DIMENSIONS.forEach((l1) => {
+      l1.children.forEach((l2) => {
+        if (l2.weight > 0 && l2.score / l2.weight < WEAK_THRESHOLD) {
+          items.push({
+            l1: l1.name,
+            name: l2.name,
+            score: l2.score,
+            weight: l2.weight,
+            ratio: l2.score / l2.weight,
+          });
+        }
+      });
+    });
+    return items.sort((a, b) => a.ratio - b.ratio).slice(0, 6);
+  }, []);
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border border-warning/30 bg-gradient-to-br from-warning/10 via-card to-warning/5 p-4 animate-fade-in">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-warning/15 text-warning">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+          <span className="text-sm font-semibold text-foreground">薄弱指标提醒</span>
+          {weak.length > 0 && (
+            <Badge variant="outline" className="border-warning/40 bg-warning/10 font-mono text-[10px] text-warning">
+              共 {weak.length} 项
+            </Badge>
+          )}
+        </div>
+        <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+          <Lightbulb className="h-3 w-3" />
+          针对薄弱项完善证明材料或加入节能技术，可有效提升得分
+        </span>
+      </div>
+
+      {weak.length === 0 ? (
+        <div className="flex items-center gap-2 rounded-md border border-success/30 bg-success/10 px-3 py-2 text-sm text-success">
+          <CheckCircle2 className="h-4 w-4" />
+          所有指标均达到良好水平，暂无明显薄弱项。
+        </div>
+      ) : (
+        <div className="grid gap-2 md:grid-cols-2">
+          {weak.map((w) => {
+            const lost = Math.round((w.weight - w.score) * 10) / 10;
+            const pct = w.ratio * 100;
+            return (
+              <div
+                key={`${w.l1}-${w.name}`}
+                className="rounded-lg border border-warning/30 bg-background/70 p-3 backdrop-blur-sm"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <span>{w.l1}</span>
+                      <ChevronRight className="h-3 w-3" />
+                      <span className="text-sm font-semibold text-foreground">{w.name}</span>
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 font-mono text-[11px]">
+                      <span className="text-warning">
+                        {w.score} / {w.weight}
+                      </span>
+                      <span className="text-muted-foreground">失分 {lost} 分</span>
+                      <span className="text-muted-foreground">得分率 {pct.toFixed(0)}%</span>
+                    </div>
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-warning"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <p className="mt-2 text-[12px] leading-relaxed text-foreground/80">
+                      <Lightbulb className="mr-1 inline h-3 w-3 text-warning" />
+                      {suggestionFor(w.name)}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="shrink-0 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                    onClick={() => toast.info(`已为「${w.name}」打开补充材料入口`)}
+                  >
+                    <Upload className="mr-1 h-3 w-3" />
+                    补充材料
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
