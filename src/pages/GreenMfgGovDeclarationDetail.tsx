@@ -161,7 +161,7 @@ export default function GreenMfgGovDeclarationDetail() {
           <EvaluationIndicatorCard mode="gov" data={indicators} onChange={setIndicators} />
         </TabsContent>
         <TabsContent value="ai-scoring" className="mt-0">
-          <AIScoringAgentPanel initialFinished />
+          <AIScoringAgentPanel initialFinished hideSupplementButton />
         </TabsContent>
 
       </Tabs>
