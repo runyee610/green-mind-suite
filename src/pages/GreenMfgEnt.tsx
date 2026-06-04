@@ -119,6 +119,11 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     <TableRow key={r.id} className="h-12 border-border/40">
                       <TableCell className="text-center font-mono text-xs">
                         <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
+                        {r.attested && (
+                          <Badge variant="outline" className="ml-2 h-5 border-success/40 bg-success/10 text-success">
+                            <CheckCircle2 className="mr-1 h-3 w-3" />已确权
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.note ?? "—"}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{r.date}</TableCell>
