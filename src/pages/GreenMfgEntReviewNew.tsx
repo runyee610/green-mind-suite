@@ -114,6 +114,7 @@ export default function GreenMfgEntReviewNew() {
           }),
         );
       }
+      if (draft.attestation) setAttestation(draft.attestation);
       setDraftSavedAt(draft.savedAt ?? null);
     } catch {
       /* ignore */
