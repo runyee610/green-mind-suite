@@ -284,6 +284,8 @@ export function AIScoringAgentPanel({ initialFinished = false, hideSupplementBut
       </CardHeader>
 
       <CardContent className="relative space-y-4">
+        {!initialFinished && (<>
+
         {/* 总体进度 */}
         <div className="relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-cyan-500/5 p-3">
           <div className="mb-2 flex items-center justify-between text-xs">
