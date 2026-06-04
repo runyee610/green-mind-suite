@@ -24,7 +24,6 @@ import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
   EvaluationIndicatorCard,
-  AuthenticityCommitmentCard,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import { cn } from "@/lib/utils";
 
@@ -32,7 +31,6 @@ const TABS = [
   { value: "evaluation-indicator", label: "评价指标表（通则）" },
   { value: "basic-info", label: "企业基本信息表" },
   { value: "basic-requirements", label: "基本要求" },
-  { value: "authenticity-commitment", label: "真实性承诺" },
   { value: "audit-record", label: "审批记录" },
   { value: "smart-score", label: "智能打分" },
 ];

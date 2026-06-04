@@ -208,10 +208,7 @@ export default function GreenMfgEntDeclarationNew() {
             onChange={setIndicators}
           />
         )}
-        {currentStep === ANCHORS[3].href && (
-          <AuthenticityCommitmentCard editable value={commitment} onChange={setCommitment} />
-        )}
-        {currentStep === ANCHORS[4].href && <AIScoringAgentPanel />}
+        {currentStep === ANCHORS[3].href && <AIScoringAgentPanel />}
       </StepTabs>
 
       <div className="mt-6 flex items-center justify-between gap-2">

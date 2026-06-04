@@ -1927,7 +1927,7 @@ export function DeclarationDetailSections({ mode = "view" }: { mode?: DetailMode
       <EnterpriseBasicInfoCard />
       <BasicRequirementsCard editable={mode === "ent"} />
       <EvaluationIndicatorCard mode={mode} />
-      <AuthenticityCommitmentCard />
+      
     </div>
   );
 }
