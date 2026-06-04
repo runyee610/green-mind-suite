@@ -240,7 +240,14 @@ export default function GreenMfgEntDeclarationDetail() {
           <EvaluationIndicatorCard mode="view" />
         </TabsContent>
         <TabsContent value="ai-scoring" className="mt-0">
-          <AIScoringAgentPanel />
+          <AIScoringAgentPanel initialFinished />
+        </TabsContent>
+        <TabsContent value="data-attestation" className="mt-0">
+          <DataAttestationPanel
+            mode="gov"
+            defaultSigner="张明（法定代表人）"
+            defaultSignedAt={detail.submitDate}
+          />
         </TabsContent>
       </Tabs>
     </AppLayout>
