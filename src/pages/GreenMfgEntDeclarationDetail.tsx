@@ -29,6 +29,7 @@ const TABS = [
   { value: "evaluation-indicator", label: "评价指标表（通则）" },
   { value: "basic-requirements", label: "基本要求" },
   { value: "ai-scoring", label: "AI 打分结果" },
+  { value: "data-attestation", label: "数据确权" },
   { value: "smart-score", label: "智能打分明细" },
 ];
 
