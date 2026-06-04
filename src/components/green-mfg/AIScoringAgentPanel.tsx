@@ -619,15 +619,18 @@ function WeakIndicatorsPanel({ hideButton = false }: { hideButton?: boolean } = 
                       {suggestionFor(w.name)}
                     </p>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="shrink-0 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                    onClick={() => toast.info(`已为「${w.name}」打开补充材料入口`)}
-                  >
-                    <Upload className="mr-1 h-3 w-3" />
-                    补充材料
-                  </Button>
+                  {!hideButton && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="shrink-0 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                      onClick={() => toast.info(`已为「${w.name}」打开补充材料入口`)}
+                    >
+                      <Upload className="mr-1 h-3 w-3" />
+                      补充材料
+                    </Button>
+                  )}
+
                 </div>
               </div>
             );
