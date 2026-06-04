@@ -164,6 +164,14 @@ export default function GreenMfgGovDeclarationDetail() {
         <TabsContent value="ai-scoring" className="mt-0">
           <AIScoringAgentPanel initialFinished hideSupplementButton />
         </TabsContent>
+        <TabsContent value="data-attestation" className="mt-0">
+          <DataAttestationPanel
+            mode="gov"
+            defaultSigner={`${detail.contact ?? "张明"}（法定代表人）`}
+            defaultSignedAt={detail.submitDate}
+          />
+        </TabsContent>
+
 
       </Tabs>
 
