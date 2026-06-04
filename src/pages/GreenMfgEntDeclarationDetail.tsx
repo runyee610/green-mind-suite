@@ -240,7 +240,7 @@ export default function GreenMfgEntDeclarationDetail() {
           <EvaluationIndicatorCard mode="view" />
         </TabsContent>
         <TabsContent value="ai-scoring" className="mt-0">
-          <AIScoringAgentPanel initialFinished />
+          <AIScoringAgentPanel />
         </TabsContent>
         <TabsContent value="data-attestation" className="mt-0">
           <DataAttestationPanel
