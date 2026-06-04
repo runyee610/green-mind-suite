@@ -234,6 +234,9 @@ export default function GreenMfgGovDeclarationDetail() {
         <TabsContent value="evaluation-indicator" className="mt-0">
           <EvaluationIndicatorCard mode="gov" data={indicators} onChange={setIndicators} />
         </TabsContent>
+        <TabsContent value="ai-scoring" className="mt-0">
+          <AIScoringAgentPanel />
+        </TabsContent>
       </Tabs>
 
       {/* 通过 */}
