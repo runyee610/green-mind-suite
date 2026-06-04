@@ -47,6 +47,7 @@ interface DraftPayload {
   basicInfo: EnterpriseBasicInfo;
   basicReqs: BasicRequirementItem[];
   indicators: IndicatorRow[];
+  attestation?: AttestationState | null;
   savedAt: string;
 }
 
