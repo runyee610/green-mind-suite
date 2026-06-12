@@ -17,7 +17,7 @@ import {
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
-import { DataAttestationPanel, type AttestationState } from "@/components/green-mfg/DataAttestationPanel";
+
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -30,7 +30,7 @@ const ANCHORS = [
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
   { href: "ai-scoring", label: "AI 打分智能体" },
-  { href: "data-attestation", label: "数据确权" },
+  
 ];
 
 // 默认企业信息（登录企业），开始评价时自动带入，不可编辑
@@ -47,7 +47,6 @@ interface DraftPayload {
   basicInfo: EnterpriseBasicInfo;
   basicReqs: BasicRequirementItem[];
   indicators: IndicatorRow[];
-  attestation?: AttestationState | null;
   savedAt: string;
 }
 
@@ -65,7 +64,7 @@ export default function GreenMfgEntDeclarationNew() {
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
-  const [attestation, setAttestation] = useState<AttestationState | null>(null);
+  
 
   
 
@@ -103,7 +102,7 @@ export default function GreenMfgEntDeclarationNew() {
           }),
         );
       }
-      if (draft.attestation) setAttestation(draft.attestation);
+      
       setDraftSavedAt(draft.savedAt ?? null);
     } catch {
       /* ignore */
@@ -129,7 +128,6 @@ export default function GreenMfgEntDeclarationNew() {
         proofs: it.proofs,
       })),
       savedAt,
-      attestation,
     };
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
@@ -208,13 +206,6 @@ export default function GreenMfgEntDeclarationNew() {
           />
         )}
         {currentStep === ANCHORS[3].href && <AIScoringAgentPanel />}
-        {currentStep === ANCHORS[4].href && (
-          <DataAttestationPanel
-            mode="ent"
-            initial={attestation}
-            onConfirmedChange={setAttestation}
-          />
-        )}
       </StepTabs>
 
       <div className="mt-6 flex items-center justify-between gap-2">

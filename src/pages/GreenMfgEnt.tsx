@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Send, Sparkles, Sprout, Target } from "lucide-react";
+import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Sparkles, Sprout, Target } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -131,12 +131,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                         <div className="flex justify-end gap-2">
                           <Button size="sm" variant="ghost" className="h-7" onClick={() => navigate(`/green-mfg/ent/declaration/${myDeclaration.id}?mode=self`)}>
                             <Eye className="mr-1 h-3 w-3" />查看
-                          </Button>
-                          <Button size="sm" variant="outline" className="h-7" onClick={() => {
-                            toast.success("已基于此次自评价数据创建专家审核推荐草稿");
-                            navigate("/green-mfg/ent/declaration/new");
-                          }}>
-                            <Send className="mr-1 h-3 w-3" />提交审核
                           </Button>
                         </div>
                       </TableCell>
