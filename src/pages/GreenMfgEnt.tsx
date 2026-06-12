@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Send, Sparkles, Sprout, Target } from "lucide-react";
+import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Sparkles, Sprout, Target } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
