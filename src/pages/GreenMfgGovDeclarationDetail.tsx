@@ -21,7 +21,7 @@ import { EVALUATION_INDICATORS, type IndicatorRow } from "@/components/green-mfg
 import { AuditFlowTimeline } from "@/components/green-mfg/AuditFlowTimeline";
 import { ScoreBreakdown } from "@/components/green-mfg/ScoreBreakdown";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
-import { DataAttestationPanel } from "@/components/green-mfg/DataAttestationPanel";
+
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
@@ -35,7 +35,6 @@ const TABS = [
   { value: "basic-requirements", label: "基本要求" },
   { value: "audit-record", label: "审批记录" },
   { value: "ai-scoring", label: "AI 打分结果" },
-  { value: "data-attestation", label: "数据确权" },
 ];
 
 export default function GreenMfgGovDeclarationDetail() {
@@ -163,13 +162,6 @@ export default function GreenMfgGovDeclarationDetail() {
         </TabsContent>
         <TabsContent value="ai-scoring" className="mt-0">
           <AIScoringAgentPanel initialFinished hideSupplementButton />
-        </TabsContent>
-        <TabsContent value="data-attestation" className="mt-0">
-          <DataAttestationPanel
-            mode="gov"
-            defaultSigner="张明（法定代表人）"
-            defaultSignedAt={detail.submitDate}
-          />
         </TabsContent>
 
 

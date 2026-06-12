@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight, Save, Send } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Save } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -150,24 +150,6 @@ export default function GreenMfgEntReviewNew() {
     }
   };
 
-  const handleSubmit = () => {
-    if (!batch) {
-      toast.warning("请选择自我评价批次");
-      return;
-    }
-    if (usedBatches.includes(batch)) {
-      toast.error("该批次已存在评价记录，请选择其他批次");
-      return;
-    }
-    if (!attestation?.confirmed) {
-      toast.warning("请先在「数据确权」步骤完成承诺");
-      setCurrentStep("data-attestation");
-      return;
-    }
-    toast.success("自我评价已提交,等待区级审核");
-    localStorage.removeItem(DRAFT_KEY);
-    setTimeout(() => navigate("/green-mfg/ent/review"), 600);
-  };
 
   return (
     <AppLayout
@@ -208,9 +190,6 @@ export default function GreenMfgEntReviewNew() {
             </Button>
             <Button size="sm" variant="outline" onClick={handleSave}>
               <Save className="mr-1 h-4 w-4" />保存
-            </Button>
-            <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit} disabled={!attestation?.confirmed} title={!attestation?.confirmed ? "请先完成数据确权" : undefined}>
-              <Send className="mr-1 h-4 w-4" />提交审核
             </Button>
           </div>
         </CardContent>
@@ -257,11 +236,7 @@ export default function GreenMfgEntReviewNew() {
           <Button variant="outline" onClick={handleSave}>
             <Save className="mr-1 h-4 w-4" />保存
           </Button>
-          {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
-            <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit} disabled={!attestation?.confirmed} title={!attestation?.confirmed ? "请先完成数据确权" : undefined}>
-              <Send className="mr-1 h-4 w-4" />提交审核
-            </Button>
-          ) : (
+          {currentStep !== ANCHORS[ANCHORS.length - 1].href && (
             <Button
               className="bg-gradient-primary text-primary-foreground"
               onClick={() => {
