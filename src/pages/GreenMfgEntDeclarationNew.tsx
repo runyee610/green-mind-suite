@@ -208,13 +208,6 @@ export default function GreenMfgEntDeclarationNew() {
           />
         )}
         {currentStep === ANCHORS[3].href && <AIScoringAgentPanel />}
-        {currentStep === ANCHORS[4].href && (
-          <DataAttestationPanel
-            mode="ent"
-            initial={attestation}
-            onConfirmedChange={setAttestation}
-          />
-        )}
       </StepTabs>
 
       <div className="mt-6 flex items-center justify-between gap-2">
