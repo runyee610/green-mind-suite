@@ -30,7 +30,7 @@ const ANCHORS = [
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
   { href: "ai-scoring", label: "AI 打分智能体" },
-  { href: "data-attestation", label: "数据确权" },
+  
 ];
 
 // 默认企业信息（登录企业），开始评价时自动带入，不可编辑
