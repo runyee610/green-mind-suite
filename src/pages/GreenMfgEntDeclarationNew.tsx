@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight, Save, Send } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Save } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -140,16 +140,6 @@ export default function GreenMfgEntDeclarationNew() {
     }
   };
 
-  const handleSubmit = () => {
-    if (!attestation?.confirmed) {
-      toast.warning("请先在「数据确权」步骤完成承诺");
-      setCurrentStep("data-attestation");
-      return;
-    }
-    toast.success("自我评价已提交,等待区级审核");
-    localStorage.removeItem(DRAFT_KEY);
-    setTimeout(() => navigate("/green-mfg/ent"), 600);
-  };
 
   return (
     <AppLayout
@@ -190,9 +180,6 @@ export default function GreenMfgEntDeclarationNew() {
               </Button>
               <Button size="sm" variant="outline" onClick={handleSave}>
                 <Save className="mr-1 h-4 w-4" />保存
-              </Button>
-              <Button size="sm" className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit} disabled={!attestation?.confirmed} title={!attestation?.confirmed ? "请先完成数据确权" : undefined}>
-                <Send className="mr-1 h-4 w-4" />提交审核
               </Button>
             </div>
           </div>
@@ -245,11 +232,7 @@ export default function GreenMfgEntDeclarationNew() {
           <Button variant="outline" onClick={handleSave}>
             <Save className="mr-1 h-4 w-4" />保存
           </Button>
-          {currentStep === ANCHORS[ANCHORS.length - 1].href ? (
-            <Button className="bg-gradient-primary text-primary-foreground" onClick={handleSubmit} disabled={!attestation?.confirmed} title={!attestation?.confirmed ? "请先完成数据确权" : undefined}>
-              <Send className="mr-1 h-4 w-4" />提交审核
-            </Button>
-          ) : (
+          {currentStep !== ANCHORS[ANCHORS.length - 1].href && (
             <Button
               className="bg-gradient-primary text-primary-foreground"
               onClick={() => {
