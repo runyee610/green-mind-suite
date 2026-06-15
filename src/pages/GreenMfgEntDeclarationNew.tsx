@@ -66,6 +66,31 @@ export default function GreenMfgEntDeclarationNew() {
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
+  const [materialPool, setMaterialPool] = useState<MaterialFile[]>([]);
+
+  // 把 AI 匹配结果合并到 basicReqs / indicators 的 proofs 中（按文件名去重）
+  const applyMaterialMapping = (mapping: {
+    indicator: Record<string, string[]>;
+    basic: Record<string, string[]>;
+  }) => {
+    setBasicReqs((prev) =>
+      prev.map((it) => {
+        const aiFiles = mapping.basic[String(it.no)] ?? [];
+        if (aiFiles.length === 0) return it;
+        const merged = Array.from(new Set([...(it.proofs ?? []), ...aiFiles]));
+        return { ...it, proofs: merged };
+      }),
+    );
+    setIndicators((prev) =>
+      prev.map((it) => {
+        const aiFiles = mapping.indicator[it.id] ?? [];
+        if (aiFiles.length === 0) return it;
+        const merged = Array.from(new Set([...(it.proofs ?? []), ...aiFiles]));
+        return { ...it, proofs: merged };
+      }),
+    );
+  };
+
   
 
   
