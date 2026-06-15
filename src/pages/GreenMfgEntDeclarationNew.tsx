@@ -17,6 +17,8 @@ import {
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
+import { AIMaterialIntakePanel } from "@/components/green-mfg/AIMaterialIntakePanel";
+import type { MaterialFile } from "@/components/green-mfg/aiMaterialMatcher";
 
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
@@ -64,6 +66,31 @@ export default function GreenMfgEntDeclarationNew() {
   const [indicators, setIndicators] = useState<IndicatorRow[]>(() => buildEmptyIndicators());
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
+  const [materialPool, setMaterialPool] = useState<MaterialFile[]>([]);
+
+  // 把 AI 匹配结果合并到 basicReqs / indicators 的 proofs 中（按文件名去重）
+  const applyMaterialMapping = (mapping: {
+    indicator: Record<string, string[]>;
+    basic: Record<string, string[]>;
+  }) => {
+    setBasicReqs((prev) =>
+      prev.map((it) => {
+        const aiFiles = mapping.basic[String(it.no)] ?? [];
+        if (aiFiles.length === 0) return it;
+        const merged = Array.from(new Set([...(it.proofs ?? []), ...aiFiles]));
+        return { ...it, proofs: merged };
+      }),
+    );
+    setIndicators((prev) =>
+      prev.map((it) => {
+        const aiFiles = mapping.indicator[it.id] ?? [];
+        if (aiFiles.length === 0) return it;
+        const merged = Array.from(new Set([...(it.proofs ?? []), ...aiFiles]));
+        return { ...it, proofs: merged };
+      }),
+    );
+  };
+
   
 
   
@@ -194,16 +221,34 @@ export default function GreenMfgEntDeclarationNew() {
           <EnterpriseBasicInfoCard data={basicInfo} editable onChange={setBasicInfo} />
         )}
         {currentStep === ANCHORS[1].href && (
-          <BasicRequirementsCard data={basicReqs} editable onChange={setBasicReqs} />
+          <>
+            <AIMaterialIntakePanel
+              indicators={indicators}
+              basics={basicReqs}
+              pool={materialPool}
+              onPoolChange={setMaterialPool}
+              onApply={applyMaterialMapping}
+            />
+            <BasicRequirementsCard data={basicReqs} editable onChange={setBasicReqs} />
+          </>
         )}
         {currentStep === ANCHORS[2].href && (
-          <EvaluationIndicatorCard
-            data={indicators}
-            totalScore={0}
-            mode="ent"
-            showGovRemark={false}
-            onChange={setIndicators}
-          />
+          <>
+            <AIMaterialIntakePanel
+              indicators={indicators}
+              basics={basicReqs}
+              pool={materialPool}
+              onPoolChange={setMaterialPool}
+              onApply={applyMaterialMapping}
+            />
+            <EvaluationIndicatorCard
+              data={indicators}
+              totalScore={0}
+              mode="ent"
+              showGovRemark={false}
+              onChange={setIndicators}
+            />
+          </>
         )}
         {currentStep === ANCHORS[3].href && <AIScoringAgentPanel />}
       </StepTabs>
