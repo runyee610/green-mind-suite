@@ -1549,6 +1549,11 @@ function IndicatorItem({
         </div>
       </div>
 
+      {/* AI 薄弱项行内提醒 */}
+      <WeakHint row={row} />
+
+
+
       {/* 政府审核备注 */}
       {showGovRemark && (govEditable || row.govRemark) && (
         <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-3">
