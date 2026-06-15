@@ -970,7 +970,7 @@ export function EvaluationIndicatorCard({
     if (statusFilter === "filled") return isRowFilled(row);
     if (statusFilter === "unfilled") return !isRowFilled(row);
     if (statusFilter === "revised") return isRowRevised(row);
-    if (statusFilter === "weak") return !!row.aiMeta?.weak && !weakDismissed[row.id];
+    if (statusFilter === "weak") return !!row.aiMeta?.weak;
     return true;
   };
 
