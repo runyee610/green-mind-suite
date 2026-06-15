@@ -17,6 +17,8 @@ import {
 } from "@/components/green-mfg/DeclarationDetailSections";
 import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
+import { AIMaterialIntakePanel } from "@/components/green-mfg/AIMaterialIntakePanel";
+import type { MaterialFile } from "@/components/green-mfg/aiMaterialMatcher";
 
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
