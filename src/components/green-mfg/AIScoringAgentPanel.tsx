@@ -36,7 +36,7 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-export function AIScoringAgentPanel({ hideSupplementButton = false }: { hideSupplementButton?: boolean } = {}) {
+export function AIScoringAgentPanel({ hideSupplementButton = false }: { hideSupplementButton?: boolean; initialFinished?: boolean } = {}) {
   const animatedScore = 91;
 
   return (
