@@ -8,7 +8,6 @@ import {
   Megaphone,
   Send,
   Leaf,
-  FileSpreadsheet,
   Gauge,
   Boxes,
   Settings,
@@ -68,9 +67,6 @@ const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   ],
 };
 
-const reportItems: NavItem[] = [
-  { title: "经信委节能月报", url: "/report-monthly", icon: FileSpreadsheet },
-];
 
 const quotaItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
@@ -115,7 +111,6 @@ const systemItems: NavItem[] = systemItemsByRole.gov;
 
 export const navItems: NavItem[] = [
   ...greenMfgItemsByRole.gov,
-  ...reportItems,
   ...quotaItems,
   ...assetsItems,
   ...directBenefitItemsByRole.gov,
@@ -176,7 +171,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         {renderGroup("绿色制造", greenMfgItemsByRole[role])}
-        {renderGroup("经信委节能月报", reportItems)}
+        
         {renderGroup("能耗限额管理", quotaItemsByRole[role])}
         {assetsItemsByRole[role].length > 0 && renderGroup("固定资产投资项目", assetsItemsByRole[role])}
         {renderGroup("免审即享", directBenefitItemsByRole[role])}
