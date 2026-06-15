@@ -76,7 +76,16 @@ export interface IndicatorRow {
   formula?: string;
   /** 当 hasStandard='有' 时使用的备选公式（仅用于序号 1、6） */
   formulaHasStandard?: string;
+  /** AI 一键打分结果（仅前端展示用） */
+  aiMeta?: {
+    score: number;          // 0-100
+    weak: boolean;
+    reason: string;         // 简短中文说明
+    suggestedProofs?: string[];
+    filledAt: string;       // ISO
+  };
 }
+
 
 /** 序号 4：能碳管理系统平台功能符合项 候选 */
 export const PLATFORM_FUNCTION_OPTIONS = [
