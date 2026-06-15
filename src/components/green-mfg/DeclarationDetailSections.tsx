@@ -904,12 +904,46 @@ export function EvaluationIndicatorCard({
   const [preview, setPreview] = useState<string | null>(null);
   const [keyword, setKeyword] = useState("");
   const [activeL1, setActiveL1] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | "filled" | "unfilled" | "revised">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "filled" | "unfilled" | "revised" | "weak">("all");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  // —— AI 一键打分 ——
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiLastRunAt, setAiLastRunAt] = useState<string | null>(null);
+  const [aiOverviewDismissed, setAiOverviewDismissed] = useState(false);
+  const [aiOverview, setAiOverview] = useState<{ total: number; filled: number; weak: number; topSuggestions: { id: string; l3: string; reason: string; suggestedProofs: string[] }[] } | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [weakDismissed, setWeakDismissed] = useState<Record<string, boolean>>({});
+  const hasAiResult = useMemo(() => data.some((r) => r.aiMeta), [data]);
+  const hasUserInput = useMemo(() => data.some((r) => (r.reportValue ?? "").trim().length > 0 && !r.aiMeta), [data]);
 
   // 进度统计
   const filledCount = useMemo(() => data.filter(isRowFilled).length, [data]);
   const revisedCount = useMemo(() => data.filter(isRowRevised).length, [data]);
+  const weakCount = useMemo(() => data.filter((r) => r.aiMeta?.weak && !weakDismissed[r.id]).length, [data, weakDismissed]);
+
+  const runAI = async (overwrite: AIScoringOverwrite) => {
+    setAiLoading(true);
+    try {
+      const result = await runAIScoring(data, { overwrite });
+      onChange?.(result.rows);
+      setAiLastRunAt(new Date().toISOString());
+      setAiOverview({ total: result.total, filled: result.filled, weak: result.weak, topSuggestions: result.topSuggestions });
+      setAiOverviewDismissed(false);
+      setWeakDismissed({});
+      toast.success(`AI 打分完成 · 已填 ${result.filled}/${result.total} 项，识别薄弱项 ${result.weak} 项`);
+    } catch {
+      toast.error("AI 打分失败，请重试");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAIClick = () => {
+    if (hasUserInput || hasAiResult) setConfirmOpen(true);
+    else runAI("all");
+  };
+
 
   // L1 分组（保持原顺序）
   const groupedByL1 = useMemo(() => {
