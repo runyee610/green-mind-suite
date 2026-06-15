@@ -8,14 +8,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs as GuideTabs, TabsList as GuideTabsList, TabsTrigger as GuideTabsTrigger, TabsContent as GuideTabsContent } from "@/components/ui/tabs";
-import { Building2, Calculator, ChevronDown, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, NotebookPen, PencilLine, Search, Upload } from "lucide-react";
+import { AlertTriangle, Building2, Calculator, ChevronDown, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, Loader2, NotebookPen, PencilLine, Search, Sparkles, Upload, X } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, PLATFORM_FUNCTION_OPTIONS, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
+import { runAIScoring, type AIScoringOverwrite } from "./aiIndicatorScorer";
 import { INDICATOR_GUIDES } from "./indicatorGuide";
 import { Checkbox } from "@/components/ui/checkbox";
 import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
+
 
 export type DetailMode = "ent" | "gov" | "view";
 
