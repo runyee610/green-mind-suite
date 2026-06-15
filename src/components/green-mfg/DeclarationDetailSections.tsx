@@ -8,14 +8,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs as GuideTabs, TabsList as GuideTabsList, TabsTrigger as GuideTabsTrigger, TabsContent as GuideTabsContent } from "@/components/ui/tabs";
-import { Building2, Calculator, ChevronDown, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, NotebookPen, PencilLine, Search, Upload } from "lucide-react";
+import { AlertTriangle, Building2, Calculator, ChevronDown, ClipboardCheck, Download, Eye, FileSignature, FileText, HelpCircle, Image as ImageIcon, Lightbulb, ListChecks, Loader2, NotebookPen, PencilLine, Search, Sparkles, Upload, X } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { EVALUATION_INDICATORS, EVALUATION_TOTAL_SCORE, EMPTY_PRODUCT_ENERGY_ENTRY, PLATFORM_FUNCTION_OPTIONS, type IndicatorRow, type ProductEnergyEntry } from "./evaluationIndicators";
+import { runAIScoring, type AIScoringOverwrite } from "./aiIndicatorScorer";
 import { INDICATOR_GUIDES } from "./indicatorGuide";
 import { Checkbox } from "@/components/ui/checkbox";
 import { INDUSTRY_TREE, ALL_INDUSTRIES, getSubIndustries, getIndustryType } from "./data";
+
 
 export type DetailMode = "ent" | "gov" | "view";
 
@@ -902,12 +904,46 @@ export function EvaluationIndicatorCard({
   const [preview, setPreview] = useState<string | null>(null);
   const [keyword, setKeyword] = useState("");
   const [activeL1, setActiveL1] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | "filled" | "unfilled" | "revised">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "filled" | "unfilled" | "revised" | "weak">("all");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  // —— AI 一键打分 ——
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiLastRunAt, setAiLastRunAt] = useState<string | null>(null);
+  const [aiOverviewDismissed, setAiOverviewDismissed] = useState(false);
+  const [aiOverview, setAiOverview] = useState<{ total: number; filled: number; weak: number; topSuggestions: { id: string; l3: string; reason: string; suggestedProofs: string[] }[] } | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  
+  const hasAiResult = useMemo(() => data.some((r) => r.aiMeta), [data]);
+  const hasUserInput = useMemo(() => data.some((r) => (r.reportValue ?? "").trim().length > 0 && !r.aiMeta), [data]);
 
   // 进度统计
   const filledCount = useMemo(() => data.filter(isRowFilled).length, [data]);
   const revisedCount = useMemo(() => data.filter(isRowRevised).length, [data]);
+  const weakCount = useMemo(() => data.filter((r) => r.aiMeta?.weak).length, [data]);
+
+  const runAI = async (overwrite: AIScoringOverwrite) => {
+    setAiLoading(true);
+    try {
+      const result = await runAIScoring(data, { overwrite });
+      onChange?.(result.rows);
+      setAiLastRunAt(new Date().toISOString());
+      setAiOverview({ total: result.total, filled: result.filled, weak: result.weak, topSuggestions: result.topSuggestions });
+      setAiOverviewDismissed(false);
+      
+      toast.success(`AI 打分完成 · 已填 ${result.filled}/${result.total} 项，识别薄弱项 ${result.weak} 项`);
+    } catch {
+      toast.error("AI 打分失败，请重试");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAIClick = () => {
+    if (hasUserInput || hasAiResult) setConfirmOpen(true);
+    else runAI("all");
+  };
+
 
   // L1 分组（保持原顺序）
   const groupedByL1 = useMemo(() => {
@@ -934,8 +970,10 @@ export function EvaluationIndicatorCard({
     if (statusFilter === "filled") return isRowFilled(row);
     if (statusFilter === "unfilled") return !isRowFilled(row);
     if (statusFilter === "revised") return isRowRevised(row);
+    if (statusFilter === "weak") return !!row.aiMeta?.weak;
     return true;
   };
+
   const matchAll = (row: IndicatorRow) => matchKeyword(row) && matchStatus(row);
 
   const scrollToL1 = (l1: string) => {
@@ -957,7 +995,7 @@ export function EvaluationIndicatorCard({
               共 {data.length} 项
             </Badge>
           </span>
-          <div className="flex items-center gap-2 text-sm font-normal">
+          <div className="flex flex-wrap items-center gap-2 text-sm font-normal">
             <span className="text-muted-foreground">
               已填 <span className="font-mono text-foreground">{filledCount}</span> / {data.length}
               {govEditable || revisedCount > 0 ? <> · 已修订 <span className="font-mono text-warning">{revisedCount}</span></> : null}
@@ -965,9 +1003,34 @@ export function EvaluationIndicatorCard({
             <Badge variant="outline" className="border-primary/40 bg-primary/10 text-sm text-primary">
               得分 {totalScore.toFixed(2)}
             </Badge>
+            {entEditable && (
+              <Button
+                size="sm"
+                onClick={handleAIClick}
+                disabled={aiLoading}
+                className={cn(
+                  "h-8 gap-1.5 text-xs",
+                  hasAiResult
+                    ? "border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20"
+                    : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:opacity-90",
+                )}
+              >
+                {aiLoading ? (
+                  <><Loader2 className="h-3.5 w-3.5 animate-spin" />AI 分析中…</>
+                ) : (
+                  <><Sparkles className="h-3.5 w-3.5" />{hasAiResult ? "重新 AI 打分" : "AI 一键打分"}</>
+                )}
+              </Button>
+            )}
+            {entEditable && aiLastRunAt && !aiLoading && (
+              <span className="text-[11px] text-muted-foreground">
+                上次打分 · {new Date(aiLastRunAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
+              </span>
+            )}
           </div>
         </CardTitle>
         <p className="mt-1 text-xs text-muted-foreground">
+
           得分计算：未达基准值 0 分，达到/优于引领值满分，介于二者之间按线性比例
         </p>
         {/* 工具条：仅状态筛选 */}
@@ -978,6 +1041,7 @@ export function EvaluationIndicatorCard({
             { k: "unfilled", label: `未填 ${data.length - filledCount}` },
             { k: "filled", label: `已填 ${filledCount}` },
             ...(govEditable || revisedCount > 0 ? [{ k: "revised" as const, label: `已修订 ${revisedCount}` }] : []),
+            ...(weakCount > 0 ? [{ k: "weak" as const, label: `⚠ 薄弱 ${weakCount}` }] : []),
           ] as const).map((s) => (
             <button
               key={s.k}
@@ -986,8 +1050,12 @@ export function EvaluationIndicatorCard({
               className={cn(
                 "rounded-full border px-3 py-1 text-sm transition",
                 statusFilter === s.k
-                  ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
+                  ? s.k === "weak"
+                    ? "border-warning/50 bg-warning/15 text-warning"
+                    : "border-primary/40 bg-primary/10 text-primary"
+                  : s.k === "weak"
+                    ? "border-warning/40 bg-warning/5 text-warning hover:bg-warning/10"
+                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
               )}
             >
               {s.label}
@@ -997,6 +1065,46 @@ export function EvaluationIndicatorCard({
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* AI 打分结果总览 */}
+        {entEditable && aiOverview && !aiOverviewDismissed && (
+          <div className="relative rounded-md border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-3 pr-9">
+            <button
+              type="button"
+              onClick={() => setAiOverviewDismissed(true)}
+              className="absolute right-2 top-2 rounded p-1 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+              aria-label="关闭"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Sparkles className="h-4 w-4 text-primary" />
+              AI 已完成 <span className="font-mono text-primary">{aiOverview.filled}</span> 项指标打分，识别薄弱项 <span className="font-mono text-warning">{aiOverview.weak}</span> 项
+            </div>
+            {aiOverview.topSuggestions.length > 0 && (
+              <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                <div>建议优先补充以下证明材料：</div>
+                <ul className="ml-4 list-disc space-y-0.5">
+                  {aiOverview.topSuggestions.slice(0, 3).map((s) => (
+                    <li key={s.id}>
+                      <span className="text-foreground">{s.l3}</span>
+                      <span className="ml-1">— {s.suggestedProofs.join("、")}</span>
+                    </li>
+                  ))}
+                </ul>
+                {aiOverview.weak > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter("weak")}
+                    className="mt-1 text-primary hover:underline"
+                  >
+                    仅查看薄弱项 →
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {groupedByL1.map((g) => {
           const visibleRows = g.rows.filter(matchAll);
           if (visibleRows.length === 0 && (keyword || statusFilter !== "all")) return null;
@@ -1086,7 +1194,38 @@ export function EvaluationIndicatorCard({
       open={!!preview}
       onOpenChange={(v) => !v && setPreview(null)}
     />
+    <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-base">
+            <Sparkles className="h-4 w-4 text-primary" />使用 AI 重新打分
+          </DialogTitle>
+          <DialogDescription className="text-xs">
+            检测到已有填写内容。请选择 AI 打分的覆盖范围：
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2 py-2 text-sm">
+          <button
+            type="button"
+            onClick={() => { setConfirmOpen(false); runAI("empty"); }}
+            className="w-full rounded-md border border-border/60 bg-background px-3 py-2.5 text-left transition hover:border-primary/40 hover:bg-primary/5"
+          >
+            <div className="font-medium">仅填充空白项</div>
+            <div className="text-xs text-muted-foreground">保留已人工填写的指标值，仅补全未填部分</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => { setConfirmOpen(false); runAI("all"); }}
+            className="w-full rounded-md border border-warning/40 bg-warning/5 px-3 py-2.5 text-left transition hover:bg-warning/10"
+          >
+            <div className="font-medium text-warning">覆盖全部指标值</div>
+            <div className="text-xs text-muted-foreground">所有指标都由 AI 重新生成（已填内容将被替换）</div>
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
     </>
+
   );
 }
 
@@ -1410,6 +1549,11 @@ function IndicatorItem({
         </div>
       </div>
 
+      {/* AI 薄弱项行内提醒 */}
+      <WeakHint row={row} />
+
+
+
       {/* 政府审核备注 */}
       {showGovRemark && (govEditable || row.govRemark) && (
         <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-3">
@@ -1433,7 +1577,65 @@ function IndicatorItem({
   );
 }
 
+/** AI 识别的薄弱项提醒条 */
+function WeakHint({ row }: { row: IndicatorRow }) {
+  const [dismissed, setDismissed] = useState(false);
+  const meta = row.aiMeta;
+  if (!meta?.weak || dismissed) return null;
+  const focusReportValue = () => {
+    // 简单做法：滚动到所在行
+    const el = document.activeElement as HTMLElement | null;
+    el?.blur();
+    document.getElementById(`indicator-row-${row.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+  return (
+    <div
+      id={`indicator-row-${row.id}`}
+      className="mt-3 flex flex-wrap items-start gap-2 rounded-md border-l-4 border-warning bg-warning/10 px-3 py-2 text-xs"
+    >
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="font-medium text-warning">AI 识别为薄弱项</span>
+          <Badge variant="outline" className="h-4 border-warning/40 bg-warning/10 px-1.5 text-[10px] font-mono text-warning">
+            评分 {meta.score}
+          </Badge>
+          <span className="text-foreground">{meta.reason}</span>
+        </div>
+        {meta.suggestedProofs && meta.suggestedProofs.length > 0 && (
+          <div className="text-muted-foreground">
+            建议补充：
+            {meta.suggestedProofs.map((p, i) => (
+              <span key={p} className="mx-0.5 inline-flex items-center rounded border border-warning/30 bg-background/60 px-1.5 py-0.5 text-[10px] text-foreground">
+                {p}{i < meta.suggestedProofs!.length - 1 ? "" : ""}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-6 border-warning/40 px-2 text-[11px] text-warning hover:bg-warning/10"
+          onClick={focusReportValue}
+        >
+          <Upload className="mr-1 h-3 w-3" />补传证明
+        </Button>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          className="text-[11px] text-muted-foreground hover:text-foreground"
+        >
+          忽略
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** 同一序号 (no) 多子行：合并为一个卡片，共享父级元数据，子项以分段切换/堆叠展示 */
+
 function IndicatorGroupCard({
   rows,
   mode,
