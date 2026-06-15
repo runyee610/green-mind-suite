@@ -1,73 +1,92 @@
-## 目标
-在企业侧模拟自我评价（`GreenMfgEntDeclarationNew`）中，新增"一键上传证明材料 → AI 智能体自动匹配到对应指标"的能力。企业无需在每个指标处手动上传；未匹配上的文件归集到"未匹配文件区"，由企业手动调整。
+# 评价指标表 · AI 打分 与 薄弱项预警
 
-## 整体交互流程
+在企业侧"模拟自我评价 → 评价指标表（通则）"中新增 **AI 打分** 能力：一键由 AI 智能体根据已上传证明材料自动填充每项指标值，并对薄弱项（得分较低 / 未达基准值 / 证明材料不足）给出醒目提醒，方便企业用户针对性补传材料。
 
-```
-[基本信息] → [基本要求] → [评价指标表] → [AI 打分]
-                            ↑
-              新增：顶部"智能材料上传"入口（贯穿"基本要求"与"评价指标表"两步）
-```
+## 范围
 
-1. 在"基本要求"和"评价指标表"步骤顶部，新增一个 **"AI 材料智能归集"面板**（默认折叠为一个高亮 Banner，点击展开为抽屉 Sheet）。
-2. 企业一次性把多份证明文件拖拽 / 选择上传。
-3. 智能体进度条展示"解析中 → 匹配中 → 完成"，每个文件被识别后显示：
-   - 文件名 / 大小 / 类型
-   - AI 推断的指标归属（一级 → 二级 → 三级），可显示匹配置信度（高/中/低）
-   - 状态徽章：`已匹配` / `多处可能` / `未匹配`
-4. 匹配上的文件自动写入对应 `IndicatorRow.proofs` 或 `BasicRequirementItem.proofs`。
-5. 未匹配文件进入"未归集文件"列表，企业可：
-   - 手动从下拉选择指派到任一指标 / 基本要求条款
-   - 直接删除
-   - 标记为"附件备查"
-6. 已匹配文件也可被企业"撤回 / 重新指派 / 删除"。
-7. 指标表行内：在 `proofs` 字段处显示一个 ✨ 标记 + tooltip"AI 自动归集"，与手动上传区分。
+- 仅作用于企业侧 `mode="ent"` 的 `EvaluationIndicatorCard`（评价指标表通则）
+- 纯前端模拟，不接入真实 AI；满足交互演示
+- 不影响政府侧、查看模式、基本要求等其他界面
 
-## 新增 / 修改文件
+## 交互设计
 
-### 新增
-- `src/components/green-mfg/AIMaterialIntakePanel.tsx`
-  - 顶部 Banner（折叠态）：图标 + "AI 材料智能归集 · 已上传 12 / 已匹配 9 / 未匹配 3" + "打开" 按钮
-  - 展开态（Sheet 右侧抽屉，宽 720px）包含三块：
-    1. **上传区**：拖拽框（多文件，支持 PDF/图片/Excel/Word），上传后显示总进度条与"AI 重新匹配"按钮
-    2. **匹配结果列表**：表格 [文件名 | 类型 | AI 归属指标（可改） | 置信度 | 状态 | 操作]
-       - 归属指标使用级联 Select（一级→二级→三级 / 或"基本要求-序号X"）
-       - 置信度：进度条 + 百分比
-       - 操作：重新匹配 / 移除 / 标记备查
-    3. **未匹配文件区**：单独列表 + 提示"AI 未能匹配，请手动指派或删除"
-  - 内部使用 `useReducer` 维护文件集合 `MaterialFile[]`
+### 1. 顶部"AI 打分"按钮
+位置：`EvaluationIndicatorCard` 头部右侧，与现有"得分 / 已填 / 已修订"统计并列。
 
-### 修改
+样式与状态：
+- 默认态：`<Sparkles>` 图标 + "AI 一键打分"，渐变主色按钮
+- 进行中：spinner + "AI 分析中…（约 3s）"，按钮禁用，整卡顶部出现细进度条
+- 完成态：按钮变次要样式 "重新 AI 打分"，旁边显示"上次打分 · HH:mm"
+- 二次点击前弹确认：若已有部分人工填写，提示"将覆盖未锁定的指标值，是否继续？"（可勾选"仅填充空白项"）
+
+### 2. AI 打分逻辑（前端模拟）
+对每个 `IndicatorRow` 按类型生成 `reportValue`：
+- **正向定量**：在 `baseValue` 与 `leadValue` 之间随机偏向中位（70% 概率落在 [base, lead] 区间）
+- **逆向定量**：反向同理
+- **正向定性 / 单选**：从 `reportOptions` 中按权重选一项
+- **特殊行**：
+  - 序号 1（产品综合能耗，`hasStandard='有'`）：为每条 `products` 行生成 `reportValue`
+  - 序号 4（平台功能）：勾选 1–N 项 `platformFunctions`，`reportValue` 同步为数量
+- 同步生成一个 `aiMeta`：`{ score: 0-100, weak: boolean, reason: string, suggestedProofs: string[] }`
+- 用 1.5–2.5s `setTimeout` 模拟分析过程，分批 setState 形成"逐项点亮"动画感
+
+### 3. 薄弱项识别规则
+判定为薄弱项 `weak=true` 的条件（任一即可）：
+- 定量：`reportValue` 未达 `baseValue`（与 `type` 方向相关）
+- 定性 / 单选：选中非最高档选项
+- `proofs.length === 0`（无证明材料）
+- AI 评分 < 60
+
+### 4. 薄弱项行内提醒（核心可视化）
+在指标行（`updateRow` 渲染区块）下方新增 `WeakHint` 条：
+- 仅当 `aiMeta?.weak === true` 时显示
+- 样式：左侧 4px 橙色竖条 + 浅橙背景 `bg-warning/10 border-warning/30`
+- 内容：`<AlertTriangle>` 图标 + "AI 识别为薄弱项" + 简短原因（如"低于基准值 0.42 tce/t · 建议补充能耗台账"）
+- 右侧操作：
+  - **补传证明** 按钮 → 复用现有上传入口（高亮证明材料区域，自动滚动并闪烁 2 次）
+  - **修正数值** 按钮 → focus 该行 `reportValue` 输入框
+  - **忽略** 链接 → 隐藏本行提醒（仅 UI，不修改数据）
+- 顶部汇总：卡片标题统计区追加"⚠ 薄弱 N 项"徽章，点击后筛选只展示薄弱项（复用现有 `statusFilter`，新增 `weak` 选项）
+
+### 5. AI 打分结果总览（可选折叠面板）
+打分完成后在卡片顶部出现一条可关闭的 `Alert`：
+- "AI 已完成 X 项指标打分，识别薄弱项 N 项，建议优先补充以下材料：……（最多列 3 条）"
+- "查看完整建议" → 打开右侧 Sheet 展示按一级指标分组的薄弱项清单
+
+## 技术实现
+
+### 文件改动
 - `src/components/green-mfg/evaluationIndicators.ts`
-  - 给 `proofs` 配套新增可选 `proofMeta?: { name: string; source: "ai" | "manual"; confidence?: number }[]`（保持向后兼容，UI 优先读 meta）
+  - 给 `IndicatorRow` 增加可选字段：
+    ```ts
+    aiMeta?: {
+      score: number;        // 0-100
+      weak: boolean;
+      reason: string;       // 简短中文原因
+      suggestedProofs?: string[];
+      filledAt: string;     // ISO
+    };
+    ```
+- `src/components/green-mfg/aiIndicatorScorer.ts`（新建）
+  - 导出 `runAIScoring(rows, opts): Promise<IndicatorRow[]>`
+  - 内含定量/定性/特殊行的填充策略与薄弱项判定
+  - 支持 `{ overwrite: 'empty' | 'all' }`
 - `src/components/green-mfg/DeclarationDetailSections.tsx`
-  - `EvaluationIndicatorCard` / `BasicRequirementsCard` 接受新 prop `aiMatchedKeys?: Set<string>`，在 proofs 单元渲染 ✨ 徽章
-  - 暴露一个 `appendProofs(indicatorId, files)` 工具供 Panel 调用（通过 onChange 实现）
+  - 在 `EvaluationIndicatorCard` 头部新增 AI 打分按钮 + 加载态 + 确认 Dialog
+  - 在每个指标行渲染块尾部插入 `<WeakHint>` 组件（同文件内定义，避免新增文件）
+  - 在 `statusFilter` 增加 `"weak"` 选项及对应过滤逻辑
+  - 顶部新增 `Alert` 总览（可关闭）
 - `src/pages/GreenMfgEntDeclarationNew.tsx`
-  - 在"基本要求"和"评价指标表"步骤上方挂载 `<AIMaterialIntakePanel value={...} onApply={(matches) => {...}} />`
-  - 实现 `onApply`：根据匹配结果合并 `proofs` 到 `basicReqs` / `indicators`，并保存"未匹配文件"到组件本地 state（同时持久化到 draft）
-  - `DraftPayload` 增加 `materialPool: MaterialFile[]`
+  - 无结构改动；`indicators` 状态已通过 `onChange` 接管，AI 结果走相同入口
 
-## Mock AI 匹配逻辑（前端 demo）
+### 不动的内容
+- 政府侧、详情查看模式、基本要求、企业基本信息表
+- 草稿存储结构（`aiMeta` 自然随 `indicators` 序列化保存）
+- 现有 AI 材料归集面板、AI 打分智能体 Tab
 
-无真实后端 — 用纯前端模拟：
-- 上传时 `setTimeout` 模拟解析延时（1.5s）
-- 根据文件名关键词匹配指标关键字（如 "能耗" → 综合能耗指标；"碳排放" → 温室气体指标；"ISO14001" → 环境管理体系基本要求）
-- 命中 → 状态 `已匹配`，置信度 75–98%
-- 未命中 → 状态 `未匹配`
-- 多关键词命中 → 状态 `多处可能`，弹出选择
-
-匹配规则集中在 `src/components/green-mfg/aiMaterialMatcher.ts`（新增），便于后续替换为真实 API。
-
-## 视觉规范
-- Banner 用 `bg-gradient-primary/10` + `Sparkles` 图标（与现有"模拟自我评价"卡片一致）
-- 状态徽章：已匹配 = success、多处可能 = warning、未匹配 = destructive 浅色
-- 抽屉用现有 `Sheet` 组件；表格用现有 `Table`
-- 不改动政府侧
-
-## 不在本次范围
-- 真实文件存储（仅前端 mock，文件保存为 File 对象 + 名称）
-- AI 模型调用（不接 Gateway，纯规则）
-- 评价指标数据结构大改
-
-确认后开始实现。
+## 验收要点
+1. 点击"AI 一键打分" → 2s 内所有空白指标值被填入，输入框高亮一次
+2. 薄弱项行下方出现橙色提醒条，原因文案与数值/材料状态吻合
+3. 卡片头出现"⚠ 薄弱 N 项"徽章，点击仅显示薄弱项
+4. 手动修改某指标值后该行薄弱提醒会按新值实时重算
+5. 政府侧打开同一申报详情时，看不到 AI 打分按钮（仅 ent 模式渲染）
