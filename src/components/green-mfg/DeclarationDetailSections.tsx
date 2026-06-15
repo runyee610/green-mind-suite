@@ -930,7 +930,7 @@ export function EvaluationIndicatorCard({
       setAiLastRunAt(new Date().toISOString());
       setAiOverview({ total: result.total, filled: result.filled, weak: result.weak, topSuggestions: result.topSuggestions });
       setAiOverviewDismissed(false);
-      setWeakDismissed({});
+      
       toast.success(`AI 打分完成 · 已填 ${result.filled}/${result.total} 项，识别薄弱项 ${result.weak} 项`);
     } catch {
       toast.error("AI 打分失败，请重试");
