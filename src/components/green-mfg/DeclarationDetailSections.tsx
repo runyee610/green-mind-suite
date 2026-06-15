@@ -913,7 +913,7 @@ export function EvaluationIndicatorCard({
   const [aiOverviewDismissed, setAiOverviewDismissed] = useState(false);
   const [aiOverview, setAiOverview] = useState<{ total: number; filled: number; weak: number; topSuggestions: { id: string; l3: string; reason: string; suggestedProofs: string[] }[] } | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [weakDismissed, setWeakDismissed] = useState<Record<string, boolean>>({});
+  
   const hasAiResult = useMemo(() => data.some((r) => r.aiMeta), [data]);
   const hasUserInput = useMemo(() => data.some((r) => (r.reportValue ?? "").trim().length > 0 && !r.aiMeta), [data]);
 
