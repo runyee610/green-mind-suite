@@ -1041,6 +1041,7 @@ export function EvaluationIndicatorCard({
             { k: "unfilled", label: `未填 ${data.length - filledCount}` },
             { k: "filled", label: `已填 ${filledCount}` },
             ...(govEditable || revisedCount > 0 ? [{ k: "revised" as const, label: `已修订 ${revisedCount}` }] : []),
+            ...(weakCount > 0 ? [{ k: "weak" as const, label: `⚠ 薄弱 ${weakCount}` }] : []),
           ] as const).map((s) => (
             <button
               key={s.k}
@@ -1049,8 +1050,12 @@ export function EvaluationIndicatorCard({
               className={cn(
                 "rounded-full border px-3 py-1 text-sm transition",
                 statusFilter === s.k
-                  ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
+                  ? s.k === "weak"
+                    ? "border-warning/50 bg-warning/15 text-warning"
+                    : "border-primary/40 bg-primary/10 text-primary"
+                  : s.k === "weak"
+                    ? "border-warning/40 bg-warning/5 text-warning hover:bg-warning/10"
+                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
               )}
             >
               {s.label}
@@ -1060,6 +1065,46 @@ export function EvaluationIndicatorCard({
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* AI 打分结果总览 */}
+        {entEditable && aiOverview && !aiOverviewDismissed && (
+          <div className="relative rounded-md border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-3 pr-9">
+            <button
+              type="button"
+              onClick={() => setAiOverviewDismissed(true)}
+              className="absolute right-2 top-2 rounded p-1 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+              aria-label="关闭"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Sparkles className="h-4 w-4 text-primary" />
+              AI 已完成 <span className="font-mono text-primary">{aiOverview.filled}</span> 项指标打分，识别薄弱项 <span className="font-mono text-warning">{aiOverview.weak}</span> 项
+            </div>
+            {aiOverview.topSuggestions.length > 0 && (
+              <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                <div>建议优先补充以下证明材料：</div>
+                <ul className="ml-4 list-disc space-y-0.5">
+                  {aiOverview.topSuggestions.slice(0, 3).map((s) => (
+                    <li key={s.id}>
+                      <span className="text-foreground">{s.l3}</span>
+                      <span className="ml-1">— {s.suggestedProofs.join("、")}</span>
+                    </li>
+                  ))}
+                </ul>
+                {aiOverview.weak > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter("weak")}
+                    className="mt-1 text-primary hover:underline"
+                  >
+                    仅查看薄弱项 →
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {groupedByL1.map((g) => {
           const visibleRows = g.rows.filter(matchAll);
           if (visibleRows.length === 0 && (keyword || statusFilter !== "all")) return null;
