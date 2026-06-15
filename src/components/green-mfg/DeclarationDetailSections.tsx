@@ -920,7 +920,7 @@ export function EvaluationIndicatorCard({
   // 进度统计
   const filledCount = useMemo(() => data.filter(isRowFilled).length, [data]);
   const revisedCount = useMemo(() => data.filter(isRowRevised).length, [data]);
-  const weakCount = useMemo(() => data.filter((r) => r.aiMeta?.weak && !weakDismissed[r.id]).length, [data, weakDismissed]);
+  const weakCount = useMemo(() => data.filter((r) => r.aiMeta?.weak).length, [data]);
 
   const runAI = async (overwrite: AIScoringOverwrite) => {
     setAiLoading(true);
