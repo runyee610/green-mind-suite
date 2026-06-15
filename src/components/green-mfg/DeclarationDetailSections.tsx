@@ -1577,7 +1577,65 @@ function IndicatorItem({
   );
 }
 
+/** AI 识别的薄弱项提醒条 */
+function WeakHint({ row }: { row: IndicatorRow }) {
+  const [dismissed, setDismissed] = useState(false);
+  const meta = row.aiMeta;
+  if (!meta?.weak || dismissed) return null;
+  const focusReportValue = () => {
+    // 简单做法：滚动到所在行
+    const el = document.activeElement as HTMLElement | null;
+    el?.blur();
+    document.getElementById(`indicator-row-${row.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+  return (
+    <div
+      id={`indicator-row-${row.id}`}
+      className="mt-3 flex flex-wrap items-start gap-2 rounded-md border-l-4 border-warning bg-warning/10 px-3 py-2 text-xs"
+    >
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="font-medium text-warning">AI 识别为薄弱项</span>
+          <Badge variant="outline" className="h-4 border-warning/40 bg-warning/10 px-1.5 text-[10px] font-mono text-warning">
+            评分 {meta.score}
+          </Badge>
+          <span className="text-foreground">{meta.reason}</span>
+        </div>
+        {meta.suggestedProofs && meta.suggestedProofs.length > 0 && (
+          <div className="text-muted-foreground">
+            建议补充：
+            {meta.suggestedProofs.map((p, i) => (
+              <span key={p} className="mx-0.5 inline-flex items-center rounded border border-warning/30 bg-background/60 px-1.5 py-0.5 text-[10px] text-foreground">
+                {p}{i < meta.suggestedProofs!.length - 1 ? "" : ""}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-6 border-warning/40 px-2 text-[11px] text-warning hover:bg-warning/10"
+          onClick={focusReportValue}
+        >
+          <Upload className="mr-1 h-3 w-3" />补传证明
+        </Button>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          className="text-[11px] text-muted-foreground hover:text-foreground"
+        >
+          忽略
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** 同一序号 (no) 多子行：合并为一个卡片，共享父级元数据，子项以分段切换/堆叠展示 */
+
 function IndicatorGroupCard({
   rows,
   mode,
