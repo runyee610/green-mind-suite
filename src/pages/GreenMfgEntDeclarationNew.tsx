@@ -221,16 +221,34 @@ export default function GreenMfgEntDeclarationNew() {
           <EnterpriseBasicInfoCard data={basicInfo} editable onChange={setBasicInfo} />
         )}
         {currentStep === ANCHORS[1].href && (
-          <BasicRequirementsCard data={basicReqs} editable onChange={setBasicReqs} />
+          <>
+            <AIMaterialIntakePanel
+              indicators={indicators}
+              basics={basicReqs}
+              pool={materialPool}
+              onPoolChange={setMaterialPool}
+              onApply={applyMaterialMapping}
+            />
+            <BasicRequirementsCard data={basicReqs} editable onChange={setBasicReqs} />
+          </>
         )}
         {currentStep === ANCHORS[2].href && (
-          <EvaluationIndicatorCard
-            data={indicators}
-            totalScore={0}
-            mode="ent"
-            showGovRemark={false}
-            onChange={setIndicators}
-          />
+          <>
+            <AIMaterialIntakePanel
+              indicators={indicators}
+              basics={basicReqs}
+              pool={materialPool}
+              onPoolChange={setMaterialPool}
+              onApply={applyMaterialMapping}
+            />
+            <EvaluationIndicatorCard
+              data={indicators}
+              totalScore={0}
+              mode="ent"
+              showGovRemark={false}
+              onChange={setIndicators}
+            />
+          </>
         )}
         {currentStep === ANCHORS[3].href && <AIScoringAgentPanel />}
       </StepTabs>
