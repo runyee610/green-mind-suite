@@ -31,7 +31,7 @@ const ANCHORS = [
   { href: "basic-info", label: "企业基本信息表" },
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
-  { href: "ai-scoring", label: "AI 打分智能体" },
+  { href: "ai-scoring", label: "AI 打分结果" },
   
 ];
 
