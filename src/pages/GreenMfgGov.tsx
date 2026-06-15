@@ -251,18 +251,18 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理"
-          : "审核推荐"
+          : "推荐管理"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表复核"
-          : "专家审核 → 通过评定；不通过自动进入梯度培育"
+          : "专家推荐 → 标记推荐企业，助力绿色工厂梯度培育"
       }
     >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="审核推荐" value={MOCK_DECLARATIONS.length} accent="primary" />
-        <KpiTile icon={Clock} label="待审核" value={MOCK_DECLARATIONS.filter((d) => d.stage === "待审核").length} accent="primary" />
+        <KpiTile icon={ClipboardList} label="推荐总数" value={MOCK_DECLARATIONS.length} accent="primary" />
+        <KpiTile icon={Clock} label="待推荐" value={MOCK_DECLARATIONS.filter((d) => d.stage === "待审核").length} accent="primary" />
         <KpiTile icon={XCircle} label="已驳回" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已驳回").length} accent="warning" />
         <KpiTile icon={CheckCircle2} label="已完成" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已完成").length} accent="success" />
       </div>
@@ -270,7 +270,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       <Tabs value={tab} onValueChange={setTab}>
         {!section && (
           <TabsList>
-            <TabsTrigger value="declaration">审核推荐</TabsTrigger>
+            <TabsTrigger value="declaration">推荐</TabsTrigger>
             <TabsTrigger value="dynamic">动态管理表（年度）</TabsTrigger>
           </TabsList>
         )}
@@ -280,7 +280,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
           <Card className="panel">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <CardTitle className="text-base">审核推荐列表</CardTitle>
+                <CardTitle className="text-base">推荐列表</CardTitle>
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -333,7 +333,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead className="whitespace-nowrap">所属区</TableHead>
                     <TableHead className="whitespace-nowrap">行业</TableHead>
                     <TableHead className="whitespace-nowrap">提交批次</TableHead>
-                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家审核</TableHead>
+                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家推荐</TableHead>
                     <TableHead className="text-center whitespace-nowrap">流转状态</TableHead>
                     <TableHead className="whitespace-nowrap">提交时间</TableHead>
                     <TableHead className="sticky right-0 z-20 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))]">操作</TableHead>
@@ -371,14 +371,14 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">{r.submitDate}</TableCell>
                       <TableCell className="sticky right-0 z-10 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))] group-hover:bg-muted/40">
                         <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
-                          <Eye className="mr-1 h-3 w-3" />详情/审核
+                          <Eye className="mr-1 h-3 w-3" />详情/推荐
                         </Button>
                       </TableCell>
                     </TableRow>
                     );
                   })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家审核推荐</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家推荐</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
