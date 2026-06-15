@@ -970,8 +970,10 @@ export function EvaluationIndicatorCard({
     if (statusFilter === "filled") return isRowFilled(row);
     if (statusFilter === "unfilled") return !isRowFilled(row);
     if (statusFilter === "revised") return isRowRevised(row);
+    if (statusFilter === "weak") return !!row.aiMeta?.weak && !weakDismissed[row.id];
     return true;
   };
+
   const matchAll = (row: IndicatorRow) => matchKeyword(row) && matchStatus(row);
 
   const scrollToL1 = (l1: string) => {
