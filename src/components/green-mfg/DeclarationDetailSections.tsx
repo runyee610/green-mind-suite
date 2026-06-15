@@ -995,7 +995,7 @@ export function EvaluationIndicatorCard({
               共 {data.length} 项
             </Badge>
           </span>
-          <div className="flex items-center gap-2 text-sm font-normal">
+          <div className="flex flex-wrap items-center gap-2 text-sm font-normal">
             <span className="text-muted-foreground">
               已填 <span className="font-mono text-foreground">{filledCount}</span> / {data.length}
               {govEditable || revisedCount > 0 ? <> · 已修订 <span className="font-mono text-warning">{revisedCount}</span></> : null}
@@ -1003,9 +1003,34 @@ export function EvaluationIndicatorCard({
             <Badge variant="outline" className="border-primary/40 bg-primary/10 text-sm text-primary">
               得分 {totalScore.toFixed(2)}
             </Badge>
+            {entEditable && (
+              <Button
+                size="sm"
+                onClick={handleAIClick}
+                disabled={aiLoading}
+                className={cn(
+                  "h-8 gap-1.5 text-xs",
+                  hasAiResult
+                    ? "border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20"
+                    : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:opacity-90",
+                )}
+              >
+                {aiLoading ? (
+                  <><Loader2 className="h-3.5 w-3.5 animate-spin" />AI 分析中…</>
+                ) : (
+                  <><Sparkles className="h-3.5 w-3.5" />{hasAiResult ? "重新 AI 打分" : "AI 一键打分"}</>
+                )}
+              </Button>
+            )}
+            {entEditable && aiLastRunAt && !aiLoading && (
+              <span className="text-[11px] text-muted-foreground">
+                上次打分 · {new Date(aiLastRunAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
+              </span>
+            )}
           </div>
         </CardTitle>
         <p className="mt-1 text-xs text-muted-foreground">
+
           得分计算：未达基准值 0 分，达到/优于引领值满分，介于二者之间按线性比例
         </p>
         {/* 工具条：仅状态筛选 */}
