@@ -35,6 +35,7 @@ import GreenMfgGov from "./pages/GreenMfgGov.tsx";
 import GreenMfgGovDeclarationDetail from "./pages/GreenMfgGovDeclarationDetail.tsx";
 import GreenMfgGovDynamicEdit from "./pages/GreenMfgGovDynamicEdit.tsx";
 import GreenMfgGovIncubator from "./pages/GreenMfgGovIncubator.tsx";
+import GreenMfgGovIncubatorDetail from "./pages/GreenMfgGovIncubatorDetail.tsx";
 import GreenMfgEnt from "./pages/GreenMfgEnt.tsx";
 import GreenMfgEntDeclarationDetail from "./pages/GreenMfgEntDeclarationDetail.tsx";
 import GreenMfgEntDeclarationNew from "./pages/GreenMfgEntDeclarationNew.tsx";
