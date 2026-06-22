@@ -20,8 +20,8 @@ import {
 } from "@/components/green-mfg/DeclarationDetailSections";
 
 const TABS = [
-  { value: "evaluation-indicator", label: "3\n评价指标表\u00a0" },
-  { value: "basic-info", label: "1\n基本信息" },
+  { value: "evaluation-indicator", label: "评价指标表（通则）" },
+  { value: "basic-info", label: "企业基本信息表" },
   { value: "basic-requirements", label: "基本要求" },
   { value: "ai-scoring", label: "AI 打分结果" },
 ];
@@ -98,7 +98,7 @@ export default function GreenMfgGovDeclarationDetail() {
             <TabsTrigger
               key={t.value}
               value={t.value}
-              className="text-base font-medium px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary whitespace-pre-line"
+              className="text-base font-medium px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary"
             >
               {t.label}
             </TabsTrigger>
