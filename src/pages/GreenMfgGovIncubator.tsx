@@ -130,9 +130,9 @@ const energyTagBadge = (t: EnergyTag) =>
 export default function GreenMfgGovIncubator() {
   const navigate = useNavigate();
   const [data, setData] = useState<IncubateRecord[]>(INITIAL_INCUBATE_DATA);
+  const [viewLevel, setViewLevel] = useState<IncubateLevel>("区级");
   const [keyword, setKeyword] = useState("");
   const [industryFilter, setIndustryFilter] = useState("all");
-  const [levelFilter, setLevelFilter] = useState<"all" | IncubateLevel>("all");
   const [energyFilter, setEnergyFilter] = useState<"all" | EnergyTag>("all");
   const [stageFilter, setStageFilter] = useState<"all" | IncubateStage>("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -155,36 +155,36 @@ export default function GreenMfgGovIncubator() {
   // 晋升培育二次确认
   const [promoteConfirmOpen, setPromoteConfirmOpen] = useState(false);
 
+  // 当前视角下的全部数据（基础范围）
+  const scopeData = useMemo(() => data.filter((r) => r.level === viewLevel), [data, viewLevel]);
+
   const rows = useMemo(
     () =>
-      data.filter((r) => {
+      scopeData.filter((r) => {
         const k = keyword.trim();
         if (k && !r.name.includes(k) && !r.creditCode.includes(k)) return false;
         if (industryFilter !== "all" && r.industry !== industryFilter) return false;
-        if (levelFilter !== "all" && r.level !== levelFilter) return false;
         if (energyFilter !== "all" && r.energyTag !== energyFilter) return false;
         if (stageFilter !== "all" && r.stage !== stageFilter) return false;
         return true;
       }),
-    [data, keyword, industryFilter, levelFilter, energyFilter, stageFilter],
+    [scopeData, keyword, industryFilter, energyFilter, stageFilter],
   );
 
-  // 统计
-  const cityLevel = data.filter((r) => r.level === "市级");
-  const districtLevel = data.filter((r) => r.level === "区级");
-  const keyEnergy = data.filter((r) => r.energyTag === "重点用能单位");
-  const bigOutput = data.filter((r) => r.energyTag === "10亿+非重点规上");
-
-  const stageCounts = STAGE_PIPELINE.map((s) => ({
-    ...s,
-    count: data.filter((r) => r.stage === s.key).length,
-  }));
-  const exitedCount = data.filter((r) => r.stage === "退库").length;
-  const graduatedCount = data.filter((r) => r.stage === "晋级出库").length;
-  const totalCount = data.length;
-  const conversionRate = Math.round((graduatedCount / Math.max(totalCount, 1)) * 100);
+  // 视角内统计
+  const scopeTotal = scopeData.length;
+  const scopeAvgScore = Math.round(scopeData.reduce((s, r) => s + r.score, 0) / Math.max(scopeTotal, 1));
+  const scopeNewThisYear = scopeData.filter((r) => r.enterDate.startsWith("2025")).length;
+  const scopeKeyEnergy = scopeData.filter((r) => r.energyTag === "重点用能单位").length;
+  const scopeBigOutput = scopeData.filter((r) => r.energyTag === "10亿+非重点规上").length;
+  const scopeInTraining = scopeData.filter((r) => r.stage !== "退库" && r.stage !== "晋级出库").length;
+  const scopeEnterCount = scopeData.filter((r) => r.stage === "入库登记").length;
+  const scopeDiagCount = scopeData.filter((r) => r.stage === "诊断评估").length;
+  const scopeGraduatedCount = scopeData.filter((r) => r.stage === "晋级出库").length;
 
   const selectedDistrictRows = rows.filter((r) => selected.has(r.id) && r.level === "区级");
+
+
 
   function toggleSelect(id: string) {
     setSelected((prev) => {
