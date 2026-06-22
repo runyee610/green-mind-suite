@@ -22,15 +22,17 @@ import { toast } from "sonner";
 // 本地"模拟自我评价"记录（仅 AI 智能体分析打分，不提交）
 interface SelfAssessRecord {
   id: string;
+  enterpriseName: string;
   date: string;
   aiScore: number;
+  indicatorCount: number;
   note?: string;
-  attested?: boolean;
 }
+const DEFAULT_ENT_NAME = "上海华普电缆有限公司";
 const MOCK_SELF_ASSESS: SelfAssessRecord[] = [
-  { id: "SA-2025-003", date: "2025-09-20", aiScore: 78, note: "新增 3 项绿色产品后再评", attested: true },
-  { id: "SA-2025-002", date: "2025-08-12", aiScore: 72 },
-  { id: "SA-2025-001", date: "2025-06-04", aiScore: 65, note: "首次试评", attested: true },
+  { id: "SA-2025-003", enterpriseName: DEFAULT_ENT_NAME, date: "2025-09-20", aiScore: 78, indicatorCount: 23, note: "新增 3 项绿色产品后再评" },
+  { id: "SA-2025-002", enterpriseName: DEFAULT_ENT_NAME, date: "2025-08-12", aiScore: 72, indicatorCount: 23 },
+  { id: "SA-2025-001", enterpriseName: DEFAULT_ENT_NAME, date: "2025-06-04", aiScore: 65, indicatorCount: 23, note: "首次试评" },
 ];
 
 export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
@@ -108,7 +110,9 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
+                    <TableHead>公司名称</TableHead>
                     <TableHead className="text-center">AI 智能打分</TableHead>
+                    <TableHead className="text-center">指标数</TableHead>
                     <TableHead>备注</TableHead>
                     <TableHead>评估日期</TableHead>
                     <TableHead className="text-right">操作</TableHead>
@@ -117,14 +121,11 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                 <TableBody>
                   {MOCK_SELF_ASSESS.map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
+                      <TableCell className="text-xs">{r.enterpriseName}</TableCell>
                       <TableCell className="text-center font-mono text-xs">
                         <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
-                        {r.attested && (
-                          <Badge variant="outline" className="ml-2 h-5 border-success/40 bg-success/10 text-success">
-                            <CheckCircle2 className="mr-1 h-3 w-3" />已确权
-                          </Badge>
-                        )}
                       </TableCell>
+                      <TableCell className="text-center font-mono text-xs">{r.indicatorCount}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{r.note ?? "—"}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{r.date}</TableCell>
                       <TableCell className="text-right">

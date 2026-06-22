@@ -4,7 +4,6 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Save } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
@@ -19,15 +18,9 @@ import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
 import { AIMaterialIntakePanel } from "@/components/green-mfg/AIMaterialIntakePanel";
 import type { MaterialFile } from "@/components/green-mfg/aiMaterialMatcher";
+import { DECLARATION_ANCHORS as ANCHORS, StepTabs } from "@/components/green-mfg/DeclarationStepTabs";
 
 import { toast } from "sonner";
-
-const ANCHORS = [
-  { href: "basic-requirements", label: "基本要求" },
-  { href: "evaluation-indicator", label: "评价指标表" },
-  { href: "basic-info", label: "基本信息" },
-  { href: "ai-scoring", label: "AI 打分结果" },
-];
 
 // 默认企业信息（登录企业），开始评价时自动带入，不可编辑
 const DEFAULT_ENTERPRISE = {
@@ -172,7 +165,16 @@ export default function GreenMfgEntDeclarationNew() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
               <ArrowLeft className="mr-1 h-4 w-4" />返回
             </Button>
-            <Button size="sm" variant="outline" onClick={handleSave}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                handleSave();
+                if (currentStep === "ai-scoring") {
+                  navigate("/green-mfg/ent");
+                }
+              }}
+            >
               <Save className="mr-1 h-4 w-4" />
               {currentStep === "ai-scoring" ? "完成" : "保存"}
             </Button>
@@ -184,7 +186,7 @@ export default function GreenMfgEntDeclarationNew() {
       <StepTabs
         currentStep={currentStep}
         onStepChange={setCurrentStep}
-        steps={ANCHORS}
+        steps={[...ANCHORS]}
       >
         {currentStep === "basic-requirements" && (
           <>
@@ -251,42 +253,3 @@ export default function GreenMfgEntDeclarationNew() {
   );
 }
 
-function StepTabs({
-  steps,
-  currentStep,
-  onStepChange,
-  children,
-}: {
-  steps: { href: string; label: string }[];
-  currentStep: string;
-  onStepChange: (s: string) => void;
-  children: React.ReactNode;
-}) {
-  const idx = Math.max(0, steps.findIndex((s) => s.href === currentStep));
-  return (
-    <Tabs value={currentStep} onValueChange={onStepChange} className="space-y-4">
-      <TabsList className="h-auto w-full flex-wrap justify-start gap-1 bg-muted/40 p-1">
-        {steps.map((s, i) => (
-          <TabsTrigger
-            key={s.href}
-            value={s.href}
-            className="flex items-center gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
-          >
-            <span
-              className={
-                "inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] " +
-                (i <= idx ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground")
-              }
-            >
-              {i + 1}
-            </span>
-            {s.label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      <TabsContent value={currentStep} forceMount className="mt-0">
-        {children}
-      </TabsContent>
-    </Tabs>
-  );
-}
