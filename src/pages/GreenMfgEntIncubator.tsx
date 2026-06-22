@@ -76,11 +76,11 @@ export default function GreenMfgEntIncubator() {
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
             <InfoTile label="所属区" value={me.district} />
             <InfoTile label="所属行业" value={`${me.industry}${me.subIndustry ? " / " + me.subIndustry : ""}`} />
-            <InfoTile label="模拟时间" value={me.submitDate} icon={CalendarDays} />
             <InfoTile label="产值（万元）" value={me.outputValue.toLocaleString()} />
             <InfoTile label="模拟自评价得分" value={me.score != null ? `${me.score}` : "—"} />
             <InfoTile label="区级专家评分" value={me.manualScore != null ? `${me.manualScore}` : "—"} />
             <InfoTile label="市级专家评分" value="—" />
+            <InfoTile label="" value="" />
             <InfoTile label="" value="" />
           </div>
         </CardContent>
@@ -115,9 +115,7 @@ export default function GreenMfgEntIncubator() {
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-3 text-sm">
             <InfoTile label="进入培育时间" value={me.submitDate} />
-            <InfoTile label="计划复评批次" value="2026年第一批" />
             <InfoTile label="培育周期" value="12 个月" />
-            <InfoTile label="培育阶段" value="资料补正" />
           </CardContent>
         </Card>
       </div>
