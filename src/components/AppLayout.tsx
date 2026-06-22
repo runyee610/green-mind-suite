@@ -93,6 +93,10 @@ export function AppLayout({ title, subtitle, hideHeader = false, children }: App
               ))}
             </nav>
 
+            {headerActions && (
+              <div className="ml-4 flex items-center">{headerActions}</div>
+            )}
+
             <div className="ml-auto flex items-center gap-3">
               <Button variant="ghost" size="icon" className="relative h-8 w-8">
                 <Bell className="h-4 w-4" />
