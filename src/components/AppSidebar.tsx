@@ -50,6 +50,7 @@ type NavItem = {
 const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
     { title: "全景视图看板", url: "/", icon: LayoutDashboard },
+    { title: "企业模拟评价", url: "/green-mfg/gov/self-assess", icon: ClipboardList },
     { title: "审核推荐", url: "/green-mfg/gov/review", icon: Send },
     { title: "梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
