@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, Filter, Search, XCircle, Clock, Check } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, Filter, Search, XCircle, Clock, Check, Upload } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -197,23 +197,31 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   // 本地模拟推荐状态覆盖
   const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
 
-  const getDerivedStatus = (id: string, originalStage: string): "待推荐" | "已推荐" => {
-    if (recommendedIds.has(id)) return "已推荐";
-    return (originalStage === "培育中" || originalStage === "已完成") ? "已推荐" : "待推荐";
+  const recommendedLabel = expertView === "district" ? "已推荐到市级" : "已推荐到国家";
+
+  const getDerivedStatus = (id: string, originalStage: string): "待推荐" | typeof recommendedLabel => {
+    if (recommendedIds.has(id)) return recommendedLabel;
+    return (originalStage === "培育中" || originalStage === "已完成") ? recommendedLabel : "待推荐";
   };
+
+  const isRecommended = (id: string, originalStage: string) =>
+    getDerivedStatus(id, originalStage) !== "待推荐";
 
   const declarations = useMemo(() => {
     return MOCK_DECLARATIONS.filter((r) => {
-      const derivedStatus = getDerivedStatus(r.id, r.stage);
-      
-      // 视角过滤
-      if (expertView === "city" && derivedStatus !== "已推荐") return false;
+      const recommended = isRecommended(r.id, r.stage);
+
+      // 视角过滤：市级专家只看到已推荐的
+      if (expertView === "city" && !recommended) return false;
 
       const k = keyword.trim();
       if (k && !r.enterpriseName.includes(k)) return false;
-      
+
       // 全部状态下拉过滤
-      if (stageFilter !== "all" && derivedStatus !== stageFilter) return false;
+      if (stageFilter !== "all") {
+        if (stageFilter === "待推荐" && recommended) return false;
+        if (stageFilter !== "待推荐" && !recommended) return false;
+      }
 
       if (industryFilter !== "all") {
         const node = INDUSTRY_TREE.find((i) => i.name === industryFilter);
@@ -239,8 +247,17 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
 
   const handleRecommend = (id: string, name: string) => {
     setRecommendedIds(prev => new Set([...prev, id]));
-    const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定";
+    const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定（国家）";
     toast.success(`企业「${name}」${msg}`);
+  };
+
+  const handleSwitchView = (view: "district" | "city") => {
+    setExpertView(view);
+    setStageFilter("all");
+  };
+
+  const handleImport = () => {
+    toast.message("导入功能开发中");
   };
 
   return (
@@ -261,7 +278,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
         <div className="mb-4 flex justify-center">
           <div className="inline-flex items-center rounded-lg bg-muted p-1">
             <button
-              onClick={() => setExpertView("district")}
+              onClick={() => handleSwitchView("district")}
               className={cn(
                 "rounded-md px-6 py-1.5 text-sm font-medium transition-all",
                 expertView === "district" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
@@ -270,7 +287,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               区级专家
             </button>
             <button
-              onClick={() => setExpertView("city")}
+              onClick={() => handleSwitchView("city")}
               className={cn(
                 "rounded-md px-6 py-1.5 text-sm font-medium transition-all",
                 expertView === "city" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
@@ -293,13 +310,13 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
         <KpiTile 
           icon={Clock} 
           label="待推荐" 
-          value={declarations.filter(d => getDerivedStatus(d.id, d.stage) === "待推荐").length} 
+          value={declarations.filter(d => !isRecommended(d.id, d.stage)).length} 
           accent="warning" 
         />
         <KpiTile 
           icon={CheckCircle2} 
-          label="已推荐" 
-          value={declarations.filter(d => getDerivedStatus(d.id, d.stage) === "已推荐").length} 
+          label={recommendedLabel} 
+          value={declarations.filter(d => isRecommended(d.id, d.stage)).length} 
           accent="success" 
         />
       </div>
@@ -319,6 +336,9 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <CardTitle className="text-base">推荐列表</CardTitle>
                 <div className="flex flex-wrap items-center gap-2">
+                  <Button variant="outline" size="sm" className="h-8" onClick={handleImport}>
+                    <Upload className="mr-1 h-3 w-3" />导入
+                  </Button>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                     <Input
@@ -349,7 +369,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
                       <SelectItem value="待推荐">待推荐</SelectItem>
-                      <SelectItem value="已推荐">已推荐</SelectItem>
+                      <SelectItem value={recommendedLabel}>{recommendedLabel}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -390,7 +410,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
                       <TableCell className="text-center whitespace-nowrap">
-                        <Badge variant="outline" className={status === "已推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
+                        <Badge variant="outline" className={status !== "待推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
                           {status}
                         </Badge>
                       </TableCell>
@@ -404,7 +424,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                             size="sm" 
                             variant="default" 
                             className="h-7 bg-primary hover:bg-primary/90" 
-                            disabled={status === "已推荐"}
+                            disabled={status !== "待推荐"}
                             onClick={() => handleRecommend(r.id, r.enterpriseName)}
                           >
                             <Check className="mr-1 h-3 w-3" />推荐

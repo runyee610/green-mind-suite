@@ -1,47 +1,43 @@
 ## 目标
-将政府侧「企业模拟评价」详情页（`/green-mfg/gov/self-assess/:creditCode`）的展示结构与企业侧「模拟自我评价」详情页对齐，并确保所有内容只读、没有任何可交互操作。
+在政府侧「专家评审」页面（`/green-mfg/gov/review`，对应 `GreenMfgGov.tsx`）增加多项功能调整，并让其详情页与企业模拟评价详情页保持一致，同时新增「加入培育库」操作。
 
-## 现状
-- 企业侧详情页 `GreenMfgEntDeclarationDetail.tsx` 使用 `StepTabs` + `DeclarationDetailSections` 展示：基本要求、评价指标表、基本信息、AI 打分结果，含编辑和上下步操作。
-- 政府侧当前详情页 `GreenMfgGovSelfAssessDetail.tsx` 仅展示企业信息卡、评价摘要 KPI、一级指标维度得分、薄弱项清单，没有完整评价表单内容。
-- `DeclarationDetailSections` 中的 `EnterpriseBasicInfoCard`、`BasicRequirementsCard`、`EvaluationIndicatorCard` 均支持 `editable={false}` / 不传 `onChange` 的只读模式。
+## 变更点
 
-## 实施方案
+### 1. 状态下拉随专家视角切换（`src/pages/GreenMfgGov.tsx`）
+- 区级专家视角：「全部状态」下拉项为 `待推荐`、`已推荐到市级`
+- 市级专家视角：「全部状态」下拉项为 `待推荐`、`已推荐到国家`
+- 内部 `getDerivedStatus` 派生状态语义对应调整：
+  - 区级：`待推荐` / `已推荐到市级`
+  - 市级：`待推荐` / `已推荐到国家`
+- KPI 卡片「待推荐 / 已推荐」标签同步使用上述新文案（按当前视角显示）。
+- 列表「推荐状态」列、操作列按钮 disabled 判断使用新派生状态。
+- `handleRecommend` toast 文案保持「已推荐至市级 / 已推荐认定（国家）」语义，与新状态语义对齐。
+- 切换视角时重置 `stageFilter` 为 `all`，避免出现旧值。
 
-### 1. 重构页面结构
-修改 `src/pages/GreenMfgGovSelfAssessDetail.tsx`：
-- 保留「取该企业最新一次评价」的逻辑。
-- 移除当前的企业信息卡、KPI 摘要卡、维度得分卡、薄弱项清单卡（这些摘要信息后续可在基本信息/评价指标表中自然透出，不再单独展示）。
-- 改为与企业侧一致的 `StepTabs` 四标签布局：
-  - 基本要求
-  - 评价指标表
-  - 基本信息
-  - AI 打分结果
+### 2. 顶部新增「导入」按钮
+- 在「推荐列表」`CardHeader` 右侧操作区（搜索/筛选所在的 `flex-wrap`）首位新增一个 `导入` 按钮（`Upload` 图标，`variant="outline"`、`size="sm"`、`h-8`）。
+- 仅做 UI 占位：点击 toast 提示「导入功能开发中」，与项目现有 mock 风格一致。
 
-### 2. 只读复用现有组件
-引用 `DeclarationDetailSections` 中的卡片：
-- `EnterpriseBasicInfoCard` — 不传 `onChange`，使用只读展示。
-- `BasicRequirementsCard` — 不传 `onChange`，使用只读展示。
-- `EvaluationIndicatorCard` — `mode="gov"`，`editable={false}`，不传 `onChange`。
-- `AIScoringAgentPanel` — 直接复用 AI 打分结果面板。
+### 3. 详情页与企业模拟评价详情页保持一致（`src/pages/GreenMfgGovDeclarationDetail.tsx`）
+- 重构为与企业侧详情页（`GreenMfgEntDeclarationDetail` 中使用的 `StepTabs` + `DeclarationDetailSections` 组合）一致：
+  - 改用 `DeclarationStepTabs`（`StepTabs` + `DECLARATION_ANCHORS`），四个标签：基本要求、评价指标表、基本信息、AI 打分结果。
+  - 复用 `BasicRequirementsCard`、`EvaluationIndicatorCard`（`mode="gov"`，保留打分交互）、`EnterpriseBasicInfoCard`、`AIScoringAgentPanel`。
+  - 顶部副标题、企业名称、信用代码、行业、批次、提交时间展示方式与企业侧详情头部对齐。
 
-### 3. 数据关联
-- 通过 `creditCode` 在 `MOCK_DECLARATIONS` 中匹配对应的申报记录。
-- 命中时：使用对应企业的 `batch`、`submitDate`、`industry`、`outputValue` 等信息回填页面标题/副标题，并让各详情卡片按该企业上下文展示。
-- 未命中时（如演示企业上海华普电缆有限公司在政府侧申报库中暂无记录）：回退到 `DeclarationDetailSections` 内置的默认模拟数据，仍然保证页面可正常渲染。
-- 仍只展示该企业最新一次自评价结果；若有多条记录，按日期取最大日期的一条。
-
-### 4. 移除所有操作
-- 移除「推荐/取消推荐」等政府侧操作按钮。
-- 移除企业侧的「上一步 / 下一步」导航。
-- 只保留一个「返回列表」按钮，跳回 `/green-mfg/gov/self-assess`。
-- 页面标题格式：`企业模拟评价 · {enterpriseName}`；副标题：`仅展示该企业最新一次 AI 模拟自我评价结果（只读）`。
-
-### 5. 验证
-- 确保 `tsc --noEmit` 无类型错误。
-- 在政府侧「企业模拟评价」列表点击任意企业「详情」，确认页面只展示四个只读标签页，无输入框可编辑、无推荐/提交/导航按钮。
+### 4. 详情页操作区按钮调整
+- 在原「推荐」按钮**前面**新增「加入培育库」按钮：
+  - `Sprout` 图标，`variant="outline"`、`size="sm"`，文案「加入培育库」。
+  - 点击 toast `已加入培育库`，本地 state `addedToIncubator` 切换为 `已加入培育库（点击移除）`，与现有「推荐」按钮交互风格一致。
+- 「推荐」按钮逻辑保留。
+- `isIncubator` 分支（梯度培育入口跳转过来时）继续隐藏推荐按钮；「加入培育库」按钮也在该分支隐藏。
 
 ## 影响文件
-- `src/pages/GreenMfgGovSelfAssessDetail.tsx`（主要修改）
-- `src/components/green-mfg/DeclarationDetailSections.tsx` 及相关卡片组件（无需改动，已支持只读模式，仅调用方式变更）
-- 不涉及路由、菜单、数据类型新增
+- `src/pages/GreenMfgGov.tsx`：状态下拉项、KPI 文案、派生状态、导入按钮、切换视角时重置筛选。
+- `src/pages/GreenMfgGovDeclarationDetail.tsx`：详情页结构改为与企业侧一致，新增「加入培育库」按钮。
+- 不修改 `DeclarationDetailSections` / `DeclarationStepTabs` 等组件本身，仅作为消费方使用。
+- 不涉及路由、数据 schema 变更。
+
+## 验证
+- 切换区级 / 市级专家：下拉项分别为「待推荐 / 已推荐到市级」「待推荐 / 已推荐到国家」，列表状态徽标与 KPI 文案同步。
+- 列表顶部「导入」按钮可见、可点击并 toast 提示。
+- 详情页四个标签页与企业模拟评价详情页结构一致；操作区出现「加入培育库」「推荐」「返回列表」三个按钮（梯度培育入口下仅显示「返回列表」）。
