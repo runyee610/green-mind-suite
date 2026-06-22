@@ -294,7 +294,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       }
     >
       {/* 专家视角切换 */}
-      {!section && tab === "declaration" && (
+      {tab === "declaration" && (
         <div className="mb-4 flex justify-center">
           <div className="inline-flex items-center rounded-lg bg-muted p-1">
             <button
