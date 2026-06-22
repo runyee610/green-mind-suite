@@ -88,6 +88,10 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="outline" className="h-8" onClick={() => {
+                    if (MOCK_SELF_ASSESS.length === 0) {
+                      toast.error("请至少完成 1 次 AI 打分");
+                      return;
+                    }
                     toast.success("已加入区级培育库，可在「梯度培育」中查看");
                   }}>
                     <Sprout className="mr-1 h-4 w-4" />{"加入培育库"}
@@ -99,13 +103,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              {/* 最新一次概览 */}
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                <Field label="最近一次 AI 智能打分" value={`${latestSelf.aiScore}`} accent="primary" />
-                <Field label="评估日期" value={latestSelf.date} />
-                <Field label="所属区" value={myDeclaration.district} />
-                <Field label="所属行业" value={myDeclaration.industry} />
-              </div>
               {/* 历次自评价 */}
               <Table>
                 <TableHeader>
@@ -113,7 +110,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     <TableHead>公司名称</TableHead>
                     <TableHead className="text-center">AI 智能打分</TableHead>
                     <TableHead className="text-center">指标数</TableHead>
-                    <TableHead>备注</TableHead>
+                    <TableHead className="text-center">薄弱项</TableHead>
                     <TableHead>评估日期</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                   </TableRow>
@@ -126,7 +123,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                         <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
                       </TableCell>
                       <TableCell className="text-center font-mono text-xs">{r.indicatorCount}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{r.note ?? "—"}</TableCell>
+                      <TableCell className="text-center font-mono text-xs">{r.weakCount}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{r.date}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
