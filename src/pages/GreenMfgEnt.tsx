@@ -93,7 +93,13 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                       toast.error("请至少完成 1 次 AI 打分");
                       return;
                     }
-                    toast.success("已加入区级培育库，可在「梯度培育」中查看");
+                    toast.success("已加入区级培育库，AI 智能体正在后台检索节能技术…", {
+                      action: { label: "查看进展", onClick: () => navigate("/green-mfg/ent/incubator") },
+                    });
+                    void runIncubatorResearch({
+                      creditCode: myDeclaration.creditCode,
+                      enterpriseName: DEFAULT_ENT_NAME,
+                    });
                   }}>
                     <Sprout className="mr-1 h-4 w-4" />{"加入培育库"}
                   </Button>
