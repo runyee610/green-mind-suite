@@ -292,10 +292,8 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
           ? "市级绿色工厂年度动态管理表复核"
           : ""
       }
-    >
-      {/* 专家视角切换 */}
-      {tab === "declaration" && (
-        <div className="mb-4 flex justify-center">
+      headerActions={
+        tab === "declaration" ? (
           <div className="inline-flex items-center rounded-lg bg-muted p-1">
             <button
               onClick={() => handleSwitchView("district")}
@@ -316,9 +314,9 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               市级专家
             </button>
           </div>
-        </div>
-      )}
-
+        ) : null
+      }
+    >
       {/* 概览指标 */}
       <div className="grid gap-3 md:grid-cols-3 mb-4">
         <KpiTile 
