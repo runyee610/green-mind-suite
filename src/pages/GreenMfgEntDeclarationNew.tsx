@@ -186,7 +186,7 @@ export default function GreenMfgEntDeclarationNew() {
       <StepTabs
         currentStep={currentStep}
         onStepChange={setCurrentStep}
-        steps={ANCHORS}
+        steps={[...ANCHORS]}
       >
         {currentStep === "basic-requirements" && (
           <>
