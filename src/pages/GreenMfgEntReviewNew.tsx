@@ -30,9 +30,9 @@ import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import { toast } from "sonner";
 
 const ANCHORS = [
-  { href: "basic-info", label: "企业基本信息表" },
+  { href: "basic-info", label: "1\n基本信息" },
   { href: "basic-requirements", label: "基本要求" },
-  { href: "evaluation-indicator", label: "评价指标表（通则）" },
+  { href: "evaluation-indicator", label: "3\n评价指标表\u00a0" },
   { href: "ai-scoring", label: "AI 打分智能体" },
   { href: "data-attestation", label: "数据确权" },
 ];
