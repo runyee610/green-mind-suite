@@ -199,13 +199,13 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
 
   const recommendedLabel = expertView === "district" ? "已推荐到市级" : "已推荐到国家";
 
-  const getDerivedStatus = (id: string, originalStage: string): "待推荐" | typeof recommendedLabel => {
+  const getDerivedStatus = (id: string, originalStage: string): "未推荐" | typeof recommendedLabel => {
     if (recommendedIds.has(id)) return recommendedLabel;
-    return (originalStage === "培育中" || originalStage === "已完成") ? recommendedLabel : "待推荐";
+    return (originalStage === "培育中" || originalStage === "已完成") ? recommendedLabel : "未推荐";
   };
 
   const isRecommended = (id: string, originalStage: string) =>
-    getDerivedStatus(id, originalStage) !== "待推荐";
+    getDerivedStatus(id, originalStage) !== "未推荐";
 
   const declarations = useMemo(() => {
     return MOCK_DECLARATIONS.filter((r) => {
@@ -219,8 +219,8 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
 
       // 全部状态下拉过滤
       if (stageFilter !== "all") {
-        if (stageFilter === "待推荐" && recommended) return false;
-        if (stageFilter !== "待推荐" && !recommended) return false;
+        if (stageFilter === "未推荐" && recommended) return false;
+        if (stageFilter !== "未推荐" && !recommended) return false;
       }
 
       if (industryFilter !== "all") {
@@ -327,7 +327,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
         />
         <KpiTile 
           icon={Clock} 
-          label="待推荐" 
+          label="未推荐" 
           value={declarations.filter(d => !isRecommended(d.id, d.stage)).length} 
           accent="warning" 
         />
@@ -386,7 +386,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
-                      <SelectItem value="待推荐">待推荐</SelectItem>
+                      <SelectItem value="未推荐">未推荐</SelectItem>
                       <SelectItem value={recommendedLabel}>{recommendedLabel}</SelectItem>
                     </SelectContent>
                   </Select>
@@ -428,7 +428,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
                       <TableCell className="text-center whitespace-nowrap">
-                        <Badge variant="outline" className={status !== "待推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
+                        <Badge variant="outline" className={status !== "未推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
                           {status}
                         </Badge>
                       </TableCell>
@@ -440,11 +440,11 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                           </Button>
                           <Button 
                             size="sm" 
-                            variant={status !== "待推荐" ? "outline" : "default"}
-                            className={status !== "待推荐" ? "h-7 border-success/40 text-success hover:bg-success/10 hover:text-success" : "h-7 bg-primary hover:bg-primary/90"}
+                            variant={status !== "未推荐" ? "outline" : "default"}
+                            className={status !== "未推荐" ? "h-7 border-success/40 text-success hover:bg-success/10 hover:text-success" : "h-7 bg-primary hover:bg-primary/90"}
                             onClick={() => toggleByDerived(r.id, r.stage, r.enterpriseName)}
                           >
-                            <Check className="mr-1 h-3 w-3" />{status !== "待推荐" ? "取消推荐" : "推荐"}
+                            <Check className="mr-1 h-3 w-3" />{status !== "未推荐" ? "取消推荐" : "推荐"}
                           </Button>
                         </div>
                       </TableCell>
