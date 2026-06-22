@@ -28,9 +28,9 @@ const BATCH_OPTIONS = ["2026年第一批", "2025年第二批", "2025年第一批
 
 
 const ANCHORS = [
-  { href: "basic-info", label: "企业基本信息表" },
+  { href: "basic-info", label: "1\n基本信息" },
   { href: "basic-requirements", label: "基本要求" },
-  { href: "evaluation-indicator", label: "评价指标表（通则）" },
+  { href: "evaluation-indicator", label: "3\n评价指标表\u00a0" },
   { href: "ai-scoring", label: "AI 打分结果" },
   
 ];
@@ -304,17 +304,23 @@ function StepTabs({
           <TabsTrigger
             key={s.href}
             value={s.href}
-            className="flex items-center gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            className="flex items-center gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm whitespace-pre-line"
           >
-            <span
-              className={
-                "inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] " +
-                (i <= idx ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground")
-              }
-            >
-              {i + 1}
-            </span>
-            {s.label}
+            {s.label.includes("\n") ? (
+              <span>{s.label}</span>
+            ) : (
+              <>
+                <span
+                  className={
+                    "inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] " +
+                    (i <= idx ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground")
+                  }
+                >
+                  {i + 1}
+                </span>
+                {s.label}
+              </>
+            )}
           </TabsTrigger>
         ))}
       </TabsList>
