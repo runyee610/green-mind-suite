@@ -369,7 +369,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
                       <SelectItem value="待推荐">待推荐</SelectItem>
-                      <SelectItem value="已推荐">已推荐</SelectItem>
+                      <SelectItem value={recommendedLabel}>{recommendedLabel}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
