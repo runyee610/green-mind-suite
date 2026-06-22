@@ -50,11 +50,11 @@ type NavItem = {
 
 const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [
-    { title: "全景视图看板", url: "/", icon: LayoutDashboard },
     { title: "模拟评价管理", url: "/green-mfg/gov/self-assess", icon: ClipboardList },
     { title: "专家评审", url: "/green-mfg/gov/review", icon: Send },
     { title: "梯度培育", url: "/green-mfg/gov/incubator", icon: Sprout },
     { title: "动态管理", url: "/green-mfg/gov/dynamic", icon: BadgeCheck },
+    { title: "全景视图看板", url: "/", icon: LayoutDashboard },
     { title: "零碳进阶", url: "/green-mfg/gov/zerocarbon", icon: Leaf },
     { title: "数据智能", url: "/green-mfg-agent", icon: Brain },
     { title: "政策推送", url: "/policy-agent", icon: Megaphone },
