@@ -234,7 +234,7 @@ export default function GreenMfgEntDeclarationNew() {
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleSave}>
-            <Save className="mr-1 h-4 w-4" />保存
+            <Save className="mr-1 h-4 w-4" />完成
           </Button>
           {currentStep !== ANCHORS[ANCHORS.length - 1].href && (
             <Button
