@@ -405,22 +405,19 @@ export default function GreenMfgGovIncubator() {
                     aria-label="全选区级企业"
                   />
                 </TableHead>
-                <TableHead>企业 / 信用代码</TableHead>
+                <TableHead>企业</TableHead>
                 <TableHead>所属区</TableHead>
                 <TableHead>行业 / 子行业</TableHead>
-                <TableHead className="text-center">级别</TableHead>
                 <TableHead>企业类型标签</TableHead>
                 <TableHead className="text-center">产值（万元）</TableHead>
                 <TableHead className="text-center">综合能耗（吨标煤）</TableHead>
-                <TableHead className="text-center">得分（环比）</TableHead>
-                <TableHead className="text-center">培育阶段</TableHead>
-                <TableHead>下一步行动</TableHead>
+                <TableHead className="text-center">得分</TableHead>
                 <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.map((r) => (
-                <TableRow key={r.id} className="h-14 border-border/40">
+                <TableRow key={r.id} className="h-12 border-border/40">
                   <TableCell>
                     <Checkbox
                       checked={selected.has(r.id)}
@@ -431,15 +428,12 @@ export default function GreenMfgGovIncubator() {
                   </TableCell>
                   <TableCell>
                     <div className="text-sm font-medium">{r.name}</div>
-                    <div className="text-[11px] text-muted-foreground font-mono">{r.creditCode}</div>
-                    <div className="mt-0.5 text-[10px] text-muted-foreground">入库 {r.enterDate} · {r.reviewer}</div>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                   <TableCell>
                     <div className="text-xs">{r.industry}</div>
                     {r.subIndustry && <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>}
                   </TableCell>
-                  <TableCell className="text-center"><Badge variant="outline" className="text-[11px]">{r.level}</Badge></TableCell>
                   <TableCell>
                     <Badge variant="outline" className={cn("text-[11px]", energyTagBadge(r.energyTag))}>
                       {r.energyTag === "重点用能单位" ? <Flame className="mr-1 h-3 w-3" /> : <TrendingUp className="mr-1 h-3 w-3" />}
@@ -453,17 +447,10 @@ export default function GreenMfgGovIncubator() {
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="font-mono text-sm font-semibold">{r.score}</div>
-                    <div className={cn("text-[10px] font-medium", r.improvement > 0 ? "text-success" : r.improvement < 0 ? "text-destructive" : "text-muted-foreground")}>
-                      {r.improvement > 0 ? "▲" : r.improvement < 0 ? "▼" : "—"} {Math.abs(r.improvement)}
-                    </div>
                   </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="outline" className={cn("text-[11px]", stageBadge(r.stage))}>{r.stage}</Badge>
-                  </TableCell>
-                  <TableCell className="text-[11px] text-muted-foreground max-w-[200px]">{r.nextAction}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
+                      <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/incubator/${r.id}`)}>
                         <Eye className="mr-1 h-3 w-3" />详情
                       </Button>
                       <Button size="sm" variant="outline" className="h-7 text-destructive hover:text-destructive" onClick={() => setRemoveTarget(r)}>
@@ -474,9 +461,10 @@ export default function GreenMfgGovIncubator() {
                 </TableRow>
               ))}
               {rows.length === 0 && (
-                <TableRow><TableCell colSpan={12} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的培育企业</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的培育企业</TableCell></TableRow>
               )}
             </TableBody>
+
           </Table>
         </CardContent>
       </Card>
