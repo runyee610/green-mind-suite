@@ -197,23 +197,31 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   // 本地模拟推荐状态覆盖
   const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
 
-  const getDerivedStatus = (id: string, originalStage: string): "待推荐" | "已推荐" => {
-    if (recommendedIds.has(id)) return "已推荐";
-    return (originalStage === "培育中" || originalStage === "已完成") ? "已推荐" : "待推荐";
+  const recommendedLabel = expertView === "district" ? "已推荐到市级" : "已推荐到国家";
+
+  const getDerivedStatus = (id: string, originalStage: string): "待推荐" | typeof recommendedLabel => {
+    if (recommendedIds.has(id)) return recommendedLabel;
+    return (originalStage === "培育中" || originalStage === "已完成") ? recommendedLabel : "待推荐";
   };
+
+  const isRecommended = (id: string, originalStage: string) =>
+    getDerivedStatus(id, originalStage) !== "待推荐";
 
   const declarations = useMemo(() => {
     return MOCK_DECLARATIONS.filter((r) => {
-      const derivedStatus = getDerivedStatus(r.id, r.stage);
-      
-      // 视角过滤
-      if (expertView === "city" && derivedStatus !== "已推荐") return false;
+      const recommended = isRecommended(r.id, r.stage);
+
+      // 视角过滤：市级专家只看到已推荐的
+      if (expertView === "city" && !recommended) return false;
 
       const k = keyword.trim();
       if (k && !r.enterpriseName.includes(k)) return false;
-      
+
       // 全部状态下拉过滤
-      if (stageFilter !== "all" && derivedStatus !== stageFilter) return false;
+      if (stageFilter !== "all") {
+        if (stageFilter === "待推荐" && recommended) return false;
+        if (stageFilter !== "待推荐" && !recommended) return false;
+      }
 
       if (industryFilter !== "all") {
         const node = INDUSTRY_TREE.find((i) => i.name === industryFilter);
@@ -239,8 +247,17 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
 
   const handleRecommend = (id: string, name: string) => {
     setRecommendedIds(prev => new Set([...prev, id]));
-    const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定";
+    const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定（国家）";
     toast.success(`企业「${name}」${msg}`);
+  };
+
+  const handleSwitchView = (view: "district" | "city") => {
+    setExpertView(view);
+    setStageFilter("all");
+  };
+
+  const handleImport = () => {
+    toast.message("导入功能开发中");
   };
 
   return (
