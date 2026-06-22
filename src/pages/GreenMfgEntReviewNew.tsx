@@ -272,17 +272,23 @@ function StepTabs({
           <TabsTrigger
             key={s.href}
             value={s.href}
-            className="flex items-center gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            className="flex items-center gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm whitespace-pre-line"
           >
-            <span
-              className={
-                "inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] " +
-                (i <= idx ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground")
-              }
-            >
-              {i + 1}
-            </span>
-            {s.label}
+            {s.label.includes("\n") ? (
+              <span>{s.label}</span>
+            ) : (
+              <>
+                <span
+                  className={
+                    "inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] " +
+                    (i <= idx ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground")
+                  }
+                >
+                  {i + 1}
+                </span>
+                {s.label}
+              </>
+            )}
           </TabsTrigger>
         ))}
       </TabsList>
