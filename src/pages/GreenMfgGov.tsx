@@ -424,7 +424,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                             size="sm" 
                             variant="default" 
                             className="h-7 bg-primary hover:bg-primary/90" 
-                            disabled={status === "已推荐"}
+                            disabled={status !== "待推荐"}
                             onClick={() => handleRecommend(r.id, r.enterpriseName)}
                           >
                             <Check className="mr-1 h-3 w-3" />推荐
