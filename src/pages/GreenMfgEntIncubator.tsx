@@ -61,7 +61,7 @@ export default function GreenMfgEntIncubator() {
   ];
 
   return (
-    <AppLayout title="绿色工厂梯度培育 · 上海石化化工新材料分公司" subtitle="本企业培育进展与改进建议">
+    <AppLayout title="梯度培育&nbsp;" subtitle="">
       {/* 企业培育总览 */}
       <Card className="panel mb-4">
         <CardContent className="p-6 space-y-6">
