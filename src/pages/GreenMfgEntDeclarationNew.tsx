@@ -165,7 +165,16 @@ export default function GreenMfgEntDeclarationNew() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
               <ArrowLeft className="mr-1 h-4 w-4" />返回
             </Button>
-            <Button size="sm" variant="outline" onClick={handleSave}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                handleSave();
+                if (currentStep === "ai-scoring") {
+                  navigate("/green-mfg/ent");
+                }
+              }}
+            >
               <Save className="mr-1 h-4 w-4" />
               {currentStep === "ai-scoring" ? "完成" : "保存"}
             </Button>
