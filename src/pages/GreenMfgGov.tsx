@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, FileBarChart, Filter, Pencil, Plus, Search, Settings2, Trash2, XCircle, Clock } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, Filter, Search, XCircle, Clock, Check } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,13 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
-  ALL_INDUSTRIES,
   INDUSTRY_TREE,
   DECLARATION_BATCHES,
   MOCK_DECLARATIONS,
@@ -24,7 +22,6 @@ import {
 } from "@/components/green-mfg/data";
 import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
 import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
-
 
 /** Cascading industry filter: hover parent → reveals children on the right */
 function IndustryCascadeFilter({
@@ -186,35 +183,53 @@ function IndustryCascadeFilter({
 export default function GreenMfgGov({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<string>(section ?? "declaration");
+  const [expertView, setExpertView] = useState<"district" | "city">("district");
+  
   useEffect(() => {
     if (section) setTab(section);
   }, [section]);
+
   const [keyword, setKeyword] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
   const [batchFilter, setBatchFilter] = useState<string>("all");
-  const [batches, setBatches] = useState<string[]>([...DECLARATION_BATCHES]);
-  const [batchDialogOpen, setBatchDialogOpen] = useState(false);
 
-  const declarations = MOCK_DECLARATIONS.filter((r) => {
-    const k = keyword.trim();
-    if (k && !r.enterpriseName.includes(k) && !r.creditCode.includes(k)) return false;
-    if (stageFilter !== "all" && r.stage !== stageFilter) return false;
-    if (industryFilter !== "all") {
-      const node = INDUSTRY_TREE.find((i) => i.name === industryFilter);
-      if (node) {
-        if (r.industry !== industryFilter) return false;
-      } else {
-        // 选择的是细分行业
-        const parent = INDUSTRY_TREE.find((i) => i.children.includes(industryFilter));
-        if (!parent) return false;
-        if (r.industry !== parent.name) return false;
-        if ((r as { subIndustry?: string }).subIndustry && (r as { subIndustry?: string }).subIndustry !== industryFilter) return false;
+  // 本地模拟推荐状态覆盖
+  const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
+
+  const getDerivedStatus = (id: string, originalStage: string): "待推荐" | "已推荐" => {
+    if (recommendedIds.has(id)) return "已推荐";
+    return (originalStage === "培育中" || originalStage === "已完成") ? "已推荐" : "待推荐";
+  };
+
+  const declarations = useMemo(() => {
+    return MOCK_DECLARATIONS.filter((r) => {
+      const derivedStatus = getDerivedStatus(r.id, r.stage);
+      
+      // 视角过滤
+      if (expertView === "city" && derivedStatus !== "已推荐") return false;
+
+      const k = keyword.trim();
+      if (k && !r.enterpriseName.includes(k)) return false;
+      
+      // 全部状态下拉过滤
+      if (stageFilter !== "all" && derivedStatus !== stageFilter) return false;
+
+      if (industryFilter !== "all") {
+        const node = INDUSTRY_TREE.find((i) => i.name === industryFilter);
+        if (node) {
+          if (r.industry !== industryFilter) return false;
+        } else {
+          const parent = INDUSTRY_TREE.find((i) => i.children.includes(industryFilter));
+          if (!parent) return false;
+          if (r.industry !== parent.name) return false;
+          if ((r as { subIndustry?: string }).subIndustry && (r as { subIndustry?: string }).subIndustry !== industryFilter) return false;
+        }
       }
-    }
-    if (batchFilter !== "all" && r.batch !== batchFilter) return false;
-    return true;
-  });
+      if (batchFilter !== "all" && r.batch !== batchFilter) return false;
+      return true;
+    });
+  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, recommendedIds]);
 
   const dynamicRows = MOCK_DYNAMIC.filter((r) => {
     const k = keyword.trim();
@@ -222,30 +237,12 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     return true;
   });
 
-  const batchInUse = (b: string) => MOCK_DECLARATIONS.some((r) => r.batch === b);
+  const handleRecommend = (id: string, name: string) => {
+    setRecommendedIds(prev => new Set([...prev, id]));
+    const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定";
+    toast.success(`企业「${name}」${msg}`);
+  };
 
-  const handleAddBatch = (name: string) => {
-    const v = name.trim();
-    if (!v) return toast.error("批次名称不能为空");
-    if (batches.includes(v)) return toast.error("该批次已存在");
-    setBatches([v, ...batches]);
-    toast.success(`已新增批次「${v}」`);
-  };
-  const handleEditBatch = (oldName: string, newName: string) => {
-    const v = newName.trim();
-    if (!v) return toast.error("批次名称不能为空");
-    if (v === oldName) return;
-    if (batches.includes(v)) return toast.error("该批次已存在");
-    setBatches(batches.map((b) => (b === oldName ? v : b)));
-    if (batchFilter === oldName) setBatchFilter(v);
-    toast.success(`已更新为「${v}」`);
-  };
-  const handleDeleteBatch = (b: string) => {
-    if (batchInUse(b)) return toast.error("该批次下存在自评价记录，无法删除");
-    setBatches(batches.filter((x) => x !== b));
-    if (batchFilter === b) setBatchFilter("all");
-    toast.success(`已删除批次「${b}」`);
-  };
   return (
     <AppLayout
       title={
@@ -259,12 +256,52 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
           : "专家推荐 → 标记推荐企业，助力绿色工厂梯度培育"
       }
     >
+      {/* 专家视角切换 */}
+      {!section && tab === "declaration" && (
+        <div className="mb-4 flex justify-center">
+          <div className="inline-flex items-center rounded-lg bg-muted p-1">
+            <button
+              onClick={() => setExpertView("district")}
+              className={cn(
+                "rounded-md px-6 py-1.5 text-sm font-medium transition-all",
+                expertView === "district" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              区级专家
+            </button>
+            <button
+              onClick={() => setExpertView("city")}
+              className={cn(
+                "rounded-md px-6 py-1.5 text-sm font-medium transition-all",
+                expertView === "city" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              市级专家
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 概览指标 */}
-      <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiTile icon={ClipboardList} label="推荐总数" value={MOCK_DECLARATIONS.length} accent="primary" />
-        <KpiTile icon={Clock} label="待推荐" value={MOCK_DECLARATIONS.filter((d) => d.stage === "待审核").length} accent="primary" />
-        <KpiTile icon={XCircle} label="已驳回" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已驳回").length} accent="warning" />
-        <KpiTile icon={CheckCircle2} label="已完成" value={MOCK_DECLARATIONS.filter((d) => d.stage === "已完成").length} accent="success" />
+      <div className="grid gap-3 md:grid-cols-3 mb-4">
+        <KpiTile 
+          icon={ClipboardList} 
+          label="企业总数" 
+          value={declarations.length} 
+          accent="primary" 
+        />
+        <KpiTile 
+          icon={Clock} 
+          label="待推荐" 
+          value={declarations.filter(d => getDerivedStatus(d.id, d.stage) === "待推荐").length} 
+          accent="warning" 
+        />
+        <KpiTile 
+          icon={CheckCircle2} 
+          label="已推荐" 
+          value={declarations.filter(d => getDerivedStatus(d.id, d.stage) === "已推荐").length} 
+          accent="success" 
+        />
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
@@ -299,14 +336,11 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部批次</SelectItem>
-                      {batches.map((b) => (
+                      {DECLARATION_BATCHES.map((b) => (
                         <SelectItem key={b} value={b}>{b}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setBatchDialogOpen(true)}>
-                    <Settings2 className="mr-1 h-3 w-3" />批次管理
-                  </Button>
                   <Select value={stageFilter} onValueChange={setStageFilter}>
                     <SelectTrigger className="h-8 w-32 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
@@ -314,11 +348,8 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
-                      <SelectItem value="填写中">填写中</SelectItem>
-                      <SelectItem value="待审核">待审核</SelectItem>
-                      <SelectItem value="已驳回">已驳回</SelectItem>
-                      <SelectItem value="培育中">培育中</SelectItem>
-                      <SelectItem value="已完成">已完成</SelectItem>
+                      <SelectItem value="待推荐">待推荐</SelectItem>
+                      <SelectItem value="已推荐">已推荐</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -326,26 +357,26 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
             </CardHeader>
             <CardContent>
               <div className="relative overflow-x-auto">
-                <Table className="min-w-[1280px]">
+                <Table className="min-w-[1100px]">
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
-                    <TableHead className="whitespace-nowrap">企业名称 / 统一社会信用代码</TableHead>
+                    <TableHead className="whitespace-nowrap">企业名称</TableHead>
                     <TableHead className="whitespace-nowrap">所属区</TableHead>
                     <TableHead className="whitespace-nowrap">行业</TableHead>
                     <TableHead className="whitespace-nowrap">提交批次</TableHead>
                     <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家推荐</TableHead>
-                    <TableHead className="text-center whitespace-nowrap">流转状态</TableHead>
+                    <TableHead className="text-center whitespace-nowrap">推荐状态</TableHead>
                     <TableHead className="whitespace-nowrap">提交时间</TableHead>
                     <TableHead className="sticky right-0 z-20 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))]">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {declarations.map((r) => {
+                    const status = getDerivedStatus(r.id, r.stage);
                     return (
                     <TableRow key={r.id} className="h-12 border-border/40 group">
                       <TableCell className="whitespace-nowrap">
                         <div className="text-sm">{r.enterpriseName}</div>
-                        <div className="text-[11px] text-muted-foreground font-mono">{r.creditCode}</div>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.district}</TableCell>
                       <TableCell className="whitespace-nowrap">
@@ -355,30 +386,36 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                         )}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.batch}</TableCell>
-                      <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">
+                      <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
                       <TableCell className="text-center whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1">
-                          <Badge variant="outline" className={stageBadgeClass(r.stage)}>{r.stage}</Badge>
-                          {r.attested && (
-                            <Badge variant="outline" className="h-5 border-success/40 bg-success/10 text-success">
-                              <CheckCircle2 className="mr-0.5 h-3 w-3" />已确权
-                            </Badge>
-                          )}
-                        </div>
+                        <Badge variant="outline" className={status === "已推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
+                          {status}
+                        </Badge>
                       </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">{r.submitDate}</TableCell>
                       <TableCell className="sticky right-0 z-10 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))] group-hover:bg-muted/40">
-                        <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
-                          <Eye className="mr-1 h-3 w-3" />详情/推荐
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
+                            <Eye className="mr-1 h-3 w-3" />详情
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="default" 
+                            className="h-7 bg-primary hover:bg-primary/90" 
+                            disabled={status === "已推荐"}
+                            onClick={() => handleRecommend(r.id, r.enterpriseName)}
+                          >
+                            <Check className="mr-1 h-3 w-3" />推荐
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                     );
                   })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的专家推荐</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的推荐记录</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -414,7 +451,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                   <Table>
                     <TableHeader>
                       <TableRow className="border-border/60 hover:bg-transparent">
-                        
                         <TableHead>企业名称</TableHead>
                         <TableHead>所属区</TableHead>
                         <TableHead className="text-center">年度</TableHead>
@@ -428,13 +464,12 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableBody>
                       {dynamicRows.map((r) => (
                         <TableRow key={r.id} className="h-12 border-border/40">
-                          
                           <TableCell className="text-sm">{r.enterpriseName}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                           <TableCell className="text-center font-mono text-xs">{r.year}</TableCell>
-                          <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
-                          <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
-                          <TableCell className="p-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 font-mono text-xs text-center px-0">{r.wasteRecycleRate != null ? `${r.wasteRecycleRate}%` : "—"}</TableCell>
+                          <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">{r.energyConsumption?.toLocaleString() ?? "—"}</TableCell>
+                          <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">{r.carbonEmission?.toLocaleString() ?? "—"}</TableCell>
+                          <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">{r.wasteRecycleRate != null ? `${r.wasteRecycleRate}%` : "—"}</TableCell>
                           <TableCell className="text-center">
                             <Badge variant="outline" className={dynamicStatusClass(r.status)}>{r.status}</Badge>
                           </TableCell>
@@ -462,15 +497,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
           </Tabs>
         </TabsContent>
       </Tabs>
-      <BatchManageDialog
-        open={batchDialogOpen}
-        onOpenChange={setBatchDialogOpen}
-        batches={batches}
-        inUse={batchInUse}
-        onAdd={handleAddBatch}
-        onEdit={handleEditBatch}
-        onDelete={handleDeleteBatch}
-      />
     </AppLayout>
   );
 }
@@ -489,106 +515,5 @@ function KpiTile({ icon: Icon, label, value, accent }: { icon: any; label: strin
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-function BatchManageDialog({
-  open, onOpenChange, batches, inUse, onAdd, onEdit, onDelete,
-}: {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  batches: string[];
-  inUse: (b: string) => boolean;
-  onAdd: (name: string) => void;
-  onEdit: (oldName: string, newName: string) => void;
-  onDelete: (b: string) => void;
-}) {
-  const [newName, setNewName] = useState("");
-  const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [editingVal, setEditingVal] = useState("");
-
-  return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) { setEditingKey(null); setNewName(""); } }}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-base">提交批次管理</DialogTitle>
-        </DialogHeader>
-
-        <div className="flex items-center gap-2">
-          <Input
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="新批次名称，如 2026年第一批"
-            className="h-8 text-xs"
-          />
-          <Button
-            size="sm"
-            className="h-8"
-            onClick={() => { onAdd(newName); setNewName(""); }}
-          >
-            <Plus className="mr-1 h-3 w-3" />新增
-          </Button>
-        </div>
-
-        <div className="mt-2 max-h-72 overflow-auto rounded-md border border-border/60">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="h-9 text-xs">批次名称</TableHead>
-                <TableHead className="h-9 text-right text-xs">操作</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {batches.map((b) => (
-                <TableRow key={b} className="h-10">
-                  <TableCell className="text-sm">
-                    {editingKey === b ? (
-                      <Input
-                        autoFocus
-                        value={editingVal}
-                        onChange={(e) => setEditingVal(e.target.value)}
-                        className="h-7 text-xs"
-                      />
-                    ) : (
-                      <span>{b}{inUse(b) && <span className="ml-2 text-[10px] text-muted-foreground">使用中</span>}</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {editingKey === b ? (
-                      <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="outline" className="h-7" onClick={() => { onEdit(b, editingVal); setEditingKey(null); }}>保存</Button>
-                        <Button size="sm" variant="ghost" className="h-7" onClick={() => setEditingKey(null)}>取消</Button>
-                      </div>
-                    ) : (
-                      <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => { setEditingKey(b); setEditingVal(b); }}>
-                          <Pencil className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 px-2 text-destructive hover:text-destructive"
-                          disabled={inUse(b)}
-                          onClick={() => onDelete(b)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {batches.length === 0 && (
-                <TableRow><TableCell colSpan={2} className="h-16 text-center text-xs text-muted-foreground">暂无批次</TableCell></TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>关闭</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
