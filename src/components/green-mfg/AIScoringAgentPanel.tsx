@@ -58,13 +58,12 @@ export function AIScoringAgentPanel() {
               <Bot className="h-4 w-4" />
               <span className="absolute inset-0 rounded-md ring-1 ring-primary/40 animate-pulse-glow" />
             </span>
-            <span className="font-semibold">五、AI 打分结果</span>
+            <span className="font-semibold">AI 打分结果</span>
             <Badge
               variant="outline"
               className="border-primary/40 bg-primary/5 font-mono text-[10px] uppercase tracking-wider text-primary"
             >
               <Sparkles className="mr-1 h-3 w-3" />
-              GreenScore-LLM v3.2
             </Badge>
           </span>
         </CardTitle>
