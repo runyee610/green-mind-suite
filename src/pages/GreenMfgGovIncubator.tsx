@@ -586,7 +586,7 @@ export default function GreenMfgGovIncubator() {
   );
 }
 
-function KpiCard({ title, value, subtitle, icon: Icon, accent, extra }: { title: string; value: number | string; subtitle?: string; icon: typeof Sprout; accent: "primary" | "cyan" | "warning" | "success"; extra?: string }) {
+function KpiCard({ title, value, subtitle, icon: Icon, accent, extra, active, onClick }: { title: string; value: number | string; subtitle?: string; icon: typeof Sprout; accent: "primary" | "cyan" | "warning" | "success"; extra?: string; active?: boolean; onClick?: () => void }) {
   const map = {
     primary: { bg: "bg-primary/15", text: "text-primary", value: "text-primary" },
     cyan: { bg: "bg-cyan-500/15", text: "text-cyan-600 dark:text-cyan-300", value: "text-cyan-600 dark:text-cyan-300" },
@@ -594,8 +594,16 @@ function KpiCard({ title, value, subtitle, icon: Icon, accent, extra }: { title:
     success: { bg: "bg-success/15", text: "text-success", value: "text-success" },
   } as const;
   const c = map[accent];
+  const clickable = !!onClick;
   return (
-    <Card className="panel">
+    <Card
+      className={cn(
+        "panel",
+        clickable && "cursor-pointer transition hover:shadow-md",
+        active && "ring-2 ring-primary/50",
+      )}
+      onClick={onClick}
+    >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-md", c.bg, c.text)}>
@@ -614,3 +622,4 @@ function KpiCard({ title, value, subtitle, icon: Icon, accent, extra }: { title:
     </Card>
   );
 }
+
