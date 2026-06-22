@@ -11,6 +11,7 @@ interface AppLayoutProps {
   title?: string;
   subtitle?: React.ReactNode;
   hideHeader?: boolean;
+  headerActions?: React.ReactNode;
   children: React.ReactNode;
 }
 

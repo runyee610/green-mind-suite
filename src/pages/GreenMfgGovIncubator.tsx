@@ -258,9 +258,10 @@ export default function GreenMfgGovIncubator() {
     districtRowsInView.length > 0 && districtRowsInView.every((r) => selected.has(r.id));
 
   return (
-    <AppLayout title="绿色工厂梯度培育" subtitle="梯度培育库的跟踪与管理">
-      {/* ========== 视角切换 ========== */}
-      <div className="mb-4 flex items-center gap-2">
+    <AppLayout
+      title="绿色工厂梯度培育"
+      subtitle="梯度培育库的跟踪与管理"
+      headerActions={
         <div className="inline-flex rounded-lg border border-border bg-card p-1">
           {(["区级", "市级"] as IncubateLevel[]).map((lv) => (
             <button
@@ -282,10 +283,8 @@ export default function GreenMfgGovIncubator() {
             </button>
           ))}
         </div>
-        <span className="text-xs text-muted-foreground">
-          仅展示 {viewLevel} 培育库数据
-        </span>
-      </div>
+      }
+    >
 
       {/* ========== KPI · 7 张统计卡片 ========== */}
       <div className="grid gap-3 md:grid-cols-4 xl:grid-cols-7 mb-4">
