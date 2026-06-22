@@ -123,37 +123,27 @@ export default function GreenMfgGovIncubatorDetail() {
       {/* AI 节能技术推荐 */}
       <Card className="panel mb-4">
         <CardHeader className="pb-3">
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="text-base flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
-                <Sparkles className="h-3.5 w-3.5" />
-              </div>
-              AI 节能技术推荐
-              {research?.status === "researching" && (
-                <Badge variant="outline" className="border-border/60 bg-muted/40 text-muted-foreground font-normal">
-                  <Loader2 className="mr-1 h-3 w-3 animate-spin" />智能体调研中
-                </Badge>
-              )}
-              {research?.status === "done" && (
-                <Badge variant="outline" className="border-success/30 bg-success/10 text-success font-normal">
-                  已完成 · {research.techs.length} 项
-                </Badge>
-              )}
-            </CardTitle>
-            <Button size="sm" variant="ghost" className="h-8 text-muted-foreground hover:text-foreground" onClick={rerun} disabled={research?.status === "researching"}>
-              <RefreshCw className="mr-1 h-3 w-3" />重新调研
-            </Button>
-          </div>
+          <CardTitle className="text-base flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+            </div>
+            AI 节能技术推荐
+            {research?.status === "researching" && (
+              <Badge variant="outline" className="border-border/60 bg-muted/40 text-muted-foreground font-normal">
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />智能体调研中
+              </Badge>
+            )}
+            {research?.status === "done" && (
+              <Badge variant="outline" className="border-success/30 bg-success/10 text-success font-normal">
+                已完成 · {research.techs.length} 项
+              </Badge>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
           {!research && (
             <div className="rounded-lg border border-dashed border-border/60 bg-muted/20 p-8 text-center text-xs text-muted-foreground">
-              该企业尚未启动 AI 智能体调研。
-              <div className="mt-3">
-                <Button size="sm" variant="outline" className="h-8" onClick={rerun}>
-                  <Sparkles className="mr-1 h-3 w-3" />立即启动调研
-                </Button>
-              </div>
+              该企业尚未启动 AI 智能体调研，企业侧启动后此处将自动同步结果。
             </div>
           )}
 
