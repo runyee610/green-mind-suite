@@ -26,13 +26,13 @@ interface SelfAssessRecord {
   date: string;
   aiScore: number;
   indicatorCount: number;
-  note?: string;
+  weakCount: number;
 }
 const DEFAULT_ENT_NAME = "上海华普电缆有限公司";
 const MOCK_SELF_ASSESS: SelfAssessRecord[] = [
-  { id: "SA-2025-003", enterpriseName: DEFAULT_ENT_NAME, date: "2025-09-20", aiScore: 78, indicatorCount: 23, note: "新增 3 项绿色产品后再评" },
-  { id: "SA-2025-002", enterpriseName: DEFAULT_ENT_NAME, date: "2025-08-12", aiScore: 72, indicatorCount: 23 },
-  { id: "SA-2025-001", enterpriseName: DEFAULT_ENT_NAME, date: "2025-06-04", aiScore: 65, indicatorCount: 23, note: "首次试评" },
+  { id: "SA-2025-003", enterpriseName: DEFAULT_ENT_NAME, date: "2025-09-20", aiScore: 78, indicatorCount: 23, weakCount: 3 },
+  { id: "SA-2025-002", enterpriseName: DEFAULT_ENT_NAME, date: "2025-08-12", aiScore: 72, indicatorCount: 23, weakCount: 5 },
+  { id: "SA-2025-001", enterpriseName: DEFAULT_ENT_NAME, date: "2025-06-04", aiScore: 65, indicatorCount: 23, weakCount: 7 },
 ];
 
 export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
