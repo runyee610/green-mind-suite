@@ -336,6 +336,9 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <CardTitle className="text-base">推荐列表</CardTitle>
                 <div className="flex flex-wrap items-center gap-2">
+                  <Button variant="outline" size="sm" className="h-8" onClick={handleImport}>
+                    <Upload className="mr-1 h-3 w-3" />导入
+                  </Button>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                     <Input
