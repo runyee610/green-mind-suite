@@ -425,7 +425,7 @@ export function BasicRequirementsCard({
     <Card id="basic-requirements" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
-          <ClipboardCheck className="mr-1 inline h-4 w-4" />二、基本要求
+          <ClipboardCheck className="mr-1 inline h-4 w-4" />基本要求
         </CardTitle>
       </CardHeader>
       <CardContent>
