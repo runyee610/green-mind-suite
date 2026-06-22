@@ -254,7 +254,7 @@ export default function GreenMfgGovIncubatorDetail() {
             {!research && (
               <li className="flex gap-2">
                 <FileText className="mt-0.5 h-3.5 w-3.5 text-primary shrink-0" />
-                <span>启动 AI 智能体调研后，将在此自动生成针对薄弱项的改进建议。</span>
+                <span>企业侧启动 AI 智能体调研后，将在此自动同步针对薄弱项的改进建议。</span>
               </li>
             )}
             <li className="flex gap-2">
