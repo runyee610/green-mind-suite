@@ -43,8 +43,6 @@ import GreenMfgEntDeclarationDetail from "./pages/GreenMfgEntDeclarationDetail.t
 import GreenMfgEntDeclarationNew from "./pages/GreenMfgEntDeclarationNew.tsx";
 import GreenMfgEntDynamicEdit from "./pages/GreenMfgEntDynamicEdit.tsx";
 import GreenMfgEntIncubator from "./pages/GreenMfgEntIncubator.tsx";
-import GreenMfgEntReview from "./pages/GreenMfgEntReview.tsx";
-import GreenMfgEntReviewNew from "./pages/GreenMfgEntReviewNew.tsx";
 import GreenMfgEntZeroCarbon from "./pages/GreenMfgEntZeroCarbon.tsx";
 import GreenMfgGovZeroCarbon from "./pages/GreenMfgGovZeroCarbon.tsx";
 import System from "./pages/System.tsx";
@@ -100,8 +98,6 @@ const App = () => (
           <Route path="/green-mfg/gov/declaration/:id" element={<GreenMfgGovDeclarationDetail />} />
           <Route path="/green-mfg/gov/dynamic/:id" element={<GreenMfgGovDynamicEdit />} />
           <Route path="/green-mfg/ent" element={<GreenMfgEnt section="declaration" />} />
-          <Route path="/green-mfg/ent/review" element={<GreenMfgEntReview />} />
-          <Route path="/green-mfg/ent/review/new" element={<GreenMfgEntReviewNew />} />
           <Route path="/green-mfg/ent/dynamic" element={<GreenMfgEnt section="dynamic" />} />
           <Route path="/green-mfg/ent/zerocarbon" element={<GreenMfgEntZeroCarbon />} />
           <Route path="/green-mfg/ent/incubator" element={<GreenMfgEntIncubator />} />
