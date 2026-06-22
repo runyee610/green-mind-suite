@@ -70,29 +70,19 @@ export default function GreenMfgGovDeclarationDetail() {
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Badge variant="outline" className={stageBadgeClass(detail.stage)}>{detail.stage}</Badge>
-          {addedToIncubator && (
-            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-              <Sprout className="mr-1 h-3 w-3" />已加入培育库
-            </Badge>
-          )}
-          {recommended && (
-            <Badge variant="outline" className="border-success/40 bg-success/10 text-success">
-              <Star className="mr-1 h-3 w-3 fill-current" />已推荐
-            </Badge>
-          )}
         </div>
         <div className="flex items-center gap-2">
           {!isIncubator && (
             <>
               <Button
                 size="sm"
-                variant={addedToIncubator ? "outline" : "outline"}
+                variant={addedToIncubator ? "destructive" : "outline"}
                 onClick={handleToggleIncubator}
-                className={addedToIncubator ? "border-primary/40 text-primary hover:bg-primary/10 hover:text-primary" : ""}
               >
                 <Sprout className="mr-1 h-4 w-4" />
                 {addedToIncubator ? "退库" : "加入培育库"}
               </Button>
+
               <Button
                 size="sm"
                 onClick={handleToggleRecommend}

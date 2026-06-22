@@ -196,10 +196,13 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
 
   // 本地模拟推荐状态覆盖
   const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
+  // 取消推荐覆盖（针对 mock 数据派生的已推荐）
+  const [unrecommendedIds, setUnrecommendedIds] = useState<Set<string>>(new Set());
 
   const recommendedLabel = expertView === "district" ? "已推荐到市级" : "已推荐到国家";
 
   const getDerivedStatus = (id: string, originalStage: string): "未推荐" | typeof recommendedLabel => {
+    if (unrecommendedIds.has(id)) return "未推荐";
     if (recommendedIds.has(id)) return recommendedLabel;
     return (originalStage === "培育中" || originalStage === "已完成") ? recommendedLabel : "未推荐";
   };
@@ -237,7 +240,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       if (batchFilter !== "all" && r.batch !== batchFilter) return false;
       return true;
     });
-  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, recommendedIds]);
+  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, recommendedIds, unrecommendedIds]);
 
   const dynamicRows = MOCK_DYNAMIC.filter((r) => {
     const k = keyword.trim();
@@ -264,8 +267,24 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   const toggleByDerived = (id: string, originalStage: string, name: string) => {
     const currentlyRecommended = isRecommended(id, originalStage);
     if (currentlyRecommended && !recommendedIds.has(id)) {
-      // mock 数据派生的已推荐，无法在本地状态中取消，给出提示
-      toast.message("该企业由历史阶段派生为已推荐，暂不支持取消");
+      // mock 数据派生的已推荐：写入取消集合
+      setUnrecommendedIds(prev => {
+        const next = new Set(prev);
+        next.add(id);
+        return next;
+      });
+      toast.message(`已取消推荐「${name}」`);
+      return;
+    }
+    if (!currentlyRecommended && unrecommendedIds.has(id)) {
+      // 从已取消状态恢复推荐
+      setUnrecommendedIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定（国家）";
+      toast.success(`企业「${name}」${msg}`);
       return;
     }
     handleRecommend(id, name);
