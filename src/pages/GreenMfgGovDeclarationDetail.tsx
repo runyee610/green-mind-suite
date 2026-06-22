@@ -91,7 +91,7 @@ export default function GreenMfgGovDeclarationDetail() {
                 className={addedToIncubator ? "border-primary/40 text-primary hover:bg-primary/10 hover:text-primary" : ""}
               >
                 <Sprout className="mr-1 h-4 w-4" />
-                {addedToIncubator ? "已加入培育库（点击移除）" : "加入培育库"}
+                {addedToIncubator ? "退库" : "加入培育库"}
               </Button>
               <Button
                 size="sm"
@@ -100,7 +100,7 @@ export default function GreenMfgGovDeclarationDetail() {
                 className={recommended ? "border-success/40 text-success hover:bg-success/10 hover:text-success" : ""}
               >
                 <Star className={`mr-1 h-4 w-4 ${recommended ? "fill-current" : ""}`} />
-                {recommended ? "已推荐（点击取消）" : "推荐"}
+                {recommended ? "取消推荐" : "推荐"}
               </Button>
             </>
           )}
