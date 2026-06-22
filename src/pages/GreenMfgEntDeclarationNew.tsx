@@ -171,9 +171,9 @@ export default function GreenMfgEntDeclarationNew() {
       title="模拟自我评价"
       subtitle={
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground whitespace-pre-wrap">
-          <span>{DEFAULT_ENTERPRISE.name}</span>
-          <span>{DEFAULT_ENTERPRISE.creditCode}</span>
-          <span>{DEFAULT_ENTERPRISE.industry}</span>
+          <span>{"\n"}</span>
+          <span>{"\n"}</span>
+          <span>{"\n"}</span>
         </div>
       }
     >
