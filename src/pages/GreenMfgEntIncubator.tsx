@@ -299,23 +299,3 @@ export default function GreenMfgEntIncubator() {
   );
 }
 
-function InfoTile({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  icon?: typeof Building2;
-}) {
-  if (!label && !value) return <div className="hidden lg:block" />;
-  return (
-    <div className="rounded-md border border-border/60 bg-background/40 px-3 py-2">
-      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-        {Icon ? <Icon className="h-3 w-3" /> : null}
-        {label}
-      </div>
-      <div className="mt-1 text-sm font-medium">{value || "—"}</div>
-    </div>
-  );
-}
