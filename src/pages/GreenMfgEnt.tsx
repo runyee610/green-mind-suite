@@ -16,6 +16,7 @@ import {
 import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
 import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
 import { MOCK_RISKS } from "@/components/green-mfg/dynamicExtData";
+import { runIncubatorResearch } from "@/components/green-mfg/incubatorResearchData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
