@@ -442,12 +442,11 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                           </Button>
                           <Button 
                             size="sm" 
-                            variant="default" 
-                            className="h-7 bg-primary hover:bg-primary/90" 
-                            disabled={status !== "待推荐"}
-                            onClick={() => handleRecommend(r.id, r.enterpriseName)}
+                            variant={status !== "待推荐" ? "outline" : "default"}
+                            className={status !== "待推荐" ? "h-7 border-success/40 text-success hover:bg-success/10 hover:text-success" : "h-7 bg-primary hover:bg-primary/90"}
+                            onClick={() => toggleByDerived(r.id, r.stage, r.enterpriseName)}
                           >
-                            <Check className="mr-1 h-3 w-3" />推荐
+                            <Check className="mr-1 h-3 w-3" />{status !== "待推荐" ? "取消推荐" : "推荐"}
                           </Button>
                         </div>
                       </TableCell>
