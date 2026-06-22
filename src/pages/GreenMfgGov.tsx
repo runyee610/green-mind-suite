@@ -253,7 +253,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表复核"
-          : "专家推荐 → 标记推荐企业，助力绿色工厂梯度培育"
+          : ""
       }
     >
       {/* 专家视角切换 */}
