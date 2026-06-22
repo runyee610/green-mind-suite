@@ -7,7 +7,6 @@ import {
   ExternalLink,
   FileText,
   Loader2,
-  RefreshCw,
   Sparkles,
   Sprout,
   Target,
@@ -20,7 +19,6 @@ import { Progress } from "@/components/ui/progress";
 import { INITIAL_INCUBATE_DATA } from "@/pages/GreenMfgGovIncubator";
 import {
   loadResearch,
-  runIncubatorResearch,
   type IncubatorResearchResult,
 } from "@/components/green-mfg/incubatorResearchData";
 
