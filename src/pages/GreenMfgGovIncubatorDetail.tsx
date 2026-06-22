@@ -43,13 +43,6 @@ export default function GreenMfgGovIncubatorDetail() {
     return () => window.removeEventListener("incubator-research-updated", handler as EventListener);
   }, [me.creditCode]);
 
-  const rerun = () => {
-    void runIncubatorResearch({
-      creditCode: me.creditCode,
-      enterpriseName: me.name,
-      onUpdate: setResearch,
-    });
-  };
 
   const overviewStats: Array<{ label: string; value: string }> = [
     { label: "所属区", value: me.district },
