@@ -55,17 +55,7 @@ export default function GreenMfgGovDeclarationDetail() {
   return (
     <AppLayout
       title={detail.enterpriseName}
-      subtitle={
-        <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-          <span className="font-mono">{detail.creditCode}</span>
-          <span className="text-muted-foreground/40">·</span>
-          <span>{detail.industry}</span>
-          <span className="text-muted-foreground/40">·</span>
-          <span>{detail.batch}</span>
-          <span className="text-muted-foreground/40">·</span>
-          <span className="font-mono">{detail.submitDate}</span>
-        </span>
-      }
+      subtitle={null}
     >
       <div className="mb-4 flex items-center justify-between gap-3">
         <div />
