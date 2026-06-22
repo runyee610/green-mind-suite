@@ -291,6 +291,40 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
   },
 ];
 
+// ========== 模拟自我评价（AI 智能体打分，不提交） ==========
+export interface SelfAssessRecord {
+  id: string;
+  enterpriseName: string;
+  creditCode: string;
+  district: string;
+  industry: string;
+  subIndustry?: string;
+  date: string;
+  aiScore: number;
+  indicatorCount: number;
+  weakCount: number;
+}
+
+export const MOCK_SELF_ASSESS: SelfAssessRecord[] = [
+  // 上海华普电缆有限公司（企业侧默认企业，多次评价）
+  { id: "SA-2025-003", enterpriseName: "上海华普电缆有限公司", creditCode: "91310000HUAPU0001", district: "嘉定区", industry: "机械行业", subIndustry: "电机", date: "2025-09-20", aiScore: 78, indicatorCount: 23, weakCount: 3 },
+  { id: "SA-2025-002", enterpriseName: "上海华普电缆有限公司", creditCode: "91310000HUAPU0001", district: "嘉定区", industry: "机械行业", subIndustry: "电机", date: "2025-08-12", aiScore: 72, indicatorCount: 23, weakCount: 5 },
+  { id: "SA-2025-001", enterpriseName: "上海华普电缆有限公司", creditCode: "91310000HUAPU0001", district: "嘉定区", industry: "机械行业", subIndustry: "电机", date: "2025-06-04", aiScore: 65, indicatorCount: 23, weakCount: 7 },
+  // 其他企业（每家 1-2 次评价）
+  { id: "SA-2025-101", enterpriseName: "上海宝武特种合金有限公司", creditCode: "91310000132198765X", district: "宝山区", industry: "钢铁行业", subIndustry: "短流程钢铁企业", date: "2025-09-15", aiScore: 86, indicatorCount: 23, weakCount: 2 },
+  { id: "SA-2025-102", enterpriseName: "上海宝武特种合金有限公司", creditCode: "91310000132198765X", district: "宝山区", industry: "钢铁行业", subIndustry: "短流程钢铁企业", date: "2025-07-20", aiScore: 80, indicatorCount: 23, weakCount: 4 },
+  { id: "SA-2025-201", enterpriseName: "华域汽车电子有限公司", creditCode: "91310115MA1K38XYZ1", district: "浦东新区", industry: "机械行业", subIndustry: "汽车整车", date: "2025-09-08", aiScore: 79, indicatorCount: 23, weakCount: 4 },
+  { id: "SA-2025-301", enterpriseName: "申能电力设备股份有限公司", creditCode: "913100007896543210", district: "闵行区", industry: "机械行业", subIndustry: "电机", date: "2025-08-21", aiScore: 92, indicatorCount: 23, weakCount: 1 },
+  { id: "SA-2025-302", enterpriseName: "申能电力设备股份有限公司", creditCode: "913100007896543210", district: "闵行区", industry: "机械行业", subIndustry: "电机", date: "2025-06-12", aiScore: 85, indicatorCount: 23, weakCount: 3 },
+  { id: "SA-2025-401", enterpriseName: "上海石化化工新材料分公司", creditCode: "91310116MA1H23ABC4", district: "金山区", industry: "石化化工行业", subIndustry: "煤制烯烃", date: "2025-08-15", aiScore: 64, indicatorCount: 23, weakCount: 6 },
+  { id: "SA-2025-501", enterpriseName: "中微半导体设备(上海)股份有限公司", creditCode: "91310115MA1K0DEF56", district: "浦东新区", industry: "电子行业", subIndustry: "集成电路", date: "2025-09-20", aiScore: 76, indicatorCount: 23, weakCount: 4 },
+  { id: "SA-2025-601", enterpriseName: "上海延锋汽车饰件系统有限公司", creditCode: "91310115MA1K38AUTO2", district: "嘉定区", industry: "机械行业", subIndustry: "汽车整车", date: "2025-09-02", aiScore: 68, indicatorCount: 23, weakCount: 5 },
+  { id: "SA-2025-701", enterpriseName: "上海华谊新材料有限公司", creditCode: "91310116MA1H23HUAYI", district: "金山区", industry: "石化化工行业", subIndustry: "涂料", date: "2025-07-28", aiScore: 59, indicatorCount: 23, weakCount: 8 },
+  { id: "SA-2025-801", enterpriseName: "上海联影医疗科技股份有限公司", creditCode: "91310115MA1K38UIH01", district: "嘉定区", industry: "电子行业", subIndustry: "显示器件", date: "2025-09-12", aiScore: 82, indicatorCount: 23, weakCount: 2 },
+  { id: "SA-2025-901", enterpriseName: "上海三菱电梯有限公司", creditCode: "91310112MA1H23MITS1", district: "闵行区", industry: "机械行业", subIndustry: "电机", date: "2025-08-30", aiScore: 78, indicatorCount: 23, weakCount: 3 },
+];
+
+
 export const MOCK_DYNAMIC: DynamicRecord[] = [
   {
     id: "DYN-2025-001",

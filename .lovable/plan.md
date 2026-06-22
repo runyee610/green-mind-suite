@@ -1,33 +1,52 @@
-# 政府侧梯度培育界面精简
+## 目标
 
-仅改两个文件，不涉及数据 / 企业侧。
+在政府侧新增一级菜单「企业模拟评价」，方便政府查看辖区企业完成的"模拟自我评价（AI 智能打分）"结果。
 
-## 1. `src/pages/GreenMfgGovIncubator.tsx`
+## 实现方案
 
-**去掉「晋升培育」**
-- 移除表头第一列「选择」Checkbox 和每行的选择 Checkbox，移除全选逻辑（`selected` / `toggleSelect` / `toggleSelectAll` / `allDistrictSelected` / `selectedDistrictRows`）。
-- 移除「晋升培育」按钮、`promoteConfirmOpen` 状态、`handlePromote`、底部「晋升培育二次确认」AlertDialog。
-- 移除 `ArrowUpCircle` 引入；表格 colSpan 由 9 改为 8；移除卡片标题旁「已选 X 家」提示。
-- 切换视角时不再 `setSelected(new Set())`。
+### 1. 模拟数据（共用并扩充 `MOCK_SELF_ASSESS`）
 
-**去掉「入库登记」卡片**
-- KPI 网格从 7 张减为 6 张（`md:grid-cols-4 xl:grid-cols-6`），删除「入库登记」KpiCard 及 `scopeEnterCount` 计算。
+当前企业侧 `GreenMfgEnt.tsx` 中的 `MOCK_SELF_ASSESS` 只有 1 家企业 3 次记录。为了让政府侧列表有内容，将其抽出到 `src/components/green-mfg/data.ts`，扩展为多家企业（例如 6–8 家：上海华普电缆、宝武特种合金、华域汽车电子、申能电力、延锋汽车饰件、华谊新材料等），每家若干次评价，包含字段：`enterpriseName / creditCode / district / industry / date / aiScore / indicatorCount / weakCount`。
 
-**去掉导入**
-- 移除「导入」按钮、`importOpen` / `importForm` 状态、`handleImportSubmit`、整个「导入对话框」Dialog。
-- 移除 `Upload`、`Dialog*`、`Label`、`DISTRICTS` 等仅供导入用的引入；`setData` 改为只读的 `data = INITIAL_INCUBATE_DATA`（仍需支持退库，所以保留 `useState`）。
+企业侧仅展示自己的记录（按当前 `DEFAULT_ENT_NAME` 过滤），保持原有 UI 不变。
 
-**去掉「全部阶段」筛选项**
-- 移除工具栏中阶段 Select 控件，以及 `stageFilter` 状态。诊断调研/晋级出库 KPI 卡片改为非可点击（去掉 `onClick` / `active`），保留展示。
-- `rows` 过滤逻辑移除 `stageFilter` 分支。
+### 2. 新增侧边栏菜单（政府侧）
 
-## 2. `src/pages/GreenMfgGovIncubatorDetail.tsx`
+`src/components/AppSidebar.tsx` 的 `greenMfgItemsByRole.gov` 中新增：
 
-**政府侧只读展示 AI 调研结果**
-- 已有 `loadResearch(creditCode)` + `incubator-research-updated` 监听，企业侧启动后政府侧会自动同步——保留该机制。
-- 移除「重新调研」按钮和 `rerun` 函数；移除空态下的「立即启动调研」按钮，空态文案改为「该企业尚未启动 AI 调研，启动后此处将自动同步结果」。
-- 移除 `runIncubatorResearch` 引入及 `RefreshCw`、`Sparkles`（若仅用于该按钮）等未用图标。
-- 「改进建议」中 `!research` 文案同步改为：等待企业侧启动调研后自动生成。
+```
+{ title: "企业模拟评价", url: "/green-mfg/gov/self-assess", icon: ClipboardList }
+```
 
-## 不改动
-- `INITIAL_INCUBATE_DATA`、企业侧 `GreenMfgEntIncubator.tsx`、`incubatorResearchData.ts`、路由配置。
+位置：放在"审核推荐"上方（自评价是审核推荐的前置环节）。
+
+### 3. 新增政府侧列表页 `GreenMfgGovSelfAssess.tsx`
+
+- 顶部 KPI：参评企业数 / 评价总次数 / 平均模拟分数 / 薄弱项 ≥5 的企业数
+- 列表（按企业聚合，仅展示每家"最新一次"评价）：
+  - 列：企业名称 · 所属区 · 行业 · 最近评价日期 · **模拟分数（AI 打分）** · 指标数 · 薄弱项 · 评价次数 · 操作（"详情"）
+- 顶部支持企业名称搜索 + 区/行业筛选
+- 操作"详情"跳转 `/green-mfg/gov/self-assess/:creditCode`
+
+### 4. 新增政府侧详情页 `GreenMfgGovSelfAssessDetail.tsx`
+
+- 仅展示该企业**最新一次**模拟评价：
+  - 企业信息卡（名称、统一信用代码、所属区、行业）
+  - 评价摘要卡（评价日期、AI 模拟分数、指标总数、薄弱项数）
+  - 指标得分明细 / 薄弱项清单：复用 `src/components/green-mfg/evaluationIndicators.ts` 等现有 mock 指标渲染（与企业侧自评价详情视觉一致，只读）
+- 不展示历史多次评价，不提供"重新评价"按钮
+
+### 5. 路由
+
+`src/App.tsx` 新增：
+
+```
+<Route path="/green-mfg/gov/self-assess" element={<GreenMfgGovSelfAssess />} />
+<Route path="/green-mfg/gov/self-assess/:creditCode" element={<GreenMfgGovSelfAssessDetail />} />
+```
+
+## 影响范围
+
+- 新文件：`src/pages/GreenMfgGovSelfAssess.tsx`、`src/pages/GreenMfgGovSelfAssessDetail.tsx`
+- 修改：`src/components/AppSidebar.tsx`（新增菜单项）、`src/App.tsx`（新增路由）、`src/components/green-mfg/data.ts`（导出扩充后的 `MOCK_SELF_ASSESS`）、`src/pages/GreenMfgEnt.tsx`（改为引用共享数据并按当前企业过滤）
+- 企业侧、培育库、动态管理等其它功能保持不变

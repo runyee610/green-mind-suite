@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
   MOCK_DECLARATIONS,
   MOCK_DYNAMIC,
+  MOCK_SELF_ASSESS,
   dynamicStatusClass,
   stageBadgeClass,
 } from "@/components/green-mfg/data";
@@ -20,21 +21,9 @@ import { runIncubatorResearch } from "@/components/green-mfg/incubatorResearchDa
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// 本地"模拟自我评价"记录（仅 AI 智能体分析打分，不提交）
-interface SelfAssessRecord {
-  id: string;
-  enterpriseName: string;
-  date: string;
-  aiScore: number;
-  indicatorCount: number;
-  weakCount: number;
-}
 const DEFAULT_ENT_NAME = "上海华普电缆有限公司";
-const MOCK_SELF_ASSESS: SelfAssessRecord[] = [
-  { id: "SA-2025-003", enterpriseName: DEFAULT_ENT_NAME, date: "2025-09-20", aiScore: 78, indicatorCount: 23, weakCount: 3 },
-  { id: "SA-2025-002", enterpriseName: DEFAULT_ENT_NAME, date: "2025-08-12", aiScore: 72, indicatorCount: 23, weakCount: 5 },
-  { id: "SA-2025-001", enterpriseName: DEFAULT_ENT_NAME, date: "2025-06-04", aiScore: 65, indicatorCount: 23, weakCount: 7 },
-];
+const MY_SELF_ASSESS = MOCK_SELF_ASSESS.filter((r) => r.enterpriseName === DEFAULT_ENT_NAME);
+
 
 export default function GreenMfgEnt({ section }: { section?: "declaration" | "dynamic" } = {}) {
   const navigate = useNavigate();
@@ -50,7 +39,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
   const entRiskOpen = MOCK_RISKS.filter((r) => r.creditCode === entCreditCode && r.status !== "已关闭").length;
   const isGreenFactory = myDeclaration.stage === "已完成";
 
-  const latestSelf = MOCK_SELF_ASSESS[0];
+  const latestSelf = MY_SELF_ASSESS[0];
 
   return (
     <AppLayout
@@ -89,7 +78,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="outline" className="h-8" onClick={() => {
-                    if (MOCK_SELF_ASSESS.length === 0) {
+                    if (MY_SELF_ASSESS.length === 0) {
                       toast.error("请至少完成 1 次 AI 打分");
                       return;
                     }
@@ -123,7 +112,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {MOCK_SELF_ASSESS.map((r) => (
+                  {MY_SELF_ASSESS.map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
                       <TableCell className="text-xs">{r.enterpriseName}</TableCell>
                       <TableCell className="text-center font-mono text-xs">
