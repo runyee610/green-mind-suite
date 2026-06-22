@@ -175,16 +175,14 @@ export default function GreenMfgGovIncubator() {
         <KpiCard
           title={`${viewLevel}培育库`}
           value={scopeTotal}
-          subtitle={`本年新增 ${scopeNewThisYear}`}
           icon={viewLevel === "市级" ? Building2 : MapPin}
           accent={viewLevel === "市级" ? "primary" : "cyan"}
-          extra={`平均得分 ${scopeAvgScore}`}
         />
-        <KpiCard title="重点用能单位" value={scopeKeyEnergy} icon={Flame} accent="warning" extra={`占比 ${Math.round((scopeKeyEnergy / Math.max(scopeTotal, 1)) * 100)}%`} />
-        <KpiCard title="10亿+非重点规上" value={scopeBigOutput} icon={TrendingUp} accent="success" extra={`占比 ${Math.round((scopeBigOutput / Math.max(scopeTotal, 1)) * 100)}%`} />
-        <KpiCard title="在培企业" value={scopeInTraining} icon={Sprout} accent="cyan" extra="剔除退库/晋级" />
-        <KpiCard title="诊断调研" value={scopeDiagCount} icon={Activity} accent="cyan" extra="诊断评估阶段" />
-        <KpiCard title="晋级出库" value={scopeGraduatedCount} icon={CheckCircle2} accent="success" extra="已颁证企业" />
+        <KpiCard title="重点用能单位" value={scopeKeyEnergy} icon={Flame} accent="warning" />
+        <KpiCard title="10亿+非重点规上" value={scopeBigOutput} icon={TrendingUp} accent="success" />
+        <KpiCard title="在培企业" value={scopeInTraining} icon={Sprout} accent="cyan" />
+        <KpiCard title="诊断调研" value={scopeDiagCount} icon={Activity} accent="cyan" />
+        <KpiCard title="晋级出库" value={scopeGraduatedCount} icon={CheckCircle2} accent="success" />
       </div>
 
 
