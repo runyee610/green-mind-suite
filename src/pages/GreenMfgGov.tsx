@@ -196,10 +196,13 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
 
   // 本地模拟推荐状态覆盖
   const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
+  // 取消推荐覆盖（针对 mock 数据派生的已推荐）
+  const [unrecommendedIds, setUnrecommendedIds] = useState<Set<string>>(new Set());
 
   const recommendedLabel = expertView === "district" ? "已推荐到市级" : "已推荐到国家";
 
   const getDerivedStatus = (id: string, originalStage: string): "未推荐" | typeof recommendedLabel => {
+    if (unrecommendedIds.has(id)) return "未推荐";
     if (recommendedIds.has(id)) return recommendedLabel;
     return (originalStage === "培育中" || originalStage === "已完成") ? recommendedLabel : "未推荐";
   };
