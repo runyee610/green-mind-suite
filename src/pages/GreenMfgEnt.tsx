@@ -54,12 +54,12 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理 · 申能电力设备股份有限公司"
-          : "绿色工厂自我评价（模拟）-上海宝武特种合金有限公司"
+          : "模拟自我评价"
       }
       subtitle={
         section === "dynamic"
           ? "市级绿色工厂年度动态管理表填报"
-          : "自我评价（模拟）、AI 智能打分、审核推荐申报"
+          : "\n"
       }
     >
       <Tabs value={tab} onValueChange={setTab}>
