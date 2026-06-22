@@ -78,7 +78,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-secondary" />模拟自我评价
+                    {"\n"}
                   </CardTitle>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {"\n"}
@@ -88,10 +88,10 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   <Button size="sm" variant="outline" className="h-8" onClick={() => {
                     toast.success("已加入区级培育库，可在「梯度培育」中查看");
                   }}>
-                    <Sprout className="mr-1 h-4 w-4" />加入培育库
+                    <Sprout className="mr-1 h-4 w-4" />{"加入培育库"}
                   </Button>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new?mode=self")}>
-                    <Plus className="mr-1 h-4 w-4" />开始评价
+                    <Plus className="mr-1 h-4 w-4" />{"开始评价"}
                   </Button>
                 </div>
               </div>
