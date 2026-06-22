@@ -81,7 +81,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     <Sparkles className="h-4 w-4 text-secondary" />模拟自我评价
                   </CardTitle>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    企业自助评估工具：填写指标后由 AI 智能体分析打分，仅供企业自查参考，不向监管侧提交。
+                    {"\n"}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
