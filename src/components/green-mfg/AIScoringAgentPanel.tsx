@@ -36,7 +36,7 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-export function AIScoringAgentPanel({ hideSupplementButton = false }: { hideSupplementButton?: boolean; initialFinished?: boolean } = {}) {
+export function AIScoringAgentPanel() {
   const animatedScore = 91;
 
   return (
@@ -144,7 +144,7 @@ export function AIScoringAgentPanel({ hideSupplementButton = false }: { hideSupp
         </div>
 
         {/* 薄弱指标提醒 */}
-        <WeakIndicatorsPanel hideButton={hideSupplementButton} />
+        <WeakIndicatorsPanel />
       </CardContent>
     </Card>
   );
