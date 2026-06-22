@@ -25,8 +25,8 @@ import { cn } from "@/lib/utils";
 
 const TABS = [
   { value: "audit-flow", label: "审批流转" },
-  { value: "basic-info", label: "企业基本信息表" },
-  { value: "evaluation-indicator", label: "评价指标表（通则）" },
+  { value: "basic-info", label: "1\n基本信息" },
+  { value: "evaluation-indicator", label: "3\n评价指标表\u00a0" },
   { value: "basic-requirements", label: "基本要求" },
   { value: "ai-scoring", label: "AI 打分结果" },
   { value: "smart-score", label: "智能打分明细" },
