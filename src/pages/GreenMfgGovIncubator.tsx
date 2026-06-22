@@ -264,65 +264,76 @@ export default function GreenMfgGovIncubator() {
 
   return (
     <AppLayout title="绿色工厂梯度培育" subtitle="梯度培育库的跟踪与管理">
-      {/* ========== KPI ========== */}
-      <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiCard title="市级培育库" value={cityLevel.length} subtitle={`本年新增 ${cityLevel.filter((r) => r.enterDate.startsWith("2025")).length}`} icon={Building2} accent="primary" extra={`平均得分 ${Math.round(cityLevel.reduce((s, r) => s + r.score, 0) / Math.max(cityLevel.length, 1))}`} />
-        <KpiCard title="区级培育库" value={districtLevel.length} subtitle={`本年新增 ${districtLevel.filter((r) => r.enterDate.startsWith("2025")).length}`} icon={MapPin} accent="cyan" extra={`平均得分 ${Math.round(districtLevel.reduce((s, r) => s + r.score, 0) / Math.max(districtLevel.length, 1))}`} />
-        <KpiCard title="重点用能单位" value={keyEnergy.length} subtitle="" icon={Flame} accent="warning" extra={`占比 ${Math.round((keyEnergy.length / Math.max(totalCount, 1)) * 100)}%`} />
-        <KpiCard title="10亿+非重点规上" value={bigOutput.length} subtitle="" icon={TrendingUp} accent="success" extra={`占比 ${Math.round((bigOutput.length / Math.max(totalCount, 1)) * 100)}%`} />
+      {/* ========== 视角切换 ========== */}
+      <div className="mb-4 flex items-center gap-2">
+        <div className="inline-flex rounded-lg border border-border bg-card p-1">
+          {(["区级", "市级"] as IncubateLevel[]).map((lv) => (
+            <button
+              key={lv}
+              type="button"
+              onClick={() => {
+                setViewLevel(lv);
+                setSelected(new Set());
+                setStageFilter("all");
+              }}
+              className={cn(
+                "px-4 py-1.5 text-sm rounded-md transition",
+                viewLevel === lv
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {lv}专家视角
+            </button>
+          ))}
+        </div>
+        <span className="text-xs text-muted-foreground">
+          仅展示 {viewLevel} 培育库数据
+        </span>
       </div>
 
-      {/* ========== 培育闭环 ========== */}
-      <Card className="panel mb-4">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Recycle className="h-4 w-4 text-success" />
-              培育体系闭环流转
-            </CardTitle>
-            <div className="flex items-center gap-3 text-xs">
-              <span className="inline-flex items-center gap-1 text-success"><CheckCircle2 className="h-3 w-3" />晋级 {graduatedCount} 家</span>
-              <span className="inline-flex items-center gap-1 text-destructive"><RefreshCcw className="h-3 w-3" />退库 {exitedCount} 家</span>
-              <span className="inline-flex items-center gap-1 text-primary font-semibold">培育转化率 {conversionRate}%</span>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-2">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-stretch gap-1 overflow-x-auto">
-              {stageCounts.map((s, i) => {
-                const Icon = s.icon;
-                const isLast = i === stageCounts.length - 1;
-                return (
-                  <div key={s.key} className="flex items-stretch flex-1 min-w-[120px]">
-                    <button type="button" onClick={() => setStageFilter(stageFilter === s.key ? "all" : s.key)} className={cn("flex-1 rounded-lg border p-3 text-left transition hover:shadow-md", stageFilter === s.key ? "border-primary/60 bg-primary/5 shadow-sm" : "border-border bg-card")} style={{ borderLeftWidth: 4, borderLeftColor: s.color }}>
-                      <div className="flex items-center gap-1.5 text-xs font-medium" style={{ color: s.color }}>
-                        <Icon className="h-3.5 w-3.5" />{s.label}
-                      </div>
-                      <div className="mt-1 flex items-baseline gap-1">
-                        <span className="text-2xl font-bold tracking-tight" style={{ color: s.color }}>{s.count}</span>
-                        <span className="text-[11px] text-muted-foreground">家</span>
-                      </div>
-                    </button>
-                    {!isLast && (<div className="flex items-center px-1 text-muted-foreground/50"><ArrowRight className="h-4 w-4" /></div>)}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex items-center justify-between rounded-md border border-dashed border-muted-foreground/30 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <RefreshCcw className="h-3.5 w-3.5 text-destructive" />
-                <strong className="text-destructive">退库回流</strong>
-                ：连续两次复评未达标自动退库 → 次年重新自评价入库，形成"培育—评估—整改—晋级/退库—再自评价"良性闭环。
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-success">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                晋级出库企业自动进入「绿色工厂动态管理」年度复核
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* ========== KPI · 7 张统计卡片 ========== */}
+      <div className="grid gap-3 md:grid-cols-4 xl:grid-cols-7 mb-4">
+        <KpiCard
+          title={`${viewLevel}培育库`}
+          value={scopeTotal}
+          subtitle={`本年新增 ${scopeNewThisYear}`}
+          icon={viewLevel === "市级" ? Building2 : MapPin}
+          accent={viewLevel === "市级" ? "primary" : "cyan"}
+          extra={`平均得分 ${scopeAvgScore}`}
+        />
+        <KpiCard title="重点用能单位" value={scopeKeyEnergy} icon={Flame} accent="warning" extra={`占比 ${Math.round((scopeKeyEnergy / Math.max(scopeTotal, 1)) * 100)}%`} />
+        <KpiCard title="10亿+非重点规上" value={scopeBigOutput} icon={TrendingUp} accent="success" extra={`占比 ${Math.round((scopeBigOutput / Math.max(scopeTotal, 1)) * 100)}%`} />
+        <KpiCard title="在培企业" value={scopeInTraining} icon={Sprout} accent="cyan" extra="剔除退库/晋级" />
+        <KpiCard
+          title="入库登记"
+          value={scopeEnterCount}
+          icon={Sprout}
+          accent="primary"
+          extra="点击筛选"
+          active={stageFilter === "入库登记"}
+          onClick={() => setStageFilter(stageFilter === "入库登记" ? "all" : "入库登记")}
+        />
+        <KpiCard
+          title="诊断调研"
+          value={scopeDiagCount}
+          icon={Activity}
+          accent="cyan"
+          extra="点击筛选"
+          active={stageFilter === "诊断评估"}
+          onClick={() => setStageFilter(stageFilter === "诊断评估" ? "all" : "诊断评估")}
+        />
+        <KpiCard
+          title="晋级出库"
+          value={scopeGraduatedCount}
+          icon={CheckCircle2}
+          accent="success"
+          extra="点击筛选"
+          active={stageFilter === "晋级出库"}
+          onClick={() => setStageFilter(stageFilter === "晋级出库" ? "all" : "晋级出库")}
+        />
+      </div>
+
 
       {/* ========== 列表 ========== */}
       <Card className="panel">
