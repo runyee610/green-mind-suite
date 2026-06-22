@@ -4,7 +4,6 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Save } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EnterpriseBasicInfoCard,
   BasicRequirementsCard,
@@ -19,15 +18,9 @@ import type { IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
 import { AIMaterialIntakePanel } from "@/components/green-mfg/AIMaterialIntakePanel";
 import type { MaterialFile } from "@/components/green-mfg/aiMaterialMatcher";
+import { DECLARATION_ANCHORS as ANCHORS, StepTabs } from "@/components/green-mfg/DeclarationStepTabs";
 
 import { toast } from "sonner";
-
-const ANCHORS = [
-  { href: "basic-requirements", label: "基本要求" },
-  { href: "evaluation-indicator", label: "评价指标表" },
-  { href: "basic-info", label: "基本信息" },
-  { href: "ai-scoring", label: "AI 打分结果" },
-];
 
 // 默认企业信息（登录企业），开始评价时自动带入，不可编辑
 const DEFAULT_ENTERPRISE = {
