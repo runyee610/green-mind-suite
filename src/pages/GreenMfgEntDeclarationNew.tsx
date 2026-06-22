@@ -173,7 +173,8 @@ export default function GreenMfgEntDeclarationNew() {
               <ArrowLeft className="mr-1 h-4 w-4" />返回
             </Button>
             <Button size="sm" variant="outline" onClick={handleSave}>
-              <Save className="mr-1 h-4 w-4" />保存
+              <Save className="mr-1 h-4 w-4" />
+              {currentStep === "ai-scoring" ? "完成" : "保存"}
             </Button>
           </div>
         </CardContent>
@@ -233,9 +234,6 @@ export default function GreenMfgEntDeclarationNew() {
           <ChevronLeft className="mr-1 h-4 w-4" />上一步
         </Button>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleSave}>
-            <Save className="mr-1 h-4 w-4" />完成
-          </Button>
           {currentStep !== ANCHORS[ANCHORS.length - 1].href && (
             <Button
               className="bg-gradient-primary text-primary-foreground"
