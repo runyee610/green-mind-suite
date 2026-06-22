@@ -21,18 +21,12 @@ import { AIMaterialIntakePanel } from "@/components/green-mfg/AIMaterialIntakePa
 import type { MaterialFile } from "@/components/green-mfg/aiMaterialMatcher";
 
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-const BATCH_OPTIONS = ["2026年第一批", "2025年第二批", "2025年第一批", "2024年第二批"];
-
 
 const ANCHORS = [
-  { href: "basic-info", label: "企业基本信息表" },
   { href: "basic-requirements", label: "基本要求" },
   { href: "evaluation-indicator", label: "评价指标表（通则）" },
+  { href: "basic-info", label: "企业基本信息表" },
   { href: "ai-scoring", label: "AI 打分结果" },
-  
 ];
 
 // 默认企业信息（登录企业），开始评价时自动带入，不可编辑
@@ -45,7 +39,6 @@ const DEFAULT_ENTERPRISE = {
 const DRAFT_KEY = "green-mfg-ent-declaration-draft";
 
 interface DraftPayload {
-  batch: string;
   basicInfo: EnterpriseBasicInfo;
   basicReqs: BasicRequirementItem[];
   indicators: IndicatorRow[];
@@ -54,7 +47,6 @@ interface DraftPayload {
 
 export default function GreenMfgEntDeclarationNew() {
   const navigate = useNavigate();
-  const [batch, setBatch] = useState("");
   const [basicInfo, setBasicInfo] = useState<EnterpriseBasicInfo>(() => ({
     ...EMPTY_ENTERPRISE_BASIC,
     factoryName: DEFAULT_ENTERPRISE.name,
@@ -68,7 +60,6 @@ export default function GreenMfgEntDeclarationNew() {
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
   const [materialPool, setMaterialPool] = useState<MaterialFile[]>([]);
 
-  // 把 AI 匹配结果合并到 basicReqs / indicators 的 proofs 中（按文件名去重）
   const applyMaterialMapping = (mapping: {
     indicator: Record<string, string[]>;
     basic: Record<string, string[]>;
@@ -91,20 +82,13 @@ export default function GreenMfgEntDeclarationNew() {
     );
   };
 
-  
-
-  
-
-  // 恢复草稿
   useEffect(() => {
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
       if (!raw) return;
       const draft = JSON.parse(raw) as DraftPayload;
-      setBatch(draft.batch ?? "");
       if (draft.basicInfo) setBasicInfo(draft.basicInfo);
       if (draft.basicReqs?.length) {
-        // 从存储恢复时仅保留 conform / proofs（requirement / proofRequirement 是 ReactNode，不会被序列化）
         setBasicReqs((prev) =>
           prev.map((it) => {
             const saved = draft.basicReqs.find((s) => s.no === it.no);
@@ -129,7 +113,6 @@ export default function GreenMfgEntDeclarationNew() {
           }),
         );
       }
-      
       setDraftSavedAt(draft.savedAt ?? null);
     } catch {
       /* ignore */
@@ -139,13 +122,11 @@ export default function GreenMfgEntDeclarationNew() {
   const handleSave = () => {
     const savedAt = new Date().toISOString();
     const payload: DraftPayload = {
-      batch,
       basicInfo,
       basicReqs: basicReqs.map((it) => ({
         no: it.no,
         conform: it.conform,
         proofs: it.proofs,
-        // 占位字段，避免类型报错
         requirement: null as unknown as React.ReactNode,
         proofRequirement: null as unknown as React.ReactNode,
       })),
@@ -180,33 +161,20 @@ export default function GreenMfgEntDeclarationNew() {
       {/* 顶部操作栏 */}
       <Card className="panel mb-4">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3">
-          <div className="flex items-center gap-2">
-            <Label className="text-xs text-muted-foreground">评价批次</Label>
-            <Select value={batch} onValueChange={setBatch}>
-              <SelectTrigger className="h-8 w-[180px] text-xs">
-                <SelectValue placeholder="请选择批次" />
-              </SelectTrigger>
-              <SelectContent>
-                {BATCH_OPTIONS.map((b) => (
-                  <SelectItem key={b} value={b} className="text-xs">{b}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
           <div className="flex items-center gap-3">
             {draftSavedAt && (
               <span className="text-[11px] text-muted-foreground">
                 草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
               </span>
             )}
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
-                <ArrowLeft className="mr-1 h-4 w-4" />返回
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleSave}>
-                <Save className="mr-1 h-4 w-4" />保存
-              </Button>
-            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
+              <ArrowLeft className="mr-1 h-4 w-4" />返回
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              <Save className="mr-1 h-4 w-4" />保存
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -217,10 +185,7 @@ export default function GreenMfgEntDeclarationNew() {
         onStepChange={setCurrentStep}
         steps={ANCHORS}
       >
-        {currentStep === ANCHORS[0].href && (
-          <EnterpriseBasicInfoCard data={basicInfo} editable onChange={setBasicInfo} />
-        )}
-        {currentStep === ANCHORS[1].href && (
+        {currentStep === "basic-requirements" && (
           <>
             <AIMaterialIntakePanel
               indicators={indicators}
@@ -232,7 +197,7 @@ export default function GreenMfgEntDeclarationNew() {
             <BasicRequirementsCard data={basicReqs} editable onChange={setBasicReqs} />
           </>
         )}
-        {currentStep === ANCHORS[2].href && (
+        {currentStep === "evaluation-indicator" && (
           <>
             <AIMaterialIntakePanel
               indicators={indicators}
@@ -250,7 +215,10 @@ export default function GreenMfgEntDeclarationNew() {
             />
           </>
         )}
-        {currentStep === ANCHORS[3].href && <AIScoringAgentPanel />}
+        {currentStep === "basic-info" && (
+          <EnterpriseBasicInfoCard data={basicInfo} editable onChange={setBasicInfo} />
+        )}
+        {currentStep === "ai-scoring" && <AIScoringAgentPanel />}
       </StepTabs>
 
       <div className="mt-6 flex items-center justify-between gap-2">
@@ -322,21 +290,5 @@ function StepTabs({
         {children}
       </TabsContent>
     </Tabs>
-  );
-}
-
-function ReadonlyField({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      <div
-        className={
-          "flex h-10 items-center rounded-md border border-border/50 bg-muted/30 px-3 text-sm text-foreground " +
-          (mono ? "font-mono" : "")
-        }
-      >
-        {value}
-      </div>
-    </div>
   );
 }
