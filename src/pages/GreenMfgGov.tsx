@@ -246,9 +246,29 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   });
 
   const handleRecommend = (id: string, name: string) => {
-    setRecommendedIds(prev => new Set([...prev, id]));
-    const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定（国家）";
-    toast.success(`企业「${name}」${msg}`);
+    setRecommendedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        toast.message(`已取消推荐「${name}」`);
+      } else {
+        next.add(id);
+        const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定（国家）";
+        toast.success(`企业「${name}」${msg}`);
+      }
+      return next;
+    });
+  };
+
+  // 对于初始即为"已推荐"状态（来自 mock stage）的行，也允许通过显式标记取消
+  const toggleByDerived = (id: string, originalStage: string, name: string) => {
+    const currentlyRecommended = isRecommended(id, originalStage);
+    if (currentlyRecommended && !recommendedIds.has(id)) {
+      // mock 数据派生的已推荐，无法在本地状态中取消，给出提示
+      toast.message("该企业由历史阶段派生为已推荐，暂不支持取消");
+      return;
+    }
+    handleRecommend(id, name);
   };
 
   const handleSwitchView = (view: "district" | "city") => {
