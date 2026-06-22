@@ -24,8 +24,8 @@ import { toast } from "sonner";
 
 const ANCHORS = [
   { href: "basic-requirements", label: "基本要求" },
-  { href: "evaluation-indicator", label: "评价指标表（通则）" },
-  { href: "basic-info", label: "企业基本信息表" },
+  { href: "evaluation-indicator", label: "评价指标表" },
+  { href: "basic-info", label: "基本信息" },
   { href: "ai-scoring", label: "AI 打分结果" },
 ];
 
@@ -234,7 +234,7 @@ export default function GreenMfgEntDeclarationNew() {
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleSave}>
-            <Save className="mr-1 h-4 w-4" />保存
+            <Save className="mr-1 h-4 w-4" />完成
           </Button>
           {currentStep !== ANCHORS[ANCHORS.length - 1].href && (
             <Button
