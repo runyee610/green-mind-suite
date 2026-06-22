@@ -52,7 +52,7 @@ function getCrumbs(pathname: string): string[] {
   return ["页面"];
 }
 
-export function AppLayout({ title, subtitle, hideHeader = false, children }: AppLayoutProps) {
+export function AppLayout({ title, subtitle, hideHeader = false, headerActions, children }: AppLayoutProps) {
   const { role, setRole } = useRole();
   const navigate = useNavigate();
   const { pathname } = useLocation();
