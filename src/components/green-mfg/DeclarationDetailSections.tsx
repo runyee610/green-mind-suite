@@ -119,7 +119,7 @@ export function EnterpriseBasicInfoCard({
     <Card id="basic-info" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">
-          <Building2 className="mr-1 inline h-4 w-4" />一、企业基本信息表
+          <Building2 className="mr-1 inline h-4 w-4" />基本信息
         </CardTitle>
       </CardHeader>
       <CardContent>
