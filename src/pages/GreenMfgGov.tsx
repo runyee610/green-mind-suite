@@ -240,7 +240,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       if (batchFilter !== "all" && r.batch !== batchFilter) return false;
       return true;
     });
-  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, recommendedIds]);
+  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, recommendedIds, unrecommendedIds]);
 
   const dynamicRows = MOCK_DYNAMIC.filter((r) => {
     const k = keyword.trim();
