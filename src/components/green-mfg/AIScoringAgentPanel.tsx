@@ -2,13 +2,11 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Bot,
   Sparkles,
   CheckCircle2,
   AlertTriangle,
-  Upload,
   Lightbulb,
   ChevronRight,
 } from "lucide-react";
@@ -158,7 +156,7 @@ interface WeakItem {
   ratio: number;
 }
 
-function WeakIndicatorsPanel({ hideButton = false }: { hideButton?: boolean } = {}) {
+function WeakIndicatorsPanel() {
   const weak = useMemo<WeakItem[]>(() => {
     const items: WeakItem[] = [];
     SCORE_DIMENSIONS.forEach((l1) => {
@@ -237,17 +235,6 @@ function WeakIndicatorsPanel({ hideButton = false }: { hideButton?: boolean } = 
                       {suggestionFor(w.name)}
                     </p>
                   </div>
-                  {!hideButton && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="shrink-0 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                      onClick={() => toast.info(`已为「${w.name}」打开补充材料入口`)}
-                    >
-                      <Upload className="mr-1 h-3 w-3" />
-                      补充材料
-                    </Button>
-                  )}
                 </div>
               </div>
             );
