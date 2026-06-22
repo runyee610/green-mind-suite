@@ -61,6 +61,10 @@ export function AppLayout({ title, subtitle, hideHeader = false, headerActions, 
   const switchRole = (next: Role) => {
     if (next === role) return;
     setRole(next);
+    if (next === "ent" && (pathname === "/green-mfg/gov" || pathname.startsWith("/green-mfg/gov/review"))) {
+      navigate("/green-mfg/ent");
+      return;
+    }
     const m = pathname.match(/^\/green-mfg\/(gov|ent)(\/.*)?$/);
     if (m) {
       const rest = m[2] ?? "";
