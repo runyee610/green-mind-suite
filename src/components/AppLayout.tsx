@@ -61,7 +61,7 @@ export function AppLayout({ title, subtitle, hideHeader = false, headerActions, 
   const switchRole = (next: Role) => {
     if (next === role) return;
     setRole(next);
-    if (next === "ent" && (pathname === "/green-mfg/gov" || pathname.startsWith("/green-mfg/gov/review"))) {
+    if (next === "ent" && (pathname === "/green-mfg/gov" || pathname.startsWith("/green-mfg/gov/review") || pathname.startsWith("/green-mfg/gov/self-assess"))) {
       navigate("/green-mfg/ent");
       return;
     }
