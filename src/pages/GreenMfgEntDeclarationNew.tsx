@@ -24,8 +24,8 @@ import { toast } from "sonner";
 
 const ANCHORS = [
   { href: "basic-requirements", label: "基本要求" },
-  { href: "evaluation-indicator", label: "评价指标表（通则）" },
-  { href: "basic-info", label: "企业基本信息表" },
+  { href: "evaluation-indicator", label: "评价指标表" },
+  { href: "basic-info", label: "基本信息" },
   { href: "ai-scoring", label: "AI 打分结果" },
 ];
 
@@ -272,7 +272,7 @@ function StepTabs({
           <TabsTrigger
             key={s.href}
             value={s.href}
-            className="flex items-center gap-1.5 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            className="flex flex-col items-center gap-1.5 p-2 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
           >
             <span
               className={
@@ -282,7 +282,7 @@ function StepTabs({
             >
               {i + 1}
             </span>
-            {s.label}
+            <span className="whitespace-pre-line text-center">{s.label}</span>
           </TabsTrigger>
         ))}
       </TabsList>
