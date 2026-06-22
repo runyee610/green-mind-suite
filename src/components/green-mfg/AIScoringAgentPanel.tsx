@@ -1,14 +1,11 @@
 import { useMemo } from "react";
-import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Bot,
   Sparkles,
   CheckCircle2,
   AlertTriangle,
-  Upload,
   Lightbulb,
   ChevronRight,
 } from "lucide-react";
@@ -36,7 +33,7 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-export function AIScoringAgentPanel({ hideSupplementButton = false }: { hideSupplementButton?: boolean; initialFinished?: boolean } = {}) {
+export function AIScoringAgentPanel() {
   const animatedScore = 91;
 
   return (
@@ -144,7 +141,7 @@ export function AIScoringAgentPanel({ hideSupplementButton = false }: { hideSupp
         </div>
 
         {/* 薄弱指标提醒 */}
-        <WeakIndicatorsPanel hideButton={hideSupplementButton} />
+        <WeakIndicatorsPanel />
       </CardContent>
     </Card>
   );
@@ -158,7 +155,7 @@ interface WeakItem {
   ratio: number;
 }
 
-function WeakIndicatorsPanel({ hideButton = false }: { hideButton?: boolean } = {}) {
+function WeakIndicatorsPanel() {
   const weak = useMemo<WeakItem[]>(() => {
     const items: WeakItem[] = [];
     SCORE_DIMENSIONS.forEach((l1) => {
@@ -237,17 +234,6 @@ function WeakIndicatorsPanel({ hideButton = false }: { hideButton?: boolean } = 
                       {suggestionFor(w.name)}
                     </p>
                   </div>
-                  {!hideButton && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="shrink-0 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                      onClick={() => toast.info(`已为「${w.name}」打开补充材料入口`)}
-                    >
-                      <Upload className="mr-1 h-3 w-3" />
-                      补充材料
-                    </Button>
-                  )}
                 </div>
               </div>
             );
