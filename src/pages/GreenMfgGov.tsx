@@ -310,13 +310,13 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
         <KpiTile 
           icon={Clock} 
           label="待推荐" 
-          value={declarations.filter(d => getDerivedStatus(d.id, d.stage) === "待推荐").length} 
+          value={declarations.filter(d => !isRecommended(d.id, d.stage)).length} 
           accent="warning" 
         />
         <KpiTile 
           icon={CheckCircle2} 
-          label="已推荐" 
-          value={declarations.filter(d => getDerivedStatus(d.id, d.stage) === "已推荐").length} 
+          label={recommendedLabel} 
+          value={declarations.filter(d => isRecommended(d.id, d.stage)).length} 
           accent="success" 
         />
       </div>
