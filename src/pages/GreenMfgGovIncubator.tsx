@@ -99,11 +99,10 @@ export const INITIAL_INCUBATE_DATA: IncubateRecord[] = [
 
 const STAGE_PIPELINE: { key: IncubateStage; label: string; icon: typeof Sprout; color: string }[] = [
   { key: "入库登记", label: "入库登记", icon: Sprout, color: "hsl(200 75% 50%)" },
-  { key: "诊断评估", label: "诊断评估", icon: Activity, color: "hsl(220 70% 55%)" },
-  { key: "整改提升", label: "整改提升", icon: TrendingUp, color: "hsl(35 90% 55%)" },
-  { key: "复评预审", label: "复评预审", icon: Target, color: "hsl(265 65% 60%)" },
+  { key: "诊断评估", label: "诊断调研", icon: Activity, color: "hsl(220 70% 55%)" },
   { key: "晋级出库", label: "晋级出库", icon: CheckCircle2, color: "hsl(150 70% 42%)" },
 ];
+
 
 const DISTRICTS = ["浦东新区", "黄浦区", "徐汇区", "长宁区", "静安区", "普陀区", "虹口区", "杨浦区", "闵行区", "宝山区", "嘉定区", "金山区", "松江区", "青浦区", "奉贤区", "崇明区"];
 
