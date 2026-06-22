@@ -9,12 +9,8 @@ import {
   MapPin,
   Flame,
   TrendingUp,
-  Recycle,
-  ArrowRight,
   CheckCircle2,
   Activity,
-  Target,
-  RefreshCcw,
   Upload,
   ArrowUpCircle,
   Trash2,
@@ -89,7 +85,7 @@ interface IncubateRecord {
   improvement: number; // 较上次评估提升百分点
 }
 
-const INITIAL_INCUBATE_DATA: IncubateRecord[] = [
+export const INITIAL_INCUBATE_DATA: IncubateRecord[] = [
   { id: "INC-2025-001", name: "上海石化化工新材料分公司", creditCode: "91310116MA1H23ABC4", district: "金山区", industry: "石化化工行业", subIndustry: "煤制烯烃", level: "市级", energyTag: "重点用能单位", outputValue: 89500, energyConsumption: 36800, carbonIntensity: 1.42, score: 64, prevScore: 58, stage: "整改提升", enterDate: "2025-08-15", reviewer: "金山区生态局", nextAction: "11 月底前完成余热回收改造", improvement: 6 },
   { id: "INC-2025-002", name: "宝钢轧辊（上海）有限公司", creditCode: "91310113MA1H23BC02", district: "宝山区", industry: "钢铁行业", subIndustry: "短流程钢铁企业", level: "市级", energyTag: "重点用能单位", outputValue: 156200, energyConsumption: 52400, carbonIntensity: 1.18, score: 71, prevScore: 62, stage: "复评预审", enterDate: "2025-06-20", reviewer: "市经信委", nextAction: "等待 12 月专家组复评打分", improvement: 9 },
   { id: "INC-2025-003", name: "中微半导体设备(上海)股份有限公司", creditCode: "91310115MA1K0DEF56", district: "浦东新区", industry: "电子行业", subIndustry: "集成电路", level: "市级", energyTag: "10亿+非重点规上", outputValue: 134000, energyConsumption: 8900, carbonIntensity: 0.32, score: 76, prevScore: 68, stage: "复评预审", enterDate: "2025-05-10", reviewer: "浦东经委", nextAction: "AI 预审已通过，进入晋级公示", improvement: 8 },
@@ -103,11 +99,10 @@ const INITIAL_INCUBATE_DATA: IncubateRecord[] = [
 
 const STAGE_PIPELINE: { key: IncubateStage; label: string; icon: typeof Sprout; color: string }[] = [
   { key: "入库登记", label: "入库登记", icon: Sprout, color: "hsl(200 75% 50%)" },
-  { key: "诊断评估", label: "诊断评估", icon: Activity, color: "hsl(220 70% 55%)" },
-  { key: "整改提升", label: "整改提升", icon: TrendingUp, color: "hsl(35 90% 55%)" },
-  { key: "复评预审", label: "复评预审", icon: Target, color: "hsl(265 65% 60%)" },
+  { key: "诊断评估", label: "诊断调研", icon: Activity, color: "hsl(220 70% 55%)" },
   { key: "晋级出库", label: "晋级出库", icon: CheckCircle2, color: "hsl(150 70% 42%)" },
 ];
+
 
 const DISTRICTS = ["浦东新区", "黄浦区", "徐汇区", "长宁区", "静安区", "普陀区", "虹口区", "杨浦区", "闵行区", "宝山区", "嘉定区", "金山区", "松江区", "青浦区", "奉贤区", "崇明区"];
 
@@ -130,9 +125,9 @@ const energyTagBadge = (t: EnergyTag) =>
 export default function GreenMfgGovIncubator() {
   const navigate = useNavigate();
   const [data, setData] = useState<IncubateRecord[]>(INITIAL_INCUBATE_DATA);
+  const [viewLevel, setViewLevel] = useState<IncubateLevel>("区级");
   const [keyword, setKeyword] = useState("");
   const [industryFilter, setIndustryFilter] = useState("all");
-  const [levelFilter, setLevelFilter] = useState<"all" | IncubateLevel>("all");
   const [energyFilter, setEnergyFilter] = useState<"all" | EnergyTag>("all");
   const [stageFilter, setStageFilter] = useState<"all" | IncubateStage>("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -155,36 +150,36 @@ export default function GreenMfgGovIncubator() {
   // 晋升培育二次确认
   const [promoteConfirmOpen, setPromoteConfirmOpen] = useState(false);
 
+  // 当前视角下的全部数据（基础范围）
+  const scopeData = useMemo(() => data.filter((r) => r.level === viewLevel), [data, viewLevel]);
+
   const rows = useMemo(
     () =>
-      data.filter((r) => {
+      scopeData.filter((r) => {
         const k = keyword.trim();
         if (k && !r.name.includes(k) && !r.creditCode.includes(k)) return false;
         if (industryFilter !== "all" && r.industry !== industryFilter) return false;
-        if (levelFilter !== "all" && r.level !== levelFilter) return false;
         if (energyFilter !== "all" && r.energyTag !== energyFilter) return false;
         if (stageFilter !== "all" && r.stage !== stageFilter) return false;
         return true;
       }),
-    [data, keyword, industryFilter, levelFilter, energyFilter, stageFilter],
+    [scopeData, keyword, industryFilter, energyFilter, stageFilter],
   );
 
-  // 统计
-  const cityLevel = data.filter((r) => r.level === "市级");
-  const districtLevel = data.filter((r) => r.level === "区级");
-  const keyEnergy = data.filter((r) => r.energyTag === "重点用能单位");
-  const bigOutput = data.filter((r) => r.energyTag === "10亿+非重点规上");
-
-  const stageCounts = STAGE_PIPELINE.map((s) => ({
-    ...s,
-    count: data.filter((r) => r.stage === s.key).length,
-  }));
-  const exitedCount = data.filter((r) => r.stage === "退库").length;
-  const graduatedCount = data.filter((r) => r.stage === "晋级出库").length;
-  const totalCount = data.length;
-  const conversionRate = Math.round((graduatedCount / Math.max(totalCount, 1)) * 100);
+  // 视角内统计
+  const scopeTotal = scopeData.length;
+  const scopeAvgScore = Math.round(scopeData.reduce((s, r) => s + r.score, 0) / Math.max(scopeTotal, 1));
+  const scopeNewThisYear = scopeData.filter((r) => r.enterDate.startsWith("2025")).length;
+  const scopeKeyEnergy = scopeData.filter((r) => r.energyTag === "重点用能单位").length;
+  const scopeBigOutput = scopeData.filter((r) => r.energyTag === "10亿+非重点规上").length;
+  const scopeInTraining = scopeData.filter((r) => r.stage !== "退库" && r.stage !== "晋级出库").length;
+  const scopeEnterCount = scopeData.filter((r) => r.stage === "入库登记").length;
+  const scopeDiagCount = scopeData.filter((r) => r.stage === "诊断评估").length;
+  const scopeGraduatedCount = scopeData.filter((r) => r.stage === "晋级出库").length;
 
   const selectedDistrictRows = rows.filter((r) => selected.has(r.id) && r.level === "区级");
+
+
 
   function toggleSelect(id: string) {
     setSelected((prev) => {
@@ -264,65 +259,76 @@ export default function GreenMfgGovIncubator() {
 
   return (
     <AppLayout title="绿色工厂梯度培育" subtitle="梯度培育库的跟踪与管理">
-      {/* ========== KPI ========== */}
-      <div className="grid gap-3 md:grid-cols-4 mb-4">
-        <KpiCard title="市级培育库" value={cityLevel.length} subtitle={`本年新增 ${cityLevel.filter((r) => r.enterDate.startsWith("2025")).length}`} icon={Building2} accent="primary" extra={`平均得分 ${Math.round(cityLevel.reduce((s, r) => s + r.score, 0) / Math.max(cityLevel.length, 1))}`} />
-        <KpiCard title="区级培育库" value={districtLevel.length} subtitle={`本年新增 ${districtLevel.filter((r) => r.enterDate.startsWith("2025")).length}`} icon={MapPin} accent="cyan" extra={`平均得分 ${Math.round(districtLevel.reduce((s, r) => s + r.score, 0) / Math.max(districtLevel.length, 1))}`} />
-        <KpiCard title="重点用能单位" value={keyEnergy.length} subtitle="" icon={Flame} accent="warning" extra={`占比 ${Math.round((keyEnergy.length / Math.max(totalCount, 1)) * 100)}%`} />
-        <KpiCard title="10亿+非重点规上" value={bigOutput.length} subtitle="" icon={TrendingUp} accent="success" extra={`占比 ${Math.round((bigOutput.length / Math.max(totalCount, 1)) * 100)}%`} />
+      {/* ========== 视角切换 ========== */}
+      <div className="mb-4 flex items-center gap-2">
+        <div className="inline-flex rounded-lg border border-border bg-card p-1">
+          {(["区级", "市级"] as IncubateLevel[]).map((lv) => (
+            <button
+              key={lv}
+              type="button"
+              onClick={() => {
+                setViewLevel(lv);
+                setSelected(new Set());
+                setStageFilter("all");
+              }}
+              className={cn(
+                "px-4 py-1.5 text-sm rounded-md transition",
+                viewLevel === lv
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {lv}专家视角
+            </button>
+          ))}
+        </div>
+        <span className="text-xs text-muted-foreground">
+          仅展示 {viewLevel} 培育库数据
+        </span>
       </div>
 
-      {/* ========== 培育闭环 ========== */}
-      <Card className="panel mb-4">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Recycle className="h-4 w-4 text-success" />
-              培育体系闭环流转
-            </CardTitle>
-            <div className="flex items-center gap-3 text-xs">
-              <span className="inline-flex items-center gap-1 text-success"><CheckCircle2 className="h-3 w-3" />晋级 {graduatedCount} 家</span>
-              <span className="inline-flex items-center gap-1 text-destructive"><RefreshCcw className="h-3 w-3" />退库 {exitedCount} 家</span>
-              <span className="inline-flex items-center gap-1 text-primary font-semibold">培育转化率 {conversionRate}%</span>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-2">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-stretch gap-1 overflow-x-auto">
-              {stageCounts.map((s, i) => {
-                const Icon = s.icon;
-                const isLast = i === stageCounts.length - 1;
-                return (
-                  <div key={s.key} className="flex items-stretch flex-1 min-w-[120px]">
-                    <button type="button" onClick={() => setStageFilter(stageFilter === s.key ? "all" : s.key)} className={cn("flex-1 rounded-lg border p-3 text-left transition hover:shadow-md", stageFilter === s.key ? "border-primary/60 bg-primary/5 shadow-sm" : "border-border bg-card")} style={{ borderLeftWidth: 4, borderLeftColor: s.color }}>
-                      <div className="flex items-center gap-1.5 text-xs font-medium" style={{ color: s.color }}>
-                        <Icon className="h-3.5 w-3.5" />{s.label}
-                      </div>
-                      <div className="mt-1 flex items-baseline gap-1">
-                        <span className="text-2xl font-bold tracking-tight" style={{ color: s.color }}>{s.count}</span>
-                        <span className="text-[11px] text-muted-foreground">家</span>
-                      </div>
-                    </button>
-                    {!isLast && (<div className="flex items-center px-1 text-muted-foreground/50"><ArrowRight className="h-4 w-4" /></div>)}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex items-center justify-between rounded-md border border-dashed border-muted-foreground/30 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <RefreshCcw className="h-3.5 w-3.5 text-destructive" />
-                <strong className="text-destructive">退库回流</strong>
-                ：连续两次复评未达标自动退库 → 次年重新自评价入库，形成"培育—评估—整改—晋级/退库—再自评价"良性闭环。
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-success">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                晋级出库企业自动进入「绿色工厂动态管理」年度复核
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* ========== KPI · 7 张统计卡片 ========== */}
+      <div className="grid gap-3 md:grid-cols-4 xl:grid-cols-7 mb-4">
+        <KpiCard
+          title={`${viewLevel}培育库`}
+          value={scopeTotal}
+          subtitle={`本年新增 ${scopeNewThisYear}`}
+          icon={viewLevel === "市级" ? Building2 : MapPin}
+          accent={viewLevel === "市级" ? "primary" : "cyan"}
+          extra={`平均得分 ${scopeAvgScore}`}
+        />
+        <KpiCard title="重点用能单位" value={scopeKeyEnergy} icon={Flame} accent="warning" extra={`占比 ${Math.round((scopeKeyEnergy / Math.max(scopeTotal, 1)) * 100)}%`} />
+        <KpiCard title="10亿+非重点规上" value={scopeBigOutput} icon={TrendingUp} accent="success" extra={`占比 ${Math.round((scopeBigOutput / Math.max(scopeTotal, 1)) * 100)}%`} />
+        <KpiCard title="在培企业" value={scopeInTraining} icon={Sprout} accent="cyan" extra="剔除退库/晋级" />
+        <KpiCard
+          title="入库登记"
+          value={scopeEnterCount}
+          icon={Sprout}
+          accent="primary"
+          extra="点击筛选"
+          active={stageFilter === "入库登记"}
+          onClick={() => setStageFilter(stageFilter === "入库登记" ? "all" : "入库登记")}
+        />
+        <KpiCard
+          title="诊断调研"
+          value={scopeDiagCount}
+          icon={Activity}
+          accent="cyan"
+          extra="点击筛选"
+          active={stageFilter === "诊断评估"}
+          onClick={() => setStageFilter(stageFilter === "诊断评估" ? "all" : "诊断评估")}
+        />
+        <KpiCard
+          title="晋级出库"
+          value={scopeGraduatedCount}
+          icon={CheckCircle2}
+          accent="success"
+          extra="点击筛选"
+          active={stageFilter === "晋级出库"}
+          onClick={() => setStageFilter(stageFilter === "晋级出库" ? "all" : "晋级出库")}
+        />
+      </div>
+
 
       {/* ========== 列表 ========== */}
       <Card className="panel">
@@ -357,14 +363,6 @@ export default function GreenMfgGovIncubator() {
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="搜索企业名称" className="h-8 w-56 pl-8 text-xs" />
               </div>
-              <Select value={levelFilter} onValueChange={(v) => setLevelFilter(v as typeof levelFilter)}>
-                <SelectTrigger className="h-8 w-28 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="级别" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">全部级别</SelectItem>
-                  <SelectItem value="市级">市级</SelectItem>
-                  <SelectItem value="区级">区级</SelectItem>
-                </SelectContent>
-              </Select>
               <Select value={energyFilter} onValueChange={(v) => setEnergyFilter(v as typeof energyFilter)}>
                 <SelectTrigger className="h-8 w-44 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="企业类型" /></SelectTrigger>
                 <SelectContent>
@@ -402,22 +400,19 @@ export default function GreenMfgGovIncubator() {
                     aria-label="全选区级企业"
                   />
                 </TableHead>
-                <TableHead>企业 / 信用代码</TableHead>
+                <TableHead>企业</TableHead>
                 <TableHead>所属区</TableHead>
                 <TableHead>行业 / 子行业</TableHead>
-                <TableHead className="text-center">级别</TableHead>
                 <TableHead>企业类型标签</TableHead>
                 <TableHead className="text-center">产值（万元）</TableHead>
                 <TableHead className="text-center">综合能耗（吨标煤）</TableHead>
-                <TableHead className="text-center">得分（环比）</TableHead>
-                <TableHead className="text-center">培育阶段</TableHead>
-                <TableHead>下一步行动</TableHead>
+                <TableHead className="text-center">得分</TableHead>
                 <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.map((r) => (
-                <TableRow key={r.id} className="h-14 border-border/40">
+                <TableRow key={r.id} className="h-12 border-border/40">
                   <TableCell>
                     <Checkbox
                       checked={selected.has(r.id)}
@@ -428,15 +423,12 @@ export default function GreenMfgGovIncubator() {
                   </TableCell>
                   <TableCell>
                     <div className="text-sm font-medium">{r.name}</div>
-                    <div className="text-[11px] text-muted-foreground font-mono">{r.creditCode}</div>
-                    <div className="mt-0.5 text-[10px] text-muted-foreground">入库 {r.enterDate} · {r.reviewer}</div>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{r.district}</TableCell>
                   <TableCell>
                     <div className="text-xs">{r.industry}</div>
                     {r.subIndustry && <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>}
                   </TableCell>
-                  <TableCell className="text-center"><Badge variant="outline" className="text-[11px]">{r.level}</Badge></TableCell>
                   <TableCell>
                     <Badge variant="outline" className={cn("text-[11px]", energyTagBadge(r.energyTag))}>
                       {r.energyTag === "重点用能单位" ? <Flame className="mr-1 h-3 w-3" /> : <TrendingUp className="mr-1 h-3 w-3" />}
@@ -450,17 +442,10 @@ export default function GreenMfgGovIncubator() {
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="font-mono text-sm font-semibold">{r.score}</div>
-                    <div className={cn("text-[10px] font-medium", r.improvement > 0 ? "text-success" : r.improvement < 0 ? "text-destructive" : "text-muted-foreground")}>
-                      {r.improvement > 0 ? "▲" : r.improvement < 0 ? "▼" : "—"} {Math.abs(r.improvement)}
-                    </div>
                   </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="outline" className={cn("text-[11px]", stageBadge(r.stage))}>{r.stage}</Badge>
-                  </TableCell>
-                  <TableCell className="text-[11px] text-muted-foreground max-w-[200px]">{r.nextAction}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
+                      <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/incubator/${r.id}`)}>
                         <Eye className="mr-1 h-3 w-3" />详情
                       </Button>
                       <Button size="sm" variant="outline" className="h-7 text-destructive hover:text-destructive" onClick={() => setRemoveTarget(r)}>
@@ -471,9 +456,10 @@ export default function GreenMfgGovIncubator() {
                 </TableRow>
               ))}
               {rows.length === 0 && (
-                <TableRow><TableCell colSpan={12} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的培育企业</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的培育企业</TableCell></TableRow>
               )}
             </TableBody>
+
           </Table>
         </CardContent>
       </Card>
@@ -583,7 +569,7 @@ export default function GreenMfgGovIncubator() {
   );
 }
 
-function KpiCard({ title, value, subtitle, icon: Icon, accent, extra }: { title: string; value: number | string; subtitle?: string; icon: typeof Sprout; accent: "primary" | "cyan" | "warning" | "success"; extra?: string }) {
+function KpiCard({ title, value, subtitle, icon: Icon, accent, extra, active, onClick }: { title: string; value: number | string; subtitle?: string; icon: typeof Sprout; accent: "primary" | "cyan" | "warning" | "success"; extra?: string; active?: boolean; onClick?: () => void }) {
   const map = {
     primary: { bg: "bg-primary/15", text: "text-primary", value: "text-primary" },
     cyan: { bg: "bg-cyan-500/15", text: "text-cyan-600 dark:text-cyan-300", value: "text-cyan-600 dark:text-cyan-300" },
@@ -591,8 +577,16 @@ function KpiCard({ title, value, subtitle, icon: Icon, accent, extra }: { title:
     success: { bg: "bg-success/15", text: "text-success", value: "text-success" },
   } as const;
   const c = map[accent];
+  const clickable = !!onClick;
   return (
-    <Card className="panel">
+    <Card
+      className={cn(
+        "panel",
+        clickable && "cursor-pointer transition hover:shadow-md",
+        active && "ring-2 ring-primary/50",
+      )}
+      onClick={onClick}
+    >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-md", c.bg, c.text)}>
@@ -611,3 +605,4 @@ function KpiCard({ title, value, subtitle, icon: Icon, accent, extra }: { title:
     </Card>
   );
 }
+
