@@ -68,9 +68,8 @@ export default function GreenMfgGovDeclarationDetail() {
       }
     >
       <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className={stageBadgeClass(detail.stage)}>{detail.stage}</Badge>
-        </div>
+        <div />
+
         <div className="flex items-center gap-2">
           {!isIncubator && (
             <>
