@@ -267,8 +267,24 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   const toggleByDerived = (id: string, originalStage: string, name: string) => {
     const currentlyRecommended = isRecommended(id, originalStage);
     if (currentlyRecommended && !recommendedIds.has(id)) {
-      // mock 数据派生的已推荐，无法在本地状态中取消，给出提示
-      toast.message("该企业由历史阶段派生为已推荐，暂不支持取消");
+      // mock 数据派生的已推荐：写入取消集合
+      setUnrecommendedIds(prev => {
+        const next = new Set(prev);
+        next.add(id);
+        return next;
+      });
+      toast.message(`已取消推荐「${name}」`);
+      return;
+    }
+    if (!currentlyRecommended && unrecommendedIds.has(id)) {
+      // 从已取消状态恢复推荐
+      setUnrecommendedIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      const msg = expertView === "district" ? "已推荐至市级" : "已推荐认定（国家）";
+      toast.success(`企业「${name}」${msg}`);
       return;
     }
     handleRecommend(id, name);
