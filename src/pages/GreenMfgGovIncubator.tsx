@@ -368,14 +368,6 @@ export default function GreenMfgGovIncubator() {
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="搜索企业名称" className="h-8 w-56 pl-8 text-xs" />
               </div>
-              <Select value={levelFilter} onValueChange={(v) => setLevelFilter(v as typeof levelFilter)}>
-                <SelectTrigger className="h-8 w-28 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="级别" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">全部级别</SelectItem>
-                  <SelectItem value="市级">市级</SelectItem>
-                  <SelectItem value="区级">区级</SelectItem>
-                </SelectContent>
-              </Select>
               <Select value={energyFilter} onValueChange={(v) => setEnergyFilter(v as typeof energyFilter)}>
                 <SelectTrigger className="h-8 w-44 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="企业类型" /></SelectTrigger>
                 <SelectContent>
