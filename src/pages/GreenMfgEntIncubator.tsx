@@ -51,73 +51,80 @@ export default function GreenMfgEntIncubator() {
     });
   };
 
+  const overviewStats: Array<{ label: string; value: string }> = [
+    { label: "所属区", value: me.district },
+    { label: "所属行业", value: `${me.industry}${me.subIndustry ? " / " + me.subIndustry : ""}` },
+    { label: "产值（万元）", value: me.outputValue.toLocaleString() },
+    { label: "模拟自评价得分", value: me.score != null ? `${me.score}` : "—" },
+    { label: "区级专家评分", value: me.manualScore != null ? `${me.manualScore}` : "—" },
+    { label: "市级专家评分", value: "—" },
+  ];
+
   return (
     <AppLayout title="绿色工厂梯度培育 · 上海石化化工新材料分公司" subtitle="本企业培育进展与改进建议">
-      {/* 企业基础信息 */}
+      {/* 企业培育总览 */}
       <Card className="panel mb-4">
-        <CardHeader className="pb-3">
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/15 text-primary">
-                <Building2 className="h-5 w-5" />
+        <CardContent className="p-6 space-y-6">
+          {/* 顶部：企业标识 */}
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Building2 className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-base font-semibold leading-tight">{me.enterpriseName}</div>
+              <div className="mt-1 text-[11px] text-muted-foreground font-mono">{me.creditCode}</div>
+            </div>
+          </div>
+
+          {/* 中部：信息网格 */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border/40 pt-5 md:grid-cols-3 lg:grid-cols-6">
+            {overviewStats.map((s) => (
+              <div key={s.label} className="min-w-0">
+                <div className="text-[11px] text-muted-foreground">{s.label}</div>
+                <div className="mt-1 truncate text-sm font-medium text-foreground">{s.value}</div>
               </div>
-              <div>
-                <CardTitle className="text-base">{me.enterpriseName}</CardTitle>
-                <div className="mt-0.5 text-[11px] text-muted-foreground font-mono">{me.creditCode}</div>
+            ))}
+          </div>
+
+          {/* 底部：培育目标 + 培育期信息 */}
+          <div className="grid gap-6 border-t border-border/40 pt-5 lg:grid-cols-[1.4fr_1fr]">
+            {/* 培育目标 */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Target className="h-4 w-4 text-primary" />培育目标
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-semibold font-mono leading-none">{me.score}</span>
+                  <span className="text-xs text-muted-foreground">/ {target}</span>
+                </div>
+              </div>
+              <Progress value={(me.score / target) * 100} className="h-1.5" />
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <span>当前综合得分</span>
+                <span className="text-warning">还差 {gap} 分达成培育目标</span>
               </div>
             </div>
-            <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning">
-              区培育中
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            <InfoTile label="所属区" value={me.district} />
-            <InfoTile label="所属行业" value={`${me.industry}${me.subIndustry ? " / " + me.subIndustry : ""}`} />
-            <InfoTile label="产值（万元）" value={me.outputValue.toLocaleString()} />
-            <InfoTile label="模拟自评价得分" value={me.score != null ? `${me.score}` : "—"} />
-            <InfoTile label="区级专家评分" value={me.manualScore != null ? `${me.manualScore}` : "—"} />
-            <InfoTile label="市级专家评分" value="—" />
-            <InfoTile label="" value="" />
-            <InfoTile label="" value="" />
+
+            {/* 培育期信息 */}
+            <div className="space-y-3 lg:border-l lg:border-border/40 lg:pl-6">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Sprout className="h-4 w-4 text-success" />培育期信息
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-[11px] text-muted-foreground">进入培育时间</div>
+                  <div className="mt-1 text-sm font-medium">{me.submitDate}</div>
+                </div>
+                <div>
+                  <div className="text-[11px] text-muted-foreground">培育周期</div>
+                  <div className="mt-1 text-sm font-medium">12 个月</div>
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* 培育目标 */}
-      <div className="grid gap-4 lg:grid-cols-2 mb-4">
-        <Card className="panel">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Target className="h-4 w-4 text-primary" />培育目标
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-end justify-between">
-              <span className="text-xs text-muted-foreground">当前综合得分</span>
-              <span className="text-2xl font-semibold font-mono">{me.score}</span>
-            </div>
-            <Progress value={(me.score / target) * 100} />
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>目标得分 {target} 分</span>
-              <span className="text-warning">还差 {gap} 分</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="panel">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Sprout className="h-4 w-4 text-success" />培育期信息
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-3 text-sm">
-            <InfoTile label="进入培育时间" value={me.submitDate} />
-            <InfoTile label="培育周期" value="12 个月" />
-          </CardContent>
-        </Card>
-      </div>
 
       {/* AI 节能技术推荐 */}
       <Card className="panel mb-4">
