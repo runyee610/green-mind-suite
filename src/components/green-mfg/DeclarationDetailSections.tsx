@@ -989,12 +989,14 @@ export function EvaluationIndicatorCard({
     <Card id="evaluation-indicator" className="panel scroll-mt-24">
       <CardHeader className="pb-3">
         <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-lg">
-          <span className="flex items-center gap-2">
-            <ListChecks className="h-5 w-5" />三、评价指标表（通则）
-            <Badge variant="outline" className="border-border/60 bg-muted/40 text-sm font-normal text-muted-foreground">
+          <div className="flex flex-col items-start gap-1">
+            <span className="flex items-center gap-2">
+              <ListChecks className="h-5 w-5" />评价指标表
+            </span>
+            <Badge variant="outline" className="w-fit border-border/60 bg-muted/40 text-sm font-normal text-muted-foreground">
               共 {data.length} 项
             </Badge>
-          </span>
+          </div>
           <div className="flex flex-wrap items-center gap-2 text-sm font-normal">
             <span className="text-muted-foreground">
               已填 <span className="font-mono text-foreground">{filledCount}</span> / {data.length}
