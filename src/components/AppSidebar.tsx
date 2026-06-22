@@ -14,6 +14,7 @@ import {
   Users,
   KeyRound,
   ListChecks,
+  ClipboardList,
   CalendarRange,
   Brain,
   Wallet,
