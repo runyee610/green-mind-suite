@@ -410,7 +410,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                         <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
                       </TableCell>
                       <TableCell className="text-center whitespace-nowrap">
-                        <Badge variant="outline" className={status === "已推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
+                        <Badge variant="outline" className={status !== "待推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
                           {status}
                         </Badge>
                       </TableCell>
