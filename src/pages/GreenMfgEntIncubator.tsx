@@ -5,6 +5,7 @@ import {
   ExternalLink,
   FileText,
   Loader2,
+  LogOut,
   RefreshCw,
   Sparkles,
   Sprout,
@@ -15,12 +16,27 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import {
+  clearResearch,
   loadResearch,
   runIncubatorResearch,
   type IncubatorResearchResult,
 } from "@/components/green-mfg/incubatorResearchData";
+import { toast } from "sonner";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function GreenMfgEntIncubator() {
   const me =
@@ -33,6 +49,7 @@ export default function GreenMfgEntIncubator() {
   const [research, setResearch] = useState<IncubatorResearchResult | null>(() =>
     loadResearch(me.creditCode),
   );
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -43,6 +60,22 @@ export default function GreenMfgEntIncubator() {
     return () => window.removeEventListener("incubator-research-updated", handler as EventListener);
   }, [me.creditCode]);
 
+  const startResearch = () => {
+    toast.success("已加入区级培育库，AI 智能体正在后台检索节能技术…");
+    void runIncubatorResearch({
+      creditCode: me.creditCode,
+      enterpriseName: me.enterpriseName,
+      onUpdate: setResearch,
+    });
+  };
+
+  const handleExit = () => {
+    clearResearch(me.creditCode);
+    setResearch(null);
+    setConfirmOpen(false);
+    toast.success("已退出培育库");
+  };
+
   const rerun = () => {
     void runIncubatorResearch({
       creditCode: me.creditCode,
@@ -50,6 +83,8 @@ export default function GreenMfgEntIncubator() {
       onUpdate: setResearch,
     });
   };
+
+  const joined = research != null;
 
   const overviewStats: Array<{ label: string; value: string }> = [
     { label: "所属区", value: me.district },
