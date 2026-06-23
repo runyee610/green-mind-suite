@@ -55,6 +55,7 @@ export default function GreenMfgEntDeclarationNew() {
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
   const [materialPool, setMaterialPool] = useState<MaterialFile[]>([]);
+  const [batch, setBatch] = useState<string>(DECLARATION_BATCHES[0]);
 
   const applyMaterialMapping = (mapping: {
     indicator: Record<string, string[]>;
