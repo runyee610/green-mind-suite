@@ -234,10 +234,10 @@ export default function GreenMfgEntIncubator() {
         <CardContent className="space-y-5">
           {!research && (
             <div className="rounded-lg border border-dashed border-border/60 bg-muted/20 p-8 text-center text-xs text-muted-foreground">
-              请先在「模拟自我评价」页点击「加入培育库」启动智能体调研。
+              当前未加入培育库，加入后 AI 智能体将自动启动节能技术调研。
               <div className="mt-3">
-                <Button size="sm" variant="outline" className="h-8" onClick={rerun}>
-                  <Sparkles className="mr-1 h-3 w-3" />立即启动调研
+                <Button size="sm" variant="outline" className="h-8" onClick={startResearch}>
+                  <Sprout className="mr-1 h-3 w-3" />加入培育库
                 </Button>
               </div>
             </div>
