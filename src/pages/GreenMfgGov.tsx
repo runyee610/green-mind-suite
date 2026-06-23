@@ -194,6 +194,34 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
   const [batchFilter, setBatchFilter] = useState<string>("all");
+  const [batches, setBatches] = useState<string[]>([...DECLARATION_BATCHES]);
+  const [batchDialogOpen, setBatchDialogOpen] = useState(false);
+
+  const batchInUse = (name: string) => MOCK_DECLARATIONS.some((r) => r.batch === name);
+  const handleAddBatch = (raw: string) => {
+    const name = raw.trim();
+    if (!name) { toast.error("批次名称不能为空"); return false; }
+    if (batches.includes(name)) { toast.error("批次名称已存在"); return false; }
+    setBatches((prev) => [name, ...prev]);
+    toast.success("已新增批次");
+    return true;
+  };
+  const handleEditBatch = (oldName: string, raw: string) => {
+    const name = raw.trim();
+    if (!name) { toast.error("批次名称不能为空"); return false; }
+    if (name === oldName) return true;
+    if (batches.includes(name)) { toast.error("批次名称已存在"); return false; }
+    setBatches((prev) => prev.map((b) => (b === oldName ? name : b)));
+    if (batchFilter === oldName) setBatchFilter(name);
+    toast.success("已重命名批次");
+    return true;
+  };
+  const handleDeleteBatch = (name: string) => {
+    if (batchInUse(name)) { toast.error("该批次已被申报记录使用，无法删除"); return; }
+    setBatches((prev) => prev.filter((b) => b !== name));
+    if (batchFilter === name) setBatchFilter("all");
+    toast.success("已删除批次");
+  };
 
   // 区级推荐覆盖（推荐到市级）
   const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
