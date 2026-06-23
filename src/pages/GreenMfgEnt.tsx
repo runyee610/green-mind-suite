@@ -116,6 +116,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   {MY_SELF_ASSESS.map((r) => (
                     <TableRow key={r.id} className="h-12 border-border/40">
                       <TableCell className="text-xs">{r.enterpriseName}</TableCell>
+                      <TableCell className="text-xs">{r.batch}</TableCell>
                       <TableCell className="text-center font-mono text-xs">
                         <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
                       </TableCell>
