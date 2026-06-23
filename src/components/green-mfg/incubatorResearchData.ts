@@ -236,6 +236,21 @@ function saveResearch(result: IncubatorResearchResult) {
   }
 }
 
+export function clearResearch(creditCode: string) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const all = JSON.parse(raw) as Record<string, IncubatorResearchResult>;
+    if (creditCode in all) {
+      delete all[creditCode];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+      window.dispatchEvent(new CustomEvent("incubator-research-updated", { detail: creditCode }));
+    }
+  } catch {
+    /* noop */
+  }
+}
+
 const now = () => new Date().toLocaleTimeString("zh-CN", { hour12: false });
 
 /** 启动智能体调研：多阶段日志推进，最终落库 */
