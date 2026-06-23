@@ -27,7 +27,7 @@ export default function GreenMfgGovIncubatorDetail() {
   const navigate = useNavigate();
   const me = INITIAL_INCUBATE_DATA.find((r) => r.id === id) ?? INITIAL_INCUBATE_DATA[0];
 
-  const target = 80;
+  const target = 100;
   const gap = Math.max(0, target - me.score);
 
   const [research, setResearch] = useState<IncubatorResearchResult | null>(() =>
