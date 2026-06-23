@@ -299,6 +299,7 @@ export interface SelfAssessRecord {
   district: string;
   industry: string;
   subIndustry?: string;
+  batch: string;
   date: string;
   aiScore: number;
   indicatorCount: number;
