@@ -37,6 +37,7 @@ interface DraftPayload {
   basicInfo: EnterpriseBasicInfo;
   basicReqs: BasicRequirementItem[];
   indicators: IndicatorRow[];
+  batch?: string;
   savedAt: string;
 }
 
