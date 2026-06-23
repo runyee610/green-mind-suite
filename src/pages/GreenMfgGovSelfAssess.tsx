@@ -135,6 +135,7 @@ export default function GreenMfgGovSelfAssess() {
                 <TableHead>企业名称</TableHead>
                 <TableHead>所属区</TableHead>
                 <TableHead>行业 / 子行业</TableHead>
+                <TableHead>评价批次</TableHead>
                 <TableHead className="text-center">最近评价日期</TableHead>
                 <TableHead className="text-center">模拟分数</TableHead>
                 <TableHead className="text-center">指标数</TableHead>
