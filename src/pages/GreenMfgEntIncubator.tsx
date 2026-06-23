@@ -101,13 +101,58 @@ export default function GreenMfgEntIncubator() {
       <Card className="panel mb-4">
         <CardContent className="p-6 space-y-6">
           {/* 顶部：企业标识 */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Building2 className="h-5 w-5" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-semibold leading-tight">{me.enterpriseName}</span>
+                  {!joined && (
+                    <Badge variant="outline" className="border-border/60 bg-muted/40 text-muted-foreground font-normal">
+                      未加入培育库
+                    </Badge>
+                  )}
+                </div>
+                <div className="mt-1 text-[11px] text-muted-foreground font-mono">{me.creditCode}</div>
+              </div>
             </div>
             <div>
-              <div className="text-base font-semibold leading-tight">{me.enterpriseName}</div>
-              <div className="mt-1 text-[11px] text-muted-foreground font-mono">{me.creditCode}</div>
+              {joined ? (
+                <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="outline" className="h-8 text-destructive hover:text-destructive">
+                      <LogOut className="mr-1 h-4 w-4" />退库
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>确认退出培育库？</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        退库后将清除 AI 智能体调研结果，可重新加入再次启动调研。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleExit}
+                        className={cn(buttonVariants({ variant: "destructive" }))}
+                      >
+                        确认退库
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
+                <Button
+                  size="sm"
+                  className="h-8 bg-gradient-primary text-primary-foreground"
+                  onClick={startResearch}
+                >
+                  <Sprout className="mr-1 h-4 w-4" />加入培育库
+                </Button>
+              )}
             </div>
           </div>
 
