@@ -1,35 +1,37 @@
-## 目标
-根据最新反馈，调整专家评审相关界面：区级/市级专家切换按钮保持现有实现；详情页操作按钮在被点击后显示更直接的反向操作文案。
+## 恢复"批次"相关功能
 
-## 变更点
+### 1. 政府侧 · 专家评审 - 恢复批次管理弹窗
 
-### 1. 专家评审界面——区级专家 / 市级专家切换按钮
-- 文件：`src/pages/GreenMfgGov.tsx`
-- 当前已在页面顶部实现两个切换按钮（自定义按钮组，位于 `推荐列表` 上方），分别对应“区级专家”和“市级专家”。
-- 按用户选择**保持现状**，不做样式重构，仅作为计划项确认存在并正常联动：
-  - 切换时重置 `stageFilter` 为 `all`。
-  - 下拉项与 KPI 标签随视角自动变为：
-    - 区级专家：`待推荐`、`已推荐到市级`
-    - 市级专家：`待推荐`、`已推荐到国家`
+文件：`src/pages/GreenMfgGov.tsx`
 
-### 2. 专家评审详情页——按钮激活态文案调整
-- 文件：`src/pages/GreenMfgGovDeclarationDetail.tsx`
-- 保持现有 toggle 交互逻辑与 toast 提示，仅修改按钮文案：
-  - **推荐按钮**：
-    - 未推荐态：`推荐`
-    - 已推荐态：由 `已推荐（点击取消）` 改为 **`取消推荐`**
-  - **加入培育库按钮**：
-    - 未加入态：`加入培育库`
-    - 已加入态：由 `已加入培育库（点击移除）` 改为 **`退库`**
-- 顶部状态徽标文案保持不变（`已推荐`、`已加入培育库`），仅按钮文案简化。
-- 在 `isIncubator`（梯度培育入口跳转）分支下，这两个操作按钮继续隐藏，不受影响。
+- 新增本地 state：`batches`（初始值来自 `DECLARATION_BATCHES`）、`batchDialogOpen`
+- 新增帮助函数 `batchInUse(name)`：判断批次是否被 `MOCK_DECLARATIONS` 中任意记录使用（用于禁用删除）
+- 新增三个 CRUD handlers：
+  - `handleAddBatch(name)`：去空、查重后追加
+  - `handleEditBatch(oldName, newName)`：重命名，校验唯一；同步更新 `batchFilter`
+  - `handleDeleteBatch(name)`：若 `batchInUse` 则 toast 提示并阻止；否则移除并重置筛选
+- 将"批次"下拉的 options 由 `DECLARATION_BATCHES.map` 改为 `batches.map`，让筛选项响应增删改
+- 在批次下拉旁新增「**批次管理**」按钮（`Settings2` 图标，`variant="outline"` `size="sm"`），点击打开 `BatchManageDialog`
+- 在文件底部新增 `BatchManageDialog` 组件（弹窗形式）：
+  - 顶部"新增批次"输入框 + 「新增」按钮
+  - 表格列出现有批次，每行支持「重命名」（行内编辑 + 保存/取消）和「删除」（被使用则禁用并 tooltip 提示）
+  - 关闭按钮
+- 导入 `Settings2` 图标和 `Dialog` 系列组件
 
-## 影响文件
-- `src/pages/GreenMfgGov.tsx`：仅确认/保持现有切换按钮逻辑，无实际代码改动。
-- `src/pages/GreenMfgGovDeclarationDetail.tsx`：修改按钮激活态文案。
+### 2. 企业侧 · 开始评价 - 恢复"评价批次"下拉
 
-## 验证
-- 专家评审列表顶部可见“区级专家 / 市级专家”切换按钮，点击后下拉项与 KPI 标签同步变化。
-- 详情页点击“推荐”后，按钮变为“取消推荐”；点击“加入培育库”后，按钮变为“退库”。
-- 顶部状态徽标仍为“已推荐”和“已加入培育库”。
-- 从梯度培育入口进入的详情页不出现推荐/退库按钮，仅显示“返回列表”。
+文件：`src/pages/GreenMfgEntDeclarationNew.tsx`
+
+- 导入 `Select` 系列组件 与 `DECLARATION_BATCHES`（来自 `@/components/green-mfg/data`）
+- 新增 state：`const [batch, setBatch] = useState<string>(DECLARATION_BATCHES[0])`
+- 在顶部操作栏左侧（`draftSavedAt` 旁）新增一段：
+  - 标签"评价批次"
+  - `<Select>` 绑定 `batch` / `setBatch`，options 来自 `DECLARATION_BATCHES`
+  - 宽度与其他下拉风格保持一致（`h-8 w-40 text-xs`）
+- 将 `batch` 写入草稿 payload（`DraftPayload` 加 `batch?: string`），保存/读取草稿时一并处理；不修改提交流程其它逻辑
+
+### 不改动
+
+- 路由、菜单、权限、数据 mock 字段保持不变
+- `DECLARATION_BATCHES` 内容不变
+- 详情页、动态管理、零碳、培育等其他页面不动
