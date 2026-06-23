@@ -155,6 +155,7 @@ export default function GreenMfgGovSelfAssess() {
                       <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>
                     )}
                   </TableCell>
+                  <TableCell className="text-xs">{r.batch}</TableCell>
                   <TableCell className="text-center font-mono text-xs text-muted-foreground">{r.date}</TableCell>
                   <TableCell className="text-center">
                     <span className="inline-flex items-center font-mono text-sm font-semibold text-primary">
