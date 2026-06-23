@@ -41,6 +41,18 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
 
   const latestSelf = MY_SELF_ASSESS[0];
 
+  const [joined, setJoined] = useState<boolean>(() => loadResearch(myDeclaration.creditCode) != null);
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail === myDeclaration.creditCode) {
+        setJoined(loadResearch(myDeclaration.creditCode) != null);
+      }
+    };
+    window.addEventListener("incubator-research-updated", handler as EventListener);
+    return () => window.removeEventListener("incubator-research-updated", handler as EventListener);
+  }, [myDeclaration.creditCode]);
+
   return (
     <AppLayout
       title={
@@ -77,7 +89,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" variant="outline" className="h-8" onClick={() => {
+                  <Button size="sm" variant={joined ? "outline" : "outline"} className="h-8" disabled={joined} onClick={() => {
                     if (MY_SELF_ASSESS.length === 0) {
                       toast.error("请至少完成 1 次 AI 打分");
                       return;
@@ -90,7 +102,11 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                       enterpriseName: DEFAULT_ENT_NAME,
                     });
                   }}>
-                    <Sprout className="mr-1 h-4 w-4" />{"加入培育库"}
+                    {joined ? (
+                      <><CheckCircle2 className="mr-1 h-4 w-4 text-success" />已加入培育库</>
+                    ) : (
+                      <><Sprout className="mr-1 h-4 w-4" />加入培育库</>
+                    )}
                   </Button>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new?mode=self")}>
                     <Plus className="mr-1 h-4 w-4" />{"开始评价"}
