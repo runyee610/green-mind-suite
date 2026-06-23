@@ -19,6 +19,8 @@ import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel"
 import { AIMaterialIntakePanel } from "@/components/green-mfg/AIMaterialIntakePanel";
 import type { MaterialFile } from "@/components/green-mfg/aiMaterialMatcher";
 import { DECLARATION_ANCHORS as ANCHORS, StepTabs } from "@/components/green-mfg/DeclarationStepTabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DECLARATION_BATCHES } from "@/components/green-mfg/data";
 
 import { toast } from "sonner";
 
