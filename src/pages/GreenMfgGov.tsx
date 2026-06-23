@@ -448,11 +448,14 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部批次</SelectItem>
-                      {DECLARATION_BATCHES.map((b) => (
+                      {batches.map((b) => (
                         <SelectItem key={b} value={b}>{b}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  <Button variant="outline" size="sm" className="h-8" onClick={() => setBatchDialogOpen(true)}>
+                    <Settings2 className="mr-1 h-3 w-3" />批次管理
+                  </Button>
                   <Select value={stageFilter} onValueChange={setStageFilter}>
                     <SelectTrigger className="h-8 w-32 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
