@@ -19,6 +19,8 @@ import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel"
 import { AIMaterialIntakePanel } from "@/components/green-mfg/AIMaterialIntakePanel";
 import type { MaterialFile } from "@/components/green-mfg/aiMaterialMatcher";
 import { DECLARATION_ANCHORS as ANCHORS, StepTabs } from "@/components/green-mfg/DeclarationStepTabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DECLARATION_BATCHES } from "@/components/green-mfg/data";
 
 import { toast } from "sonner";
 
@@ -35,6 +37,7 @@ interface DraftPayload {
   basicInfo: EnterpriseBasicInfo;
   basicReqs: BasicRequirementItem[];
   indicators: IndicatorRow[];
+  batch?: string;
   savedAt: string;
 }
 
@@ -52,6 +55,7 @@ export default function GreenMfgEntDeclarationNew() {
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>(ANCHORS[0].href);
   const [materialPool, setMaterialPool] = useState<MaterialFile[]>([]);
+  const [batch, setBatch] = useState<string>(DECLARATION_BATCHES[0]);
 
   const applyMaterialMapping = (mapping: {
     indicator: Record<string, string[]>;
@@ -106,6 +110,7 @@ export default function GreenMfgEntDeclarationNew() {
           }),
         );
       }
+      if (draft.batch) setBatch(draft.batch);
       setDraftSavedAt(draft.savedAt ?? null);
     } catch {
       /* ignore */
@@ -128,6 +133,7 @@ export default function GreenMfgEntDeclarationNew() {
         reportValue: it.reportValue ?? "",
         proofs: it.proofs,
       })),
+      batch,
       savedAt,
     };
     try {
@@ -155,6 +161,19 @@ export default function GreenMfgEntDeclarationNew() {
       <Card className="panel mb-4">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3">
           <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">评价批次</span>
+              <Select value={batch} onValueChange={setBatch}>
+                <SelectTrigger className="h-8 w-40 text-xs">
+                  <SelectValue placeholder="选择批次" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DECLARATION_BATCHES.map((b) => (
+                    <SelectItem key={b} value={b}>{b}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             {draftSavedAt && (
               <span className="text-[11px] text-muted-foreground">
                 草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}

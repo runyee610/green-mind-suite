@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, Filter, Search, XCircle, Clock, Check, Upload } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Eye, Filter, Search, XCircle, Clock, Check, Upload, Settings2, Pencil, Trash2, Plus, X } from "lucide-react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -193,6 +194,34 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
   const [batchFilter, setBatchFilter] = useState<string>("all");
+  const [batches, setBatches] = useState<string[]>([...DECLARATION_BATCHES]);
+  const [batchDialogOpen, setBatchDialogOpen] = useState(false);
+
+  const batchInUse = (name: string) => MOCK_DECLARATIONS.some((r) => r.batch === name);
+  const handleAddBatch = (raw: string) => {
+    const name = raw.trim();
+    if (!name) { toast.error("批次名称不能为空"); return false; }
+    if (batches.includes(name)) { toast.error("批次名称已存在"); return false; }
+    setBatches((prev) => [name, ...prev]);
+    toast.success("已新增批次");
+    return true;
+  };
+  const handleEditBatch = (oldName: string, raw: string) => {
+    const name = raw.trim();
+    if (!name) { toast.error("批次名称不能为空"); return false; }
+    if (name === oldName) return true;
+    if (batches.includes(name)) { toast.error("批次名称已存在"); return false; }
+    setBatches((prev) => prev.map((b) => (b === oldName ? name : b)));
+    if (batchFilter === oldName) setBatchFilter(name);
+    toast.success("已重命名批次");
+    return true;
+  };
+  const handleDeleteBatch = (name: string) => {
+    if (batchInUse(name)) { toast.error("该批次已被申报记录使用，无法删除"); return; }
+    setBatches((prev) => prev.filter((b) => b !== name));
+    if (batchFilter === name) setBatchFilter("all");
+    toast.success("已删除批次");
+  };
 
   // 区级推荐覆盖（推荐到市级）
   const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
@@ -419,11 +448,14 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部批次</SelectItem>
-                      {DECLARATION_BATCHES.map((b) => (
+                      {batches.map((b) => (
                         <SelectItem key={b} value={b}>{b}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  <Button variant="outline" size="sm" className="h-8" onClick={() => setBatchDialogOpen(true)}>
+                    <Settings2 className="mr-1 h-3 w-3" />批次管理
+                  </Button>
                   <Select value={stageFilter} onValueChange={setStageFilter}>
                     <SelectTrigger className="h-8 w-32 text-xs">
                       <Filter className="mr-1 h-3 w-3" />
@@ -579,7 +611,162 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
           </Tabs>
         </TabsContent>
       </Tabs>
+      <BatchManageDialog
+        open={batchDialogOpen}
+        onOpenChange={setBatchDialogOpen}
+        batches={batches}
+        batchInUse={batchInUse}
+        onAdd={handleAddBatch}
+        onEdit={handleEditBatch}
+        onDelete={handleDeleteBatch}
+      />
     </AppLayout>
+  );
+}
+
+function BatchManageDialog({
+  open,
+  onOpenChange,
+  batches,
+  batchInUse,
+  onAdd,
+  onEdit,
+  onDelete,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  batches: string[];
+  batchInUse: (name: string) => boolean;
+  onAdd: (name: string) => boolean;
+  onEdit: (oldName: string, newName: string) => boolean;
+  onDelete: (name: string) => void;
+}) {
+  const [newName, setNewName] = useState("");
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>批次管理</DialogTitle>
+        </DialogHeader>
+        <div className="flex items-center gap-2">
+          <Input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="输入新批次名称，如 2026年第一批"
+            className="h-8 text-xs"
+          />
+          <Button
+            size="sm"
+            className="h-8"
+            onClick={() => {
+              if (onAdd(newName)) setNewName("");
+            }}
+          >
+            <Plus className="mr-1 h-3 w-3" />新增
+          </Button>
+        </div>
+        <div className="max-h-80 overflow-auto rounded-md border border-border">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs">批次名称</TableHead>
+                <TableHead className="text-xs w-44 text-right">操作</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {batches.map((b) => {
+                const used = batchInUse(b);
+                const isEditing = editing === b;
+                return (
+                  <TableRow key={b} className="h-11 border-border/40">
+                    <TableCell className="text-sm">
+                      {isEditing ? (
+                        <Input
+                          autoFocus
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="h-7 text-xs"
+                        />
+                      ) : (
+                        <span>{b}</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {isEditing ? (
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            size="sm"
+                            className="h-7"
+                            onClick={() => {
+                              if (onEdit(b, editValue)) {
+                                setEditing(null);
+                                setEditValue("");
+                              }
+                            }}
+                          >
+                            保存
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7"
+                            onClick={() => {
+                              setEditing(null);
+                              setEditValue("");
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7"
+                            onClick={() => {
+                              setEditing(b);
+                              setEditValue(b);
+                            }}
+                          >
+                            <Pencil className="mr-1 h-3 w-3" />重命名
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-destructive hover:text-destructive"
+                            disabled={used}
+                            title={used ? "该批次已被申报记录使用" : undefined}
+                            onClick={() => onDelete(b)}
+                          >
+                            <Trash2 className="mr-1 h-3 w-3" />删除
+                          </Button>
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {batches.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={2} className="h-16 text-center text-xs text-muted-foreground">
+                    暂无批次
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+            关闭
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
