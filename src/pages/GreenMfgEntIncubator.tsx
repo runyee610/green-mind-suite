@@ -5,6 +5,7 @@ import {
   ExternalLink,
   FileText,
   Loader2,
+  LogOut,
   RefreshCw,
   Sparkles,
   Sprout,
@@ -15,12 +16,27 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { MOCK_DECLARATIONS } from "@/components/green-mfg/data";
 import {
+  clearResearch,
   loadResearch,
   runIncubatorResearch,
   type IncubatorResearchResult,
 } from "@/components/green-mfg/incubatorResearchData";
+import { toast } from "sonner";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function GreenMfgEntIncubator() {
   const me =
@@ -33,6 +49,7 @@ export default function GreenMfgEntIncubator() {
   const [research, setResearch] = useState<IncubatorResearchResult | null>(() =>
     loadResearch(me.creditCode),
   );
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -43,6 +60,22 @@ export default function GreenMfgEntIncubator() {
     return () => window.removeEventListener("incubator-research-updated", handler as EventListener);
   }, [me.creditCode]);
 
+  const startResearch = () => {
+    toast.success("已加入区级培育库，AI 智能体正在后台检索节能技术…");
+    void runIncubatorResearch({
+      creditCode: me.creditCode,
+      enterpriseName: me.enterpriseName,
+      onUpdate: setResearch,
+    });
+  };
+
+  const handleExit = () => {
+    clearResearch(me.creditCode);
+    setResearch(null);
+    setConfirmOpen(false);
+    toast.success("已退出培育库");
+  };
+
   const rerun = () => {
     void runIncubatorResearch({
       creditCode: me.creditCode,
@@ -50,6 +83,8 @@ export default function GreenMfgEntIncubator() {
       onUpdate: setResearch,
     });
   };
+
+  const joined = research != null;
 
   const overviewStats: Array<{ label: string; value: string }> = [
     { label: "所属区", value: me.district },
@@ -66,13 +101,58 @@ export default function GreenMfgEntIncubator() {
       <Card className="panel mb-4">
         <CardContent className="p-6 space-y-6">
           {/* 顶部：企业标识 */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Building2 className="h-5 w-5" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-semibold leading-tight">{me.enterpriseName}</span>
+                  {!joined && (
+                    <Badge variant="outline" className="border-border/60 bg-muted/40 text-muted-foreground font-normal">
+                      未加入培育库
+                    </Badge>
+                  )}
+                </div>
+                <div className="mt-1 text-[11px] text-muted-foreground font-mono">{me.creditCode}</div>
+              </div>
             </div>
             <div>
-              <div className="text-base font-semibold leading-tight">{me.enterpriseName}</div>
-              <div className="mt-1 text-[11px] text-muted-foreground font-mono">{me.creditCode}</div>
+              {joined ? (
+                <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="outline" className="h-8 text-destructive hover:text-destructive">
+                      <LogOut className="mr-1 h-4 w-4" />退库
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>确认退出培育库？</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        退库后将清除 AI 智能体调研结果，可重新加入再次启动调研。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleExit}
+                        className={cn(buttonVariants({ variant: "destructive" }))}
+                      >
+                        确认退库
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
+                <Button
+                  size="sm"
+                  className="h-8 bg-gradient-primary text-primary-foreground"
+                  onClick={startResearch}
+                >
+                  <Sprout className="mr-1 h-4 w-4" />加入培育库
+                </Button>
+              )}
             </div>
           </div>
 
@@ -154,10 +234,10 @@ export default function GreenMfgEntIncubator() {
         <CardContent className="space-y-5">
           {!research && (
             <div className="rounded-lg border border-dashed border-border/60 bg-muted/20 p-8 text-center text-xs text-muted-foreground">
-              请先在「模拟自我评价」页点击「加入培育库」启动智能体调研。
+              当前未加入培育库，加入后 AI 智能体将自动启动节能技术调研。
               <div className="mt-3">
-                <Button size="sm" variant="outline" className="h-8" onClick={rerun}>
-                  <Sparkles className="mr-1 h-3 w-3" />立即启动调研
+                <Button size="sm" variant="outline" className="h-8" onClick={startResearch}>
+                  <Sprout className="mr-1 h-3 w-3" />加入培育库
                 </Button>
               </div>
             </div>
