@@ -506,11 +506,16 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.batch}</TableCell>
                       <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">
                         <div className="font-mono text-xs">
-                          {expertView === "city"
-                            ? `${r.score} / ${r.manualScore ?? "—"} / ${r.cityScore ?? "—"}`
-                            : `${r.score} / ${r.manualScore ?? "—"}`}
+                          {`${r.score} / ${r.manualScore ?? "—"}`}
                         </div>
                       </TableCell>
+                      {expertView === "city" && (
+                        <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">
+                          <div className="font-mono text-xs">
+                            {r.cityScore ?? "—"}
+                          </div>
+                        </TableCell>
+                      )}
                       <TableCell className="text-center whitespace-nowrap">
                         <Badge variant="outline" className={status !== "未推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
                           {status}
