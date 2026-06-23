@@ -161,6 +161,19 @@ export default function GreenMfgEntDeclarationNew() {
       <Card className="panel mb-4">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3">
           <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">评价批次</span>
+              <Select value={batch} onValueChange={setBatch}>
+                <SelectTrigger className="h-8 w-40 text-xs">
+                  <SelectValue placeholder="选择批次" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DECLARATION_BATCHES.map((b) => (
+                    <SelectItem key={b} value={b}>{b}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             {draftSavedAt && (
               <span className="text-[11px] text-muted-foreground">
                 草稿已保存 · {new Date(draftSavedAt).toLocaleString("zh-CN")}
