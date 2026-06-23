@@ -611,7 +611,162 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
           </Tabs>
         </TabsContent>
       </Tabs>
+      <BatchManageDialog
+        open={batchDialogOpen}
+        onOpenChange={setBatchDialogOpen}
+        batches={batches}
+        batchInUse={batchInUse}
+        onAdd={handleAddBatch}
+        onEdit={handleEditBatch}
+        onDelete={handleDeleteBatch}
+      />
     </AppLayout>
+  );
+}
+
+function BatchManageDialog({
+  open,
+  onOpenChange,
+  batches,
+  batchInUse,
+  onAdd,
+  onEdit,
+  onDelete,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  batches: string[];
+  batchInUse: (name: string) => boolean;
+  onAdd: (name: string) => boolean;
+  onEdit: (oldName: string, newName: string) => boolean;
+  onDelete: (name: string) => void;
+}) {
+  const [newName, setNewName] = useState("");
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>批次管理</DialogTitle>
+        </DialogHeader>
+        <div className="flex items-center gap-2">
+          <Input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="输入新批次名称，如 2026年第一批"
+            className="h-8 text-xs"
+          />
+          <Button
+            size="sm"
+            className="h-8"
+            onClick={() => {
+              if (onAdd(newName)) setNewName("");
+            }}
+          >
+            <Plus className="mr-1 h-3 w-3" />新增
+          </Button>
+        </div>
+        <div className="max-h-80 overflow-auto rounded-md border border-border">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs">批次名称</TableHead>
+                <TableHead className="text-xs w-44 text-right">操作</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {batches.map((b) => {
+                const used = batchInUse(b);
+                const isEditing = editing === b;
+                return (
+                  <TableRow key={b} className="h-11 border-border/40">
+                    <TableCell className="text-sm">
+                      {isEditing ? (
+                        <Input
+                          autoFocus
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="h-7 text-xs"
+                        />
+                      ) : (
+                        <span>{b}</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {isEditing ? (
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            size="sm"
+                            className="h-7"
+                            onClick={() => {
+                              if (onEdit(b, editValue)) {
+                                setEditing(null);
+                                setEditValue("");
+                              }
+                            }}
+                          >
+                            保存
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7"
+                            onClick={() => {
+                              setEditing(null);
+                              setEditValue("");
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7"
+                            onClick={() => {
+                              setEditing(b);
+                              setEditValue(b);
+                            }}
+                          >
+                            <Pencil className="mr-1 h-3 w-3" />重命名
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-destructive hover:text-destructive"
+                            disabled={used}
+                            title={used ? "该批次已被申报记录使用" : undefined}
+                            onClick={() => onDelete(b)}
+                          >
+                            <Trash2 className="mr-1 h-3 w-3" />删除
+                          </Button>
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {batches.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={2} className="h-16 text-center text-xs text-muted-foreground">
+                    暂无批次
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+            关闭
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
