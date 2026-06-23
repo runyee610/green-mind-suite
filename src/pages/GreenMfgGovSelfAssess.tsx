@@ -182,7 +182,7 @@ export default function GreenMfgGovSelfAssess() {
               ))}
               {rows.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">
+                  <TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">
                     暂无符合条件的企业
                   </TableCell>
                 </TableRow>
