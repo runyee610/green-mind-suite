@@ -479,7 +479,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead className="whitespace-nowrap">所属区</TableHead>
                     <TableHead className="whitespace-nowrap">行业</TableHead>
                     <TableHead className="whitespace-nowrap">提交批次</TableHead>
-                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI 智能打分 / 专家推荐</TableHead>
+                    <TableHead className="text-center whitespace-nowrap px-[3px]">{expertView === "city" ? "AI打分/区得分/市得分" : "AI打分/区得分"}</TableHead>
                     <TableHead className="text-center whitespace-nowrap">推荐状态</TableHead>
                     <TableHead className="whitespace-nowrap">提交时间</TableHead>
                     <TableHead className="sticky right-0 z-20 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))]">操作</TableHead>
@@ -502,7 +502,11 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.batch}</TableCell>
                       <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">
-                        <div className="font-mono text-xs">{r.score} / {r.manualScore ?? "—"}</div>
+                        <div className="font-mono text-xs">
+                          {expertView === "city"
+                            ? `${r.score} / ${r.manualScore ?? "—"} / ${r.cityScore ?? "—"}`
+                            : `${r.score} / ${r.manualScore ?? "—"}`}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center whitespace-nowrap">
                         <Badge variant="outline" className={status !== "未推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>

@@ -16,7 +16,8 @@ export interface DeclarationRecord {
   submitDate: string;
   stage: DeclarationStage;
   score: number; // 系统智能打分 0-100
-  manualScore?: number; // 专家审核
+  manualScore?: number; // 区级专家审核
+  cityScore?: number; // 市级专家审核
   level: DeclarationLevel;
   reviewer?: string;
   comment?: string;
@@ -128,6 +129,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     stage: "已完成",
     score: 92,
     manualScore: 94,
+    cityScore: 95,
     level: "市级绿色工厂",
     reviewer: "王主任",
     comment: "各项指标均超基准线，审核通过，认定为市级绿色工厂。",
@@ -147,6 +149,7 @@ export const MOCK_DECLARATIONS: DeclarationRecord[] = [
     stage: "培育中",
     score: 64,
     manualScore: 65,
+    cityScore: 70,
     level: "区级培育",
     reviewer: "区生态局",
     comment: "能耗及水耗指标未达标，进入培育阶段。",
