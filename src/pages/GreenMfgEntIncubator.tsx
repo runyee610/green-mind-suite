@@ -27,7 +27,7 @@ export default function GreenMfgEntIncubator() {
     MOCK_DECLARATIONS.find((r) => r.stage === "培育中" || r.level === "区级培育") ??
     MOCK_DECLARATIONS[0];
 
-  const target = 80;
+  const target = 100;
   const gap = Math.max(0, target - me.score);
 
   const [research, setResearch] = useState<IncubatorResearchResult | null>(() =>
