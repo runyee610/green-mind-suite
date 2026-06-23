@@ -104,6 +104,7 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                 <TableHeader>
                   <TableRow className="border-border/60 hover:bg-transparent">
                     <TableHead>公司名称</TableHead>
+                    <TableHead>评价批次</TableHead>
                     <TableHead className="text-center">AI 智能打分</TableHead>
                     <TableHead className="text-center">指标数</TableHead>
                     <TableHead className="text-center">薄弱项</TableHead>
