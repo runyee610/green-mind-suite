@@ -135,6 +135,7 @@ export default function GreenMfgGovSelfAssess() {
                 <TableHead>企业名称</TableHead>
                 <TableHead>所属区</TableHead>
                 <TableHead>行业 / 子行业</TableHead>
+                <TableHead>评价批次</TableHead>
                 <TableHead className="text-center">最近评价日期</TableHead>
                 <TableHead className="text-center">模拟分数</TableHead>
                 <TableHead className="text-center">指标数</TableHead>
@@ -154,6 +155,7 @@ export default function GreenMfgGovSelfAssess() {
                       <div className="mt-0.5 text-[11px] text-muted-foreground">{r.subIndustry}</div>
                     )}
                   </TableCell>
+                  <TableCell className="text-xs">{r.batch}</TableCell>
                   <TableCell className="text-center font-mono text-xs text-muted-foreground">{r.date}</TableCell>
                   <TableCell className="text-center">
                     <span className="inline-flex items-center font-mono text-sm font-semibold text-primary">
@@ -180,7 +182,7 @@ export default function GreenMfgGovSelfAssess() {
               ))}
               {rows.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">
+                  <TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">
                     暂无符合条件的企业
                   </TableCell>
                 </TableRow>
