@@ -541,7 +541,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     );
                   })}
                   {declarations.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的推荐记录</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={expertView === "city" ? 9 : 8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的推荐记录</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
