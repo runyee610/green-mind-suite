@@ -133,6 +133,7 @@ export default function GreenMfgEntDeclarationNew() {
         reportValue: it.reportValue ?? "",
         proofs: it.proofs,
       })),
+      batch,
       savedAt,
     };
     try {
