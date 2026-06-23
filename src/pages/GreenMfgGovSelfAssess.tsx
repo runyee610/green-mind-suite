@@ -138,7 +138,6 @@ export default function GreenMfgGovSelfAssess() {
                 <TableHead>评价批次</TableHead>
                 <TableHead className="text-center">最近评价日期</TableHead>
                 <TableHead className="text-center">模拟分数</TableHead>
-                <TableHead className="text-center">指标数</TableHead>
                 <TableHead className="text-center">薄弱项</TableHead>
                 <TableHead className="text-center">评价次数</TableHead>
                 <TableHead className="text-right">操作</TableHead>
@@ -163,7 +162,6 @@ export default function GreenMfgGovSelfAssess() {
                       {r.aiScore}
                     </span>
                   </TableCell>
-                  <TableCell className="text-center font-mono text-xs">{r.indicatorCount}</TableCell>
                   <TableCell className="text-center font-mono text-xs">
                     <span className={cn(r.weakCount >= 5 ? "text-warning font-semibold" : "")}>{r.weakCount}</span>
                   </TableCell>
@@ -182,7 +180,7 @@ export default function GreenMfgGovSelfAssess() {
               ))}
               {rows.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={10} className="h-24 text-center text-xs text-muted-foreground">
+                  <TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">
                     暂无符合条件的企业
                   </TableCell>
                 </TableRow>

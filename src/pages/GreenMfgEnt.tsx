@@ -106,7 +106,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                     <TableHead>公司名称</TableHead>
                     <TableHead>评价批次</TableHead>
                     <TableHead className="text-center">AI 智能打分</TableHead>
-                    <TableHead className="text-center">指标数</TableHead>
                     <TableHead className="text-center">薄弱项</TableHead>
                     <TableHead>评估日期</TableHead>
                     <TableHead className="text-right">操作</TableHead>
@@ -120,7 +119,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                       <TableCell className="text-center font-mono text-xs">
                         <Sparkles className="mr-1 inline h-3 w-3 text-secondary" />{r.aiScore}
                       </TableCell>
-                      <TableCell className="text-center font-mono text-xs">{r.indicatorCount}</TableCell>
                       <TableCell className="text-center font-mono text-xs">{r.weakCount}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{r.date}</TableCell>
                       <TableCell className="text-right">
