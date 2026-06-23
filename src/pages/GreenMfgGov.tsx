@@ -479,7 +479,10 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead className="whitespace-nowrap">所属区</TableHead>
                     <TableHead className="whitespace-nowrap">行业</TableHead>
                     <TableHead className="whitespace-nowrap">提交批次</TableHead>
-                    <TableHead className="text-center whitespace-nowrap px-[3px]">{expertView === "city" ? "AI打分/区得分/市得分" : "AI打分/区得分"}</TableHead>
+                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI打分/区得分</TableHead>
+                    {expertView === "city" && (
+                      <TableHead className="text-center whitespace-nowrap px-[3px]">市得分</TableHead>
+                    )}
                     <TableHead className="text-center whitespace-nowrap">推荐状态</TableHead>
                     <TableHead className="whitespace-nowrap">提交时间</TableHead>
                     <TableHead className="sticky right-0 z-20 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))]">操作</TableHead>
