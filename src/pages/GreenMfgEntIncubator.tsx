@@ -281,7 +281,7 @@ export default function GreenMfgEntIncubator() {
               {/* 推荐技术卡片 */}
               {research.techs.length > 0 && (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {research.techs.map((t) => (
+                  {research.techs.slice(0, 4).map((t) => (
                     <div
                       key={t.id}
                       className="group rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-sm"
