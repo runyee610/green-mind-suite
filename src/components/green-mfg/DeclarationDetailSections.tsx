@@ -1005,7 +1005,7 @@ export function EvaluationIndicatorCard({
             <Badge variant="outline" className="border-primary/40 bg-primary/10 text-sm text-primary">
               得分 {totalScore.toFixed(2)}
             </Badge>
-            {entEditable && (
+            {(entEditable || govEditable) && (
               <Button
                 size="sm"
                 onClick={handleAIClick}
@@ -1024,7 +1024,7 @@ export function EvaluationIndicatorCard({
                 )}
               </Button>
             )}
-            {entEditable && aiLastRunAt && !aiLoading && (
+            {(entEditable || govEditable) && aiLastRunAt && !aiLoading && (
               <span className="text-[11px] text-muted-foreground">
                 上次打分 · {new Date(aiLastRunAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
               </span>
@@ -1068,7 +1068,7 @@ export function EvaluationIndicatorCard({
 
       <CardContent className="space-y-4">
         {/* AI 打分结果总览 */}
-        {entEditable && aiOverview && !aiOverviewDismissed && (
+        {(entEditable || govEditable) && aiOverview && !aiOverviewDismissed && (
           <div className="relative rounded-md border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-3 pr-9">
             <button
               type="button"
