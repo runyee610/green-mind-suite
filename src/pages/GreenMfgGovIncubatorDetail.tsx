@@ -182,7 +182,7 @@ export default function GreenMfgGovIncubatorDetail() {
 
               {research.techs.length > 0 && (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {research.techs.slice(0, 4).map((t) => (
+                  {research.techs.slice(0, 3).map((t) => (
                     <div
                       key={t.id}
                       className="group rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-sm"
@@ -242,7 +242,7 @@ export default function GreenMfgGovIncubatorDetail() {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            {research?.status === "done" && research.techs.slice(0, 4).map((t) => (
+            {research?.status === "done" && research.techs.slice(0, 3).map((t) => (
               <li key={t.id} className="flex gap-2">
                 <FileText className="mt-0.5 h-3.5 w-3.5 text-primary shrink-0" />
                 <span>
