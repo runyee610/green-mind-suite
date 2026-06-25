@@ -594,7 +594,7 @@ const Index = () => {
       {/* Top KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
         <KpiTile icon={Factory} label="绿色工厂" value="523" unit="家" nation={KPI.factory.nation} nationUnit="家" nationExtra="十四五完成率 104.6%" variant="green" />
-        <KpiTile icon={Layers} label="绿色供应链管理企业" value="75" unit="家" nation={KPI.supply.nation} nationUnit="家" nationExtra="较上年 +12" variant="cyan" />
+        <KpiTile icon={Layers} label="绿色供应链企业" value="75" unit="家" nation={KPI.supply.nation} nationUnit="家" nationExtra="较上年 +12" variant="cyan" />
         <KpiTile icon={Boxes} label="绿色园区" value="29" unit="个" nation={KPI.park.nation} nationUnit="个" nationExtra="完成率 96.7%" variant="green" />
         <KpiTile icon={Leaf} label="绿色设计产品" value="150" unit="项" nation={KPI.product.nation} nationUnit="项" nationExtra="12 家示范企业" variant="cyan" />
         <KpiTile icon={Zap} label="单位 GDP 能耗" value="0.232" unit="tce/万元" delta={{ v: -4.2, label: "同比" }} sub="脱钩指数 0.83 · 持续强脱钩" variant="green" />
