@@ -7,12 +7,14 @@ import {
   TrendingUp,
   Trash2,
   ArrowUpCircle,
+  Plus,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -28,6 +30,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +59,11 @@ type EnergyTag = "重点用能单位" | "10亿+非重点规上";
 type Ownership = "国有" | "民营" | "外资" | "中外合资";
 type GreenType = "绿色工厂" | "绿色供应链管理" | "绿色工厂、绿色供应链管理";
 
+const DISTRICTS = ["浦东新区", "闵行区", "嘉定区", "金山区", "宝山区", "青浦区", "奉贤区", "松江区", "徐汇区", "杨浦区"];
+const OWNERSHIPS: Ownership[] = ["国有", "民营", "外资", "中外合资"];
+const GREEN_TYPES: GreenType[] = ["绿色工厂", "绿色供应链管理", "绿色工厂、绿色供应链管理"];
+const ENERGY_TAGS: EnergyTag[] = ["重点用能单位", "10亿+非重点规上"];
+
 interface IncubateRecord {
   id: string;
   name: string;
@@ -58,8 +73,8 @@ interface IncubateRecord {
   subIndustry?: string;
   level: IncubateLevel;
   energyTag: EnergyTag;
-  outputValue: number | null; // 万元
-  energyConsumption: number; // 吨标煤
+  outputValue: number | null;
+  energyConsumption: number;
   carbonIntensity: number;
   score: number;
   prevScore: number;
@@ -91,17 +106,63 @@ const energyTagBadge = (t: EnergyTag) =>
     ? "border-orange-400/40 bg-orange-400/10 text-orange-600 dark:text-orange-300"
     : "border-emerald-400/40 bg-emerald-400/10 text-emerald-600 dark:text-emerald-300";
 
+function maskPhone(p: string) {
+  if (!/^\d{11}$/.test(p)) return p;
+  return `${p.slice(0, 3)}****${p.slice(7)}`;
+}
+
+interface AddFormState {
+  name: string;
+  creditCode: string;
+  district: string;
+  industry: string;
+  ownership: Ownership | "";
+  greenType: GreenType | "";
+  energyTag: EnergyTag | "";
+  level: IncubateLevel;
+  outputValue: string;
+  energyConsumption: string;
+  contactName: string;
+  contactPhone: string;
+}
+
+function emptyForm(level: IncubateLevel): AddFormState {
+  return {
+    name: "",
+    creditCode: "",
+    district: "",
+    industry: "",
+    ownership: "",
+    greenType: "",
+    energyTag: "",
+    level,
+    outputValue: "",
+    energyConsumption: "",
+    contactName: "",
+    contactPhone: "",
+  };
+}
+
 export default function GreenMfgGovIncubator() {
   const [data, setData] = useState<IncubateRecord[]>(INITIAL_INCUBATE_DATA);
   const [viewLevel, setViewLevel] = useState<IncubateLevel>("区级");
   const [keyword, setKeyword] = useState("");
   const [industryFilter, setIndustryFilter] = useState("all");
   const [energyFilter, setEnergyFilter] = useState<"all" | EnergyTag>("all");
+  const [tierFilter, setTierFilter] = useState<"all" | IncubateLevel>("all");
 
   const [removeTarget, setRemoveTarget] = useState<IncubateRecord | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<IncubateRecord | null>(null);
 
-  const scopeData = useMemo(() => data.filter((r) => r.level === viewLevel), [data, viewLevel]);
+  const [addOpen, setAddOpen] = useState(false);
+  const [form, setForm] = useState<AddFormState>(() => emptyForm("区级"));
+
+  const scopeData = useMemo(() => {
+    if (viewLevel === "市级") return data.filter((r) => r.level === "市级");
+    // 区级视角
+    if (tierFilter === "all") return data;
+    return data.filter((r) => r.level === tierFilter);
+  }, [data, viewLevel, tierFilter]);
 
   const rows = useMemo(
     () =>
@@ -115,6 +176,11 @@ export default function GreenMfgGovIncubator() {
     [scopeData, keyword, industryFilter, energyFilter],
   );
 
+  function handleSwitchView(lv: IncubateLevel) {
+    setViewLevel(lv);
+    if (lv === "市级") setTierFilter("all");
+  }
+
   function handleRemoveConfirm() {
     if (!removeTarget) return;
     setData((prev) => prev.filter((r) => r.id !== removeTarget.id));
@@ -125,8 +191,86 @@ export default function GreenMfgGovIncubator() {
   function handlePromoteConfirm() {
     if (!promoteTarget) return;
     setData((prev) => prev.map((r) => (r.id === promoteTarget.id ? { ...r, level: "市级" } : r)));
-    toast.success(`已将「${promoteTarget.name}」推荐到市级培育库`);
+    toast.success(`已将「${promoteTarget.name}」升入市级梯队`);
     setPromoteTarget(null);
+  }
+
+  function openAdd() {
+    setForm(emptyForm(viewLevel));
+    setAddOpen(true);
+  }
+
+  function handleAddSubmit() {
+    const required: Array<[keyof AddFormState, string]> = [
+      ["name", "企业名称"],
+      ["creditCode", "统一社会信用代码"],
+      ["district", "所属区"],
+      ["industry", "行业"],
+      ["ownership", "企业性质"],
+      ["greenType", "类型"],
+      ["energyTag", "企业类型"],
+      ["energyConsumption", "综合能耗"],
+      ["contactName", "联系人"],
+      ["contactPhone", "联系方式"],
+    ];
+    for (const [k, label] of required) {
+      if (!String(form[k] ?? "").trim()) {
+        toast.error(`请填写${label}`);
+        return;
+      }
+    }
+    if (form.creditCode.length !== 18) {
+      toast.error("统一社会信用代码需 18 位");
+      return;
+    }
+    if (!/^\d{11}$/.test(form.contactPhone)) {
+      toast.error("联系方式需为 11 位手机号");
+      return;
+    }
+    const energy = Number(form.energyConsumption);
+    if (Number.isNaN(energy) || energy < 0) {
+      toast.error("综合能耗需为数字");
+      return;
+    }
+    const output = form.outputValue.trim() === "" ? null : Number(form.outputValue);
+    if (output !== null && (Number.isNaN(output) || output < 0)) {
+      toast.error("产值需为数字");
+      return;
+    }
+
+    const maxNum = data.reduce((m, r) => {
+      const n = Number(r.id.split("-").pop());
+      return Number.isFinite(n) && n > m ? n : m;
+    }, 0);
+    const newId = `INC-2025-${String(maxNum + 1).padStart(3, "0")}`;
+    const today = new Date().toISOString().slice(0, 10);
+
+    const newRecord: IncubateRecord = {
+      id: newId,
+      name: form.name.trim(),
+      creditCode: form.creditCode.trim(),
+      district: form.district,
+      industry: form.industry,
+      level: form.level,
+      energyTag: form.energyTag as EnergyTag,
+      outputValue: output,
+      energyConsumption: energy,
+      carbonIntensity: 0,
+      score: 0,
+      prevScore: 0,
+      stage: "入库登记",
+      enterDate: today,
+      reviewer: form.level === "市级" ? "市经信委" : `${form.district}经委`,
+      nextAction: "完成入库材料归档，待诊断",
+      improvement: 0,
+      ownership: form.ownership as Ownership,
+      greenType: form.greenType as GreenType,
+      contactName: form.contactName.trim(),
+      contactPhone: maskPhone(form.contactPhone.trim()),
+    };
+    setData((prev) => [newRecord, ...prev]);
+    toast.success(`已新增「${newRecord.name}」到${form.level}梯队培育库`);
+    setAddOpen(false);
   }
 
   return (
@@ -139,7 +283,7 @@ export default function GreenMfgGovIncubator() {
             <button
               key={lv}
               type="button"
-              onClick={() => setViewLevel(lv)}
+              onClick={() => handleSwitchView(lv)}
               className={cn(
                 "px-4 py-1.5 text-sm rounded-md transition",
                 viewLevel === lv
@@ -162,6 +306,16 @@ export default function GreenMfgGovIncubator() {
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="搜索企业名称" className="h-8 w-56 pl-8 text-xs" />
               </div>
+              {viewLevel === "区级" && (
+                <Select value={tierFilter} onValueChange={(v) => setTierFilter(v as typeof tierFilter)}>
+                  <SelectTrigger className="h-8 w-36 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="梯队" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全部梯队</SelectItem>
+                    <SelectItem value="区级">区级梯队</SelectItem>
+                    <SelectItem value="市级">市级梯队</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
               <Select value={energyFilter} onValueChange={(v) => setEnergyFilter(v as typeof energyFilter)}>
                 <SelectTrigger className="h-8 w-44 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="企业类型" /></SelectTrigger>
                 <SelectContent>
@@ -177,6 +331,9 @@ export default function GreenMfgGovIncubator() {
                   {ALL_INDUSTRIES.map((n) => (<SelectItem key={n} value={n}>{n}</SelectItem>))}
                 </SelectContent>
               </Select>
+              <Button size="sm" className="h-8" onClick={openAdd}>
+                <Plus className="mr-1 h-3.5 w-3.5" />新增
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -221,9 +378,9 @@ export default function GreenMfgGovIncubator() {
                   <TableCell className="font-mono text-xs">{r.contactPhone}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      {viewLevel === "区级" && (
+                      {viewLevel === "区级" && r.level === "区级" && (
                         <Button size="sm" variant="outline" className="h-7 text-primary hover:text-primary" onClick={() => setPromoteTarget(r)}>
-                          <ArrowUpCircle className="mr-1 h-3 w-3" />推荐到市级
+                          <ArrowUpCircle className="mr-1 h-3 w-3" />升到市级梯队
                         </Button>
                       )}
                       <Button size="sm" variant="outline" className="h-7 text-destructive hover:text-destructive" onClick={() => setRemoveTarget(r)}>
@@ -261,19 +418,106 @@ export default function GreenMfgGovIncubator() {
       <AlertDialog open={!!promoteTarget} onOpenChange={(o) => !o && setPromoteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认推荐到市级培育库？</AlertDialogTitle>
+            <AlertDialogTitle>确认升入市级梯队？</AlertDialogTitle>
             <AlertDialogDescription>
-              即将把「{promoteTarget?.name}」从区级培育库推荐至市级培育库，市级专家将进行后续评审。
+              即将把「{promoteTarget?.name}」从区级梯队升入市级梯队，市级专家将进行后续评审。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={handlePromoteConfirm}>
-              <ArrowUpCircle className="mr-1 h-4 w-4" />确认推荐
+              <ArrowUpCircle className="mr-1 h-4 w-4" />确认升级
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>新增培育企业</DialogTitle>
+            <DialogDescription>
+              填写企业基础信息，提交后将加入{form.level}梯队培育库，初始阶段为「入库登记」。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid max-h-[60vh] grid-cols-2 gap-3 overflow-y-auto pr-1">
+            <div className="col-span-2 space-y-1.5">
+              <Label className="text-xs">企业名称 <span className="text-destructive">*</span></Label>
+              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="请输入企业全称" className="h-9" />
+            </div>
+            <div className="col-span-2 space-y-1.5">
+              <Label className="text-xs">统一社会信用代码 <span className="text-destructive">*</span></Label>
+              <Input value={form.creditCode} onChange={(e) => setForm({ ...form, creditCode: e.target.value.toUpperCase() })} placeholder="18 位" maxLength={18} className="h-9 font-mono" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">所属区 <span className="text-destructive">*</span></Label>
+              <Select value={form.district} onValueChange={(v) => setForm({ ...form, district: v })}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="请选择" /></SelectTrigger>
+                <SelectContent>{DISTRICTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">行业 <span className="text-destructive">*</span></Label>
+              <Select value={form.industry} onValueChange={(v) => setForm({ ...form, industry: v })}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="请选择" /></SelectTrigger>
+                <SelectContent>{ALL_INDUSTRIES.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">企业性质 <span className="text-destructive">*</span></Label>
+              <Select value={form.ownership} onValueChange={(v) => setForm({ ...form, ownership: v as Ownership })}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="请选择" /></SelectTrigger>
+                <SelectContent>{OWNERSHIPS.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">类型 <span className="text-destructive">*</span></Label>
+              <Select value={form.greenType} onValueChange={(v) => setForm({ ...form, greenType: v as GreenType })}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="请选择" /></SelectTrigger>
+                <SelectContent>{GREEN_TYPES.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">企业类型（能耗） <span className="text-destructive">*</span></Label>
+              <Select value={form.energyTag} onValueChange={(v) => setForm({ ...form, energyTag: v as EnergyTag })}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="请选择" /></SelectTrigger>
+                <SelectContent>{ENERGY_TAGS.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">梯队 <span className="text-destructive">*</span></Label>
+              <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v as IncubateLevel })} disabled>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="区级">区级</SelectItem>
+                  <SelectItem value="市级">市级</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">默认按当前视角（{viewLevel}）入库</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">产值（万元）</Label>
+              <Input type="number" value={form.outputValue} onChange={(e) => setForm({ ...form, outputValue: e.target.value })} placeholder="选填" className="h-9" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">综合能耗（吨标煤） <span className="text-destructive">*</span></Label>
+              <Input type="number" value={form.energyConsumption} onChange={(e) => setForm({ ...form, energyConsumption: e.target.value })} className="h-9" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">联系人 <span className="text-destructive">*</span></Label>
+              <Input value={form.contactName} onChange={(e) => setForm({ ...form, contactName: e.target.value })} className="h-9" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">联系方式 <span className="text-destructive">*</span></Label>
+              <Input value={form.contactPhone} onChange={(e) => setForm({ ...form, contactPhone: e.target.value })} placeholder="11 位手机号" maxLength={11} className="h-9 font-mono" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddOpen(false)}>取消</Button>
+            <Button onClick={handleAddSubmit}><Plus className="mr-1 h-4 w-4" />确认新增</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
