@@ -1,23 +1,41 @@
-## 调整内容
+## 梯度培育列表改造
 
-### 1. 政府侧 - 专家评审企业详情页去掉"加入培育库"按钮
-文件：`src/pages/GreenMfgGovDeclarationDetail.tsx`（区/市级专家共用此页）
-- 移除右上角"加入培育库/退库"按钮（L66-73）
-- 删除相关 state `addedToIncubator` 与 handler `handleToggleIncubator`
-- 清理不再使用的 `Sprout` 图标 import 与 `toast` 中相关引用
+### 目标文件
+`src/pages/GreenMfgGovIncubator.tsx`
 
-### 2. 企业侧 - 模拟自评价界面去掉"加入培育库"按钮
-文件：`src/pages/GreenMfgEnt.tsx`
-- 移除自评价列表卡片右上角"加入培育库/已加入培育库"按钮（L92-110）
-- 清理相关 state（`joined`）、`runIncubatorResearch` 调用、及不再使用的 `Sprout` / `CheckCircle2` import
+### 改动
 
-### 3. 企业侧 - 去掉梯度培育界面
-- `src/components/AppSidebar.tsx`：移除 ent 角色侧边栏中的「梯度培育」菜单项（L64）
-- `src/App.tsx`：移除 `/green-mfg/ent/incubator` 路由及 `GreenMfgEntIncubator` import（L45, L103）
-- 删除文件 `src/pages/GreenMfgEntIncubator.tsx`
+**1. 删除卡片统计数据**
+- 移除顶部 6 张 KPI 卡片区块及 `KpiCard` 组件
+- 移除相关统计计算（scopeAvgScore、scopeKeyEnergy 等）
 
-### 影响范围
-- 政府侧专家评审详情页（区级 + 市级）顶部操作区仅保留「推荐 / 返回列表」按钮
-- 企业侧模拟自评价页顶部操作区仅保留「开始评价」按钮
-- 企业侧导航不再有「梯度培育」入口；梯度培育能力仅保留在政府侧
-- 不涉及业务逻辑改动，仅为前端 UI / 路由 / 导航调整
+**2. 列表列调整为图中展示字段**
+
+| 列 | 数据来源 |
+|---|---|
+| 序号 | 行索引 |
+| 所属区 | `district` |
+| 企业（园区）名称 | `name` |
+| 行业 | `industry` |
+| 企业性质 | 新增 mock：国有 / 民营 / 外资 / 中外合资 |
+| 产值（万元） | `outputValue`（部分显示 `/`） |
+| 综合能耗（当量值）（吨标煤） | `energyConsumption` |
+| 类型 | 新增 mock：绿色工厂 / 绿色供应链管理 / 组合 |
+| 联系人 | 新增 mock 姓名 |
+| 联系方式 | 新增 mock 手机号（中间打码） |
+| 操作 | 见下 |
+
+为 `IncubateRecord` 增加字段：`ownership`、`greenType`、`contactName`、`contactPhone`。在 `INITIAL_INCUBATE_DATA` 9 条记录中补齐。
+
+**3. 操作列**
+- 去掉"详情"按钮（去掉详情入口）
+- 保留"退库"按钮
+- 区级专家视角额外增加"推荐到市级"按钮（点击 toast 提示并将该记录 `level` 改为 `市级` 从当前列表移除；或仅 toast 提示，保持简单——采用：toast 成功 + 从区级列表移除并加入市级）
+
+**4. 其他**
+- 保留顶部"区级/市级 专家视角"切换
+- 保留搜索、行业、企业类型筛选
+- 不删除路由 `/green-mfg/gov/incubator/:id`（其他入口可能使用），仅移除本页详情按钮
+
+### 非改动
+- 不修改其他页面、不改后端/业务逻辑
