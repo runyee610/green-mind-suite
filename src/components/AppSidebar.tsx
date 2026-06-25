@@ -61,7 +61,7 @@ const greenMfgItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   ],
   ent: [
     { title: "模拟评价", url: "/green-mfg/ent", icon: ShieldCheck },
-    { title: "梯度培育", url: "/green-mfg/ent/incubator", icon: Sprout },
+    
     { title: "动态管理", url: "/green-mfg/ent/dynamic", icon: BadgeCheck },
     { title: "零碳进阶", url: "/green-mfg/ent/zerocarbon", icon: Leaf },
     { title: "数据智能", url: "/green-mfg-agent", icon: Brain },

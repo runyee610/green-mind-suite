@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Star, Sprout } from "lucide-react";
+import { ArrowLeft, Star } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +30,6 @@ export default function GreenMfgGovDeclarationDetail() {
   const [activeTab, setActiveTab] = useState<string>(ANCHORS[0].href);
   const [indicators, setIndicators] = useState<IndicatorRow[]>(EVALUATION_INDICATORS);
   const [recommended, setRecommended] = useState(false);
-  const [addedToIncubator, setAddedToIncubator] = useState(false);
 
   const handleToggleRecommend = () => {
     if (recommended) {
@@ -39,16 +38,6 @@ export default function GreenMfgGovDeclarationDetail() {
     } else {
       setRecommended(true);
       toast.success("已标记为推荐企业");
-    }
-  };
-
-  const handleToggleIncubator = () => {
-    if (addedToIncubator) {
-      setAddedToIncubator(false);
-      toast.message("已移出培育库");
-    } else {
-      setAddedToIncubator(true);
-      toast.success("已加入培育库");
     }
   };
 
@@ -62,26 +51,15 @@ export default function GreenMfgGovDeclarationDetail() {
 
         <div className="flex items-center gap-2">
           {!isIncubator && (
-            <>
-              <Button
-                size="sm"
-                variant={addedToIncubator ? "destructive" : "outline"}
-                onClick={handleToggleIncubator}
-              >
-                <Sprout className="mr-1 h-4 w-4" />
-                {addedToIncubator ? "退库" : "加入培育库"}
-              </Button>
-
-              <Button
-                size="sm"
-                onClick={handleToggleRecommend}
-                variant={recommended ? "outline" : "default"}
-                className={recommended ? "border-success/40 text-success hover:bg-success/10 hover:text-success" : ""}
-              >
-                <Star className={`mr-1 h-4 w-4 ${recommended ? "fill-current" : ""}`} />
-                {recommended ? "取消推荐" : "推荐"}
-              </Button>
-            </>
+            <Button
+              size="sm"
+              onClick={handleToggleRecommend}
+              variant={recommended ? "outline" : "default"}
+              className={recommended ? "border-success/40 text-success hover:bg-success/10 hover:text-success" : ""}
+            >
+              <Star className={`mr-1 h-4 w-4 ${recommended ? "fill-current" : ""}`} />
+              {recommended ? "取消推荐" : "推荐"}
+            </Button>
           )}
           <Button variant="ghost" size="sm" onClick={() => navigate(isIncubator ? "/green-mfg/gov/incubator" : "/green-mfg/gov/review")}>
             <ArrowLeft className="mr-1 h-4 w-4" />返回列表

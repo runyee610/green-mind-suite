@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Sparkles, Sprout, Target } from "lucide-react";
+import { CheckCircle2, ClipboardList, Eye, FileEdit, Leaf, Plus, Sparkles, Target } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
 import { GreenArchivePanel } from "@/components/green-mfg/GreenArchivePanel";
 import { RiskWarningPanel } from "@/components/green-mfg/RiskWarningPanel";
 import { MOCK_RISKS } from "@/components/green-mfg/dynamicExtData";
-import { loadResearch, runIncubatorResearch } from "@/components/green-mfg/incubatorResearchData";
+
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -41,17 +41,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
 
   const latestSelf = MY_SELF_ASSESS[0];
 
-  const [joined, setJoined] = useState<boolean>(() => loadResearch(myDeclaration.creditCode) != null);
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail === myDeclaration.creditCode) {
-        setJoined(loadResearch(myDeclaration.creditCode) != null);
-      }
-    };
-    window.addEventListener("incubator-research-updated", handler as EventListener);
-    return () => window.removeEventListener("incubator-research-updated", handler as EventListener);
-  }, [myDeclaration.creditCode]);
 
   return (
     <AppLayout
@@ -89,25 +78,6 @@ export default function GreenMfgEnt({ section }: { section?: "declaration" | "dy
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" variant={joined ? "outline" : "outline"} className="h-8" disabled={joined} onClick={() => {
-                    if (MY_SELF_ASSESS.length === 0) {
-                      toast.error("请至少完成 1 次 AI 打分");
-                      return;
-                    }
-                    toast.success("已加入区级培育库，AI 智能体正在后台检索节能技术…", {
-                      action: { label: "查看进展", onClick: () => navigate("/green-mfg/ent/incubator") },
-                    });
-                    void runIncubatorResearch({
-                      creditCode: myDeclaration.creditCode,
-                      enterpriseName: DEFAULT_ENT_NAME,
-                    });
-                  }}>
-                    {joined ? (
-                      <><CheckCircle2 className="mr-1 h-4 w-4 text-success" />已加入培育库</>
-                    ) : (
-                      <><Sprout className="mr-1 h-4 w-4" />加入培育库</>
-                    )}
-                  </Button>
                   <Button size="sm" className="h-8 bg-gradient-primary text-primary-foreground" onClick={() => navigate("/green-mfg/ent/declaration/new?mode=self")}>
                     <Plus className="mr-1 h-4 w-4" />{"开始评价"}
                   </Button>
