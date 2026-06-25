@@ -1556,25 +1556,46 @@ function IndicatorItem({
 
 
 
-      {/* 政府审核备注 */}
-      {showGovRemark && (govEditable || row.govRemark) && (
-        <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-3">
-          <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-amber-700 dark:text-amber-300">
-            <ClipboardCheck className="h-3.5 w-3.5" />审核备注
+      {/* 政府修订备注（仅当政府修改了指标值时出现，且必填） */}
+      {showGovRemark && ((govEditable && isRowRevised(row)) || (!govEditable && row.govRemark)) && (() => {
+        const remarkEmpty = (row.govRemark ?? "").trim() === "";
+        const showRequiredError = govEditable && remarkEmpty;
+        return (
+          <div className={cn(
+            "mt-3 rounded-md border p-3",
+            showRequiredError
+              ? "border-destructive/50 bg-destructive/5"
+              : "border-amber-500/30 bg-amber-500/5",
+          )}>
+            <div className={cn(
+              "mb-1.5 flex items-center gap-1.5 text-sm font-medium",
+              showRequiredError ? "text-destructive" : "text-amber-700 dark:text-amber-300",
+            )}>
+              <ClipboardCheck className="h-3.5 w-3.5" />修订备注
+              {govEditable && <span className="text-destructive">*</span>}
+            </div>
+            {govEditable && remarkEmpty && (
+              <p className="mb-1.5 text-xs text-destructive">已修改指标值，请填写修订备注（必填）</p>
+            )}
+            {govEditable ? (
+              <Textarea
+                value={row.govRemark ?? ""}
+                rows={2}
+                required
+                aria-invalid={remarkEmpty}
+                className={cn(
+                  "min-h-[48px] resize-none text-sm",
+                  remarkEmpty && "border-destructive focus-visible:ring-destructive",
+                )}
+                placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
+                onChange={(e) => updateRow(row.id, { govRemark: e.target.value })}
+              />
+            ) : (
+              <span className="text-sm leading-relaxed">{row.govRemark}</span>
+            )}
           </div>
-          {govEditable ? (
-            <Textarea
-              value={row.govRemark ?? ""}
-              rows={2}
-              className="min-h-[48px] resize-none text-sm"
-              placeholder="如指标值有修订，请填写修订备注，例如：该指标值由 A 修改为 B，理由是……"
-              onChange={(e) => updateRow(row.id, { govRemark: e.target.value })}
-            />
-          ) : (
-            <span className="text-sm leading-relaxed">{row.govRemark}</span>
-          )}
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
