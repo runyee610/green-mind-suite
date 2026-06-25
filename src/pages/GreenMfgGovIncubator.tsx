@@ -148,7 +148,7 @@ export default function GreenMfgGovIncubator() {
   const [viewLevel, setViewLevel] = useState<IncubateLevel>("区级");
   const [keyword, setKeyword] = useState("");
   const [industryFilter, setIndustryFilter] = useState("all");
-  const [energyFilter, setEnergyFilter] = useState<"all" | EnergyTag>("all");
+  const [energyFilter, setEnergyFilter] = useState<"all" | "绿色工厂" | "绿色供应链">("all");
   const [tierFilter, setTierFilter] = useState<"all" | IncubateLevel>("all");
 
   const [removeTarget, setRemoveTarget] = useState<IncubateRecord | null>(null);
