@@ -1,25 +1,23 @@
-## 目标
-政府侧区级专家 / 市级专家进入"评价指标表"时，与企业侧一样支持 **AI 一键打分**（含进度统计、AI 概览提示、重新打分二次确认）。
+## 调整内容
 
-## 改动范围
-仅前端 UI 条件控制，**1 个文件**：
+### 1. 政府侧 - 专家评审企业详情页去掉"加入培育库"按钮
+文件：`src/pages/GreenMfgGovDeclarationDetail.tsx`（区/市级专家共用此页）
+- 移除右上角"加入培育库/退库"按钮（L66-73）
+- 删除相关 state `addedToIncubator` 与 handler `handleToggleIncubator`
+- 清理不再使用的 `Sprout` 图标 import 与 `toast` 中相关引用
 
-`src/components/green-mfg/DeclarationDetailSections.tsx`
+### 2. 企业侧 - 模拟自评价界面去掉"加入培育库"按钮
+文件：`src/pages/GreenMfgEnt.tsx`
+- 移除自评价列表卡片右上角"加入培育库/已加入培育库"按钮（L92-110）
+- 清理相关 state（`joined`）、`runIncubatorResearch` 调用、及不再使用的 `Sprout` / `CheckCircle2` import
 
-把 `EvaluationIndicatorCard` 内三处仅在企业模式 (`entEditable`) 显示 AI 相关 UI 的条件，改为同时允许政府模式 (`entEditable || govEditable`)：
+### 3. 企业侧 - 去掉梯度培育界面
+- `src/components/AppSidebar.tsx`：移除 ent 角色侧边栏中的「梯度培育」菜单项（L64）
+- `src/App.tsx`：移除 `/green-mfg/ent/incubator` 路由及 `GreenMfgEntIncubator` import（L45, L103）
+- 删除文件 `src/pages/GreenMfgEntIncubator.tsx`
 
-1. **L1008** —— 顶部「AI 一键打分 / 重新 AI 打分」按钮
-2. **L1027** —— 按钮旁的「上次打分 · HH:MM」时间戳
-3. **L1071** —— AI 打分完成后的概览提示卡（已填 / 薄弱项 / Top 建议）
-
-`handleAIClick` / `runAI` / `confirmOpen` / `aiOverview` 等逻辑已经在组件作用域内，无需新增 state；`runAIScoring` 工具已存在，复用即可。
-
-## 不变更
-- 企业侧体验保持不变。
-- 政府侧详情页 `GreenMfgGovDeclarationDetail.tsx` 已经以 `mode="gov"` 传入，无需改动。
-- 评分计算、AI 引擎、数据结构、路由、其它 tab 均不动。
-
-## 验证
-- 切到「政府 → 区级专家 / 市级专家 → 进入某条申报 → 评价指标表」tab，能看到「AI 一键打分」按钮并可触发；已有评分时按钮变为「重新 AI 打分」并弹出二次确认；执行后顶部出现 AI 概览卡。
-- 企业侧路径下行为不变。
-- TypeScript 编译通过。
+### 影响范围
+- 政府侧专家评审详情页（区级 + 市级）顶部操作区仅保留「推荐 / 返回列表」按钮
+- 企业侧模拟自评价页顶部操作区仅保留「开始评价」按钮
+- 企业侧导航不再有「梯度培育」入口；梯度培育能力仅保留在政府侧
+- 不涉及业务逻辑改动，仅为前端 UI / 路由 / 导航调整
