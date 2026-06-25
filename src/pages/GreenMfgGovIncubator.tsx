@@ -150,7 +150,6 @@ export default function GreenMfgGovIncubator() {
   const [industryFilter, setIndustryFilter] = useState("all");
   const [energyFilter, setEnergyFilter] = useState<"all" | EnergyTag>("all");
   const [tierFilter, setTierFilter] = useState<"all" | IncubateLevel>("all");
-  const [typeFilter, setTypeFilter] = useState<"all" | "绿色工厂" | "绿色供应链">("all");
 
   const [removeTarget, setRemoveTarget] = useState<IncubateRecord | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<IncubateRecord | null>(null);
@@ -172,11 +171,9 @@ export default function GreenMfgGovIncubator() {
         if (k && !r.name.includes(k) && !r.creditCode.includes(k)) return false;
         if (industryFilter !== "all" && r.industry !== industryFilter) return false;
         if (energyFilter !== "all" && r.energyTag !== energyFilter) return false;
-        if (typeFilter === "绿色工厂" && !r.greenType.includes("绿色工厂")) return false;
-        if (typeFilter === "绿色供应链" && !r.greenType.includes("绿色供应链管理")) return false;
         return true;
       }),
-    [scopeData, keyword, industryFilter, energyFilter, typeFilter],
+    [scopeData, keyword, industryFilter, energyFilter],
   );
 
   function handleSwitchView(lv: IncubateLevel) {
