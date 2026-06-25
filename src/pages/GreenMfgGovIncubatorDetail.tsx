@@ -54,7 +54,7 @@ export default function GreenMfgGovIncubatorDetail() {
   ];
 
   return (
-    <AppLayout title={`绿色工厂梯度培育 · ${me.name}`} subtitle="本企业培育进展与改进建议">
+    <AppLayout title={`梯度培育 · ${me.name}`} subtitle="本企业培育进展与改进建议">
       <div className="mb-3">
         <Button size="sm" variant="ghost" className="h-8 text-muted-foreground" onClick={() => navigate(-1)}>
           <ArrowLeft className="mr-1 h-3.5 w-3.5" />返回培育列表
