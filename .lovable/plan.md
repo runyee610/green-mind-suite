@@ -1,54 +1,42 @@
-## 梯度培育列表 — 新增交互与筛选
+## 目标
+政府侧（AI 一键打分页）将"审核备注"改为"修订备注"，并改为"仅当政府修改了指标值才出现，且为必填项"。
 
-### 目标文件
-`src/pages/GreenMfgGovIncubator.tsx`
+## 改动文件
+`src/components/green-mfg/DeclarationDetailSections.tsx`
 
-### 改动
+## 改动点
 
-**1. 文案调整**
-- 区级专家操作列按钮 "推荐到市级" → "升到市级梯队"
-- 推荐确认弹窗标题与描述中同步使用"市级梯队 / 区级梯队"措辞
+### 1. 文案 "审核备注" → "修订备注"
+- 第 1563 行 `<ClipboardCheck /> 审核备注` → `修订备注`
+- placeholder 已经是"如指标值有修订…"，保留不变
 
-**2. 区级专家视角新增筛选项「梯队」**
-- 位置：放在"企业类型"筛选前
-- 下拉项：`全部` / `区级梯队` / `市级梯队`
-- 状态：`tierFilter`，默认 `all`
-- 仅在 `viewLevel === "区级"` 时显示；切换到市级视角时自动重置为 `all`
-- 当选择"市级梯队"时，列表数据源切换为 `data.filter(r => r.level === "市级")`；选"区级梯队"时为 `level === "区级"`；选"全部"时为 `data`（仍受其它筛选项作用）
-- 市级专家视角保持原逻辑（仅显示市级）
+### 2. 仅当指标值被修订时才展示备注框（政府侧）
+当前条件（第 1560 行）：
+```
+{showGovRemark && (govEditable || row.govRemark) && ...}
+```
+改为：政府侧仅在 `isRowRevised(row)` 为 true 时展示；其他角色保持原行为（有 `row.govRemark` 时只读展示）。
 
-**3. 两个视角都增加「新增」按钮**
-- 位置：CardHeader 右侧筛选行末尾，主按钮样式，图标 `Plus`
-- 点击打开 `AddIncubateDialog`（新增企业到培育库）
+```
+{showGovRemark && (
+  (govEditable && isRowRevised(row)) ||
+  (!govEditable && row.govRemark)
+) && ...}
+```
 
-**4. 新增企业弹窗 `AddIncubateDialog`（同文件内组件）**
+### 3. 必填校验与视觉提示
+- 当 `govEditable && isRowRevised(row)` 时：
+  - Textarea 增加 `required` 语义、`aria-invalid` 当为空时为 true
+  - 标题"修订备注"后追加红色 `*` 必填标记
+  - 当 `(row.govRemark ?? "").trim() === ""` 时：
+    - Textarea 边框变为 `border-destructive`
+    - 标题下方显示一行小字提示："已修改指标值，请填写修订备注（必填）"
+- 仅作为前端表单展示约束。当前页面没有统一的"保存/提交"按钮在该组件内触发提交，所以校验以视觉必填提示 + `aria-invalid` 呈现，符合"如果修改指标值，则出现修订备注且是必填项"的视觉规则。
 
-使用 shadcn `Dialog`，表单字段（全部前端 mock，无后端）：
+### 4. 同步入口/筛选/统计中的文案（如适用）
+检索结果表明 `审核备注` 仅出现在该组件第 1563 行 和 `evaluationIndicators.ts` 内的示例数据字段说明里。`evaluationIndicators.ts` 中若仅是注释/示例描述，可一并替换为"修订备注"以保持统一；如是类型字段名（如 `govRemark`）则保持不动。
 
-| 字段 | 控件 | 必填 | 备注 |
-|---|---|---|---|
-| 企业名称 | Input | 是 | |
-| 统一社会信用代码 | Input | 是 | 18 位校验（简单长度） |
-| 所属区 | Select | 是 | 浦东/闵行/嘉定/金山/宝山/青浦/奉贤等（沿用现有 mock 中出现的区） |
-| 行业 | Select | 是 | `ALL_INDUSTRIES` |
-| 企业性质 | Select | 是 | 国有/民营/外资/中外合资 |
-| 类型 | Select | 是 | 绿色工厂/绿色供应链管理/绿色工厂、绿色供应链管理 |
-| 企业类型（能耗） | Select | 是 | 重点用能单位 / 10亿+非重点规上 |
-| 梯队 | Select | 是 | 区级 / 市级（区级视角下默认区级且锁定，市级视角下默认市级且锁定） |
-| 产值（万元） | Input number | 否 | 留空显示"/" |
-| 综合能耗（吨标煤） | Input number | 是 | |
-| 联系人 | Input | 是 | |
-| 联系方式 | Input | 是 | 11 位，提交时中间打码存储 |
-
-按钮：取消 / 确认新增
-- 提交时：生成 `id = INC-2025-xxx`（基于当前最大序号 +1），其余阶段字段使用合理默认值（`stage: "入库登记"`, `enterDate: 今天`, `score/prevScore: 0`, `improvement: 0`, `carbonIntensity: 0`, `reviewer: 当前视角对应"区/市级专家"`, `nextAction: "完成入库材料归档，待诊断"`）
-- 成功后 `setData(prev => [新记录, ...prev])`，toast 成功，关闭弹窗
-
-**5. 其他**
-- 不修改其它页面、不动业务/后端逻辑
-- 保留现有退库 / 升级流程
-
-### 非改动
-- 不改路由
-- 不改 KPI / 详情页（已删除）
-- 不修改 mock 初始数据结构
+## 不改动
+- 数据模型字段名 `govRemark`、`originalReportValue` 等
+- 企业侧（`ent` 模式）行为
+- AI 一键打分流程本身
