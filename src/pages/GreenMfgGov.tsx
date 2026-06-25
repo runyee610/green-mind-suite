@@ -359,7 +359,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       title={
         section === "dynamic"
           ? "绿色工厂动态管理"
-          : "推荐管理"
+          : "专家评审"
       }
       subtitle={
         section === "dynamic"
