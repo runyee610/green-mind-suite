@@ -57,11 +57,11 @@ type IncubateLevel = "市级" | "区级";
 type IncubateStage = "入库登记" | "诊断评估" | "整改提升" | "复评预审" | "晋级出库" | "退库";
 type EnergyTag = "重点用能单位" | "10亿+非重点规上";
 type Ownership = "国有" | "民营" | "外资" | "中外合资";
-type GreenType = "绿色工厂" | "绿色供应链管理" | "绿色工厂、绿色供应链管理";
+type GreenType = "绿色工厂" | "绿色供应链" | "绿色工厂、绿色供应链";
 
 const DISTRICTS = ["浦东新区", "闵行区", "嘉定区", "金山区", "宝山区", "青浦区", "奉贤区", "松江区", "徐汇区", "杨浦区"];
 const OWNERSHIPS: Ownership[] = ["国有", "民营", "外资", "中外合资"];
-const GREEN_TYPES: GreenType[] = ["绿色工厂", "绿色供应链管理", "绿色工厂、绿色供应链管理"];
+const GREEN_TYPES: GreenType[] = ["绿色工厂", "绿色供应链", "绿色工厂、绿色供应链"];
 const ENERGY_TAGS: EnergyTag[] = ["重点用能单位", "10亿+非重点规上"];
 
 interface IncubateRecord {
@@ -90,15 +90,15 @@ interface IncubateRecord {
 }
 
 export const INITIAL_INCUBATE_DATA: IncubateRecord[] = [
-  { id: "INC-2025-001", name: "上海石化化工新材料分公司", creditCode: "91310116MA1H23ABC4", district: "金山区", industry: "石化化工行业", subIndustry: "煤制烯烃", level: "市级", energyTag: "重点用能单位", outputValue: 89500, energyConsumption: 36800, carbonIntensity: 1.42, score: 64, prevScore: 58, stage: "整改提升", enterDate: "2025-08-15", reviewer: "金山区生态局", nextAction: "11 月底前完成余热回收改造", improvement: 6, ownership: "国有", greenType: "绿色工厂", contactName: "王欣玮", contactPhone: "138****1712" },
-  { id: "INC-2025-002", name: "宝钢轧辊（上海）有限公司", creditCode: "91310113MA1H23BC02", district: "宝山区", industry: "钢铁行业", subIndustry: "短流程钢铁企业", level: "市级", energyTag: "重点用能单位", outputValue: 156200, energyConsumption: 52400, carbonIntensity: 1.18, score: 71, prevScore: 62, stage: "复评预审", enterDate: "2025-06-20", reviewer: "市经信委", nextAction: "等待 12 月专家组复评打分", improvement: 9, ownership: "国有", greenType: "绿色工厂", contactName: "韩淑哲", contactPhone: "139****3325" },
-  { id: "INC-2025-003", name: "中微半导体设备(上海)股份有限公司", creditCode: "91310115MA1K0DEF56", district: "浦东新区", industry: "电子行业", subIndustry: "集成电路", level: "市级", energyTag: "10亿+非重点规上", outputValue: 134000, energyConsumption: 8900, carbonIntensity: 0.32, score: 76, prevScore: 68, stage: "复评预审", enterDate: "2025-05-10", reviewer: "浦东经委", nextAction: "AI 预审已通过，进入晋级公示", improvement: 8, ownership: "民营", greenType: "绿色工厂、绿色供应链管理", contactName: "刘海洋", contactPhone: "137****8824" },
-  { id: "INC-2025-004", name: "上海延锋汽车饰件系统有限公司", creditCode: "91310115MA1K38AUTO2", district: "嘉定区", industry: "机械行业", subIndustry: "汽车整车", level: "区级", energyTag: "10亿+非重点规上", outputValue: 218000, energyConsumption: 6200, carbonIntensity: 0.18, score: 68, prevScore: 60, stage: "诊断评估", enterDate: "2025-09-02", reviewer: "嘉定区经委", nextAction: "AI 智能体出具诊断报告中", improvement: 8, ownership: "中外合资", greenType: "绿色工厂、绿色供应链管理", contactName: "张冠宇", contactPhone: "135****1899" },
-  { id: "INC-2025-005", name: "上海华谊新材料有限公司", creditCode: "91310116MA1H23HUAYI", district: "金山区", industry: "石化化工行业", subIndustry: "涂料", level: "区级", energyTag: "重点用能单位", outputValue: null, energyConsumption: 21300, carbonIntensity: 0.96, score: 59, prevScore: 55, stage: "整改提升", enterDate: "2025-07-28", reviewer: "金山区经委", nextAction: "VOCs 治理方案待审定", improvement: 4, ownership: "民营", greenType: "绿色工厂", contactName: "干俊杰", contactPhone: "136****9803" },
-  { id: "INC-2025-006", name: "上海联影医疗科技股份有限公司", creditCode: "91310115MA1K38UIH01", district: "嘉定区", industry: "电子行业", subIndustry: "显示器件", level: "市级", energyTag: "10亿+非重点规上", outputValue: 312000, energyConsumption: 5800, carbonIntensity: 0.12, score: 82, prevScore: 73, stage: "晋级出库", enterDate: "2024-11-12", reviewer: "市经信委", nextAction: "已颁发市级绿色工厂证书", improvement: 9, ownership: "民营", greenType: "绿色工厂", contactName: "张心雨", contactPhone: "138****8952" },
-  { id: "INC-2025-007", name: "上海三菱电梯有限公司", creditCode: "91310112MA1H23MITS1", district: "闵行区", industry: "机械行业", subIndustry: "电机", level: "市级", energyTag: "10亿+非重点规上", outputValue: 187600, energyConsumption: 7400, carbonIntensity: 0.22, score: 78, prevScore: 70, stage: "复评预审", enterDate: "2025-04-18", reviewer: "闵行区生态局", nextAction: "等待 12 月市级评审", improvement: 8, ownership: "中外合资", greenType: "绿色工厂", contactName: "付开杰", contactPhone: "139****9299" },
-  { id: "INC-2025-008", name: "上海某印染织造有限公司", creditCode: "91310118MA1J23DYE01", district: "青浦区", industry: "纺织行业", subIndustry: "印染", level: "区级", energyTag: "重点用能单位", outputValue: 42300, energyConsumption: 14600, carbonIntensity: 1.58, score: 48, prevScore: 50, stage: "退库", enterDate: "2024-09-10", reviewer: "青浦区生态局", nextAction: "改进无成效，已退库下年度重新自评价", improvement: -2, ownership: "国有", greenType: "绿色工厂", contactName: "陈鑫雨", contactPhone: "137****1823" },
-  { id: "INC-2025-009", name: "上海某轻工日化股份有限公司", creditCode: "91310120MA1A23QG001", district: "奉贤区", industry: "轻工行业", subIndustry: "家用电器", level: "区级", energyTag: "10亿+非重点规上", outputValue: 108200, energyConsumption: 4800, carbonIntensity: 0.16, score: 66, prevScore: 58, stage: "入库登记", enterDate: "2025-10-08", reviewer: "奉贤区经委", nextAction: "完成入库材料归档，待诊断", improvement: 8, ownership: "国有", greenType: "绿色供应链管理", contactName: "王飞", contactPhone: "135****8315" },
+  { id: "INC-2025-001", name: "上海石化化工新材料分公司", creditCode: "91310116MA1H23ABC4", district: "金山区", industry: "石化化工行业", subIndustry: "煤制烯烃", level: "市级", energyTag: "重点用能单位", outputValue: 89500, energyConsumption: 36800, carbonIntensity: 1.42, score: 64, prevScore: 58, stage: "整改提升", enterDate: "2025-08-15", reviewer: "金山区生态局", nextAction: "11 月底前完成余热回收改造", improvement: 6, ownership: "国有", greenType: "绿色工厂", contactName: "王欣玮", contactPhone: "13822221712" },
+  { id: "INC-2025-002", name: "宝钢轧辊（上海）有限公司", creditCode: "91310113MA1H23BC02", district: "宝山区", industry: "钢铁行业", subIndustry: "短流程钢铁企业", level: "市级", energyTag: "重点用能单位", outputValue: 156200, energyConsumption: 52400, carbonIntensity: 1.18, score: 71, prevScore: 62, stage: "复评预审", enterDate: "2025-06-20", reviewer: "市经信委", nextAction: "等待 12 月专家组复评打分", improvement: 9, ownership: "国有", greenType: "绿色工厂", contactName: "韩淑哲", contactPhone: "13822221712" },
+  { id: "INC-2025-003", name: "中微半导体设备(上海)股份有限公司", creditCode: "91310115MA1K0DEF56", district: "浦东新区", industry: "电子行业", subIndustry: "集成电路", level: "市级", energyTag: "10亿+非重点规上", outputValue: 134000, energyConsumption: 8900, carbonIntensity: 0.32, score: 76, prevScore: 68, stage: "复评预审", enterDate: "2025-05-10", reviewer: "浦东经委", nextAction: "AI 预审已通过，进入晋级公示", improvement: 8, ownership: "民营", greenType: "绿色工厂、绿色供应链", contactName: "刘海洋", contactPhone: "13822221712" },
+  { id: "INC-2025-004", name: "上海延锋汽车饰件系统有限公司", creditCode: "91310115MA1K38AUTO2", district: "嘉定区", industry: "机械行业", subIndustry: "汽车整车", level: "区级", energyTag: "10亿+非重点规上", outputValue: 218000, energyConsumption: 6200, carbonIntensity: 0.18, score: 68, prevScore: 60, stage: "诊断评估", enterDate: "2025-09-02", reviewer: "嘉定区经委", nextAction: "AI 智能体出具诊断报告中", improvement: 8, ownership: "中外合资", greenType: "绿色工厂、绿色供应链", contactName: "张冠宇", contactPhone: "13822221712" },
+  { id: "INC-2025-005", name: "上海华谊新材料有限公司", creditCode: "91310116MA1H23HUAYI", district: "金山区", industry: "石化化工行业", subIndustry: "涂料", level: "区级", energyTag: "重点用能单位", outputValue: null, energyConsumption: 21300, carbonIntensity: 0.96, score: 59, prevScore: 55, stage: "整改提升", enterDate: "2025-07-28", reviewer: "金山区经委", nextAction: "VOCs 治理方案待审定", improvement: 4, ownership: "民营", greenType: "绿色工厂", contactName: "干俊杰", contactPhone: "13822221712" },
+  { id: "INC-2025-006", name: "上海联影医疗科技股份有限公司", creditCode: "91310115MA1K38UIH01", district: "嘉定区", industry: "电子行业", subIndustry: "显示器件", level: "市级", energyTag: "10亿+非重点规上", outputValue: 312000, energyConsumption: 5800, carbonIntensity: 0.12, score: 82, prevScore: 73, stage: "晋级出库", enterDate: "2024-11-12", reviewer: "市经信委", nextAction: "已颁发市级绿色工厂证书", improvement: 9, ownership: "民营", greenType: "绿色工厂", contactName: "张心雨", contactPhone: "13822221712" },
+  { id: "INC-2025-007", name: "上海三菱电梯有限公司", creditCode: "91310112MA1H23MITS1", district: "闵行区", industry: "机械行业", subIndustry: "电机", level: "市级", energyTag: "10亿+非重点规上", outputValue: 187600, energyConsumption: 7400, carbonIntensity: 0.22, score: 78, prevScore: 70, stage: "复评预审", enterDate: "2025-04-18", reviewer: "闵行区生态局", nextAction: "等待 12 月市级评审", improvement: 8, ownership: "中外合资", greenType: "绿色工厂", contactName: "付开杰", contactPhone: "13822221712" },
+  { id: "INC-2025-008", name: "上海某印染织造有限公司", creditCode: "91310118MA1J23DYE01", district: "青浦区", industry: "纺织行业", subIndustry: "印染", level: "区级", energyTag: "重点用能单位", outputValue: 42300, energyConsumption: 14600, carbonIntensity: 1.58, score: 48, prevScore: 50, stage: "退库", enterDate: "2024-09-10", reviewer: "青浦区生态局", nextAction: "改进无成效，已退库下年度重新自评价", improvement: -2, ownership: "国有", greenType: "绿色工厂", contactName: "陈鑫雨", contactPhone: "13822221712" },
+  { id: "INC-2025-009", name: "上海某轻工日化股份有限公司", creditCode: "91310120MA1A23QG001", district: "奉贤区", industry: "轻工行业", subIndustry: "家用电器", level: "区级", energyTag: "10亿+非重点规上", outputValue: 108200, energyConsumption: 4800, carbonIntensity: 0.16, score: 66, prevScore: 58, stage: "入库登记", enterDate: "2025-10-08", reviewer: "奉贤区经委", nextAction: "完成入库材料归档，待诊断", improvement: 8, ownership: "国有", greenType: "绿色供应链", contactName: "王飞", contactPhone: "13822221712" },
 ];
 
 const energyTagBadge = (t: EnergyTag) =>
@@ -106,10 +106,6 @@ const energyTagBadge = (t: EnergyTag) =>
     ? "border-orange-400/40 bg-orange-400/10 text-orange-600 dark:text-orange-300"
     : "border-emerald-400/40 bg-emerald-400/10 text-emerald-600 dark:text-emerald-300";
 
-function maskPhone(p: string) {
-  if (!/^\d{11}$/.test(p)) return p;
-  return `${p.slice(0, 3)}****${p.slice(7)}`;
-}
 
 interface AddFormState {
   name: string;
@@ -172,7 +168,7 @@ export default function GreenMfgGovIncubator() {
         if (industryFilter !== "all" && r.industry !== industryFilter) return false;
                 if (energyFilter !== "all") {
                   if (energyFilter === "绿色工厂" && !r.greenType.includes("绿色工厂")) return false;
-                  if (energyFilter === "绿色供应链" && !r.greenType.includes("绿色供应链管理")) return false;
+                  if (energyFilter === "绿色供应链" && !r.greenType.includes("绿色供应链")) return false;
                 }
         return true;
       }),
@@ -269,7 +265,7 @@ export default function GreenMfgGovIncubator() {
       ownership: form.ownership as Ownership,
       greenType: form.greenType as GreenType,
       contactName: form.contactName.trim(),
-      contactPhone: maskPhone(form.contactPhone.trim()),
+      contactPhone: form.contactPhone.trim(),
     };
     setData((prev) => [newRecord, ...prev]);
     toast.success(`已新增「${newRecord.name}」到${form.level}梯队培育库`);
@@ -349,8 +345,8 @@ export default function GreenMfgGovIncubator() {
                 <TableHead>企业（园区）名称</TableHead>
                 <TableHead>行业</TableHead>
                 <TableHead>企业性质</TableHead>
-                <TableHead className="text-center">产值（万元）</TableHead>
-                <TableHead className="text-center">综合能耗（当量值）（吨标煤）</TableHead>
+                <TableHead className="text-center">产值(万元)</TableHead>
+                <TableHead className="text-center">综合能耗(吨标煤)</TableHead>
                 <TableHead>类型</TableHead>
                 <TableHead>联系人</TableHead>
                 <TableHead>联系方式</TableHead>
