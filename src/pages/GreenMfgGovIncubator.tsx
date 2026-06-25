@@ -170,7 +170,10 @@ export default function GreenMfgGovIncubator() {
         const k = keyword.trim();
         if (k && !r.name.includes(k) && !r.creditCode.includes(k)) return false;
         if (industryFilter !== "all" && r.industry !== industryFilter) return false;
-        if (energyFilter !== "all" && r.energyTag !== energyFilter) return false;
+                if (energyFilter !== "all") {
+                  if (energyFilter === "绿色工厂" && !r.greenType.includes("绿色工厂")) return false;
+                  if (energyFilter === "绿色供应链" && !r.greenType.includes("绿色供应链管理")) return false;
+                }
         return true;
       }),
     [scopeData, keyword, industryFilter, energyFilter],
