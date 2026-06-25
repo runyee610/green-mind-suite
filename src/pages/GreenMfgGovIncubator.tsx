@@ -320,11 +320,11 @@ export default function GreenMfgGovIncubator() {
                 </Select>
               )}
               <Select value={energyFilter} onValueChange={(v) => setEnergyFilter(v as typeof energyFilter)}>
-                <SelectTrigger className="h-8 w-44 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="企业类型" /></SelectTrigger>
+                <SelectTrigger className="h-8 w-44 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="类型" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">全部类型</SelectItem>
-                  <SelectItem value="重点用能单位">重点用能单位</SelectItem>
-                  <SelectItem value="10亿+非重点规上">10亿+非重点规上</SelectItem>
+                  <SelectItem value="绿色工厂">绿色工厂</SelectItem>
+                  <SelectItem value="绿色供应链">绿色供应链</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={industryFilter} onValueChange={setIndustryFilter}>
