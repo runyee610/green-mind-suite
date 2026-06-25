@@ -57,7 +57,7 @@ type IncubateLevel = "市级" | "区级";
 type IncubateStage = "入库登记" | "诊断评估" | "整改提升" | "复评预审" | "晋级出库" | "退库";
 type EnergyTag = "重点用能单位" | "10亿+非重点规上";
 type Ownership = "国有" | "民营" | "外资" | "中外合资";
-type GreenType = "绿色工厂" | "绿色供应链管理" | "绿色工厂、绿色供应链管理";
+type GreenType = "绿色工厂" | "绿色供应链" | "绿色工厂、绿色供应链";
 
 const DISTRICTS = ["浦东新区", "闵行区", "嘉定区", "金山区", "宝山区", "青浦区", "奉贤区", "松江区", "徐汇区", "杨浦区"];
 const OWNERSHIPS: Ownership[] = ["国有", "民营", "外资", "中外合资"];
