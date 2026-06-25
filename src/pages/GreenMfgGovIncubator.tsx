@@ -269,7 +269,7 @@ export default function GreenMfgGovIncubator() {
       ownership: form.ownership as Ownership,
       greenType: form.greenType as GreenType,
       contactName: form.contactName.trim(),
-      contactPhone: maskPhone(form.contactPhone.trim()),
+      contactPhone: form.contactPhone.trim(),
     };
     setData((prev) => [newRecord, ...prev]);
     toast.success(`已新增「${newRecord.name}」到${form.level}梯队培育库`);
