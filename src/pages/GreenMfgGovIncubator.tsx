@@ -278,7 +278,7 @@ export default function GreenMfgGovIncubator() {
 
   return (
     <AppLayout
-      title="绿色工厂梯度培育"
+      title="梯度培育"
       subtitle="梯度培育库的跟踪与管理"
       headerActions={
         <div className="inline-flex rounded-lg border border-border bg-card p-1">
