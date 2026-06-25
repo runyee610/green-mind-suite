@@ -148,7 +148,7 @@ export default function GreenMfgGovIncubator() {
   const [viewLevel, setViewLevel] = useState<IncubateLevel>("区级");
   const [keyword, setKeyword] = useState("");
   const [industryFilter, setIndustryFilter] = useState("all");
-  const [energyFilter, setEnergyFilter] = useState<"all" | EnergyTag>("all");
+  const [energyFilter, setEnergyFilter] = useState<"all" | "绿色工厂" | "绿色供应链">("all");
   const [tierFilter, setTierFilter] = useState<"all" | IncubateLevel>("all");
 
   const [removeTarget, setRemoveTarget] = useState<IncubateRecord | null>(null);
@@ -170,7 +170,10 @@ export default function GreenMfgGovIncubator() {
         const k = keyword.trim();
         if (k && !r.name.includes(k) && !r.creditCode.includes(k)) return false;
         if (industryFilter !== "all" && r.industry !== industryFilter) return false;
-        if (energyFilter !== "all" && r.energyTag !== energyFilter) return false;
+                if (energyFilter !== "all") {
+                  if (energyFilter === "绿色工厂" && !r.greenType.includes("绿色工厂")) return false;
+                  if (energyFilter === "绿色供应链" && !r.greenType.includes("绿色供应链管理")) return false;
+                }
         return true;
       }),
     [scopeData, keyword, industryFilter, energyFilter],
@@ -317,11 +320,11 @@ export default function GreenMfgGovIncubator() {
                 </Select>
               )}
               <Select value={energyFilter} onValueChange={(v) => setEnergyFilter(v as typeof energyFilter)}>
-                <SelectTrigger className="h-8 w-44 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="企业类型" /></SelectTrigger>
+                <SelectTrigger className="h-8 w-44 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="类型" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">全部类型</SelectItem>
-                  <SelectItem value="重点用能单位">重点用能单位</SelectItem>
-                  <SelectItem value="10亿+非重点规上">10亿+非重点规上</SelectItem>
+                  <SelectItem value="绿色工厂">绿色工厂</SelectItem>
+                  <SelectItem value="绿色供应链">绿色供应链</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={industryFilter} onValueChange={setIndustryFilter}>
