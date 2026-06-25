@@ -106,10 +106,6 @@ const energyTagBadge = (t: EnergyTag) =>
     ? "border-orange-400/40 bg-orange-400/10 text-orange-600 dark:text-orange-300"
     : "border-emerald-400/40 bg-emerald-400/10 text-emerald-600 dark:text-emerald-300";
 
-function maskPhone(p: string) {
-  if (!/^\d{11}$/.test(p)) return p;
-  return `${p.slice(0, 3)}****${p.slice(7)}`;
-}
 
 interface AddFormState {
   name: string;
