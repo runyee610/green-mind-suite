@@ -1195,37 +1195,8 @@ export function EvaluationIndicatorCard({
       open={!!preview}
       onOpenChange={(v) => !v && setPreview(null)}
     />
-    <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base">
-            <Sparkles className="h-4 w-4 text-primary" />使用 AI 重新打分
-          </DialogTitle>
-          <DialogDescription className="text-xs">
-            检测到已有填写内容。请选择 AI 打分的覆盖范围：
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-2 py-2 text-sm">
-          <button
-            type="button"
-            onClick={() => { setConfirmOpen(false); runAI("empty"); }}
-            className="w-full rounded-md border border-border/60 bg-background px-3 py-2.5 text-left transition hover:border-primary/40 hover:bg-primary/5"
-          >
-            <div className="font-medium">仅填充空白项</div>
-            <div className="text-xs text-muted-foreground">保留已人工填写的指标值，仅补全未填部分</div>
-          </button>
-          <button
-            type="button"
-            onClick={() => { setConfirmOpen(false); runAI("all"); }}
-            className="w-full rounded-md border border-warning/40 bg-warning/5 px-3 py-2.5 text-left transition hover:bg-warning/10"
-          >
-            <div className="font-medium text-warning">覆盖全部指标值</div>
-            <div className="text-xs text-muted-foreground">所有指标都由 AI 重新生成（已填内容将被替换）</div>
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
     </>
+
 
   );
 }
