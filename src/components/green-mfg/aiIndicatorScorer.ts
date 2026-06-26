@@ -206,7 +206,7 @@ const computeOne = (row: IndicatorRow, overwrite: AIScoringOverwrite): AICompute
   }
   const score = 70 + Math.floor(Math.random() * 20) - proofPenalty;
   return {
-    reportValue: "已建立相关制度并按要求执行",
+    reportValue: "",
     score,
     weak: score < 60 || !hasProof,
     reason: !hasProof ? "缺少制度文件、台账等证明" : "AI 已根据材料生成描述，请人工复核",
