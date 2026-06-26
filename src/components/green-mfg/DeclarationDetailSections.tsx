@@ -1605,14 +1605,6 @@ function WeakHint({ row }: { row: IndicatorRow }) {
         )}
       </div>
       <div className="flex shrink-0 items-center gap-1">
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-6 border-warning/40 px-2 text-[11px] text-warning hover:bg-warning/10"
-          onClick={focusReportValue}
-        >
-          <Upload className="mr-1 h-3 w-3" />补传证明
-        </Button>
         <button
           type="button"
           onClick={() => setDismissed(true)}
