@@ -376,7 +376,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                 expertView === "district" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              区级专家
+              区级管理员&nbsp;
             </button>
             <button
               onClick={() => handleSwitchView("city")}
@@ -385,7 +385,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                 expertView === "city" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              市级专家
+              市级管理员&nbsp;
             </button>
           </div>
         ) : null
