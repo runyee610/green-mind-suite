@@ -345,6 +345,7 @@ export default function GreenMfgGovIncubator() {
                 <TableHead>企业（园区）名称</TableHead>
                 <TableHead>行业</TableHead>
                 <TableHead>企业性质</TableHead>
+                <TableHead className="text-center">梯队</TableHead>
                 <TableHead className="text-center">产值(万元)</TableHead>
                 <TableHead className="text-center">综合能耗(吨标煤)</TableHead>
                 <TableHead>类型</TableHead>
