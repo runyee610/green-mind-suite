@@ -345,6 +345,7 @@ export default function GreenMfgGovIncubator() {
                 <TableHead>企业（园区）名称</TableHead>
                 <TableHead>行业</TableHead>
                 <TableHead>企业性质</TableHead>
+                <TableHead className="text-center">梯队</TableHead>
                 <TableHead className="text-center">产值(万元)</TableHead>
                 <TableHead className="text-center">综合能耗(吨标煤)</TableHead>
                 <TableHead>类型</TableHead>
@@ -363,6 +364,19 @@ export default function GreenMfgGovIncubator() {
                   </TableCell>
                   <TableCell className="text-xs">{r.industry}</TableCell>
                   <TableCell className="text-xs">{r.ownership}</TableCell>
+                  <TableCell className="text-center text-xs">
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "text-[11px]",
+                        r.level === "市级"
+                          ? "border-primary/40 bg-primary/10 text-primary"
+                          : "border-emerald-400/40 bg-emerald-400/10 text-emerald-600 dark:text-emerald-300"
+                      )}
+                    >
+                      {r.level}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-center font-mono text-xs">
                     {r.outputValue == null ? "/" : r.outputValue.toLocaleString()}
                   </TableCell>
@@ -392,7 +406,7 @@ export default function GreenMfgGovIncubator() {
                 </TableRow>
               ))}
               {rows.length === 0 && (
-                <TableRow><TableCell colSpan={11} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的培育企业</TableCell></TableRow>
+                <TableRow><TableCell colSpan={12} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的培育企业</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
