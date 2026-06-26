@@ -940,8 +940,7 @@ export function EvaluationIndicatorCard({
   };
 
   const handleAIClick = () => {
-    if (hasUserInput || hasAiResult) setConfirmOpen(true);
-    else runAI("all");
+    runAI("all");
   };
 
 
