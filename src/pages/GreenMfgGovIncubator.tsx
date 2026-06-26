@@ -406,7 +406,7 @@ export default function GreenMfgGovIncubator() {
                 </TableRow>
               ))}
               {rows.length === 0 && (
-                <TableRow><TableCell colSpan={11} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的培育企业</TableCell></TableRow>
+                <TableRow><TableCell colSpan={12} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的培育企业</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
