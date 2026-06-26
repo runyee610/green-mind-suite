@@ -364,6 +364,19 @@ export default function GreenMfgGovIncubator() {
                   </TableCell>
                   <TableCell className="text-xs">{r.industry}</TableCell>
                   <TableCell className="text-xs">{r.ownership}</TableCell>
+                  <TableCell className="text-center text-xs">
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "text-[11px]",
+                        r.level === "市级"
+                          ? "border-primary/40 bg-primary/10 text-primary"
+                          : "border-emerald-400/40 bg-emerald-400/10 text-emerald-600 dark:text-emerald-300"
+                      )}
+                    >
+                      {r.level}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-center font-mono text-xs">
                     {r.outputValue == null ? "/" : r.outputValue.toLocaleString()}
                   </TableCell>
