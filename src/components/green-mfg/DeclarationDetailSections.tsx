@@ -1525,7 +1525,7 @@ function IndicatorItem({
 
 
       {/* 政府修订备注（仅当政府修改了指标值时出现，且必填） */}
-      {showGovRemark && ((govEditable && isRowRevised(row)) || (!govEditable && row.govRemark)) && (() => {
+      {showGovRemark && ((govEditable && (isRowRevised(row) || (row.govRemark ?? "").trim() !== "")) || (!govEditable && row.govRemark)) && (() => {
         const remarkEmpty = (row.govRemark ?? "").trim() === "";
         const showRequiredError = govEditable && remarkEmpty;
         return (
