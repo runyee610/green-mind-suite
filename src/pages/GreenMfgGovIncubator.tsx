@@ -382,9 +382,11 @@ export default function GreenMfgGovIncubator() {
                           <ArrowUpCircle className="mr-1 h-3 w-3" />升到市级梯队
                         </Button>
                       )}
-                      <Button size="sm" variant="outline" className="h-7 text-destructive hover:text-destructive" onClick={() => setRemoveTarget(r)}>
-                        <Trash2 className="mr-1 h-3 w-3" />退库
-                      </Button>
+                      {!(viewLevel === "区级" && r.level === "市级") && (
+                        <Button size="sm" variant="outline" className="h-7 text-destructive hover:text-destructive" onClick={() => setRemoveTarget(r)}>
+                          <Trash2 className="mr-1 h-3 w-3" />退库
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
