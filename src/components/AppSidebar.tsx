@@ -83,7 +83,7 @@ const quotaItems: NavItem[] = quotaItemsByRole.gov;
 
 const assetsItemsByRole: Record<"gov" | "ent", NavItem[]> = {
   gov: [{ title: "固定资产投资项目管理", url: "/assets", icon: Boxes }],
-  ent: [],
+  ent: [{ title: "固定资产投资项目", url: "/assets", icon: Boxes }],
 };
 const assetsItems: NavItem[] = assetsItemsByRole.gov;
 
