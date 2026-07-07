@@ -400,15 +400,19 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
         <KpiTile 
           icon={Clock} 
           label="未推荐" 
-          value={declarations.filter(d => !isRecommended(d.id, d.stage)).length} 
+          value={declarations.filter(d => getDerivedStatus(d.id, d.stage) === "未推荐").length} 
           accent="warning" 
         />
         <KpiTile 
           icon={CheckCircle2} 
-          label={recommendedLabel} 
-          value={declarations.filter(d => isRecommended(d.id, d.stage)).length} 
+          label={expertView === "city" ? "已推荐到国家" : "审核中"} 
+          value={declarations.filter(d => {
+            const s = getDerivedStatus(d.id, d.stage);
+            return expertView === "city" ? s === "已推荐到国家" : s === "审核中";
+          }).length} 
           accent="success" 
         />
+
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
