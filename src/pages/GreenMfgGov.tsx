@@ -527,7 +527,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                               </Button>
                             </>
                           )}
-                          {expertView === "city" && status === "未推荐" && (
+                          {expertView === "city" && (status === "未推荐" || status === "已推荐到市级") && (
                             <Button size="sm" className="h-7 bg-primary hover:bg-primary/90" onClick={() => handleRecommendNational(r.id, r.enterpriseName)}>
                               <Check className="mr-1 h-3 w-3" />推荐
                             </Button>
