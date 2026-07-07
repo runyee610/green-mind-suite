@@ -53,7 +53,7 @@
     --input: 150 25% 90%;
     --ring: 160 84% 39%;
 
-    --radius: 0.5rem;
+    --radius: 0.875rem;
 
     /* 渐变：翠绿 → 薄荷 */
     --gradient-primary: linear-gradient(135deg, hsl(160 84% 35%), hsl(158 70% 50%));
@@ -63,24 +63,26 @@
     --gradient-grid: linear-gradient(hsl(150 25% 90% / 0.6) 1px, transparent 1px),
                      linear-gradient(90deg, hsl(150 25% 90% / 0.6) 1px, transparent 1px);
 
-    /* 阴影：带绿调的极淡阴影 */
+    /* 阴影 */
     --shadow-glow: 0 0 0 3px hsl(160 84% 35% / 0.14);
     --shadow-card: 0 1px 2px hsl(160 40% 20% / 0.04), 0 1px 3px hsl(160 40% 20% / 0.06);
     --shadow-elevated: 0 4px 12px hsl(160 40% 20% / 0.08), 0 2px 4px hsl(160 40% 20% / 0.04);
+    --shadow-button: 0 8px 20px -6px hsl(160 84% 35% / 0.45), 0 2px 6px hsl(160 84% 35% / 0.25);
 
     --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* === Sidebar：浅色薄荷主题 === */
-    --sidebar-background: 150 33% 98%;
-    --sidebar-foreground: 160 20% 25%;
-    --sidebar-primary: 160 84% 32%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 152 55% 92%;
-    --sidebar-accent-foreground: 160 84% 25%;
-    --sidebar-border: 150 25% 90%;
-    --sidebar-ring: 160 84% 39%;
+    /* === Sidebar：深色绿墨 === */
+    --sidebar-background: 165 30% 10%;
+    --sidebar-foreground: 150 15% 78%;
+    --sidebar-primary: 158 70% 48%;
+    --sidebar-primary-foreground: 165 30% 10%;
+    --sidebar-accent: 165 25% 16%;
+    --sidebar-accent-foreground: 158 70% 65%;
+    --sidebar-border: 165 25% 18%;
+    --sidebar-ring: 158 70% 48%;
   }
 }
+
 
 @layer base {
   * {
