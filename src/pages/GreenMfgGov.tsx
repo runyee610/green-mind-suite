@@ -230,31 +230,18 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     toast.success("已删除批次");
   };
 
-  // 区级已推荐 → 审核中集合
-  const [pendingCityIds, setPendingCityIds] = useState<Set<string>>(new Set());
-  // 市级已确认（通过审核，但尚未推荐到国家）
-  const [cityConfirmedIds, setCityConfirmedIds] = useState<Set<string>>(new Set());
-  // 区级/市级撤回覆盖（针对 mock 派生的已推荐）
-  const [unrecommendedIds, setUnrecommendedIds] = useState<Set<string>>(new Set());
-  // 已推荐到国家
-  const [nationalRecommendedIds, setNationalRecommendedIds] = useState<Set<string>>(new Set());
+  // 共享评审状态（列表与详情页通过 localStorage 同步）
+  const reviewState = useReviewState();
+  const pendingCityIds = reviewState.pendingCityIds;
+  const cityConfirmedIds = reviewState.cityConfirmedIds;
+  const nationalRecommendedIds = reviewState.nationalRecommendedIds;
+  const unrecommendedIds = reviewState.unrecommendedIds;
 
-  type ReviewStatus = "未推荐" | "审核中" | "已推荐到国家";
+  const isSubmittedToCity = (id: string, originalStage: string) =>
+    isSubmittedToCityFn(id, originalStage, reviewState);
 
-  // 是否已进入市级流程（审核中 / 市级已确认 / 已推荐到国家 / mock 派生）
-  const isSubmittedToCity = (id: string, originalStage: string) => {
-    if (nationalRecommendedIds.has(id)) return true;
-    if (cityConfirmedIds.has(id)) return true;
-    if (pendingCityIds.has(id)) return true;
-    if (unrecommendedIds.has(id)) return false;
-    return originalStage === "培育中" || originalStage === "已完成";
-  };
-
-  const getDerivedStatus = (id: string, originalStage: string): ReviewStatus => {
-    if (nationalRecommendedIds.has(id)) return "已推荐到国家";
-    if (pendingCityIds.has(id)) return "审核中";
-    return "未推荐";
-  };
+  const getDerivedStatus = (id: string, _originalStage: string): ReviewStatus =>
+    deriveStatus(id, reviewState);
 
   const declarations = useMemo(() => {
     return MOCK_DECLARATIONS.filter((r) => {
@@ -282,7 +269,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       if (batchFilter !== "all" && r.batch !== batchFilter) return false;
       return true;
     });
-  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, pendingCityIds, cityConfirmedIds, unrecommendedIds, nationalRecommendedIds]);
+  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, reviewState]);
 
   const dynamicRows = MOCK_DYNAMIC.filter((r) => {
     const k = keyword.trim();
@@ -292,46 +279,37 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
 
   // 区级：推荐 → 审核中
   const handleRecommendDistrict = (id: string, name: string) => {
-    setPendingCityIds((prev) => { const n = new Set(prev); n.add(id); return n; });
-    setUnrecommendedIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
-    setCityConfirmedIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
-    setNationalRecommendedIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
+    reviewActions.districtRecommend(id);
     toast.success(`已提交「${name}」至市级审核`);
   };
 
   // 区级：撤回审核中
   const handleCancelDistrict = (id: string, name: string) => {
-    setPendingCityIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
-    setUnrecommendedIds((prev) => { const n = new Set(prev); n.add(id); return n; });
+    reviewActions.districtCancel(id);
     toast.message(`已撤回「${name}」的推荐`);
   };
 
   // 市级：确认（通过审核，但暂不推到国家）
   const handleConfirmCity = (id: string, name: string) => {
-    setPendingCityIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
-    setCityConfirmedIds((prev) => { const n = new Set(prev); n.add(id); return n; });
+    reviewActions.cityConfirm(id);
     toast.success(`已确认「${name}」通过市级审核`);
   };
 
   // 市级：退回 → 回到未推荐（区级）
   const handleReturnCity = (id: string, name: string) => {
-    setPendingCityIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
-    setCityConfirmedIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
-    setNationalRecommendedIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
-    setUnrecommendedIds((prev) => { const n = new Set(prev); n.add(id); return n; });
+    reviewActions.cityReturn(id);
     toast.message(`已退回「${name}」至区级`);
   };
 
   // 市级：推荐到国家
   const handleRecommendNational = (id: string, name: string) => {
-    setNationalRecommendedIds((prev) => { const n = new Set(prev); n.add(id); return n; });
-    setCityConfirmedIds((prev) => { const n = new Set(prev); n.add(id); return n; });
+    reviewActions.cityRecommendNational(id);
     toast.success(`已推荐「${name}」至国家`);
   };
 
-  // 市级：取消推荐到国家（回到市级已确认的未推荐态）
+  // 市级：取消推荐到国家
   const handleCancelNational = (id: string, name: string) => {
-    setNationalRecommendedIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
+    reviewActions.cityCancelNational(id);
     toast.message(`已取消「${name}」的国家推荐`);
   };
 
