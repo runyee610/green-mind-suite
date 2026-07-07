@@ -7,6 +7,8 @@ import {
   TrendingUp,
   Trash2,
   ArrowUpCircle,
+  ArrowDownCircle,
+  Pencil,
   Plus,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
