@@ -532,19 +532,6 @@ export default function GreenMfgGovIncubator() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-            <AlertDialogTitle>确认升入市级梯队？</AlertDialogTitle>
-            <AlertDialogDescription>
-              即将把「{promoteTarget?.name}」从区级梯队升入市级梯队，市级专家将进行后续评审。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={handlePromoteConfirm}>
-              <ArrowUpCircle className="mr-1 h-4 w-4" />确认升级
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-2xl">
