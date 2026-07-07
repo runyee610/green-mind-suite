@@ -90,7 +90,7 @@ export default function GreenMfgGovDeclarationDetail() {
               onClick={handleToggleRecommend}
               disabled={recommended}
               variant={recommended ? "outline" : "default"}
-              className={recommended ? "border-info/40 text-info hover:bg-info/10 hover:text-info disabled:opacity-100" : ""}
+              className={recommended ? "border-warning/40 text-warning hover:bg-warning/10 hover:text-warning disabled:opacity-100" : ""}
             >
               <Star className={`mr-1 h-4 w-4 ${recommended ? "fill-current" : ""}`} />
               {recommended ? "审核中" : "推荐"}
