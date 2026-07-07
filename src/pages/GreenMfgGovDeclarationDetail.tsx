@@ -79,6 +79,18 @@ export default function GreenMfgGovDeclarationDetail() {
           {!isIncubator && (
             <Button
               size="sm"
+              onClick={handleJoinIncubator}
+              disabled={joined}
+              variant="outline"
+              className={joined ? "border-success/40 text-success hover:bg-success/10 hover:text-success disabled:opacity-100" : ""}
+            >
+              {joined ? <Check className="mr-1 h-4 w-4" /> : <Sprout className="mr-1 h-4 w-4" />}
+              {joined ? "已加入培育库" : "加入培育库"}
+            </Button>
+          )}
+          {!isIncubator && (
+            <Button
+              size="sm"
               onClick={handleToggleRecommend}
               variant={recommended ? "outline" : "default"}
               className={recommended ? "border-success/40 text-success hover:bg-success/10 hover:text-success" : ""}
