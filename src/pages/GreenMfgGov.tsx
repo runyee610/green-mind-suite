@@ -465,10 +465,12 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
-                      <SelectItem value="未推荐">未推荐</SelectItem>
-                      <SelectItem value={recommendedLabel}>{recommendedLabel}</SelectItem>
+                      {expertView === "district" && <SelectItem value="未推荐">未推荐</SelectItem>}
+                      <SelectItem value="审核中">审核中</SelectItem>
+                      <SelectItem value="已推荐到国家">已推荐到国家</SelectItem>
                     </SelectContent>
                   </Select>
+
                 </div>
               </div>
             </CardHeader>
