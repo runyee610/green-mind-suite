@@ -71,6 +71,7 @@ export function deriveStatus(
 ): ReviewStatus {
   if (state.nationalRecommendedIds.includes(id)) return "已推荐到国家";
   if (state.pendingCityIds.includes(id)) return "审核中";
+  if (state.cityConfirmedIds.includes(id)) return "已推荐到市级";
   return "未推荐";
 }
 
