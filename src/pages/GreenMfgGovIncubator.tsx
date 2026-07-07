@@ -151,8 +151,11 @@ export default function GreenMfgGovIncubator() {
 
   const [removeTarget, setRemoveTarget] = useState<IncubateRecord | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<IncubateRecord | null>(null);
+  const [demoteTarget, setDemoteTarget] = useState<IncubateRecord | null>(null);
 
   const [addOpen, setAddOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"add" | "edit">("add");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<AddFormState>(() => emptyForm("区级"));
 
   const scopeData = useMemo(() => {
