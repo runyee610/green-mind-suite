@@ -189,7 +189,7 @@ export default function GreenMfgEntDeclarationNew() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
+            <Button variant="ghost" size="sm" onClick={handleBack}>
               <ArrowLeft className="mr-1 h-4 w-4" />返回
             </Button>
             <Button
