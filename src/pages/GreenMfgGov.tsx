@@ -487,8 +487,9 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     const status = getDerivedStatus(r.id, r.stage);
                     const statusClass =
                       status === "已推荐到国家" ? "border-success/40 bg-success/10 text-success"
-                      : status === "审核中" ? "border-info/40 bg-info/10 text-info"
-                      : "border-warning/40 bg-warning/10 text-warning";
+                      : status === "审核中" ? "border-warning/40 bg-warning/10 text-warning"
+                      : "border-border bg-muted/60 text-muted-foreground";
+                    const cityApproved = cityConfirmedIds.has(r.id);
                     return (
                     <TableRow key={r.id} className="h-12 border-border/40 group">
                       <TableCell className="whitespace-nowrap">
@@ -541,11 +542,22 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                               </Button>
                             </>
                           )}
+                          {expertView === "city" && status === "未推荐" && cityApproved && (
+                            <Button size="sm" className="h-7 bg-primary hover:bg-primary/90" onClick={() => handleRecommendNational(r.id, r.enterpriseName)}>
+                              <Check className="mr-1 h-3 w-3" />推荐
+                            </Button>
+                          )}
+                          {expertView === "city" && status === "已推荐到国家" && (
+                            <Button size="sm" variant="outline" className="h-7 border-success/40 text-success hover:bg-success/10 hover:text-success" onClick={() => handleCancelNational(r.id, r.enterpriseName)}>
+                              <X className="mr-1 h-3 w-3" />取消推荐
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
                     );
                   })}
+
                   {declarations.length === 0 && (
                     <TableRow><TableCell colSpan={expertView === "city" ? 9 : 8} className="h-24 text-center text-xs text-muted-foreground">暂无符合条件的推荐记录</TableCell></TableRow>
                   )}
