@@ -199,8 +199,37 @@ export default function GreenMfgGovIncubator() {
     setPromoteTarget(null);
   }
 
+  function handleDemoteConfirm() {
+    if (!demoteTarget) return;
+    setData((prev) => prev.map((r) => (r.id === demoteTarget.id ? { ...r, level: "区级" } : r)));
+    toast.success(`已将「${demoteTarget.name}」降到区级梯队`);
+    setDemoteTarget(null);
+  }
+
   function openAdd() {
+    setFormMode("add");
+    setEditingId(null);
     setForm(emptyForm(viewLevel));
+    setAddOpen(true);
+  }
+
+  function openEdit(r: IncubateRecord) {
+    setFormMode("edit");
+    setEditingId(r.id);
+    setForm({
+      name: r.name,
+      creditCode: r.creditCode,
+      district: r.district,
+      industry: r.industry,
+      ownership: r.ownership,
+      greenType: r.greenType,
+      energyTag: r.energyTag,
+      level: r.level,
+      outputValue: r.outputValue == null ? "" : String(r.outputValue),
+      energyConsumption: String(r.energyConsumption),
+      contactName: r.contactName,
+      contactPhone: r.contactPhone,
+    });
     setAddOpen(true);
   }
 
@@ -239,6 +268,33 @@ export default function GreenMfgGovIncubator() {
     const output = form.outputValue.trim() === "" ? null : Number(form.outputValue);
     if (output !== null && (Number.isNaN(output) || output < 0)) {
       toast.error("产值需为数字");
+      return;
+    }
+
+    if (formMode === "edit" && editingId) {
+      setData((prev) =>
+        prev.map((r) =>
+          r.id === editingId
+            ? {
+                ...r,
+                name: form.name.trim(),
+                creditCode: form.creditCode.trim(),
+                district: form.district,
+                industry: form.industry,
+                level: form.level,
+                energyTag: form.energyTag as EnergyTag,
+                outputValue: output,
+                energyConsumption: energy,
+                ownership: form.ownership as Ownership,
+                greenType: form.greenType as GreenType,
+                contactName: form.contactName.trim(),
+                contactPhone: form.contactPhone.trim(),
+              }
+            : r,
+        ),
+      );
+      toast.success(`已保存「${form.name.trim()}」的修改`);
+      setAddOpen(false);
       return;
     }
 
