@@ -197,7 +197,7 @@ export default function GreenMfgGovDeclarationDetail() {
         <div />
 
         <div className="flex items-center gap-2">
-          {!isIncubator && view === "district" && (
+          {!isIncubator && (
             <Button
               size="sm"
               onClick={handleJoinIncubator}
