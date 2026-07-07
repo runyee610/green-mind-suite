@@ -589,14 +589,16 @@ export default function GreenMfgGovIncubator() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">梯队 <span className="text-destructive">*</span></Label>
-              <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v as IncubateLevel })} disabled>
+              <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v as IncubateLevel })} disabled={formMode === "add"}>
                 <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="区级">区级</SelectItem>
                   <SelectItem value="市级">市级</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-[11px] text-muted-foreground">默认按当前视角（{viewLevel}）入库</p>
+              <p className="text-[11px] text-muted-foreground">
+                {formMode === "edit" ? "编辑时可切换梯队" : `默认按当前视角（${viewLevel}）入库`}
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">产值（万元）</Label>
