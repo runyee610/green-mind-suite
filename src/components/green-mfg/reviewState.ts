@@ -68,10 +68,13 @@ export function useReviewState(): ReviewState {
 export function deriveStatus(
   id: string,
   state: ReviewState,
+  viewer: "district" | "city" = "district",
 ): ReviewStatus {
   if (state.nationalRecommendedIds.includes(id)) return "已推荐到国家";
   if (state.pendingCityIds.includes(id)) return "审核中";
-  if (state.cityConfirmedIds.includes(id)) return "已推荐到市级";
+  if (state.cityConfirmedIds.includes(id)) {
+    return viewer === "city" ? "未推荐" : "已推荐到市级";
+  }
   return "未推荐";
 }
 
