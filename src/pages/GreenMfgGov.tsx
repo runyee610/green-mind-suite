@@ -442,6 +442,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       <SelectItem value="all">全部状态</SelectItem>
                       {expertView === "district" && <SelectItem value="未推荐">未推荐</SelectItem>}
                       <SelectItem value="审核中">审核中</SelectItem>
+                      <SelectItem value="已推荐到市级">已推荐到市级</SelectItem>
                       <SelectItem value="已推荐到国家">已推荐到国家</SelectItem>
                     </SelectContent>
                   </Select>
