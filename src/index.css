@@ -11,30 +11,30 @@
 
 @layer base {
   :root {
-    /* === 主面板：Paper White 政务浅色 === */
-    --background: 210 20% 98%;        /* #F8FAFC paper white */
-    --foreground: 215 28% 17%;        /* deep slate ink */
+    /* === 主面板：Mint White 明亮翠绿系 === */
+    --background: 150 33% 97%;        /* mint white */
+    --foreground: 160 25% 15%;        /* deep green ink */
 
     --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
+    --card-foreground: 160 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
+    --popover-foreground: 160 25% 15%;
 
-    /* 主色：Professional Deep Green #0F5E4E */
-    --primary: 168 72% 21%;
-    --primary-foreground: 210 20% 98%;
-    --primary-glow: 168 60% 35%;
+    /* 主色：Bright Emerald ≈ #10B981 */
+    --primary: 160 84% 32%;
+    --primary-foreground: 150 33% 98%;
+    --primary-glow: 158 70% 48%;
 
-    /* 次要：政务沉稳蓝 */
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 215 28% 17%;
+    /* 次要：淡绿灰 */
+    --secondary: 150 40% 95%;
+    --secondary-foreground: 160 25% 15%;
 
-    --muted: 210 25% 95%;
-    --muted-foreground: 215 16% 45%;
+    --muted: 150 25% 95%;
+    --muted-foreground: 160 12% 42%;
 
-    --accent: 168 65% 92%;
-    --accent-foreground: 168 72% 21%;
+    --accent: 152 60% 92%;
+    --accent-foreground: 160 84% 25%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
@@ -42,43 +42,43 @@
     --warning: 32 95% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --success: 142 65% 38%;
+    --success: 160 84% 35%;
     --success-foreground: 0 0% 100%;
 
     /* 信息蓝 - 进行中 / 填报中 */
     --info: 211 90% 45%;
     --info-foreground: 0 0% 100%;
 
-    --border: 215 20% 90%;
-    --input: 215 20% 90%;
-    --ring: 168 72% 21%;
+    --border: 150 25% 90%;
+    --input: 150 25% 90%;
+    --ring: 160 84% 39%;
 
     --radius: 0.5rem;
 
-    /* 渐变 */
-    --gradient-primary: linear-gradient(135deg, hsl(168 72% 21%), hsl(168 60% 32%));
-    --gradient-secondary: linear-gradient(135deg, hsl(210 40% 96%), hsl(210 30% 92%));
-    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(168 72% 25% / 0.08), transparent 70%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 25% 99%));
-    --gradient-grid: linear-gradient(hsl(215 20% 90% / 0.6) 1px, transparent 1px),
-                     linear-gradient(90deg, hsl(215 20% 90% / 0.6) 1px, transparent 1px);
+    /* 渐变：翠绿 → 薄荷 */
+    --gradient-primary: linear-gradient(135deg, hsl(160 84% 35%), hsl(158 70% 50%));
+    --gradient-secondary: linear-gradient(135deg, hsl(150 40% 95%), hsl(150 30% 92%));
+    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(158 80% 45% / 0.10), transparent 70%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(150 30% 99%));
+    --gradient-grid: linear-gradient(hsl(150 25% 90% / 0.6) 1px, transparent 1px),
+                     linear-gradient(90deg, hsl(150 25% 90% / 0.6) 1px, transparent 1px);
 
-    /* 阴影：政务卡片轻阴影 */
-    --shadow-glow: 0 0 0 3px hsl(168 72% 21% / 0.12);
-    --shadow-card: 0 1px 2px hsl(215 28% 17% / 0.04), 0 1px 3px hsl(215 28% 17% / 0.06);
-    --shadow-elevated: 0 4px 12px hsl(215 28% 17% / 0.08), 0 2px 4px hsl(215 28% 17% / 0.04);
+    /* 阴影：带绿调的极淡阴影 */
+    --shadow-glow: 0 0 0 3px hsl(160 84% 35% / 0.14);
+    --shadow-card: 0 1px 2px hsl(160 40% 20% / 0.04), 0 1px 3px hsl(160 40% 20% / 0.06);
+    --shadow-elevated: 0 4px 12px hsl(160 40% 20% / 0.08), 0 2px 4px hsl(160 40% 20% / 0.04);
 
     --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* === Sidebar：保持深色系 === */
-    --sidebar-background: 215 35% 10%;       /* deep ink */
-    --sidebar-foreground: 210 20% 80%;
-    --sidebar-primary: 168 65% 45%;          /* lighter green for dark bg */
-    --sidebar-primary-foreground: 215 35% 10%;
-    --sidebar-accent: 215 30% 16%;
-    --sidebar-accent-foreground: 168 65% 60%;
-    --sidebar-border: 215 30% 18%;
-    --sidebar-ring: 168 65% 45%;
+    /* === Sidebar：浅色薄荷主题 === */
+    --sidebar-background: 150 33% 98%;
+    --sidebar-foreground: 160 20% 25%;
+    --sidebar-primary: 160 84% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 152 55% 92%;
+    --sidebar-accent-foreground: 160 84% 25%;
+    --sidebar-border: 150 25% 90%;
+    --sidebar-ring: 160 84% 39%;
   }
 }
 
@@ -91,7 +91,7 @@
     @apply bg-background text-foreground;
     font-feature-settings: "cv11", "ss01";
     background-image:
-      radial-gradient(ellipse at top, hsl(168 70% 30% / 0.04), transparent 60%);
+      radial-gradient(ellipse at top, hsl(158 80% 45% / 0.05), transparent 60%);
     background-attachment: fixed;
   }
 }
