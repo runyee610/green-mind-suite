@@ -39,7 +39,10 @@ export default function GreenMfgGovDeclarationDetail() {
   const reviewState = useReviewState();
   const status = deriveStatus(detail.id, reviewState, view);
 
-  const JOINED_KEY = "green-mfg-incubator-joined";
+  const JOINED_KEY = view === "city"
+    ? "green-mfg-incubator-joined-city"
+    : "green-mfg-incubator-joined-district";
+  const tierLabel = view === "city" ? "市级" : "区级";
   useEffect(() => {
     try {
       const raw = localStorage.getItem(JOINED_KEY);
@@ -48,7 +51,7 @@ export default function GreenMfgGovDeclarationDetail() {
     } catch {
       /* noop */
     }
-  }, [detail.id]);
+  }, [detail.id, JOINED_KEY]);
 
   const handleJoinIncubator = () => {
     if (joined) return;
@@ -61,7 +64,7 @@ export default function GreenMfgGovDeclarationDetail() {
       /* noop */
     }
     setJoined(true);
-    toast.success(`已将「${detail.enterpriseName}」加入区级培育库`);
+    toast.success(`已将「${detail.enterpriseName}」加入${tierLabel}培育库`);
   };
 
   // 区级推荐
