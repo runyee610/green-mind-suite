@@ -30,6 +30,32 @@ export default function GreenMfgGovDeclarationDetail() {
   const [activeTab, setActiveTab] = useState<string>(ANCHORS[0].href);
   const [indicators, setIndicators] = useState<IndicatorRow[]>(EVALUATION_INDICATORS);
   const [recommended, setRecommended] = useState(false);
+  const [joined, setJoined] = useState(false);
+
+  const JOINED_KEY = "green-mfg-incubator-joined";
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(JOINED_KEY);
+      const list: string[] = raw ? JSON.parse(raw) : [];
+      setJoined(list.includes(detail.id));
+    } catch {
+      /* noop */
+    }
+  }, [detail.id]);
+
+  const handleJoinIncubator = () => {
+    if (joined) return;
+    try {
+      const raw = localStorage.getItem(JOINED_KEY);
+      const list: string[] = raw ? JSON.parse(raw) : [];
+      if (!list.includes(detail.id)) list.push(detail.id);
+      localStorage.setItem(JOINED_KEY, JSON.stringify(list));
+    } catch {
+      /* noop */
+    }
+    setJoined(true);
+    toast.success(`已将「${detail.enterpriseName}」加入区级培育库`);
+  };
 
   const handleToggleRecommend = () => {
     if (recommended) {
