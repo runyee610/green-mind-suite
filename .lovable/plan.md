@@ -1,42 +1,33 @@
 
-## 目标（4 个前端交互改动）
+## 需求
+区级推荐 → 市级点击"确认"后，区级列表里该条记录的推荐状态应显示为 **"已推荐到市级"**（当前显示为"未推荐"，不符合业务）。
 
-### 1. 培育库新增"编辑"功能
-在 `src/pages/GreenMfgGovIncubator.tsx` 的操作列每一行加"编辑"按钮：
-- 复用现有新增 Dialog 组件（改造为受控 `mode: "add" | "edit"`）
-- 打开时用当前行数据回填 `form`；提交时按 id 更新 `data`，保留 `id / stage / enterDate / score / prevScore / carbonIntensity / improvement / reviewer / nextAction`。
-- 编辑态下"梯队"字段允许切换，其它校验规则复用现有的 `handleAddSubmit`。
-- Dialog 标题、描述、确认按钮文案按 mode 切换（新增 / 保存修改）。
+## 状态机（更新后）
+```text
+未推荐  ──区级推荐──▶  审核中  ──市级确认──▶  已推荐到市级  ──市级推荐到国家──▶  已推荐到国家
+                                              ▲                                    │
+                                              └──────── 市级取消国家推荐 ──────────┘
+市级"退回" / 区级"撤回"：审核中 / 已推荐到市级 → 未推荐
+```
 
-### 2. 薄弱项增加"建议文案"（推荐节能技改技术 / 具体措施）
-在 `src/components/green-mfg/AIScoringAgentPanel.tsx` 中：
-- 扩充 `suggestionFor(name)` 为 `getSuggestion(name)`，返回结构化建议：
-  ```ts
-  { technologies: string[]; measures: string[] }
-  ```
-- 覆盖当前 8 类关键词（能耗、碳排、水、固废/污染、绿色设计/产品、工艺/设备、管理平台、土地），每类给 3–4 条具体技术（如"MVR 蒸发浓缩""高效永磁同步电机""余热回收 ORC""光伏 + 储能微电网""VOCs RTO 焚烧""智能空压站群控"等）+ 2–3 条落地措施（"引入 EMS 能源管理系统并接入市级平台""开展第三方能源审计""签订绿电采购协议 ≥30%"等）。
-- `WeakIndicatorsPanel` 里每张薄弱卡片下方原来的一句灯泡提示，改为两段式：
-  - 「推荐节能技改技术」 → chip 化标签列表
-  - 「建议采取措施」 → 带 `•` 的短列表
-- 保持卡片整体在两列网格内不溢出；文案样式沿用现有 warning 色系。
+## 涉及改动
 
-### 3. 模拟自评价详情页返回时自动保存
-在 `src/pages/GreenMfgEntDeclarationNew.tsx`：
-- 顶部"返回"按钮的 `onClick` 改为 `handleSave()` → `navigate("/green-mfg/ent")`。
-- toast 由"已保存"改为"已自动保存草稿"，避免与手动"保存"按钮混淆。
-- 底部的浏览器/系统级返回（`beforeunload`）不做处理，仅覆盖页面内"返回"按钮，保持范围最小。
+### 1. `src/components/green-mfg/reviewState.ts`
+- `ReviewStatus` 增加成员：`"已推荐到市级"`。
+- `deriveStatus` 新增判断：`cityConfirmedIds` 命中且不在 `nationalRecommendedIds` → `"已推荐到市级"`。
+- 保持既有 mutation：`cityConfirm` 会把 id 从 `pendingCityIds` 移到 `cityConfirmedIds`，因此该状态会自然出现。
 
-### 4. 培育库市级视角操作列增加"降到区级梯队"按钮
-在 `GreenMfgGovIncubator.tsx` 操作列：
-- 现有"升到市级梯队"（区级视角 + 区级记录才显示）保持不变。
-- 新增"降到区级梯队"按钮：仅在 `viewLevel === "市级"` 且 `r.level === "市级"` 时显示，样式与"升到"对称——使用 `ArrowDownCircle` 图标 + `text-muted-foreground`/`border-muted` 中性描边，与危险性的"退库"红色区分开。
-- 新增 `demoteTarget` 状态与 `AlertDialog` 二次确认（复用现有 AlertDialog 组件），确认后 `setData(...level: "区级")`，toast 提示。
+### 2. `src/pages/GreenMfgGov.tsx`
+- 状态徽章颜色映射增加：`"已推荐到市级"` 使用主色调（如 `border-primary/40 bg-primary/10 text-primary`），区别于绿色的"已推荐到国家"和琥珀色的"审核中"。
+- 状态筛选下拉框 `SelectContent` 增加 `SelectItem value="已推荐到市级"`（区级/市级视角都可见）。
+- 市级视角"未推荐"按钮行为保持：`已推荐到市级` 本质上就是市级已确认待推国家，市级视角应当仍能点"推荐"（推荐到国家）；因此把当前 `expertView === "city" && status === "未推荐"` 的推荐按钮条件扩展为 `status === "未推荐" || status === "已推荐到市级"`。
+- KPI 卡片文案维持现状（不新增卡片，避免拥挤）。
 
----
+### 3. `src/pages/GreenMfgGovDeclarationDetail.tsx`
+- 详情页按钮渲染中，`"已推荐到市级"` 在市级视角下渲染"推荐"按钮（可直达"已推荐到国家"），在区级视角下渲染禁用态的"已推荐到市级"提示徽章按钮（primary 色系，与列表徽章一致）。
 
-## 涉及文件
-- `src/pages/GreenMfgGovIncubator.tsx`（任务 1、4）
-- `src/components/green-mfg/AIScoringAgentPanel.tsx`（任务 2）
-- `src/pages/GreenMfgEntDeclarationNew.tsx`（任务 3）
+## 不改动
+- 数据模型 / 路由 / 后端。
+- 市级"退回"仍回到"未推荐"（区级）；取消国家推荐仍回到"已推荐到市级"。
 
-无路由、无数据模型、无后端变更；纯前端交互与展示。
+改动纯前端、纯展示与筛选，不影响审批链路本身。

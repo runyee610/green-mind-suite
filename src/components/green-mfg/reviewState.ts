@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 const KEY = "green-mfg-review-state";
 const EVENT = "green-mfg-review-state:change";
 
-export type ReviewStatus = "未推荐" | "审核中" | "已推荐到国家";
+export type ReviewStatus = "未推荐" | "审核中" | "已推荐到市级" | "已推荐到国家";
 
 export type ReviewState = {
   pendingCityIds: string[];
@@ -71,6 +71,7 @@ export function deriveStatus(
 ): ReviewStatus {
   if (state.nationalRecommendedIds.includes(id)) return "已推荐到国家";
   if (state.pendingCityIds.includes(id)) return "审核中";
+  if (state.cityConfirmedIds.includes(id)) return "已推荐到市级";
   return "未推荐";
 }
 

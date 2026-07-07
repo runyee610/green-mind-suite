@@ -110,6 +110,19 @@ export default function GreenMfgGovDeclarationDetail() {
           </Button>
         );
       }
+      if (status === "已推荐到市级") {
+        return (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled
+            className="border-primary/40 text-primary hover:bg-primary/10 hover:text-primary disabled:opacity-100"
+          >
+            <Check className="mr-1 h-4 w-4" />
+            已推荐到市级
+          </Button>
+        );
+      }
       if (status === "已推荐到国家") {
         return (
           <Button
