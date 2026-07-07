@@ -37,7 +37,7 @@ export default function GreenMfgGovDeclarationDetail() {
   const [joined, setJoined] = useState(false);
 
   const reviewState = useReviewState();
-  const status = deriveStatus(detail.id, reviewState);
+  const status = deriveStatus(detail.id, reviewState, view);
 
   const JOINED_KEY = "green-mfg-incubator-joined";
   useEffect(() => {

@@ -241,7 +241,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     isSubmittedToCityFn(id, originalStage, reviewState);
 
   const getDerivedStatus = (id: string, _originalStage: string): ReviewStatus =>
-    deriveStatus(id, reviewState);
+    deriveStatus(id, reviewState, expertView === "city" ? "city" : "district");
 
   const declarations = useMemo(() => {
     return MOCK_DECLARATIONS.filter((r) => {
