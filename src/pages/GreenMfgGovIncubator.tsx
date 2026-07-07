@@ -536,9 +536,11 @@ export default function GreenMfgGovIncubator() {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>新增培育企业</DialogTitle>
+            <DialogTitle>{formMode === "edit" ? "编辑培育企业" : "新增培育企业"}</DialogTitle>
             <DialogDescription>
-              填写企业基础信息，提交后将加入{form.level}梯队培育库，初始阶段为「入库登记」。
+              {formMode === "edit"
+                ? `修改「${form.name || "该企业"}」的基础信息，保存后立即生效。`
+                : `填写企业基础信息，提交后将加入${form.level}梯队培育库，初始阶段为「入库登记」。`}
             </DialogDescription>
           </DialogHeader>
           <div className="grid max-h-[60vh] grid-cols-2 gap-3 overflow-y-auto pr-1">
