@@ -13,17 +13,140 @@ import { SCORE_DIMENSIONS } from "./data";
 
 const WEAK_THRESHOLD = 0.9;
 
-function suggestionFor(name: string): string {
-  if (/能耗|能源消耗/.test(name)) return "建议补充能源审计报告、节能改造方案，或上传节能技术应用记录。";
-  if (/碳排|碳足迹|可再生|清洁能源/.test(name)) return "建议加入光伏 / 绿电采购证明，更新碳核查报告与减排技术说明。";
-  if (/水|取水/.test(name)) return "建议补充中水回用、节水设备运行记录及节水技术改造证明。";
-  if (/固废|污染|排放浓度/.test(name)) return "建议补充污染物在线监测数据、固废综合利用台账与处置合同。";
-  if (/绿色设计|绿色产品|产品/.test(name)) return "建议上传绿色设计自评报告、产品碳足迹核算与第三方认证证书。";
-  if (/工艺|设备|改造/.test(name)) return "建议补充先进工艺设备清单、绿色低碳改造前后对比数据。";
-  if (/管理|平台|系统/.test(name)) return "建议完善能碳管理平台功能截图、管理体系认证证书。";
-  if (/土地|用地/.test(name)) return "建议补充土地产出率核算依据与厂区集约用地说明。";
-  return "建议补充对应证明材料，或引入相关节能 / 减排技术以提高得分。";
+interface Suggestion {
+  technologies: string[];
+  measures: string[];
 }
+
+function getSuggestion(name: string): Suggestion {
+  if (/能耗|能源消耗|电耗/.test(name)) {
+    return {
+      technologies: [
+        "余热余压回收（ORC 低温发电）",
+        "高效永磁同步电机 + 变频改造",
+        "智能空压站群控系统",
+        "工业热泵替代蒸汽锅炉",
+      ],
+      measures: [
+        "开展第三方能源审计并制定节能改造清单",
+        "接入市级能碳管理平台，实现分项计量",
+        "签订绿电采购协议，绿电占比 ≥ 30%",
+      ],
+    };
+  }
+  if (/碳排|碳足迹|可再生|清洁能源|光伏/.test(name)) {
+    return {
+      technologies: [
+        "屋顶分布式光伏 + 储能微电网",
+        "CCUS 碳捕集与再利用",
+        "氢能 / 生物质替代化石燃料",
+        "低碳制冷剂（R1234ze）替换",
+      ],
+      measures: [
+        "完成 ISO 14064 温室气体核查",
+        "编制产品碳足迹（ISO 14067）报告",
+        "签订绿证 / 绿电交易合同并公示",
+      ],
+    };
+  }
+  if (/水|取水|节水/.test(name)) {
+    return {
+      technologies: [
+        "MVR 蒸发浓缩废水零排",
+        "反渗透（RO）+ EDI 中水回用",
+        "闭式循环冷却塔",
+        "雨水收集回用系统",
+      ],
+      measures: [
+        "开展水平衡测试并建立节水台账",
+        "申报省级节水型企业认定",
+        "对高耗水工序设定单耗考核指标",
+      ],
+    };
+  }
+  if (/固废|污染|排放浓度|VOCs|废气/.test(name)) {
+    return {
+      technologies: [
+        "VOCs RTO 蓄热焚烧",
+        "SCR 脱硝 + 湿电除尘超低排放",
+        "危废在线监控（视频 + 电子联单）",
+        "固废资源化（水泥窑协同处置）",
+      ],
+      measures: [
+        "接入生态环境局在线监测平台",
+        "签订固废综合利用合同并归档",
+        "开展清洁生产审核并公示报告",
+      ],
+    };
+  }
+  if (/绿色设计|绿色产品|产品/.test(name)) {
+    return {
+      technologies: [
+        "LCA 全生命周期评价工具",
+        "可再生 / 可回收材料替代设计",
+        "绿色包装（减量化 / 单一材质）",
+        "模块化易拆解结构设计",
+      ],
+      measures: [
+        "编制绿色设计产品自评报告",
+        "申请中国环境标志（十环）认证",
+        "披露产品环境声明（EPD）",
+      ],
+    };
+  }
+  if (/工艺|设备|改造/.test(name)) {
+    return {
+      technologies: [
+        "淘汰高耗能落后设备（一级能效替换）",
+        "机器人 + MES 精益产线改造",
+        "干法 / 少水化清洁工艺",
+        "3D 打印近净成形减材制造",
+      ],
+      measures: [
+        "编制绿色低碳改造方案并申报专项资金",
+        "对比改造前后单位产品能耗 / 排放",
+        "纳入工信部绿色工艺推广目录跟踪",
+      ],
+    };
+  }
+  if (/管理|平台|系统|信息化/.test(name)) {
+    return {
+      technologies: [
+        "EMS 能源管理系统（GB/T 23331）",
+        "数字孪生能碳看板",
+        "AI 能效优化算法（负荷预测）",
+        "移动端巡检 + 电子工单",
+      ],
+      measures: [
+        "通过 ISO 50001 能源管理体系认证",
+        "接入市级绿色制造公共服务平台",
+        "设立能源管理岗与月度考核机制",
+      ],
+    };
+  }
+  if (/土地|用地|容积/.test(name)) {
+    return {
+      technologies: [
+        "多层厂房 / 立体仓储改造",
+        "屋顶光伏一体化（BIPV）",
+        "地下管廊集约布置",
+      ],
+      measures: [
+        "复核容积率与建筑系数并优化布局",
+        "闲置土地二次开发或转让",
+        "申报「亩均论英雄」绩效评价",
+      ],
+    };
+  }
+  return {
+    technologies: ["引入行业先进节能减排技术", "对标同行业绿色工厂标杆"],
+    measures: [
+      "补充对应指标的证明材料与台账",
+      "开展专项诊断并制定整改计划",
+    ],
+  };
+}
+
 
 const DIMENSIONS = [
   { l: "能源低碳化", v: 22.5, m: 25 },
@@ -203,40 +326,68 @@ function WeakIndicatorsPanel() {
           {weak.map((w) => {
             const lost = Math.round((w.weight - w.score) * 10) / 10;
             const pct = w.ratio * 100;
+            const suggestion = getSuggestion(w.name);
             return (
               <div
                 key={`${w.l1}-${w.name}`}
                 className="rounded-lg border border-warning/30 bg-background/70 p-3 backdrop-blur-sm"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                      <span>{w.l1}</span>
-                      <ChevronRight className="h-3 w-3" />
-                      <span className="text-sm font-semibold text-foreground">{w.name}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <span>{w.l1}</span>
+                    <ChevronRight className="h-3 w-3" />
+                    <span className="text-sm font-semibold text-foreground">{w.name}</span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-2 font-mono text-[11px]">
+                    <span className="text-warning">
+                      {w.score} / {w.weight}
+                    </span>
+                    <span className="text-muted-foreground">失分 {lost} 分</span>
+                    <span className="text-muted-foreground">得分率 {pct.toFixed(0)}%</span>
+                  </div>
+                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-warning"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+
+                  <div className="mt-2.5 space-y-2">
+                    <div>
+                      <div className="mb-1 flex items-center gap-1 text-[11px] font-semibold text-warning">
+                        <Lightbulb className="h-3 w-3" />
+                        推荐节能技改技术
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {suggestion.technologies.map((t) => (
+                          <span
+                            key={t}
+                            className="inline-flex items-center rounded-md border border-warning/30 bg-warning/10 px-1.5 py-0.5 text-[11px] text-warning"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <div className="mt-1 flex items-center gap-2 font-mono text-[11px]">
-                      <span className="text-warning">
-                        {w.score} / {w.weight}
-                      </span>
-                      <span className="text-muted-foreground">失分 {lost} 分</span>
-                      <span className="text-muted-foreground">得分率 {pct.toFixed(0)}%</span>
+                    <div>
+                      <div className="mb-1 text-[11px] font-semibold text-foreground/80">
+                        建议采取措施
+                      </div>
+                      <ul className="space-y-0.5 text-[11px] leading-relaxed text-muted-foreground">
+                        {suggestion.measures.map((m) => (
+                          <li key={m} className="flex gap-1.5">
+                            <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-muted-foreground/60" />
+                            <span>{m}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-warning"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <p className="mt-2 text-[12px] leading-relaxed text-foreground/80">
-                      <Lightbulb className="mr-1 inline h-3 w-3 text-warning" />
-                      {suggestionFor(w.name)}
-                    </p>
                   </div>
                 </div>
               </div>
             );
           })}
+
         </div>
       )}
     </div>

@@ -117,7 +117,7 @@ export default function GreenMfgEntDeclarationNew() {
     }
   }, []);
 
-  const handleSave = () => {
+  const handleSave = (opts?: { silent?: boolean; message?: string }) => {
     const savedAt = new Date().toISOString();
     const payload: DraftPayload = {
       basicInfo,
@@ -139,11 +139,19 @@ export default function GreenMfgEntDeclarationNew() {
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
       setDraftSavedAt(savedAt);
-      toast.success("已保存");
+      if (!opts?.silent) toast.success(opts?.message ?? "已保存");
+      return true;
     } catch {
       toast.error("草稿保存失败");
+      return false;
     }
   };
+
+  const handleBack = () => {
+    handleSave({ message: "已自动保存草稿" });
+    navigate("/green-mfg/ent");
+  };
+
 
 
   return (
@@ -181,7 +189,7 @@ export default function GreenMfgEntDeclarationNew() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/green-mfg/ent")}>
+            <Button variant="ghost" size="sm" onClick={handleBack}>
               <ArrowLeft className="mr-1 h-4 w-4" />返回
             </Button>
             <Button

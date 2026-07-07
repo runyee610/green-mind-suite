@@ -1,61 +1,42 @@
 
-## 变更目标
+## 目标（4 个前端交互改动）
 
-1. **市级详情页**：市级视角下点击"推荐"→按钮变为"取消推荐"（含义=已推荐到国家），外部列表推荐状态同步为"已推荐到国家"。
-2. **市级列表**：除"审核中"（区级刚推荐上来的）只显示"确认/退回"外，其余"未推荐"记录都出现"推荐"按钮。
-3. **市级"退回"按钮**颜色重新调整，去掉刺眼的红色。
+### 1. 培育库新增"编辑"功能
+在 `src/pages/GreenMfgGovIncubator.tsx` 的操作列每一行加"编辑"按钮：
+- 复用现有新增 Dialog 组件（改造为受控 `mode: "add" | "edit"`）
+- 打开时用当前行数据回填 `form`；提交时按 id 更新 `data`，保留 `id / stage / enterDate / score / prevScore / carbonIntensity / improvement / reviewer / nextAction`。
+- 编辑态下"梯队"字段允许切换，其它校验规则复用现有的 `handleAddSubmit`。
+- Dialog 标题、描述、确认按钮文案按 mode 切换（新增 / 保存修改）。
 
----
+### 2. 薄弱项增加"建议文案"（推荐节能技改技术 / 具体措施）
+在 `src/components/green-mfg/AIScoringAgentPanel.tsx` 中：
+- 扩充 `suggestionFor(name)` 为 `getSuggestion(name)`，返回结构化建议：
+  ```ts
+  { technologies: string[]; measures: string[] }
+  ```
+- 覆盖当前 8 类关键词（能耗、碳排、水、固废/污染、绿色设计/产品、工艺/设备、管理平台、土地），每类给 3–4 条具体技术（如"MVR 蒸发浓缩""高效永磁同步电机""余热回收 ORC""光伏 + 储能微电网""VOCs RTO 焚烧""智能空压站群控"等）+ 2–3 条落地措施（"引入 EMS 能源管理系统并接入市级平台""开展第三方能源审计""签订绿电采购协议 ≥30%"等）。
+- `WeakIndicatorsPanel` 里每张薄弱卡片下方原来的一句灯泡提示，改为两段式：
+  - 「推荐节能技改技术」 → chip 化标签列表
+  - 「建议采取措施」 → 带 `•` 的短列表
+- 保持卡片整体在两列网格内不溢出；文案样式沿用现有 warning 色系。
 
-## 详细方案
+### 3. 模拟自评价详情页返回时自动保存
+在 `src/pages/GreenMfgEntDeclarationNew.tsx`：
+- 顶部"返回"按钮的 `onClick` 改为 `handleSave()` → `navigate("/green-mfg/ent")`。
+- toast 由"已保存"改为"已自动保存草稿"，避免与手动"保存"按钮混淆。
+- 底部的浏览器/系统级返回（`beforeunload`）不做处理，仅覆盖页面内"返回"按钮，保持范围最小。
 
-### 1. 详情页区分角色 + 与列表状态联动
-
-**问题**：详情页 `GreenMfgGovDeclarationDetail.tsx` 目前只有一个 `recommended` 本地状态，既不区分区/市视角，也不会同步到列表页的 `pendingCityIds / cityConfirmedIds / nationalRecommendedIds` 状态。
-
-**做法**：
-- 将列表中的四个 ID 集合（`pendingCityIds` / `cityConfirmedIds` / `nationalRecommendedIds` / `unrecommendedIds`）改为通过 `localStorage` 持久化的共享存储（key 例如 `green-mfg-review-state`），列表页和详情页都读写同一份数据。
-- 列表页跳转详情时在 URL 上带 `?view=city|district`（沿用当前 `expertView`），详情页据此判断当前是哪种角色。
-- 详情页按视角渲染按钮：
-  - **区级视角** `?view=district`：保持现状 —— "推荐"→"审核中"（一次性）。
-  - **市级视角** `?view=city`：
-    - 若当前状态为"未推荐"：按钮显示"推荐"，点击后加入 `nationalRecommendedIds`（同步 `cityConfirmedIds`），状态变为"已推荐到国家"，按钮切换为"取消推荐"。
-    - 若当前状态为"已推荐到国家"：按钮显示"取消推荐"（success 描边样式），点击后从 `nationalRecommendedIds` 移除，回到"未推荐"。
-    - 若当前状态为"审核中"：按钮显示"确认"与"退回"（与列表一致）。
-
-### 2. 市级列表推荐按钮规则调整
-
-在 `src/pages/GreenMfgGov.tsx` 表格操作列：
-- 移除现在 `expertView === "city" && status === "未推荐" && cityApproved` 里的 `cityApproved` 限制，改为：市级视角下所有 `status === "未推荐"` 都渲染"推荐"按钮，点击直接调用 `handleRecommendNational`（直达"已推荐到国家"）。
-- "审核中"仍然只显示"确认/退回"，不显示"推荐"。
-- "已推荐到国家"仍然显示"取消推荐"。
-
-### 3. "退回"按钮配色
-
-当前 `border-destructive/40 text-destructive hover:bg-destructive/10`（红色）改为中性偏灰的次要样式：
-- 使用 `border-border text-muted-foreground hover:bg-muted hover:text-foreground`（灰底描边，与"撤回"等中性操作观感一致，且不与"确认"的主色冲突）。
+### 4. 培育库市级视角操作列增加"降到区级梯队"按钮
+在 `GreenMfgGovIncubator.tsx` 操作列：
+- 现有"升到市级梯队"（区级视角 + 区级记录才显示）保持不变。
+- 新增"降到区级梯队"按钮：仅在 `viewLevel === "市级"` 且 `r.level === "市级"` 时显示，样式与"升到"对称——使用 `ArrowDownCircle` 图标 + `text-muted-foreground`/`border-muted` 中性描边，与危险性的"退库"红色区分开。
+- 新增 `demoteTarget` 状态与 `AlertDialog` 二次确认（复用现有 AlertDialog 组件），确认后 `setData(...level: "区级")`，toast 提示。
 
 ---
 
 ## 涉及文件
+- `src/pages/GreenMfgGovIncubator.tsx`（任务 1、4）
+- `src/components/green-mfg/AIScoringAgentPanel.tsx`（任务 2）
+- `src/pages/GreenMfgEntDeclarationNew.tsx`（任务 3）
 
-- `src/pages/GreenMfgGov.tsx`
-  - 四个 ID 集合改为读写 `localStorage`（用 `useEffect` 初始化 + 每次更新写回）
-  - 列表跳转详情传 `?view=` 参数
-  - 市级 未推荐 无条件显示"推荐"按钮
-  - "退回"按钮换为中性灰色样式
-- `src/pages/GreenMfgGovDeclarationDetail.tsx`
-  - 读取 URL `view` 参数
-  - 读取同一 localStorage 的状态并做写回
-  - 按视角与当前状态渲染 推荐 / 取消推荐 / 确认+退回
-
----
-
-## 交互效果小结
-
-```text
-区级详情：推荐 → 审核中（不可撤回自身，需在列表撤回）
-市级详情（未推荐）：推荐 → 已推荐到国家 → 按钮变"取消推荐"
-市级详情（审核中）：显示 确认 / 退回
-市级列表：审核中 → 确认/退回；未推荐 → 推荐；已推荐到国家 → 取消推荐
-```
+无路由、无数据模型、无后端变更；纯前端交互与展示。

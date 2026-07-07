@@ -7,6 +7,8 @@ import {
   TrendingUp,
   Trash2,
   ArrowUpCircle,
+  ArrowDownCircle,
+  Pencil,
   Plus,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -149,8 +151,11 @@ export default function GreenMfgGovIncubator() {
 
   const [removeTarget, setRemoveTarget] = useState<IncubateRecord | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<IncubateRecord | null>(null);
+  const [demoteTarget, setDemoteTarget] = useState<IncubateRecord | null>(null);
 
   const [addOpen, setAddOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"add" | "edit">("add");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<AddFormState>(() => emptyForm("区级"));
 
   const scopeData = useMemo(() => {
@@ -194,8 +199,37 @@ export default function GreenMfgGovIncubator() {
     setPromoteTarget(null);
   }
 
+  function handleDemoteConfirm() {
+    if (!demoteTarget) return;
+    setData((prev) => prev.map((r) => (r.id === demoteTarget.id ? { ...r, level: "区级" } : r)));
+    toast.success(`已将「${demoteTarget.name}」降到区级梯队`);
+    setDemoteTarget(null);
+  }
+
   function openAdd() {
+    setFormMode("add");
+    setEditingId(null);
     setForm(emptyForm(viewLevel));
+    setAddOpen(true);
+  }
+
+  function openEdit(r: IncubateRecord) {
+    setFormMode("edit");
+    setEditingId(r.id);
+    setForm({
+      name: r.name,
+      creditCode: r.creditCode,
+      district: r.district,
+      industry: r.industry,
+      ownership: r.ownership,
+      greenType: r.greenType,
+      energyTag: r.energyTag,
+      level: r.level,
+      outputValue: r.outputValue == null ? "" : String(r.outputValue),
+      energyConsumption: String(r.energyConsumption),
+      contactName: r.contactName,
+      contactPhone: r.contactPhone,
+    });
     setAddOpen(true);
   }
 
@@ -234,6 +268,33 @@ export default function GreenMfgGovIncubator() {
     const output = form.outputValue.trim() === "" ? null : Number(form.outputValue);
     if (output !== null && (Number.isNaN(output) || output < 0)) {
       toast.error("产值需为数字");
+      return;
+    }
+
+    if (formMode === "edit" && editingId) {
+      setData((prev) =>
+        prev.map((r) =>
+          r.id === editingId
+            ? {
+                ...r,
+                name: form.name.trim(),
+                creditCode: form.creditCode.trim(),
+                district: form.district,
+                industry: form.industry,
+                level: form.level,
+                energyTag: form.energyTag as EnergyTag,
+                outputValue: output,
+                energyConsumption: energy,
+                ownership: form.ownership as Ownership,
+                greenType: form.greenType as GreenType,
+                contactName: form.contactName.trim(),
+                contactPhone: form.contactPhone.trim(),
+              }
+            : r,
+        ),
+      );
+      toast.success(`已保存「${form.name.trim()}」的修改`);
+      setAddOpen(false);
       return;
     }
 
@@ -391,9 +452,17 @@ export default function GreenMfgGovIncubator() {
                   <TableCell className="font-mono text-xs">{r.contactPhone}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Button size="sm" variant="outline" className="h-7" onClick={() => openEdit(r)}>
+                        <Pencil className="mr-1 h-3 w-3" />编辑
+                      </Button>
                       {viewLevel === "区级" && r.level === "区级" && (
                         <Button size="sm" variant="outline" className="h-7 text-primary hover:text-primary" onClick={() => setPromoteTarget(r)}>
                           <ArrowUpCircle className="mr-1 h-3 w-3" />升到市级梯队
+                        </Button>
+                      )}
+                      {viewLevel === "市级" && r.level === "市级" && (
+                        <Button size="sm" variant="outline" className="h-7 text-muted-foreground hover:text-foreground" onClick={() => setDemoteTarget(r)}>
+                          <ArrowDownCircle className="mr-1 h-3 w-3" />降到区级梯队
                         </Button>
                       )}
                       {!(viewLevel === "区级" && r.level === "市级") && (
@@ -447,12 +516,31 @@ export default function GreenMfgGovIncubator() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={!!demoteTarget} onOpenChange={(o) => !o && setDemoteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认降到区级梯队？</AlertDialogTitle>
+            <AlertDialogDescription>
+              即将把「{demoteTarget?.name}」从市级梯队降到区级梯队，后续由所属区级专家跟进。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDemoteConfirm}>
+              <ArrowDownCircle className="mr-1 h-4 w-4" />确认降级
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>新增培育企业</DialogTitle>
+            <DialogTitle>{formMode === "edit" ? "编辑培育企业" : "新增培育企业"}</DialogTitle>
             <DialogDescription>
-              填写企业基础信息，提交后将加入{form.level}梯队培育库，初始阶段为「入库登记」。
+              {formMode === "edit"
+                ? `修改「${form.name || "该企业"}」的基础信息，保存后立即生效。`
+                : `填写企业基础信息，提交后将加入${form.level}梯队培育库，初始阶段为「入库登记」。`}
             </DialogDescription>
           </DialogHeader>
           <div className="grid max-h-[60vh] grid-cols-2 gap-3 overflow-y-auto pr-1">
@@ -501,14 +589,16 @@ export default function GreenMfgGovIncubator() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">梯队 <span className="text-destructive">*</span></Label>
-              <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v as IncubateLevel })} disabled>
+              <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v as IncubateLevel })} disabled={formMode === "add"}>
                 <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="区级">区级</SelectItem>
                   <SelectItem value="市级">市级</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-[11px] text-muted-foreground">默认按当前视角（{viewLevel}）入库</p>
+              <p className="text-[11px] text-muted-foreground">
+                {formMode === "edit" ? "编辑时可切换梯队" : `默认按当前视角（${viewLevel}）入库`}
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">产值（万元）</Label>
@@ -529,7 +619,9 @@ export default function GreenMfgGovIncubator() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>取消</Button>
-            <Button onClick={handleAddSubmit}><Plus className="mr-1 h-4 w-4" />确认新增</Button>
+            <Button onClick={handleAddSubmit}>
+              {formMode === "edit" ? (<><Pencil className="mr-1 h-4 w-4" />保存修改</>) : (<><Plus className="mr-1 h-4 w-4" />确认新增</>)}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
