@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Star } from "lucide-react";
+import { ArrowLeft, Check, Sprout, Star } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
