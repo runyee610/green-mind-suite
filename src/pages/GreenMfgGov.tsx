@@ -503,7 +503,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">{r.submitDate}</TableCell>
                       <TableCell className="sticky right-0 z-10 bg-card text-right whitespace-nowrap shadow-[-8px_0_8px_-8px_hsl(var(--border))] group-hover:bg-muted/40">
                         <div className="flex justify-end gap-2">
-                          <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
+                          <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}?view=${expertView}`)}>
                             <Eye className="mr-1 h-3 w-3" />详情
                           </Button>
                           {expertView === "district" && status === "未推荐" && (
@@ -521,12 +521,12 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                               <Button size="sm" className="h-7 bg-primary hover:bg-primary/90" onClick={() => handleConfirmCity(r.id, r.enterpriseName)}>
                                 <Check className="mr-1 h-3 w-3" />确认
                               </Button>
-                              <Button size="sm" variant="outline" className="h-7 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleReturnCity(r.id, r.enterpriseName)}>
+                              <Button size="sm" variant="outline" className="h-7 border-border text-muted-foreground hover:bg-muted hover:text-foreground" onClick={() => handleReturnCity(r.id, r.enterpriseName)}>
                                 <XCircle className="mr-1 h-3 w-3" />退回
                               </Button>
                             </>
                           )}
-                          {expertView === "city" && status === "未推荐" && cityApproved && (
+                          {expertView === "city" && status === "未推荐" && (
                             <Button size="sm" className="h-7 bg-primary hover:bg-primary/90" onClick={() => handleRecommendNational(r.id, r.enterpriseName)}>
                               <Check className="mr-1 h-3 w-3" />推荐
                             </Button>
