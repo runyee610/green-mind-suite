@@ -472,6 +472,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     const status = getDerivedStatus(r.id, r.stage);
                     const statusClass =
                       status === "已推荐到国家" ? "border-success/40 bg-success/10 text-success"
+                      : status === "已推荐到市级" ? "border-primary/40 bg-primary/10 text-primary"
                       : status === "审核中" ? "border-warning/40 bg-warning/10 text-warning"
                       : "border-border bg-muted/60 text-muted-foreground";
                     return (
