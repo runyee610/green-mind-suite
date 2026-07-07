@@ -223,47 +223,40 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     toast.success("已删除批次");
   };
 
-  // 区级推荐覆盖（推荐到市级）
-  const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
-  // 区级取消推荐覆盖（针对 mock 数据派生的已推荐）
+  // 区级已推荐 → 审核中集合
+  const [pendingCityIds, setPendingCityIds] = useState<Set<string>>(new Set());
+  // 区级撤回覆盖（针对 mock 派生的已推荐）
   const [unrecommendedIds, setUnrecommendedIds] = useState<Set<string>>(new Set());
-  // 市级推荐覆盖（推荐到国家），独立维护
+  // 市级已确认 → 已推荐到国家（终态）
   const [nationalRecommendedIds, setNationalRecommendedIds] = useState<Set<string>>(new Set());
 
-  const recommendedLabel = expertView === "district" ? "已推荐到市级" : "已推荐到国家";
+  type ReviewStatus = "未推荐" | "审核中" | "已推荐到国家";
 
-  // 区级视角下，企业是否已被推荐到市级
-  const isDistrictRecommended = (id: string, originalStage: string) => {
+  // 是否曾被区级提交到市级（审核中或已经推荐到国家）
+  const isSubmittedToCity = (id: string, originalStage: string) => {
+    if (nationalRecommendedIds.has(id)) return true;
+    if (pendingCityIds.has(id)) return true;
     if (unrecommendedIds.has(id)) return false;
-    if (recommendedIds.has(id)) return true;
     return originalStage === "培育中" || originalStage === "已完成";
   };
 
-  const getDerivedStatus = (id: string, originalStage: string): "未推荐" | typeof recommendedLabel => {
-    if (expertView === "city") {
-      return nationalRecommendedIds.has(id) ? recommendedLabel : "未推荐";
-    }
-    return isDistrictRecommended(id, originalStage) ? recommendedLabel : "未推荐";
+  const getDerivedStatus = (id: string, originalStage: string): ReviewStatus => {
+    if (nationalRecommendedIds.has(id)) return "已推荐到国家";
+    if (isSubmittedToCity(id, originalStage)) return "审核中";
+    return "未推荐";
   };
-
-  const isRecommended = (id: string, originalStage: string) =>
-    getDerivedStatus(id, originalStage) !== "未推荐";
 
   const declarations = useMemo(() => {
     return MOCK_DECLARATIONS.filter((r) => {
-      // 市级视角：只看到区级已推荐的企业
-      if (expertView === "city" && !isDistrictRecommended(r.id, r.stage)) return false;
+      // 市级视角：只看到已提交到市级的记录（审核中 或 已推荐到国家）
+      if (expertView === "city" && !isSubmittedToCity(r.id, r.stage)) return false;
 
-      const recommended = isRecommended(r.id, r.stage);
+      const status = getDerivedStatus(r.id, r.stage);
 
       const k = keyword.trim();
       if (k && !r.enterpriseName.includes(k)) return false;
 
-      // 全部状态下拉过滤
-      if (stageFilter !== "all") {
-        if (stageFilter === "未推荐" && recommended) return false;
-        if (stageFilter !== "未推荐" && !recommended) return false;
-      }
+      if (stageFilter !== "all" && status !== stageFilter) return false;
 
       if (industryFilter !== "all") {
         const node = INDUSTRY_TREE.find((i) => i.name === industryFilter);
@@ -279,7 +272,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       if (batchFilter !== "all" && r.batch !== batchFilter) return false;
       return true;
     });
-  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, recommendedIds, unrecommendedIds, nationalRecommendedIds]);
+  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, pendingCityIds, unrecommendedIds, nationalRecommendedIds]);
 
   const dynamicRows = MOCK_DYNAMIC.filter((r) => {
     const k = keyword.trim();
@@ -287,62 +280,67 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     return true;
   });
 
-  // 区级推荐/取消推荐（推荐到市级）
+  // 区级：推荐 → 审核中
   const handleRecommendDistrict = (id: string, name: string) => {
-    setRecommendedIds(prev => {
+    setPendingCityIds((prev) => {
       const next = new Set(prev);
       next.add(id);
       return next;
     });
-    setUnrecommendedIds(prev => {
+    setUnrecommendedIds((prev) => {
       const next = new Set(prev);
       next.delete(id);
       return next;
     });
-    toast.success(`企业「${name}」已推荐至市级`);
+    toast.success(`已提交「${name}」至市级审核`);
   };
 
+  // 区级：撤回审核中
   const handleCancelDistrict = (id: string, name: string) => {
-    setRecommendedIds(prev => {
+    setPendingCityIds((prev) => {
       const next = new Set(prev);
       next.delete(id);
       return next;
     });
-    setUnrecommendedIds(prev => {
+    setUnrecommendedIds((prev) => {
       const next = new Set(prev);
       next.add(id);
       return next;
     });
-    toast.message(`已取消推荐「${name}」`);
+    toast.message(`已撤回「${name}」的推荐`);
   };
 
-  // 市级推荐/取消推荐（推荐到国家）
-  const handleToggleNational = (id: string, name: string) => {
-    setNationalRecommendedIds(prev => {
+  // 市级：确认 → 已推荐到国家（终态）
+  const handleConfirmCity = (id: string, name: string) => {
+    setPendingCityIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-        toast.message(`已取消推荐「${name}」`);
-      } else {
-        next.add(id);
-        toast.success(`企业「${name}」已推荐认定（国家）`);
-      }
+      next.delete(id);
       return next;
     });
+    setNationalRecommendedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    toast.success(`已确认「${name}」推荐至国家`);
   };
 
-  // 操作列统一入口
-  const toggleByDerived = (id: string, originalStage: string, name: string) => {
-    if (expertView === "city") {
-      handleToggleNational(id, name);
-      return;
-    }
-    if (isDistrictRecommended(id, originalStage)) {
-      handleCancelDistrict(id, name);
-    } else {
-      handleRecommendDistrict(id, name);
-    }
+  // 市级：退回 → 回到未推荐
+  const handleReturnCity = (id: string, name: string) => {
+    setPendingCityIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+    setUnrecommendedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    toast.message(`已退回「${name}」至区级`);
   };
+
+
 
 
   const handleSwitchView = (view: "district" | "city") => {
