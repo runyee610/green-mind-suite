@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Star } from "lucide-react";
+import { ArrowLeft, Check, Sprout, Star } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,32 @@ export default function GreenMfgGovDeclarationDetail() {
   const [activeTab, setActiveTab] = useState<string>(ANCHORS[0].href);
   const [indicators, setIndicators] = useState<IndicatorRow[]>(EVALUATION_INDICATORS);
   const [recommended, setRecommended] = useState(false);
+  const [joined, setJoined] = useState(false);
+
+  const JOINED_KEY = "green-mfg-incubator-joined";
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(JOINED_KEY);
+      const list: string[] = raw ? JSON.parse(raw) : [];
+      setJoined(list.includes(detail.id));
+    } catch {
+      /* noop */
+    }
+  }, [detail.id]);
+
+  const handleJoinIncubator = () => {
+    if (joined) return;
+    try {
+      const raw = localStorage.getItem(JOINED_KEY);
+      const list: string[] = raw ? JSON.parse(raw) : [];
+      if (!list.includes(detail.id)) list.push(detail.id);
+      localStorage.setItem(JOINED_KEY, JSON.stringify(list));
+    } catch {
+      /* noop */
+    }
+    setJoined(true);
+    toast.success(`已将「${detail.enterpriseName}」加入区级培育库`);
+  };
 
   const handleToggleRecommend = () => {
     if (recommended) {
@@ -50,6 +76,18 @@ export default function GreenMfgGovDeclarationDetail() {
         <div />
 
         <div className="flex items-center gap-2">
+          {!isIncubator && (
+            <Button
+              size="sm"
+              onClick={handleJoinIncubator}
+              disabled={joined}
+              variant="outline"
+              className={joined ? "border-success/40 text-success hover:bg-success/10 hover:text-success disabled:opacity-100" : ""}
+            >
+              {joined ? <Check className="mr-1 h-4 w-4" /> : <Sprout className="mr-1 h-4 w-4" />}
+              {joined ? "已加入培育库" : "加入培育库"}
+            </Button>
+          )}
           {!isIncubator && (
             <Button
               size="sm"

@@ -1,42 +1,22 @@
 ## 目标
-政府侧（AI 一键打分页）将"审核备注"改为"修订备注"，并改为"仅当政府修改了指标值才出现，且为必填项"。
 
-## 改动文件
-`src/components/green-mfg/DeclarationDetailSections.tsx`
+在区级管理员的「专家评审 → 企业详情页」中，在「推荐」按钮左侧新增「加入培育库」按钮；企业加入后按钮变为「已加入培育库」标识（禁用态 + 对勾图标），刷新后仍保持。
 
-## 改动点
+## 涉及文件
 
-### 1. 文案 "审核备注" → "修订备注"
-- 第 1563 行 `<ClipboardCheck /> 审核备注` → `修订备注`
-- placeholder 已经是"如指标值有修订…"，保留不变
+- `src/pages/GreenMfgGovDeclarationDetail.tsx`：新增按钮与交互逻辑。
 
-### 2. 仅当指标值被修订时才展示备注框（政府侧）
-当前条件（第 1560 行）：
-```
-{showGovRemark && (govEditable || row.govRemark) && ...}
-```
-改为：政府侧仅在 `isRowRevised(row)` 为 true 时展示；其他角色保持原行为（有 `row.govRemark` 时只读展示）。
+## 交互逻辑
 
-```
-{showGovRemark && (
-  (govEditable && isRowRevised(row)) ||
-  (!govEditable && row.govRemark)
-) && ...}
-```
+1. 页面加载时，从 `localStorage`（key：`green-mfg-incubator-joined`，存储已加入企业 id 数组）读取当前企业是否已加入。
+2. 按钮位于「推荐 / 取消推荐」按钮左侧，仅在非培育库入口进入时显示（沿用现有 `!isIncubator` 判断，对应区级专家评审场景）。
+3. 未加入状态：
+   - 展示按钮「加入培育库」（`variant="outline"`，`Sprout` 图标）。
+   - 点击后：写入 localStorage、更新本地状态、`toast.success("已加入区级培育库")`。
+4. 已加入状态：
+   - 按钮切换为「已加入培育库」标识：绿色描边 + 对勾图标，`disabled` 不可再次点击（一次性动作，避免误操作；退库仍由梯度培育页统一处理）。
+5. 保持「推荐 / 取消推荐」及「返回列表」按钮的现有逻辑与位置不变。
 
-### 3. 必填校验与视觉提示
-- 当 `govEditable && isRowRevised(row)` 时：
-  - Textarea 增加 `required` 语义、`aria-invalid` 当为空时为 true
-  - 标题"修订备注"后追加红色 `*` 必填标记
-  - 当 `(row.govRemark ?? "").trim() === ""` 时：
-    - Textarea 边框变为 `border-destructive`
-    - 标题下方显示一行小字提示："已修改指标值，请填写修订备注（必填）"
-- 仅作为前端表单展示约束。当前页面没有统一的"保存/提交"按钮在该组件内触发提交，所以校验以视觉必填提示 + `aria-invalid` 呈现，符合"如果修改指标值，则出现修订备注且是必填项"的视觉规则。
+## 备注
 
-### 4. 同步入口/筛选/统计中的文案（如适用）
-检索结果表明 `审核备注` 仅出现在该组件第 1563 行 和 `evaluationIndicators.ts` 内的示例数据字段说明里。`evaluationIndicators.ts` 中若仅是注释/示例描述，可一并替换为"修订备注"以保持统一；如是类型字段名（如 `govRemark`）则保持不动。
-
-## 不改动
-- 数据模型字段名 `govRemark`、`originalReportValue` 等
-- 企业侧（`ent` 模式）行为
-- AI 一键打分流程本身
+- 仅前端演示状态，通过 localStorage 持久化；不与梯度培育 mock 列表联动（该列表当前为常量模拟数据，避免跨页面数据源冲突）。
