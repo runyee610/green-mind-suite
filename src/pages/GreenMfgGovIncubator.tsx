@@ -452,9 +452,17 @@ export default function GreenMfgGovIncubator() {
                   <TableCell className="font-mono text-xs">{r.contactPhone}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Button size="sm" variant="outline" className="h-7" onClick={() => openEdit(r)}>
+                        <Pencil className="mr-1 h-3 w-3" />编辑
+                      </Button>
                       {viewLevel === "区级" && r.level === "区级" && (
                         <Button size="sm" variant="outline" className="h-7 text-primary hover:text-primary" onClick={() => setPromoteTarget(r)}>
                           <ArrowUpCircle className="mr-1 h-3 w-3" />升到市级梯队
+                        </Button>
+                      )}
+                      {viewLevel === "市级" && r.level === "市级" && (
+                        <Button size="sm" variant="outline" className="h-7 text-muted-foreground hover:text-foreground" onClick={() => setDemoteTarget(r)}>
+                          <ArrowDownCircle className="mr-1 h-3 w-3" />降到区级梯队
                         </Button>
                       )}
                       {!(viewLevel === "区级" && r.level === "市级") && (
