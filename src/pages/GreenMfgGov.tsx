@@ -474,7 +474,6 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       status === "已推荐到国家" ? "border-success/40 bg-success/10 text-success"
                       : status === "审核中" ? "border-warning/40 bg-warning/10 text-warning"
                       : "border-border bg-muted/60 text-muted-foreground";
-                    const cityApproved = cityConfirmedIds.has(r.id);
                     return (
                     <TableRow key={r.id} className="h-12 border-border/40 group">
                       <TableCell className="whitespace-nowrap">
