@@ -147,17 +147,18 @@ export function AppLayout({ title, subtitle, hideHeader = false, headerActions, 
             </div>
           </header>
 
-          <main className="flex-1 overflow-auto p-6 animate-fade-in">
+          <main className="flex-1 overflow-auto rounded-2xl border border-border/60 bg-card p-6 shadow-card animate-fade-in">
             {!hideHeader && title ? (
               <div className="mb-6">
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+                <h1 className="text-[28px] leading-tight font-semibold tracking-tight text-foreground">{title}</h1>
                 {subtitle && (
-                  <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+                  <p className="text-[13px] text-muted-foreground mt-1.5">{subtitle}</p>
                 )}
               </div>
             ) : null}
             {children}
           </main>
+
         </div>
       </div>
     </SidebarProvider>
