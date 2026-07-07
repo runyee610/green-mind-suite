@@ -619,7 +619,9 @@ export default function GreenMfgGovIncubator() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>取消</Button>
-            <Button onClick={handleAddSubmit}><Plus className="mr-1 h-4 w-4" />确认新增</Button>
+            <Button onClick={handleAddSubmit}>
+              {formMode === "edit" ? (<><Pencil className="mr-1 h-4 w-4" />保存修改</>) : (<><Plus className="mr-1 h-4 w-4" />确认新增</>)}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
