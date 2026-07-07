@@ -77,9 +77,10 @@ export function AppLayout({ title, subtitle, hideHeader = false, headerActions, 
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
 
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center gap-3 border-b border-border bg-card px-4 sticky top-0 z-30 shadow-sm">
-            <nav className="flex items-center gap-1.5 text-sm min-w-0" aria-label="面包屑">
+        <div className="flex-1 flex flex-col min-w-0 p-3 gap-3">
+          <header className="h-14 flex items-center gap-3 rounded-2xl border border-border/60 bg-card px-4 shadow-card">
+            <nav className="flex items-center gap-1.5 text-[13px] min-w-0" aria-label="面包屑">
+
               {crumbs.map((c, i) => (
                 <span key={i} className="flex items-center gap-1.5 min-w-0">
                   {i > 0 && <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0" />}
