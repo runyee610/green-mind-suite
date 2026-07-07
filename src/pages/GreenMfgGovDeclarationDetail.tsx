@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Check, Sprout, Star } from "lucide-react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { ArrowLeft, Check, Sprout, Star, X, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   MOCK_DECLARATIONS,
-  stageBadgeClass,
 } from "@/components/green-mfg/data";
 import { EVALUATION_INDICATORS, type IndicatorRow } from "@/components/green-mfg/evaluationIndicators";
 import { AIScoringAgentPanel } from "@/components/green-mfg/AIScoringAgentPanel";
@@ -17,10 +15,17 @@ import {
   EvaluationIndicatorCard,
 } from "@/components/green-mfg/DeclarationDetailSections";
 import { DECLARATION_ANCHORS as ANCHORS, StepTabs } from "@/components/green-mfg/DeclarationStepTabs";
+import {
+  deriveStatus,
+  reviewActions,
+  useReviewState,
+} from "@/components/green-mfg/reviewState";
 
 export default function GreenMfgGovDeclarationDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const view = (searchParams.get("view") === "city" ? "city" : "district") as "city" | "district";
   const isIncubator = (id ?? "").startsWith("INC-");
   const detail = useMemo(
     () => MOCK_DECLARATIONS.find((d) => d.id === id) ?? MOCK_DECLARATIONS[0],
@@ -29,8 +34,10 @@ export default function GreenMfgGovDeclarationDetail() {
 
   const [activeTab, setActiveTab] = useState<string>(ANCHORS[0].href);
   const [indicators, setIndicators] = useState<IndicatorRow[]>(EVALUATION_INDICATORS);
-  const [recommended, setRecommended] = useState(false);
   const [joined, setJoined] = useState(false);
+
+  const reviewState = useReviewState();
+  const status = deriveStatus(detail.id, reviewState);
 
   const JOINED_KEY = "green-mfg-incubator-joined";
   useEffect(() => {
@@ -57,10 +64,112 @@ export default function GreenMfgGovDeclarationDetail() {
     toast.success(`已将「${detail.enterpriseName}」加入区级培育库`);
   };
 
-  const handleToggleRecommend = () => {
-    if (recommended) return;
-    setRecommended(true);
+  // 区级推荐
+  const handleDistrictRecommend = () => {
+    reviewActions.districtRecommend(detail.id);
     toast.success("已提交至市级审核");
+  };
+
+  // 市级：推荐到国家
+  const handleCityRecommendNational = () => {
+    reviewActions.cityRecommendNational(detail.id);
+    toast.success(`已推荐「${detail.enterpriseName}」至国家`);
+  };
+
+  // 市级：取消推荐到国家
+  const handleCityCancelNational = () => {
+    reviewActions.cityCancelNational(detail.id);
+    toast.message(`已取消「${detail.enterpriseName}」的国家推荐`);
+  };
+
+  // 市级：确认
+  const handleCityConfirm = () => {
+    reviewActions.cityConfirm(detail.id);
+    toast.success(`已确认「${detail.enterpriseName}」通过市级审核`);
+  };
+
+  // 市级：退回
+  const handleCityReturn = () => {
+    reviewActions.cityReturn(detail.id);
+    toast.message(`已退回「${detail.enterpriseName}」至区级`);
+  };
+
+  const renderReviewButtons = () => {
+    if (isIncubator) return null;
+    if (view === "district") {
+      if (status === "审核中") {
+        return (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled
+            className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning disabled:opacity-100"
+          >
+            <Star className="mr-1 h-4 w-4 fill-current" />
+            审核中
+          </Button>
+        );
+      }
+      if (status === "已推荐到国家") {
+        return (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled
+            className="border-success/40 text-success hover:bg-success/10 hover:text-success disabled:opacity-100"
+          >
+            <Check className="mr-1 h-4 w-4" />
+            已推荐到国家
+          </Button>
+        );
+      }
+      return (
+        <Button size="sm" onClick={handleDistrictRecommend}>
+          <Star className="mr-1 h-4 w-4" />
+          推荐
+        </Button>
+      );
+    }
+
+    // city view
+    if (status === "审核中") {
+      return (
+        <>
+          <Button size="sm" onClick={handleCityConfirm}>
+            <Check className="mr-1 h-4 w-4" />
+            确认
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleCityReturn}
+            className="border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <XCircle className="mr-1 h-4 w-4" />
+            退回
+          </Button>
+        </>
+      );
+    }
+    if (status === "已推荐到国家") {
+      return (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleCityCancelNational}
+          className="border-success/40 text-success hover:bg-success/10 hover:text-success"
+        >
+          <X className="mr-1 h-4 w-4" />
+          取消推荐
+        </Button>
+      );
+    }
+    return (
+      <Button size="sm" onClick={handleCityRecommendNational}>
+        <Star className="mr-1 h-4 w-4" />
+        推荐
+      </Button>
+    );
   };
 
   return (
@@ -72,7 +181,7 @@ export default function GreenMfgGovDeclarationDetail() {
         <div />
 
         <div className="flex items-center gap-2">
-          {!isIncubator && (
+          {!isIncubator && view === "district" && (
             <Button
               size="sm"
               onClick={handleJoinIncubator}
@@ -84,18 +193,7 @@ export default function GreenMfgGovDeclarationDetail() {
               {joined ? "已加入培育库" : "加入培育库"}
             </Button>
           )}
-          {!isIncubator && (
-            <Button
-              size="sm"
-              onClick={handleToggleRecommend}
-              disabled={recommended}
-              variant={recommended ? "outline" : "default"}
-              className={recommended ? "border-warning/40 text-warning hover:bg-warning/10 hover:text-warning disabled:opacity-100" : ""}
-            >
-              <Star className={`mr-1 h-4 w-4 ${recommended ? "fill-current" : ""}`} />
-              {recommended ? "审核中" : "推荐"}
-            </Button>
-          )}
+          {renderReviewButtons()}
 
           <Button variant="ghost" size="sm" onClick={() => navigate(isIncubator ? "/green-mfg/gov/incubator" : "/green-mfg/gov/review")}>
             <ArrowLeft className="mr-1 h-4 w-4" />返回列表

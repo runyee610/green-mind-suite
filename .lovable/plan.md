@@ -1,75 +1,61 @@
 
-## 需求解读
+## 变更目标
 
-现有三态：`未推荐 / 审核中 / 已推荐到国家`。用户要求改为四态流程，并把"确认"与"推荐到国家"解耦为两步：
+1. **市级详情页**：市级视角下点击"推荐"→按钮变为"取消推荐"（含义=已推荐到国家），外部列表推荐状态同步为"已推荐到国家"。
+2. **市级列表**：除"审核中"（区级刚推荐上来的）只显示"确认/退回"外，其余"未推荐"记录都出现"推荐"按钮。
+3. **市级"退回"按钮**颜色重新调整，去掉刺眼的红色。
 
-| 步骤 | 视角 | 动作 | 状态变化 |
-|---|---|---|---|
-| 1 | 区级 | 点"推荐" | `未推荐` → `审核中` |
-| 2 | 市级 | 点"退回" | `审核中` → `未推荐`（回到区级） |
-| 3 | 市级 | 点"确认" | `审核中` → `未推荐`（通过市级审核，但尚未推到国家；即"未推荐（到国家）"） |
-| 4 | 市级 | 对已通过审核的行点"推荐" | `未推荐` → `已推荐到国家`，按钮变 `取消推荐` |
-| 5 | 市级 | 点"取消推荐" | `已推荐到国家` → `未推荐`（保留市级确认态） |
+---
 
-同时把"审核中"徽章/按钮的蓝色改成更柔和的色系（琥珀 warning），避免突兀。
+## 详细方案
 
-## 数据模型
+### 1. 详情页区分角色 + 与列表状态联动
 
-在 `GreenMfgGov.tsx` 新增一个集合：
-- `cityConfirmedIds: Set<string>` —— 市级已确认（通过审核）的记录 id
+**问题**：详情页 `GreenMfgGovDeclarationDetail.tsx` 目前只有一个 `recommended` 本地状态，既不区分区/市视角，也不会同步到列表页的 `pendingCityIds / cityConfirmedIds / nationalRecommendedIds` 状态。
 
-组合逻辑：
-- `已推荐到国家` = `nationalRecommendedIds.has(id)`
-- `审核中` = `pendingCityIds.has(id)` && !`已推荐到国家`
-- `未推荐` = 其它。**注意**：`cityConfirmedIds` 仍显示为"未推荐"（对外文案一致），仅在市级操作列用于决定"推荐 / 取消推荐"按钮是否可用。
+**做法**：
+- 将列表中的四个 ID 集合（`pendingCityIds` / `cityConfirmedIds` / `nationalRecommendedIds` / `unrecommendedIds`）改为通过 `localStorage` 持久化的共享存储（key 例如 `green-mfg-review-state`），列表页和详情页都读写同一份数据。
+- 列表页跳转详情时在 URL 上带 `?view=city|district`（沿用当前 `expertView`），详情页据此判断当前是哪种角色。
+- 详情页按视角渲染按钮：
+  - **区级视角** `?view=district`：保持现状 —— "推荐"→"审核中"（一次性）。
+  - **市级视角** `?view=city`：
+    - 若当前状态为"未推荐"：按钮显示"推荐"，点击后加入 `nationalRecommendedIds`（同步 `cityConfirmedIds`），状态变为"已推荐到国家"，按钮切换为"取消推荐"。
+    - 若当前状态为"已推荐到国家"：按钮显示"取消推荐"（success 描边样式），点击后从 `nationalRecommendedIds` 移除，回到"未推荐"。
+    - 若当前状态为"审核中"：按钮显示"确认"与"退回"（与列表一致）。
 
-事件：
-- `handleRecommendDistrict(id)`：`pendingCityIds.add(id)`，从 `unrecommendedIds` 移除
-- `handleCancelDistrict(id)`：区级撤回审核中 → `pendingCityIds.delete`，`unrecommendedIds.add`
-- `handleConfirmCity(id)`：`pendingCityIds.delete`，`cityConfirmedIds.add`
-- `handleReturnCity(id)`：`pendingCityIds.delete`，`unrecommendedIds.add`，`cityConfirmedIds.delete`
-- `handleRecommendNational(id)`：`nationalRecommendedIds.add`（要求 `cityConfirmedIds.has(id)`）
-- `handleCancelNational(id)`：`nationalRecommendedIds.delete`（回到 `cityConfirmedIds` 内的"未推荐"）
+### 2. 市级列表推荐按钮规则调整
 
-## 市级列表可见性
+在 `src/pages/GreenMfgGov.tsx` 表格操作列：
+- 移除现在 `expertView === "city" && status === "未推荐" && cityApproved` 里的 `cityApproved` 限制，改为：市级视角下所有 `status === "未推荐"` 都渲染"推荐"按钮，点击直接调用 `handleRecommendNational`（直达"已推荐到国家"）。
+- "审核中"仍然只显示"确认/退回"，不显示"推荐"。
+- "已推荐到国家"仍然显示"取消推荐"。
 
-`isSubmittedToCity` 扩展为：`pendingCityIds || cityConfirmedIds || nationalRecommendedIds || (mock 派生"培育中/已完成"且未被 unrecommend)`。已被市级"退回"的记录（`unrecommendedIds`）不再出现在市级列表。
+### 3. "退回"按钮配色
 
-## 市级操作列（按 status + `cityConfirmedIds` 判断）
+当前 `border-destructive/40 text-destructive hover:bg-destructive/10`（红色）改为中性偏灰的次要样式：
+- 使用 `border-border text-muted-foreground hover:bg-muted hover:text-foreground`（灰底描边，与"撤回"等中性操作观感一致，且不与"确认"的主色冲突）。
 
-- `审核中` → `确认`（primary）+ `退回`（destructive outline）
-- `未推荐` 且 `cityConfirmedIds.has(id)` → `推荐`（primary，图标 Star）
-- `已推荐到国家` → `取消推荐`（success outline）
-- `未推荐` 且未通过审核（罕见：市级视角不会显示这类，因为 `isSubmittedToCity` 过滤）→ 无按钮
+---
 
-## 区级操作列（保持不变）
+## 涉及文件
 
-- `未推荐` → `推荐`
-- `审核中` → `撤回`（warning outline）
-- `已推荐到国家` → 无按钮（保留详情）
+- `src/pages/GreenMfgGov.tsx`
+  - 四个 ID 集合改为读写 `localStorage`（用 `useEffect` 初始化 + 每次更新写回）
+  - 列表跳转详情传 `?view=` 参数
+  - 市级 未推荐 无条件显示"推荐"按钮
+  - "退回"按钮换为中性灰色样式
+- `src/pages/GreenMfgGovDeclarationDetail.tsx`
+  - 读取 URL `view` 参数
+  - 读取同一 localStorage 的状态并做写回
+  - 按视角与当前状态渲染 推荐 / 取消推荐 / 确认+退回
 
-## 颜色调整
+---
 
-- `审核中` 徽章配色：`border-info/... text-info` → 改为 `border-warning/40 bg-warning/10 text-warning`（琥珀）
-- 区级"撤回"按钮相应配套（已是 warning）
-- 详情页"推荐"按钮的"审核中"占位样式（`GreenMfgGovDeclarationDetail.tsx`）从 info 改为 warning
+## 交互效果小结
 
-## KPI 卡片
-
-- 区级视角保持"审核中"
-- 市级视角：`已推荐到国家` 计数不变。第二个 KPI"审核中"仍显示"审核中"（市级也关心）；可以再新增一列"待推荐（已审核）" = `cityConfirmedIds && !nationalRecommendedIds` 的数量。为了不改布局，改为 3 列展示：`企业总数 / 审核中 / 已推荐到国家`（市级视角），本次不再新增卡片。
-
-## 改动文件
-
-- `src/pages/GreenMfgGov.tsx`：state + handlers + 操作列 + Badge 颜色 + 过滤器
-- `src/pages/GreenMfgGovDeclarationDetail.tsx`：审核中态样式改 warning
-
-## 验证
-
-- 区级推荐 → 审核中（琥珀徽章）
-- 切市级 → 出现该记录，"确认"/"退回" 按钮
-- 点"确认" → 徽章变"未推荐"（灰/orange warning 与之前一致），操作列出现"推荐"按钮
-- 点"推荐" → 徽章"已推荐到国家"（绿），按钮变"取消推荐"
-- 点"取消推荐" → 徽章回"未推荐"，按钮回"推荐"
-- 市级"退回" → 记录从市级列表消失；回到区级视角显示"未推荐"
-- 跑 tsgo 无回归
+```text
+区级详情：推荐 → 审核中（不可撤回自身，需在列表撤回）
+市级详情（未推荐）：推荐 → 已推荐到国家 → 按钮变"取消推荐"
+市级详情（审核中）：显示 确认 / 退回
+市级列表：审核中 → 确认/退回；未推荐 → 推荐；已推荐到国家 → 取消推荐
+```
