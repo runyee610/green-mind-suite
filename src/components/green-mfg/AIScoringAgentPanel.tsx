@@ -326,40 +326,68 @@ function WeakIndicatorsPanel() {
           {weak.map((w) => {
             const lost = Math.round((w.weight - w.score) * 10) / 10;
             const pct = w.ratio * 100;
+            const suggestion = getSuggestion(w.name);
             return (
               <div
                 key={`${w.l1}-${w.name}`}
                 className="rounded-lg border border-warning/30 bg-background/70 p-3 backdrop-blur-sm"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                      <span>{w.l1}</span>
-                      <ChevronRight className="h-3 w-3" />
-                      <span className="text-sm font-semibold text-foreground">{w.name}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <span>{w.l1}</span>
+                    <ChevronRight className="h-3 w-3" />
+                    <span className="text-sm font-semibold text-foreground">{w.name}</span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-2 font-mono text-[11px]">
+                    <span className="text-warning">
+                      {w.score} / {w.weight}
+                    </span>
+                    <span className="text-muted-foreground">失分 {lost} 分</span>
+                    <span className="text-muted-foreground">得分率 {pct.toFixed(0)}%</span>
+                  </div>
+                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-warning"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+
+                  <div className="mt-2.5 space-y-2">
+                    <div>
+                      <div className="mb-1 flex items-center gap-1 text-[11px] font-semibold text-warning">
+                        <Lightbulb className="h-3 w-3" />
+                        推荐节能技改技术
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {suggestion.technologies.map((t) => (
+                          <span
+                            key={t}
+                            className="inline-flex items-center rounded-md border border-warning/30 bg-warning/10 px-1.5 py-0.5 text-[11px] text-warning"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <div className="mt-1 flex items-center gap-2 font-mono text-[11px]">
-                      <span className="text-warning">
-                        {w.score} / {w.weight}
-                      </span>
-                      <span className="text-muted-foreground">失分 {lost} 分</span>
-                      <span className="text-muted-foreground">得分率 {pct.toFixed(0)}%</span>
+                    <div>
+                      <div className="mb-1 text-[11px] font-semibold text-foreground/80">
+                        建议采取措施
+                      </div>
+                      <ul className="space-y-0.5 text-[11px] leading-relaxed text-muted-foreground">
+                        {suggestion.measures.map((m) => (
+                          <li key={m} className="flex gap-1.5">
+                            <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-muted-foreground/60" />
+                            <span>{m}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-warning"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <p className="mt-2 text-[12px] leading-relaxed text-foreground/80">
-                      <Lightbulb className="mr-1 inline h-3 w-3 text-warning" />
-                      {suggestionFor(w.name)}
-                    </p>
                   </div>
                 </div>
               </div>
             );
           })}
+
         </div>
       )}
     </div>
