@@ -58,13 +58,9 @@ export default function GreenMfgGovDeclarationDetail() {
   };
 
   const handleToggleRecommend = () => {
-    if (recommended) {
-      setRecommended(false);
-      toast.message("已取消推荐");
-    } else {
-      setRecommended(true);
-      toast.success("已标记为推荐企业");
-    }
+    if (recommended) return;
+    setRecommended(true);
+    toast.success("已提交至市级审核");
   };
 
   return (
@@ -92,13 +88,15 @@ export default function GreenMfgGovDeclarationDetail() {
             <Button
               size="sm"
               onClick={handleToggleRecommend}
+              disabled={recommended}
               variant={recommended ? "outline" : "default"}
-              className={recommended ? "border-success/40 text-success hover:bg-success/10 hover:text-success" : ""}
+              className={recommended ? "border-info/40 text-info hover:bg-info/10 hover:text-info disabled:opacity-100" : ""}
             >
               <Star className={`mr-1 h-4 w-4 ${recommended ? "fill-current" : ""}`} />
-              {recommended ? "取消推荐" : "推荐"}
+              {recommended ? "审核中" : "推荐"}
             </Button>
           )}
+
           <Button variant="ghost" size="sm" onClick={() => navigate(isIncubator ? "/green-mfg/gov/incubator" : "/green-mfg/gov/review")}>
             <ArrowLeft className="mr-1 h-4 w-4" />返回列表
           </Button>

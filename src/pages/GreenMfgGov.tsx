@@ -223,47 +223,40 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     toast.success("已删除批次");
   };
 
-  // 区级推荐覆盖（推荐到市级）
-  const [recommendedIds, setRecommendedIds] = useState<Set<string>>(new Set());
-  // 区级取消推荐覆盖（针对 mock 数据派生的已推荐）
+  // 区级已推荐 → 审核中集合
+  const [pendingCityIds, setPendingCityIds] = useState<Set<string>>(new Set());
+  // 区级撤回覆盖（针对 mock 派生的已推荐）
   const [unrecommendedIds, setUnrecommendedIds] = useState<Set<string>>(new Set());
-  // 市级推荐覆盖（推荐到国家），独立维护
+  // 市级已确认 → 已推荐到国家（终态）
   const [nationalRecommendedIds, setNationalRecommendedIds] = useState<Set<string>>(new Set());
 
-  const recommendedLabel = expertView === "district" ? "已推荐到市级" : "已推荐到国家";
+  type ReviewStatus = "未推荐" | "审核中" | "已推荐到国家";
 
-  // 区级视角下，企业是否已被推荐到市级
-  const isDistrictRecommended = (id: string, originalStage: string) => {
+  // 是否曾被区级提交到市级（审核中或已经推荐到国家）
+  const isSubmittedToCity = (id: string, originalStage: string) => {
+    if (nationalRecommendedIds.has(id)) return true;
+    if (pendingCityIds.has(id)) return true;
     if (unrecommendedIds.has(id)) return false;
-    if (recommendedIds.has(id)) return true;
     return originalStage === "培育中" || originalStage === "已完成";
   };
 
-  const getDerivedStatus = (id: string, originalStage: string): "未推荐" | typeof recommendedLabel => {
-    if (expertView === "city") {
-      return nationalRecommendedIds.has(id) ? recommendedLabel : "未推荐";
-    }
-    return isDistrictRecommended(id, originalStage) ? recommendedLabel : "未推荐";
+  const getDerivedStatus = (id: string, originalStage: string): ReviewStatus => {
+    if (nationalRecommendedIds.has(id)) return "已推荐到国家";
+    if (isSubmittedToCity(id, originalStage)) return "审核中";
+    return "未推荐";
   };
-
-  const isRecommended = (id: string, originalStage: string) =>
-    getDerivedStatus(id, originalStage) !== "未推荐";
 
   const declarations = useMemo(() => {
     return MOCK_DECLARATIONS.filter((r) => {
-      // 市级视角：只看到区级已推荐的企业
-      if (expertView === "city" && !isDistrictRecommended(r.id, r.stage)) return false;
+      // 市级视角：只看到已提交到市级的记录（审核中 或 已推荐到国家）
+      if (expertView === "city" && !isSubmittedToCity(r.id, r.stage)) return false;
 
-      const recommended = isRecommended(r.id, r.stage);
+      const status = getDerivedStatus(r.id, r.stage);
 
       const k = keyword.trim();
       if (k && !r.enterpriseName.includes(k)) return false;
 
-      // 全部状态下拉过滤
-      if (stageFilter !== "all") {
-        if (stageFilter === "未推荐" && recommended) return false;
-        if (stageFilter !== "未推荐" && !recommended) return false;
-      }
+      if (stageFilter !== "all" && status !== stageFilter) return false;
 
       if (industryFilter !== "all") {
         const node = INDUSTRY_TREE.find((i) => i.name === industryFilter);
@@ -279,7 +272,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
       if (batchFilter !== "all" && r.batch !== batchFilter) return false;
       return true;
     });
-  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, recommendedIds, unrecommendedIds, nationalRecommendedIds]);
+  }, [keyword, stageFilter, industryFilter, batchFilter, expertView, pendingCityIds, unrecommendedIds, nationalRecommendedIds]);
 
   const dynamicRows = MOCK_DYNAMIC.filter((r) => {
     const k = keyword.trim();
@@ -287,62 +280,67 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
     return true;
   });
 
-  // 区级推荐/取消推荐（推荐到市级）
+  // 区级：推荐 → 审核中
   const handleRecommendDistrict = (id: string, name: string) => {
-    setRecommendedIds(prev => {
+    setPendingCityIds((prev) => {
       const next = new Set(prev);
       next.add(id);
       return next;
     });
-    setUnrecommendedIds(prev => {
+    setUnrecommendedIds((prev) => {
       const next = new Set(prev);
       next.delete(id);
       return next;
     });
-    toast.success(`企业「${name}」已推荐至市级`);
+    toast.success(`已提交「${name}」至市级审核`);
   };
 
+  // 区级：撤回审核中
   const handleCancelDistrict = (id: string, name: string) => {
-    setRecommendedIds(prev => {
+    setPendingCityIds((prev) => {
       const next = new Set(prev);
       next.delete(id);
       return next;
     });
-    setUnrecommendedIds(prev => {
+    setUnrecommendedIds((prev) => {
       const next = new Set(prev);
       next.add(id);
       return next;
     });
-    toast.message(`已取消推荐「${name}」`);
+    toast.message(`已撤回「${name}」的推荐`);
   };
 
-  // 市级推荐/取消推荐（推荐到国家）
-  const handleToggleNational = (id: string, name: string) => {
-    setNationalRecommendedIds(prev => {
+  // 市级：确认 → 已推荐到国家（终态）
+  const handleConfirmCity = (id: string, name: string) => {
+    setPendingCityIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-        toast.message(`已取消推荐「${name}」`);
-      } else {
-        next.add(id);
-        toast.success(`企业「${name}」已推荐认定（国家）`);
-      }
+      next.delete(id);
       return next;
     });
+    setNationalRecommendedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    toast.success(`已确认「${name}」推荐至国家`);
   };
 
-  // 操作列统一入口
-  const toggleByDerived = (id: string, originalStage: string, name: string) => {
-    if (expertView === "city") {
-      handleToggleNational(id, name);
-      return;
-    }
-    if (isDistrictRecommended(id, originalStage)) {
-      handleCancelDistrict(id, name);
-    } else {
-      handleRecommendDistrict(id, name);
-    }
+  // 市级：退回 → 回到未推荐
+  const handleReturnCity = (id: string, name: string) => {
+    setPendingCityIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+    setUnrecommendedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    toast.message(`已退回「${name}」至区级`);
   };
+
+
 
 
   const handleSwitchView = (view: "district" | "city") => {
@@ -402,15 +400,19 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
         <KpiTile 
           icon={Clock} 
           label="未推荐" 
-          value={declarations.filter(d => !isRecommended(d.id, d.stage)).length} 
+          value={declarations.filter(d => getDerivedStatus(d.id, d.stage) === "未推荐").length} 
           accent="warning" 
         />
         <KpiTile 
           icon={CheckCircle2} 
-          label={recommendedLabel} 
-          value={declarations.filter(d => isRecommended(d.id, d.stage)).length} 
+          label={expertView === "city" ? "已推荐到国家" : "审核中"} 
+          value={declarations.filter(d => {
+            const s = getDerivedStatus(d.id, d.stage);
+            return expertView === "city" ? s === "已推荐到国家" : s === "审核中";
+          }).length} 
           accent="success" 
         />
+
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
@@ -463,10 +465,12 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">全部状态</SelectItem>
-                      <SelectItem value="未推荐">未推荐</SelectItem>
-                      <SelectItem value={recommendedLabel}>{recommendedLabel}</SelectItem>
+                      {expertView === "district" && <SelectItem value="未推荐">未推荐</SelectItem>}
+                      <SelectItem value="审核中">审核中</SelectItem>
+                      <SelectItem value="已推荐到国家">已推荐到国家</SelectItem>
                     </SelectContent>
                   </Select>
+
                 </div>
               </div>
             </CardHeader>
@@ -479,7 +483,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                     <TableHead className="whitespace-nowrap">所属区</TableHead>
                     <TableHead className="whitespace-nowrap">行业</TableHead>
                     <TableHead className="whitespace-nowrap">提交批次</TableHead>
-                    <TableHead className="text-center whitespace-nowrap px-[3px]">AI打分/区得分</TableHead>
+                    <TableHead className="text-center whitespace-nowrap px-[3px]">区得分</TableHead>
                     {expertView === "city" && (
                       <TableHead className="text-center whitespace-nowrap px-[3px]">市得分</TableHead>
                     )}
@@ -491,6 +495,10 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                 <TableBody>
                   {declarations.map((r) => {
                     const status = getDerivedStatus(r.id, r.stage);
+                    const statusClass =
+                      status === "已推荐到国家" ? "border-success/40 bg-success/10 text-success"
+                      : status === "审核中" ? "border-info/40 bg-info/10 text-info"
+                      : "border-warning/40 bg-warning/10 text-warning";
                     return (
                     <TableRow key={r.id} className="h-12 border-border/40 group">
                       <TableCell className="whitespace-nowrap">
@@ -505,19 +513,15 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{r.batch}</TableCell>
                       <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">
-                        <div className="font-mono text-xs">
-                          {`${r.score} / ${r.manualScore ?? "—"}`}
-                        </div>
+                        <div className="font-mono text-xs">{r.manualScore ?? "—"}</div>
                       </TableCell>
                       {expertView === "city" && (
                         <TableCell className="p-4 align-middle whitespace-nowrap font-mono text-xs text-center px-0">
-                          <div className="font-mono text-xs">
-                            {r.cityScore ?? "—"}
-                          </div>
+                          <div className="font-mono text-xs">{r.cityScore ?? "—"}</div>
                         </TableCell>
                       )}
                       <TableCell className="text-center whitespace-nowrap">
-                        <Badge variant="outline" className={status !== "未推荐" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning"}>
+                        <Badge variant="outline" className={statusClass}>
                           {status}
                         </Badge>
                       </TableCell>
@@ -527,14 +531,26 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                           <Button size="sm" variant="outline" className="h-7" onClick={() => navigate(`/green-mfg/gov/declaration/${r.id}`)}>
                             <Eye className="mr-1 h-3 w-3" />详情
                           </Button>
-                          <Button 
-                            size="sm" 
-                            variant={status !== "未推荐" ? "outline" : "default"}
-                            className={status !== "未推荐" ? "h-7 border-success/40 text-success hover:bg-success/10 hover:text-success" : "h-7 bg-primary hover:bg-primary/90"}
-                            onClick={() => toggleByDerived(r.id, r.stage, r.enterpriseName)}
-                          >
-                            <Check className="mr-1 h-3 w-3" />{status !== "未推荐" ? "取消推荐" : "推荐"}
-                          </Button>
+                          {expertView === "district" && status === "未推荐" && (
+                            <Button size="sm" className="h-7 bg-primary hover:bg-primary/90" onClick={() => handleRecommendDistrict(r.id, r.enterpriseName)}>
+                              <Check className="mr-1 h-3 w-3" />推荐
+                            </Button>
+                          )}
+                          {expertView === "district" && status === "审核中" && (
+                            <Button size="sm" variant="outline" className="h-7 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning" onClick={() => handleCancelDistrict(r.id, r.enterpriseName)}>
+                              <X className="mr-1 h-3 w-3" />撤回
+                            </Button>
+                          )}
+                          {expertView === "city" && status === "审核中" && (
+                            <>
+                              <Button size="sm" className="h-7 bg-primary hover:bg-primary/90" onClick={() => handleConfirmCity(r.id, r.enterpriseName)}>
+                                <Check className="mr-1 h-3 w-3" />确认
+                              </Button>
+                              <Button size="sm" variant="outline" className="h-7 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleReturnCity(r.id, r.enterpriseName)}>
+                                <XCircle className="mr-1 h-3 w-3" />退回
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -545,6 +561,7 @@ export default function GreenMfgGov({ section }: { section?: "declaration" | "dy
                   )}
                 </TableBody>
               </Table>
+
               </div>
             </CardContent>
           </Card>

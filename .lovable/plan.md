@@ -1,52 +1,60 @@
 
-## 目标
+## 需求
 
-1. 主按钮（"开始评价"等）颜色与阴影严格对齐参考图：**纯色翠绿**（非渐变）、**较大圆角矩形**（≈14px，非胶囊 pill）、**柔和绿色投影**。
-2. 顺手做一轮整体 UI 精修，达到"可交付给开发"的简约美观度：统一控件圆角、层级、边框、间距。仅调设计令牌与共享组件，不动业务逻辑。
+1. 政府端（区/市管理员）专家评审列表：**移除"AI打分"**，只保留"区得分"和"市得分"两列。
+2. 三段推荐流程：
+   - **区级推荐** → 状态变为 **"审核中"**（不再直接跳到"已推荐到市级"）
+   - 该数据出现在**市级管理员列表**里，操作列显示 **"确认" + "退回"** 两个按钮
+   - 市级点 **"确认"** → 状态变为 **"已推荐到国家"**（终态，不再可退回）
+   - 市级点 **"退回"** → 状态回退到 **"未推荐"**（回到区级）
+   - 已推荐到国家的记录不再显示"确认/退回"按钮
 
-## 参考图按钮特征
+## 改动清单（只改前端展示与本地状态）
 
-- 底色：单色明亮翠绿 ≈ #10B981（`hsl 160 84% 39%`），无渐变
-- 圆角：约 14px（非全圆胶囊）
-- 阴影：`0 10px 24px -8px rgba(16,185,129,.45)` 类型的柔和绿色投影
-- 内部：白色字 + 白色 `+` 图标，字重 medium，字号 14px
+### 1. `src/pages/GreenMfgGov.tsx` — 列表
 
-## 改动清单
+**状态模型（关键）**  
+将现有 `recommendedIds`（区级已推荐→市级）语义整体重命名为**审核中集合** `pendingCityIds`。市级"确认"从 `pendingCityIds` 移出并加入 `nationalRecommendedIds`。市级"退回"从 `pendingCityIds` 移出并加入 `unrecommendedIds`（覆盖 mock 的"培育中/已完成"派生已推荐）。
 
-### 1. `src/components/ui/button.tsx`
-- base class：`rounded-full` → `rounded-xl`（14px，对齐 --radius）
-- `default` variant：去掉之前追加的重阴影表达式，改为使用 CSS 变量 `shadow-[var(--shadow-button)]` + hover `shadow-[var(--shadow-button-hover)]`；底色保持 `bg-primary`（纯色）
-- `size.sm`：`h-9 px-3` 保持；`size.lg`：`h-11 px-8` 保持；圆角均继承 base
+派生状态改为四态：`"未推荐" | "审核中" | "已推荐到国家" | ...`（保留兼容显示）。
+- `getDerivedStatus`：
+  - 若 `nationalRecommendedIds.has(id)` → `已推荐到国家`
+  - 否则若"区级已推荐"（`pendingCityIds` 或 mock 派生的"培育中/已完成"未被 unrecommend） → `审核中`
+  - 否则 → `未推荐`
 
-### 2. `src/index.css`
-- 新增/调整令牌：
-  - `--shadow-button: 0 10px 24px -8px hsl(160 84% 39% / 0.45), 0 4px 10px -4px hsl(160 84% 39% / 0.25)`
-  - `--shadow-button-hover: 0 14px 30px -8px hsl(160 84% 39% / 0.55), 0 6px 14px -4px hsl(160 84% 39% / 0.3)`
-- `--radius` 保持 `0.875rem`（14px）
-- 把 `.panel` 的 `shadow-card` 稍微收敛为更柔的单层阴影，避免和圆角面板叠加过重
-- 全站保留纯色主按钮为主；`.bg-gradient-primary` 保留供极少数强调场景（例如全景看板 KPI），不再作为主按钮默认底色
+**列表列**  
+- 删除 `AI打分/区得分` 表头 + 单元格，仅保留：`区得分`（`r.manualScore ?? "—"`）+（市级视角）`市得分`（`r.cityScore ?? "—"`）
+- Badge 配色：`未推荐` → warning；`审核中` → info；`已推荐到国家` → success
+- `recommendedLabel` / 顶部 KPI"已推荐到市级/国家" 卡片相应更新：区级视角显示"审核中"计数，市级视角显示"已推荐到国家"计数
 
-### 3. 全局微调（仅共享控件，不动业务页面）
-- `src/components/ui/input.tsx` / `textarea.tsx` / `select.tsx`：确认已继承 `--radius`（若硬编码 `rounded-md` 则改为 `rounded-lg`），保持统一 14px 圆角家族
-- `src/components/ui/card.tsx`：`rounded-lg` → `rounded-2xl`，边框透明度略降 `border-border/70`
-- `src/components/ui/badge.tsx`：保持 `rounded-full`（tag/pill 语义）
-- `src/components/ui/tabs.tsx`：TabsList `rounded-lg` → `rounded-xl`，TabsTrigger `rounded-sm` → `rounded-lg`
-- `src/components/ui/dialog.tsx` / `sheet.tsx` / `popover.tsx` / `dropdown-menu.tsx`：内容器统一 `rounded-2xl`（原为 `rounded-lg`）
+**操作列**  
+- 区级视角：
+  - `未推荐` → 显示 `推荐` 按钮（primary），点击进入"审核中"
+  - `审核中` → 显示 `已推荐（审核中）` 只读 outline 徽章样式按钮 disabled，或允许"取消推荐"回退（保留现有 `handleCancelDistrict` 逻辑，只作用于 pending 状态，不影响国家态）— 保留取消，方便演示
+  - `已推荐到国家` → 不显示按钮
+- 市级视角：
+  - `审核中` → 显示 `确认`（primary，绿色）+ `退回`（outline，红字）两个按钮
+  - `已推荐到国家` → 不显示按钮，仅展示状态徽章
+- `toggleByDerived` 拆分为 `handleConfirmCity` / `handleReturnCity` / 保留区级 handler
 
-### 4. `src/components/AppLayout.tsx`
-- header 与 main 之间已改为浮动圆角面板，本次仅：
-  - main padding `p-6` → `p-8`（更透气）
-  - h1 字号已是 28px，subtitle 增加 `mt-2`
-  - 面包屑分隔符与项间距保持
+**筛选下拉**  
+`状态` 选项由 `未推荐 / 已推荐到市级` 改为 `未推荐 / 审核中 / 已推荐到国家`（按视角显示相关项）。
 
-## 不改的内容
+**市级列表可见性**  
+`declarations` 过滤里，市级视角只看到 `审核中` + `已推荐到国家` 的记录（即当前有过任何推荐动作的），保留现有 `isDistrictRecommended` 判断逻辑（rename → `isSubmittedToCity`）。
 
-- 业务页面组件、字段、文案、路由、交互
-- 状态色（destructive/warning/info）
-- 侧边栏配色（保持深绿墨）
-- 全景看板 glass-card 组件
+### 2. `src/pages/GreenMfgGovDeclarationDetail.tsx` — 详情页
+- 保留"推荐"按钮，但仅在能确定当前视角时生效。因为详情页无 role 区分，把 `handleToggleRecommend` 语义改为**区级推荐**：点击后 `recommended=true`，按钮文案变为 `已推荐（审核中）` + disabled（终止交互，市级审核走列表）。取消推荐移除（避免与列表市级流冲突，模拟一次性提交）。
+- 文案与图标：由 `Star` 保留。
+
+### 3. 无需改动
+- `src/pages/GreenMfgEnt*.tsx`、`GreenMfgAgent`、数据 mock、路由
 
 ## 验证
-
-- 跑 tsgo 确认无回归
-- 目视对比：绿色制造模拟评价页的"开始评价"按钮与参考图形态一致；Dialog/Popover/Card 圆角家族统一；Dashboard、指标表页面无控件错位
+- 区级视角：`未推荐` 记录 → 点"推荐" → 变 `审核中`，KPI"审核中"+1
+- 切到市级视角：能看到该记录，操作列显示"确认 / 退回"
+- 点"确认" → 状态 `已推荐到国家`，按钮消失
+- 再切回区级：该记录状态显示 `已推荐到国家`，不再显示操作按钮
+- 另一记录点"退回" → 回到 `未推荐`，区级列表可再次操作
+- 表格再无"AI打分/区得分"列，只有"区得分"（区、市两视角）与"市得分"（市视角）
+- 跑 tsgo 无回归
