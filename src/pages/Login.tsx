@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import bgAsset from "@/assets/login-bg.jpg.asset.json";
+import skylineAsset from "@/assets/login-skyline.png.asset.json";
 import logoAsset from "@/assets/platform-logo.png.asset.json";
 
 export default function Login() {
@@ -40,26 +40,43 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="relative min-h-screen w-full bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${bgAsset.url})` }}
-    >
-      {/* 背景遮罩：加强顶部与卡片可读性 */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-900/25 to-slate-950/70" />
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-sky-100 via-white to-white">
+      {/* 品牌色柔光晕 */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 45% at 50% 55%, hsl(var(--primary) / 0.10), transparent 70%)",
+        }}
+      />
+
+      {/* 天际线剪影：贴底、顶部与底部自然虚化 */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62vh]">
+        <img
+          src={skylineAsset.url}
+          alt=""
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 w-full h-full object-cover object-bottom opacity-70"
+        />
+        {/* 顶部向上淡出为天空色 */}
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-sky-100 to-transparent" />
+        {/* 底部向下淡出为白，让卡片区更干净 */}
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white via-white/70 to-transparent" />
+      </div>
 
       {/* 左上品牌 */}
       <div className="absolute top-6 left-8 z-10 flex items-center gap-3">
         <img
           src={logoAsset.url}
           alt="平台 Logo"
-          className="h-11 w-11 rounded-xl bg-white/95 p-1 shadow-lg"
+          className="h-11 w-11 rounded-xl bg-white p-1 shadow-md ring-1 ring-slate-200"
         />
         <div className="leading-tight">
-          <div className="text-2xl font-semibold text-white tracking-wide drop-shadow">
+          <div className="text-2xl font-semibold tracking-wide text-slate-800">
             AI 能碳数智空间
           </div>
-          <div className="text-xs text-white/75 mt-0.5">
-            政企协同 · 绿色制造评价
+          <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500 mt-1">
+            AI+ Trusted Energy-Carbon Smart Data Space
           </div>
         </div>
       </div>
@@ -67,7 +84,7 @@ export default function Login() {
       {/* 居中登录卡片 */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-md">
-          <Card className="border-white/40 shadow-2xl bg-background/95 backdrop-blur-xl">
+          <Card className="border-white/80 bg-white/85 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(15,23,42,0.18)]">
             <CardContent className="p-8">
               <div className="text-center mb-6">
                 <h1 className="text-2xl font-bold tracking-[0.35em] text-foreground">
@@ -144,7 +161,7 @@ export default function Login() {
       </div>
 
       {/* 页脚 */}
-      <div className="absolute bottom-4 left-0 right-0 z-10 text-center text-[11px] text-white/70">
+      <div className="absolute bottom-4 left-0 right-0 z-10 text-center text-[11px] text-slate-500">
         © {new Date().getFullYear()} AI 能碳数智空间 · 安全链路由平台 HTTPS 保护
       </div>
     </div>
