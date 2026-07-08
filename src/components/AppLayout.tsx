@@ -1,11 +1,22 @@
-import { Bell, Sun, User, Building2, Briefcase, ChevronRight } from "lucide-react";
+import { Bell, Sun, User, Building2, Briefcase, ChevronRight, ChevronDown, LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useRole, type Role } from "@/contexts/RoleContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+
 
 interface AppLayoutProps {
   title?: string;
@@ -54,9 +65,17 @@ function getCrumbs(pathname: string): string[] {
 
 export function AppLayout({ title, subtitle, hideHeader = false, headerActions, children }: AppLayoutProps) {
   const { role, setRole } = useRole();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const crumbs = getCrumbs(pathname);
+
+  const handleLogout = () => {
+    logout();
+    toast({ title: "已退出登录", description: "请重新登录以继续使用" });
+    navigate("/login", { replace: true });
+  };
+
 
   const switchRole = (next: Role) => {
     if (next === role) return;
@@ -139,10 +158,34 @@ export function AppLayout({ title, subtitle, hideHeader = false, headerActions, 
                     <Briefcase className="h-3 w-3" />企业侧
                   </button>
                 </div>
-                <div className="h-7 w-7 rounded-full bg-gradient-primary flex items-center justify-center">
-                  <User className="h-3.5 w-3.5 text-primary-foreground" />
-                </div>
-                <span className="hidden md:inline text-xs text-foreground">管理员</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 hover:bg-muted/60 transition"
+                    >
+                      <div className="h-7 w-7 rounded-full bg-gradient-primary flex items-center justify-center">
+                        <User className="h-3.5 w-3.5 text-primary-foreground" />
+                      </div>
+                      <span className="hidden md:inline text-xs text-foreground">{user?.name ?? "管理员"}</span>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuLabel className="text-xs">
+                      <div className="font-medium text-foreground">{user?.name ?? "管理员"}</div>
+                      {user?.account && (
+                        <div className="text-[11px] text-muted-foreground font-mono mt-0.5">{user.account}</div>
+                      )}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-xs cursor-pointer">
+                      <LogOut className="h-3.5 w-3.5 mr-2" />
+                      退出登录
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
               </div>
             </div>
           </header>

@@ -4,10 +4,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RoleProvider } from "@/contexts/RoleContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import RequireAuth from "@/components/RequireAuth";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Navigate } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
 import Index from "./pages/Index.tsx";
+import Login from "./pages/Login.tsx";
 
 const HomeRoute = () => {
   const { role } = useRole();
@@ -75,11 +78,14 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthProvider>
         <RoleProvider>
         <ScrollToTop />
         <Routes>
-          <Route path="/" element={<HomeRoute />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route element={<RequireAuth />}>
+          <Route path="/" element={<HomeRoute />} />
           <Route path="/report-monthly" element={<ReportMonthly />} />
           <Route path="/report-monthly/filling" element={<ReportMonthlyFilling />} />
           <Route path="/energy-quota" element={<EnergyQuota />} />
@@ -130,9 +136,12 @@ const App = () => (
           <Route path="/direct-benefit/ent/policy-chat" element={<EntChatConsole topic="policy-chat" />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
+          </Route>
           </Routes>
         </RoleProvider>
+        </AuthProvider>
       </BrowserRouter>
+
     </TooltipProvider>
   </QueryClientProvider>
 );

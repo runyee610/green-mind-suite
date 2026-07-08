@@ -1,16 +1,47 @@
 ## 目标
-在专家评审 → 市级视角的申报详情页也显示"加入培育库"按钮，点击后加入市级培育库（区级视角保持原逻辑加入区级培育库）。两级视角的"已加入"状态互相独立。
 
-## 修改内容
+为"AI 能碳数值空间"添加独立登录页，登录后进入系统；顶栏右上角"管理员"变为可点击的下拉菜单，支持"退出登录"。UI 风格与专家评审、模拟自我评价等已有页面统一（同一套设计 token、卡片阴影、圆角、绿色主色渐变背景，参考 `ResetPassword.tsx` 的登录级页面风格）。
 
-### `src/pages/GreenMfgGovDeclarationDetail.tsx`
-1. 将当前的单一 `JOINED_KEY = "green-mfg-incubator-joined"` 拆分为两个键：
-   - `green-mfg-incubator-joined-district`
-   - `green-mfg-incubator-joined-city`
-   根据 `view` 变量选择对应键，`district` / `city` 的加入状态互不干扰。
-2. `handleJoinIncubator`：写入当前视角对应的键；toast 文案根据 view 显示"已将「xxx」加入区级培育库"或"已将「xxx」加入市级培育库"。
-3. 渲染按钮的条件从 `!isIncubator && view === "district"` 改为 `!isIncubator`，使市级视角也显示按钮。按钮 label/icon 保持："加入培育库" / "已加入培育库"。
-4. `useEffect` 读取 `joined` 状态时，依赖项加入 `view`，切换视角能正确刷新。
+## 交互流程
 
-## 备注
-- 培育库页面（`GreenMfgGovIncubator.tsx`）目前使用组件内 `useState(INITIAL_INCUBATE_DATA)`，不读该 localStorage 键，因此此处仅在详情页维持"已加入"的按钮状态，与既有区级行为保持一致；不改动培育库数据源。
+1. 未登录访问任意受保护路由 → 自动跳转到 `/login`
+2. `/login` 输入账号密码 → 校验通过写入本地登录态 → 跳回原目标路由（默认 `/`）
+3. 顶栏"管理员"点击 → 下拉菜单显示当前账号 + "退出登录" → 退出后回到 `/login`
+
+演示阶段无后端：使用 mock 账号（如 `admin / admin123`，任意非空也可放行，二选一）。登录态存 `localStorage`。
+
+## 文件改动
+
+**新增 `src/contexts/AuthContext.tsx`**
+- `AuthProvider`：state `{ user: { name, account } | null }`，从 `localStorage("app.auth")` 恢复
+- 暴露 `login(account, password)`、`logout()`、`isAuthenticated`
+- `useAuth()` hook
+
+**新增 `src/pages/Login.tsx`**
+- 复用 `ResetPassword.tsx` 的视觉框架：`min-h-screen` + 渐变背景 + 居中卡片 + 顶部 Leaf 图标
+- 标题「AI 能碳数值空间」，副标题「政企协同 · 绿色制造评价」
+- 表单：账号 / 密码 / 显隐切换 / "记住我" / 登录按钮
+- 校验失败 toast；成功后 `navigate(from, { replace: true })`
+
+**新增 `src/components/RequireAuth.tsx`**
+- 包裹路由，未登录 `<Navigate to="/login" state={{ from: location }} />`
+
+**修改 `src/App.tsx`**
+- `<RoleProvider>` 外再包一层 `<AuthProvider>`
+- 新增 `<Route path="/login" element={<Login />} />`（放在受保护路由之前，公开）
+- `/reset-password` 保持公开
+- 其它所有路由用 `<RequireAuth>` 包裹（在 Routes 内统一处理，避免逐条改：可用一个通配 layout 路由或简单包裹每个 element；采用统一的 `wrap = (el) => <RequireAuth>{el}</RequireAuth>` 帮助函数最省改动）
+
+**修改 `src/components/AppLayout.tsx`**
+- 顶栏右上角"管理员"区域改为 shadcn `DropdownMenu`：
+  - Trigger：现有头像 + "管理员"文字 + 下拉箭头
+  - Content：显示当前账号（来自 `useAuth().user`），分隔线，`LogOut` 图标 + "退出登录"
+  - 点击退出：`logout()` → `navigate("/login", { replace: true })` + toast
+
+## 技术细节
+
+- 登录态存储 key：`app.auth`，值 `{ account, name }`；退出时 `removeItem`
+- Mock 校验规则：账号非空、密码 ≥ 6 位即通过；预置演示提示"演示账号 admin / admin123"
+- 路由保护跳转保留 `location.state.from` 以便登录后回跳
+- 视觉 token 全部使用现有语义色（`bg-primary`、`text-muted-foreground`、`bg-card` 等），不引入硬编码颜色
+- 不动业务逻辑与后端相关代码；仅前端登录/登出闭环
