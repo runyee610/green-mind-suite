@@ -1,46 +1,42 @@
-## 登录页背景柔化方案
+## 登录页再优化：柔化实景背景 + 高级毛玻璃卡片
 
-参考图的效果：上方是干净的浅蓝天空渐变，中下部才浮现天际线剪影，底部再淡出为白色，整体轻盈通透，而非一张硬照片铺满。
+回到"上海外滩实景照片"作为背景，但通过多层柔化处理去掉之前那种"硬照片"的生硬感，达到通透、温润、企业级美学。
 
-### 实现思路
+### 背景层做法（软化实景）
 
-用「渐变天空 + 抠出天际线的图」叠加来复刻这种效果，而不是直接铺原图。
+保留上传的外滩高清图 `user-uploads://image-68.png`（比 image-65 更亮更蓝，作为主视觉更合适），通过 CSS 分层柔化，不再使用之前的天际线剪影：
 
-#### 步骤 1：生成一张天际线剪影 PNG（透明背景）
-用 `imagegen--edit_image` 处理已上传的外滩图 `user-uploads://image-65.png`：
-- prompt：保留城市天际线主体，去除天空与水面，只留下城市剪影，边缘向下自然羽化淡出到透明；输出干净透明背景
-- `transparent_background: true`
-- 保存到 `src/assets/login-skyline.png`
-- 通过 `lovable-assets` 上传为 `src/assets/login-skyline.png.asset.json`
-- 移除原来的 `src/assets/login-bg.jpg.asset.json`（用 `lovable-assets delete` 清理 CDN 对象）
+1. **重新上传 `login-bg.jpg`**（`lovable-assets create`），删除现有的 `login-skyline.png.asset.json`。
+2. 根容器用 `<img>` 铺满：`absolute inset-0 w-full h-full object-cover`，加上 `filter: blur(2px) saturate(0.95) brightness(1.05)`，让照片轻微虚化+提亮，去除锐利质感。
+3. 叠加三层柔化蒙版（都在 `absolute inset-0 pointer-events-none`）：
+   - 顶部天空提亮：`bg-gradient-to-b from-white/40 via-white/10 to-transparent`
+   - 底部白色过渡：`bg-gradient-to-t from-white/70 via-white/25 to-transparent`，让登录卡片区更干净
+   - 中心品牌柔光：`radial-gradient(ellipse 55% 45% at 50% 55%, hsl(var(--primary)/0.08), transparent 70%)`
 
-#### 步骤 2：重写 `src/pages/Login.tsx` 背景层
-把当前"整张背景图 + 深色遮罩"替换为三层结构：
+### 前景卡片（毛玻璃）
 
-```
-┌──────────────────────────────────────────┐
-│  纯色/渐变天空                             │  ← 底层：from-sky-50 via-white to-white
-│    ┌──────────────────────────────┐      │
-│    │      柔和光晕（径向渐变）        │      │  ← 中层：品牌绿在卡片背后做 soft glow
-│    └──────────────────────────────┘      │
-│  ▁▂▃ 天际线剪影贴底，顶部渐隐 ▃▂▁          │  ← 顶层：skyline PNG，bottom-0，透明度约 55%
-└──────────────────────────────────────────┘
-```
+- `max-w-[420px]` 居中，`bg-white/70 backdrop-blur-2xl border border-white/60`，圆角 `rounded-2xl`
+- 阴影用双层柔和高级感：`shadow-[0_1px_2px_rgba(15,23,42,0.06),0_25px_50px_-20px_rgba(15,23,42,0.25)]`
+- 内边距 `p-9`，各元素间距上稍加大，通透感
 
-关键 class：
-- 根容器：`bg-gradient-to-b from-sky-100 via-white to-white`
-- 中层光晕：`absolute inset-0` + `bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.10),transparent_60%)]`
-- 天际线：`<img>` 绝对定位 `bottom-0 left-0 right-0 w-full h-[55vh] object-cover object-bottom opacity-60`，再叠一层 `bg-gradient-to-b from-white via-transparent to-white` 让它顶部虚化、底部融入卡片区
+### 卡片内组件微调
 
-#### 步骤 3：品牌区与卡片配色随背景调整
-背景不再是深色照片，需要把之前依赖深色的白色文字改成深色：
-- 左上「AI 能碳数智空间」：`text-slate-800`，副标题 `text-slate-500`，logo 底改 `bg-white shadow-md ring-1 ring-slate-200`
-- 页脚小字：`text-slate-500`
-- 登录卡片：`bg-white/85 backdrop-blur-xl border-white shadow-[0_20px_60px_-15px_rgba(15,23,42,0.15)]`，主色分隔条与按钮保持不变
+- 标题「用户登录」：居中，`text-xl font-medium tracking-[0.28em] text-slate-800`（去掉粗黑体，改为适中字重更"高端"）
+- 标题下方细分隔线由主色缩短为 `w-8 h-[2px] bg-primary/60`
+- 输入框：`h-11 bg-white/70 border-slate-200/80 focus-visible:border-primary/60 focus-visible:ring-primary/20`，左侧 `UserIcon` / `Lock` 图标线性风格保持不变
+- 登录按钮：宽度占满，`h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground tracking-widest shadow-md`（品牌绿已是 emerald 系，与图2 主色一致，不需另外覆盖）
+- 记住我 / 忘记密码：低调 `text-xs text-slate-500`
+
+### 左上品牌与页脚（保留但更克制）
+
+- 左上：logo 40×40 白色圆角底 + 「AI 能碳数智空间」`text-xl font-semibold text-slate-800`，副标题英文全大写小字 `text-[10px] tracking-[0.2em] text-slate-500`
+- 页脚：底部居中 `text-[11px] text-slate-500/90`，只保留版权文本
 
 ### 涉及文件
-- 新增 `src/assets/login-skyline.png.asset.json`（透明天际线，来自图片编辑）
-- 删除 `src/assets/login-bg.jpg.asset.json`（原始外滩硬照片不再使用）
-- 编辑 `src/pages/Login.tsx`：改背景层、字色、卡片阴影
 
-登录业务逻辑、路由、AuthContext 完全不动。
+- 编辑图片资源：
+  - 新增 `src/assets/login-bg.jpg.asset.json`（`lovable-assets create --file /mnt/user-uploads/image-68.png --filename login-bg.jpg`）
+  - 删除 `src/assets/login-skyline.png.asset.json`（`lovable-assets delete`）
+- 编辑 `src/pages/Login.tsx`：改为「实景图 + blur filter + 上下白色渐变蒙版 + 中央品牌光晕」结构，卡片改为更强毛玻璃感
+
+不动业务逻辑、路由、AuthContext、其它页面。
