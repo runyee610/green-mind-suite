@@ -75,21 +75,12 @@ export default function Login() {
         />
         <div className="leading-tight">
           <div className="text-xl font-semibold tracking-wide text-slate-800">
-            AI 能碳数智空间
+            AI 能碳数智空间 <span className="mx-1 text-slate-300">｜</span> <span className="text-emerald-700">绿色制造模块</span>
           </div>
         </div>
       </div>
 
-      {/* 右上：绿色制造体系 */}
-      <div className="absolute top-6 right-8 z-10 flex flex-col items-end">
-        <div className="flex items-center gap-2 text-emerald-700">
-          <Leaf className="h-5 w-5" />
-          <span className="text-xl font-semibold tracking-wide">绿色制造体系</span>
-        </div>
-        <div className="mt-1 text-[11px] tracking-[0.18em] text-slate-600">
-          智能申报 · 专家评审 · AI 智能体
-        </div>
-      </div>
+
 
 
       {/* 居中登录卡片 */}
