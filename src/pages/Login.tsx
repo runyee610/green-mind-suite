@@ -41,19 +41,21 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-sky-50">
-      {/* 底层实景，轻微虚化提亮 */}
+      {/* 底层实景，保持清晰，仅做轻微色彩润色 */}
       <img
         src={bgAsset.url}
         alt=""
         aria-hidden
-        className="absolute inset-0 h-full w-full object-cover scale-105"
-        style={{ filter: "blur(2px) saturate(0.95) brightness(1.05)" }}
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{ filter: "saturate(1.02) brightness(1.03)" }}
       />
 
+      {/* 整体极淡柔光，统一氛围但不发糊 */}
+      <div className="pointer-events-none absolute inset-0 bg-white/10" />
       {/* 顶部白色柔化 */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-white/45 via-white/10 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-white/25 via-white/5 to-transparent" />
       {/* 底部白色过渡，让卡片区更干净 */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-white/75 via-white/25 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-white/55 via-white/15 to-transparent" />
       {/* 中央品牌柔光 */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -62,6 +64,7 @@ export default function Login() {
             "radial-gradient(ellipse 55% 45% at 50% 55%, hsl(var(--primary) / 0.10), transparent 70%)",
         }}
       />
+
 
       {/* 左上品牌 */}
       <div className="absolute top-6 left-8 z-10 flex items-center gap-3">
@@ -84,7 +87,7 @@ export default function Login() {
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-[420px]">
           <Card
-            className="rounded-2xl border border-white/70 bg-white/70 backdrop-blur-2xl"
+            className="rounded-2xl border border-white/70 bg-white/[0.78] backdrop-blur-2xl"
             style={{
               boxShadow:
                 "0 1px 2px rgba(15,23,42,0.06), 0 25px 55px -20px rgba(15,23,42,0.25)",
