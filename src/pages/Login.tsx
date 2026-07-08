@@ -87,7 +87,7 @@ export default function Login() {
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-[420px]">
           <Card
-            className="rounded-2xl border border-white/70 bg-white/70 backdrop-blur-2xl"
+            className="rounded-2xl border border-white/70 bg-white/[0.78] backdrop-blur-2xl"
             style={{
               boxShadow:
                 "0 1px 2px rgba(15,23,42,0.06), 0 25px 55px -20px rgba(15,23,42,0.25)",
