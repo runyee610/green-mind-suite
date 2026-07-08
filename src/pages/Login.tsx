@@ -164,7 +164,7 @@ export default function Login() {
                 </Button>
 
                 <p className="pt-1 text-center text-[11px] text-slate-400">
-                  演示账号：<span className="font-mono text-slate-600">admin / admin123</span>
+                  {"\n"}
                 </p>
               </div>
             </CardContent>
