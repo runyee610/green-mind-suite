@@ -65,9 +65,17 @@ function getCrumbs(pathname: string): string[] {
 
 export function AppLayout({ title, subtitle, hideHeader = false, headerActions, children }: AppLayoutProps) {
   const { role, setRole } = useRole();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const crumbs = getCrumbs(pathname);
+
+  const handleLogout = () => {
+    logout();
+    toast({ title: "已退出登录", description: "请重新登录以继续使用" });
+    navigate("/login", { replace: true });
+  };
+
 
   const switchRole = (next: Role) => {
     if (next === role) return;
