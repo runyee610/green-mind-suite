@@ -1,27 +1,35 @@
-## 登录页背景优化：去模糊，保留通透高级感
+## 登录页顶部调整
 
-当前背景使用了 `blur(2px)` + `scale-105`，导致外滩实景看起来发虚、细节丢失，用户体感"糊"。本次调整让背景保持清晰锐利，同时通过柔化的白色蒙版和品牌光晕，避免"硬照片"的生硬感。
+仅修改 `src/pages/Login.tsx`，不动其它文件与业务逻辑。
 
-### 具体改动（仅 `src/pages/Login.tsx`）
+### 1. 左上角品牌区
+- 删除英文副标题 `AI+ Trusted Energy-Carbon Smart Data Space`
+- 保留 Logo + "AI 能碳数智空间" 主标题
 
-1. **背景 `<img>` 去模糊，保持清晰**
-   - 移除 `filter: blur(2px)`
-   - 保留极轻微的色彩润色：`filter: saturate(1.02) brightness(1.03)`
-   - 去掉 `scale-105`（原本是为了掩盖 blur 边缘，去 blur 后不再需要）
+### 2. 右上角新增"绿色制造体系"入口
+在页面右上角 (`absolute top-6 right-8 z-10`) 新增一个模块，与左上角品牌视觉对称：
 
-2. **蒙版层小幅调整，让卡片区更干净、天际线细节不被吃掉**
-   - 顶部白色柔化：由 `from-white/45` 降到 `from-white/25`，避免天空过白
-   - 底部白色过渡：由 `from-white/75` 降到 `from-white/55`，让江面/建筑底部保留可见细节
-   - 中央品牌绿光晕保持不变（`hsl(var(--primary)/0.10)`）
-   - 新增一层极淡的整体柔光：`bg-white/10`，让整张图统一在温润氛围里但不发糊
+- 标题：**绿色制造体系**（绿色主题色，字号与左侧主标题接近，带一个小型叶子/环保线型图标，例如 lucide 的 `Leaf`）
+- 下方以横向排列展示三个子能力，每个为轻量胶囊/标签样式（毛玻璃底 + 细边 + 小图标）：
+  - **申报**（图标：`FileText`）
+  - **专家评审**（图标：`UserCheck`）
+  - **智能体**（图标：`Bot`）
 
-3. **卡片可读性微调（因背景变清晰，卡片需稍加对比）**
-   - `bg-white/70` → `bg-white/78`
-   - `backdrop-blur-2xl` 保持，卡片自身仍是毛玻璃质感
-   - 阴影不变
+样式基调与现有卡片一致：`bg-white/70 backdrop-blur border border-white/70`、圆角、柔和阴影、slate 文本、primary 绿色点缀，保证与整体极简毛玻璃风一致，不打破画面通透感。
+
+### 技术细节
+- 从 `lucide-react` 追加导入 `Leaf, FileText, UserCheck, Bot`
+- 新增结构大致：
+  ```text
+  <div className="absolute top-6 right-8 z-10 ...">
+    <div>  Leaf + 绿色制造体系  </div>
+    <div className="mt-2 flex gap-2">
+      [胶囊: 申报]  [胶囊: 专家评审]  [胶囊: 智能体]
+    </div>
+  </div>
+  ```
+- 颜色统一使用语义 token（`text-primary`、`bg-white/70` 等），不写死颜色。
 
 ### 不改动
-
-- 图片资源（继续使用现有 `login-bg.jpg.asset.json`，即 image-68）
-- 品牌区、标题、输入框、按钮、页脚样式
-- 业务逻辑、路由、`AuthContext`、其他页面
+- 背景图、遮罩、居中登录卡片、表单、页脚
+- AuthContext、路由、其它页面

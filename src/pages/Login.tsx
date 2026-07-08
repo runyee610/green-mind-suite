@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, LogIn, Lock, User as UserIcon } from "lucide-react";
+import { Eye, EyeOff, LogIn, Lock, User as UserIcon, Leaf, FileText, UserCheck, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,9 +77,29 @@ export default function Login() {
           <div className="text-xl font-semibold tracking-wide text-slate-800">
             AI 能碳数智空间
           </div>
-          <div className="text-[10px] uppercase tracking-[0.22em] text-slate-600 mt-1">
-            AI+ Trusted Energy-Carbon Smart Data Space
-          </div>
+        </div>
+      </div>
+
+      {/* 右上：绿色制造体系 */}
+      <div className="absolute top-6 right-8 z-10 flex flex-col items-end">
+        <div className="flex items-center gap-2 text-primary">
+          <Leaf className="h-5 w-5" />
+          <span className="text-xl font-semibold tracking-wide">绿色制造体系</span>
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          {[
+            { icon: FileText, label: "申报" },
+            { icon: UserCheck, label: "专家评审" },
+            { icon: Bot, label: "智能体" },
+          ].map(({ icon: Icon, label }) => (
+            <div
+              key={label}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/70 backdrop-blur px-3 py-1 text-xs text-slate-700 shadow-sm"
+            >
+              <Icon className="h-3.5 w-3.5 text-primary" />
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
