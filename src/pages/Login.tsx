@@ -174,7 +174,7 @@ export default function Login() {
 
       {/* 页脚 */}
       <div className="absolute bottom-4 left-0 right-0 z-10 text-center text-[11px] text-slate-500/90">
-        © {new Date().getFullYear()} AI 能碳数智空间 · 安全链路由平台 HTTPS 保护
+        {"\n"}
       </div>
     </div>
   );
