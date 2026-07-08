@@ -75,7 +75,7 @@ export default function Login() {
         />
         <div className="leading-tight">
           <div className="text-xl font-semibold tracking-wide text-slate-800">
-            AI 能碳数智空间 <span className="mx-1 text-slate-300">｜</span> <span className="text-emerald-700">绿色制造模块</span>
+            AI 能碳数智空间 <span className="mx-1 text-slate-400">｜</span> <span>绿色制造模块</span>
           </div>
         </div>
       </div>
