@@ -1,11 +1,22 @@
-import { Bell, Sun, User, Building2, Briefcase, ChevronRight } from "lucide-react";
+import { Bell, Sun, User, Building2, Briefcase, ChevronRight, ChevronDown, LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useRole, type Role } from "@/contexts/RoleContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+
 
 interface AppLayoutProps {
   title?: string;
