@@ -82,26 +82,15 @@ export default function Login() {
 
       {/* 右上：绿色制造体系 */}
       <div className="absolute top-6 right-8 z-10 flex flex-col items-end">
-        <div className="flex items-center gap-2 text-primary">
+        <div className="flex items-center gap-2 text-emerald-700">
           <Leaf className="h-5 w-5" />
           <span className="text-xl font-semibold tracking-wide">绿色制造体系</span>
         </div>
-        <div className="mt-2 flex items-center gap-2">
-          {[
-            { icon: FileText, label: "申报" },
-            { icon: UserCheck, label: "专家评审" },
-            { icon: Bot, label: "智能体" },
-          ].map(({ icon: Icon, label }) => (
-            <div
-              key={label}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/70 backdrop-blur px-3 py-1 text-xs text-slate-700 shadow-sm"
-            >
-              <Icon className="h-3.5 w-3.5 text-primary" />
-              <span>{label}</span>
-            </div>
-          ))}
+        <div className="mt-1 text-[11px] tracking-[0.18em] text-slate-600">
+          智能申报 · 专家评审 · AI 智能体
         </div>
       </div>
+
 
       {/* 居中登录卡片 */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
