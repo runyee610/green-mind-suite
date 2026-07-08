@@ -1,47 +1,43 @@
-## 目标
+## 登录页视觉改造方案
 
-为"AI 能碳数值空间"添加独立登录页，登录后进入系统；顶栏右上角"管理员"变为可点击的下拉菜单，支持"退出登录"。UI 风格与专家评审、模拟自我评价等已有页面统一（同一套设计 token、卡片阴影、圆角、绿色主色渐变背景，参考 `ResetPassword.tsx` 的登录级页面风格）。
+将 `/login` 页面重做为全屏背景图 + 品牌化布局，保持现有登录逻辑不变。
 
-## 交互流程
+### 资源接入
+- 使用 `lovable-assets` 将上传的两张图上传为 CDN 资源：
+  - `src/assets/login-bg.jpg.asset.json`（图1 上海外滩天际线，作为全屏背景）
+  - `src/assets/platform-logo.png.asset.json`（图2 青色 N 型 logo，作为平台 logo）
 
-1. 未登录访问任意受保护路由 → 自动跳转到 `/login`
-2. `/login` 输入账号密码 → 校验通过写入本地登录态 → 跳回原目标路由（默认 `/`）
-3. 顶栏"管理员"点击 → 下拉菜单显示当前账号 + "退出登录" → 退出后回到 `/login`
+### 布局结构（src/pages/Login.tsx 重写）
+```
+┌─────────────────────────────────────────────┐
+│ [Logo]  AI 能碳数智空间                      │  ← 左上角，logo 40px + 大标题 text-2xl
+│                                             │
+│                                             │
+│              ┌───────────────────┐          │
+│              │    用户登录         │          │  ← 卡片居中，标题 text-2xl 加粗
+│              │  ───────────       │          │
+│              │  账号  [_______]   │          │
+│              │  密码  [_______]   │          │
+│              │  □记住我   忘记密码 │          │
+│              │  [   登   录   ]   │          │
+│              └───────────────────┘          │
+│                                             │
+│         © 2026 · 安全链路 HTTPS 保护         │
+└─────────────────────────────────────────────┘
+背景：全屏铺满外滩图，覆盖一层深色渐变遮罩提升文字对比
+```
 
-演示阶段无后端：使用 mock 账号（如 `admin / admin123`，任意非空也可放行，二选一）。登录态存 `localStorage`。
+### 关键设计细节
+- **背景**：`min-h-screen` + `bg-cover bg-center`，叠加 `bg-gradient-to-b from-slate-900/50 via-slate-900/30 to-slate-900/60` 遮罩，保证左上标题与卡片可读。
+- **左上品牌区**：`absolute top-6 left-8`，logo 图片 40×40 圆角，右侧平台名 `text-2xl font-semibold text-white tracking-wide`，副标题 `text-xs text-white/70`。
+- **登录卡片**：`max-w-md` 居中，使用 `bg-background/95 backdrop-blur-md` 玻璃拟态，`shadow-2xl` `border-border/40`，卡片内标题改为「用户登录」`text-2xl font-bold tracking-wider`，替换原「账号登录」小标题。
+- **演示账号提示、账号/密码输入、显示密码切换、记住我、忘记密码、登录按钮**：保留现有逻辑与语义 token（`text-primary` / `Button` 默认样式），仅调整字号与间距使更"大气"。
+- **页脚**：底部居中 `text-white/60`，替代原卡片下方灰字。
+- 仍复用 `useAuth().login()`，成功后 `navigate(from)`，失败 toast，不动业务逻辑。
 
-## 文件改动
+### 涉及文件
+- 新增 `src/assets/login-bg.jpg.asset.json`（via lovable-assets CLI）
+- 新增 `src/assets/platform-logo.png.asset.json`（via lovable-assets CLI）
+- 重写 `src/pages/Login.tsx`
 
-**新增 `src/contexts/AuthContext.tsx`**
-- `AuthProvider`：state `{ user: { name, account } | null }`，从 `localStorage("app.auth")` 恢复
-- 暴露 `login(account, password)`、`logout()`、`isAuthenticated`
-- `useAuth()` hook
-
-**新增 `src/pages/Login.tsx`**
-- 复用 `ResetPassword.tsx` 的视觉框架：`min-h-screen` + 渐变背景 + 居中卡片 + 顶部 Leaf 图标
-- 标题「AI 能碳数值空间」，副标题「政企协同 · 绿色制造评价」
-- 表单：账号 / 密码 / 显隐切换 / "记住我" / 登录按钮
-- 校验失败 toast；成功后 `navigate(from, { replace: true })`
-
-**新增 `src/components/RequireAuth.tsx`**
-- 包裹路由，未登录 `<Navigate to="/login" state={{ from: location }} />`
-
-**修改 `src/App.tsx`**
-- `<RoleProvider>` 外再包一层 `<AuthProvider>`
-- 新增 `<Route path="/login" element={<Login />} />`（放在受保护路由之前，公开）
-- `/reset-password` 保持公开
-- 其它所有路由用 `<RequireAuth>` 包裹（在 Routes 内统一处理，避免逐条改：可用一个通配 layout 路由或简单包裹每个 element；采用统一的 `wrap = (el) => <RequireAuth>{el}</RequireAuth>` 帮助函数最省改动）
-
-**修改 `src/components/AppLayout.tsx`**
-- 顶栏右上角"管理员"区域改为 shadcn `DropdownMenu`：
-  - Trigger：现有头像 + "管理员"文字 + 下拉箭头
-  - Content：显示当前账号（来自 `useAuth().user`），分隔线，`LogOut` 图标 + "退出登录"
-  - 点击退出：`logout()` → `navigate("/login", { replace: true })` + toast
-
-## 技术细节
-
-- 登录态存储 key：`app.auth`，值 `{ account, name }`；退出时 `removeItem`
-- Mock 校验规则：账号非空、密码 ≥ 6 位即通过；预置演示提示"演示账号 admin / admin123"
-- 路由保护跳转保留 `location.state.from` 以便登录后回跳
-- 视觉 token 全部使用现有语义色（`bg-primary`、`text-muted-foreground`、`bg-card` 等），不引入硬编码颜色
-- 不动业务逻辑与后端相关代码；仅前端登录/登出闭环
+不改动路由、AuthContext、AppLayout 或其它页面。
