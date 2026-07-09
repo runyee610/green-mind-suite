@@ -273,7 +273,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "/",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "8",
     reportValue: "提供本单位减少生产过程中原辅材料消耗的应用案例",
     reportOptions: ["提供本单位减少生产过程中原辅材料消耗的应用案例", "未提供"],
     proofs: ["1.节约原材料自评价报告.pdf", "2.设计开发控制程序.pdf"],
@@ -510,7 +510,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "%",
     leadValue: "/",
     baseValue: "/",
-    weight: "8",
+    weight: "4",
     reportValue: "100.00",
     proofs: ["1.产品碳足迹计算过程及其附件.pdf", "2.《工业产销总值及主要产品产量表》（B204-1表）.pdf", "3.产品碳足迹核查报告.pdf"],
     proofRequirement:
@@ -529,7 +529,7 @@ export const EVALUATION_INDICATORS: IndicatorRow[] = [
     unit: "%",
     leadValue: "/",
     baseValue: "/",
-    weight: "/",
+    weight: "4",
     reportValue: "",
     proofs: [],
     proofRequirement:
