@@ -209,6 +209,15 @@ export function AIScoringAgentPanel() {
     URL.revokeObjectURL(url);
   };
 
+  const handleRegenerate = () => {
+    try {
+      sessionStorage.removeItem(REPORT_READY_KEY);
+    } catch {
+      /* ignore */
+    }
+    setReportReady(false);
+  };
+
   return (
 
     <Card id="ai-scoring" className="panel scroll-mt-24 relative overflow-hidden">
