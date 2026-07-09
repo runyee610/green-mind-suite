@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Download,
   Loader2,
+  RotateCcw,
 } from "lucide-react";
 import { SCORE_DIMENSIONS } from "./data";
 
