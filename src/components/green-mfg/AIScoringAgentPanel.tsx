@@ -239,15 +239,22 @@ export function AIScoringAgentPanel() {
               <Sparkles className="mr-1 h-3 w-3" />
             </Badge>
           </span>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
-            onClick={handleDownloadReport}
-          >
-            <Download className="mr-1 h-3.5 w-3.5" />
-            下载技改报告
-          </Button>
+          {reportReady ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
+              onClick={handleDownloadReport}
+            >
+              <Download className="mr-1 h-3.5 w-3.5" />
+              下载技改报告
+            </Button>
+          ) : (
+            <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-dashed border-muted-foreground/40 bg-muted/30 px-3 text-xs text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+              技改报告生成需要几分钟，请稍候~
+            </span>
+          )}
         </CardTitle>
 
         <p className="mt-1 text-xs text-muted-foreground">
