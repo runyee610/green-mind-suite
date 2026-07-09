@@ -15,7 +15,6 @@ import {
 import { SCORE_DIMENSIONS } from "./data";
 
 const WEAK_THRESHOLD = 0.9;
-const GENERATED_KEY = "green-mfg-ai-scoring-generated";
 
 interface Suggestion {
   technologies: string[];
@@ -160,28 +159,28 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-const REPORT_READY_KEY = "green-mfg-ai-report-ready";
 const REPORT_DELAY_MS = 8000;
+let moduleTimer: number | null = null;
+let moduleReportReady = false;
 
-export function AIScoringAgentPanel() {
-  const animatedScore = 91;
-  const [reportReady, setReportReady] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return sessionStorage.getItem(REPORT_READY_KEY) === "1";
-  });
+export function AIScoringAgentPanel({ reportReady: reportReadyProp }: { reportReady?: boolean }) {
+  const [internalReady, setInternalReady] = useState(moduleReportReady);
 
   useEffect(() => {
-    if (reportReady) return;
-    const t = window.setTimeout(() => {
-      try {
-        sessionStorage.setItem(REPORT_READY_KEY, "1");
-      } catch {
-        /* ignore */
-      }
-      setReportReady(true);
+    if (moduleReportReady) {
+      setInternalReady(true);
+      return;
+    }
+    if (moduleTimer) return;
+    moduleTimer = window.setTimeout(() => {
+      moduleReportReady = true;
+      moduleTimer = null;
+      setInternalReady(true);
     }, REPORT_DELAY_MS);
-    return () => window.clearTimeout(t);
-  }, [reportReady]);
+  }, []);
+
+  const reportReady = reportReadyProp ?? internalReady;
+  const animatedScore = 91;
 
   const handleDownloadReport = () => {
     const weakLines: string[] = [];
@@ -211,16 +210,6 @@ export function AIScoringAgentPanel() {
   return (
 
     <Card id="ai-scoring" className="panel scroll-mt-24 relative overflow-hidden">
-      {/* Tech background layers */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.07]"
-        style={{
-          backgroundImage:
-            "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-          maskImage: "radial-gradient(ellipse at 30% 0%, #000 40%, transparent 80%)",
-          WebkitMaskImage: "radial-gradient(ellipse at 30% 0%, #000 40%, transparent 80%)",
-        }}
-      />
       <div className="pointer-events-none absolute -top-32 -right-32 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
 
