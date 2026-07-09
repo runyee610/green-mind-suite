@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Bot,
   Sparkles,
@@ -8,6 +9,8 @@ import {
   AlertTriangle,
   Lightbulb,
   ChevronRight,
+  Download,
+  RotateCcw,
 } from "lucide-react";
 import { SCORE_DIMENSIONS } from "./data";
 import { AIScoringGeneratingOverlay } from "./AIScoringGeneratingOverlay";
@@ -165,6 +168,40 @@ export function AIScoringAgentPanel() {
     return sessionStorage.getItem(GENERATED_KEY) === "1";
   });
 
+  const handleBackToWaiting = () => {
+    try {
+      sessionStorage.removeItem(GENERATED_KEY);
+    } catch {
+      /* ignore */
+    }
+    setGenerated(false);
+  };
+
+  const handleDownloadReport = () => {
+    const weakLines: string[] = [];
+    SCORE_DIMENSIONS.forEach((l1) => {
+      l1.children.forEach((l2) => {
+        if (l2.weight > 0 && l2.score / l2.weight < WEAK_THRESHOLD) {
+          const s = getSuggestion(l2.name);
+          weakLines.push(
+            `- [${l1.name}] ${l2.name}  得分 ${l2.score}/${l2.weight}\n    推荐技术：${s.technologies.join("、")}\n    建议措施：${s.measures.join("；")}`,
+          );
+        }
+      });
+    });
+    const dims = DIMENSIONS.map((d) => `  - ${d.l}：${d.v}/${d.m}`).join("\n");
+    const content = `绿色工厂技改建议报告\n生成时间：${new Date().toLocaleString()}\n\nAI 综合评分：${animatedScore} / 100（达到绿色工厂申报基准）\n\n一级维度得分：\n${dims}\n\n薄弱项与技改建议：\n${weakLines.join("\n\n")}\n`;
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "绿色工厂技改建议报告.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   if (!generated) {
     return (
       <AIScoringGeneratingOverlay
@@ -179,6 +216,7 @@ export function AIScoringAgentPanel() {
       />
     );
   }
+
 
 
   return (
@@ -211,7 +249,17 @@ export function AIScoringAgentPanel() {
               <Sparkles className="mr-1 h-3 w-3" />
             </Badge>
           </span>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
+            onClick={handleDownloadReport}
+          >
+            <Download className="mr-1 h-3.5 w-3.5" />
+            下载技改报告
+          </Button>
         </CardTitle>
+
         <p className="mt-1 text-xs text-muted-foreground">
           基于已上传证明材料与填报数据，AI 已完成综合评分与薄弱项分析。
         </p>
@@ -286,6 +334,18 @@ export function AIScoringAgentPanel() {
 
         {/* 薄弱指标提醒 */}
         <WeakIndicatorsPanel />
+
+        <div className="flex justify-center pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs text-muted-foreground"
+            onClick={handleBackToWaiting}
+          >
+            <RotateCcw className="mr-1 h-3.5 w-3.5" />
+            返回查看等待页
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
