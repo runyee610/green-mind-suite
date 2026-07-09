@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,9 @@ import {
   Lightbulb,
   ChevronRight,
   Download,
-  RotateCcw,
+  Loader2,
 } from "lucide-react";
 import { SCORE_DIMENSIONS } from "./data";
-import { AIScoringGeneratingOverlay } from "./AIScoringGeneratingOverlay";
 
 const WEAK_THRESHOLD = 0.9;
 const GENERATED_KEY = "green-mfg-ai-scoring-generated";
