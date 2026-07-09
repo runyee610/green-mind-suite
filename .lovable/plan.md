@@ -1,21 +1,18 @@
-## 修改计划
+## 修改 `src/components/green-mfg/AIScoringAgentPanel.tsx`
 
-### 1. 去掉方块格子背景
-**文件**：`src/components/green-mfg/AIScoringAgentPanel.tsx`
+**1. 定时器由 8s → 4s**
+- `REPORT_DELAY_MS` 由 `8000` 改为 `4000`。
 
-- 移除 Card 顶部那个网格线背景层（第 214-223 行），即 `opacity-[0.07]` 的 `linear-gradient` 交叉网格图案。
-- 保留其他装饰性背景（右侧/底部模糊光晕、评分结果区的径向渐变）。
+**2. 每次进入"AI打分结果"tab 都重新播放"生成中"提示**
+- 移除模块级持久变量 `moduleTimer` / `moduleReportReady`，也不再使用 `reportReadyProp`。
+- 组件挂载时始终以 `reportReady = false` 起步，`useEffect` 内启动 4s 定时器，卸载时清理。
+- 效果：从"基本信息"等其他子 tab 切回"AI 打分结果"时，组件重新挂载，提示重新出现 4 秒后再显示下载按钮。
 
-### 2. 修复切换子 tab 后提示重复出现
-**文件**：`src/components/green-mfg/AIScoringAgentPanel.tsx` + `src/pages/GreenMfgEntDeclarationNew.tsx`
+**3. "技改报告生成需要几分钟，请稍候~" 视觉：去掉虚线框，改为轻提示**
+- 移除 `border border-dashed border-muted-foreground/40 bg-muted/30` 的胶囊容器。
+- 改为柔和的浅色胶囊：`bg-primary/5 text-primary/80`（无边框），文字更轻；配合 `animate-pulse` 让整体有呼吸感的轻提示效果；`Loader2` 保持 `animate-spin`。
+- 保持在 `CardTitle` 右侧原位置，尺寸/间距与原下载按钮对齐（h-8、px-3、text-xs）。
 
-当前 `AIScoringAgentPanel` 内部用 `useState + sessionStorage` 管理 `reportReady`，但页面里通过 `{currentStep === "ai-scoring" && <AIScoringAgentPanel />}` 条件渲染，组件切走即卸载，导致 `sessionStorage` 回写可能未及时生效（或浏览器限制下失效），用户反馈每次切回都重新出现等待提示。
-
-**修复方案**：
-- 将 `reportReady` 状态提升到父页面 `GreenMfgEntDeclarationNew`（用 `useState` + `useRef` 记录是否已启动过定时器），通过 prop 传入 `AIScoringAgentPanel`。
-- 在 `GreenMfgEntDeclarationNew` 中，组件首次挂载到 "ai-scoring" 时启动一次 `setTimeout(8s)`，之后即使切换 tab 导致子组件卸载/重挂，状态由父组件保持，不会重复出现等待提示。
-- `AIScoringAgentPanel` 改为接收 `reportReady: boolean` prop，不再自己管理 sessionStorage 和定时器。
-
-### 技术说明
-- 纯前端 UI/状态调整，无后端变更。
-- 不涉及新增颜色 token。
+## 不改动
+- `reportReady` 作为可选 prop 的类型签名保留（外部未使用），或一并移除该 prop —— 采用后者，接口更干净。父组件 `GreenMfgEntDeclarationNew.tsx` 目前未传该 prop，无需改动。
+- 打分结果、薄弱项、下载报告的业务逻辑不变。
