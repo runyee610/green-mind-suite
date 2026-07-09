@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Bot,
   Sparkles,
@@ -8,6 +9,8 @@ import {
   AlertTriangle,
   Lightbulb,
   ChevronRight,
+  Download,
+  RotateCcw,
 } from "lucide-react";
 import { SCORE_DIMENSIONS } from "./data";
 import { AIScoringGeneratingOverlay } from "./AIScoringGeneratingOverlay";
