@@ -160,7 +160,7 @@ const DIMENSIONS = [
 ];
 
 const REPORT_DELAY_MS = 8000;
-let moduleTimer: ReturnType<typeof setTimeout> | null = null;
+let moduleTimer: number | null = null;
 let moduleReportReady = false;
 
 export function AIScoringAgentPanel({ reportReady: reportReadyProp }: { reportReady?: boolean }) {
