@@ -334,6 +334,18 @@ export function AIScoringAgentPanel() {
 
         {/* 薄弱指标提醒 */}
         <WeakIndicatorsPanel />
+
+        <div className="flex justify-center pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs text-muted-foreground"
+            onClick={handleBackToWaiting}
+          >
+            <RotateCcw className="mr-1 h-3.5 w-3.5" />
+            返回查看等待页
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
