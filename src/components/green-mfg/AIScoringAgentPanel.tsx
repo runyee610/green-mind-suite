@@ -159,7 +159,27 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-export function AIScoringAgentPanel({ reportReady }: { reportReady: boolean }) {
+const REPORT_DELAY_MS = 8000;
+let moduleTimer: ReturnType<typeof setTimeout> | null = null;
+let moduleReportReady = false;
+
+export function AIScoringAgentPanel({ reportReady: reportReadyProp }: { reportReady?: boolean }) {
+  const [internalReady, setInternalReady] = useState(moduleReportReady);
+
+  useEffect(() => {
+    if (moduleReportReady) {
+      setInternalReady(true);
+      return;
+    }
+    if (moduleTimer) return;
+    moduleTimer = window.setTimeout(() => {
+      moduleReportReady = true;
+      moduleTimer = null;
+      setInternalReady(true);
+    }, REPORT_DELAY_MS);
+  }, []);
+
+  const reportReady = reportReadyProp ?? internalReady;
   const animatedScore = 91;
 
   const handleDownloadReport = () => {
