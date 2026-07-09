@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,8 +10,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { SCORE_DIMENSIONS } from "./data";
+import { AIScoringGeneratingOverlay } from "./AIScoringGeneratingOverlay";
 
 const WEAK_THRESHOLD = 0.9;
+const GENERATED_KEY = "green-mfg-ai-scoring-generated";
 
 interface Suggestion {
   technologies: string[];
@@ -158,6 +160,26 @@ const DIMENSIONS = [
 
 export function AIScoringAgentPanel() {
   const animatedScore = 91;
+  const [generated, setGenerated] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem(GENERATED_KEY) === "1";
+  });
+
+  if (!generated) {
+    return (
+      <AIScoringGeneratingOverlay
+        onComplete={() => {
+          try {
+            sessionStorage.setItem(GENERATED_KEY, "1");
+          } catch {
+            /* ignore */
+          }
+          setGenerated(true);
+        }}
+      />
+    );
+  }
+
 
   return (
     <Card id="ai-scoring" className="panel scroll-mt-24 relative overflow-hidden">
