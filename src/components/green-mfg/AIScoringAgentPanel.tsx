@@ -15,7 +15,6 @@ import {
 import { SCORE_DIMENSIONS } from "./data";
 
 const WEAK_THRESHOLD = 0.9;
-const GENERATED_KEY = "green-mfg-ai-scoring-generated";
 
 interface Suggestion {
   technologies: string[];
@@ -159,9 +158,6 @@ const DIMENSIONS = [
   { l: "产品绿色化", v: 13.5, m: 15 },
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
-
-const REPORT_READY_KEY = "green-mfg-ai-report-ready";
-const REPORT_DELAY_MS = 8000;
 
 export function AIScoringAgentPanel() {
   const animatedScore = 91;
