@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Download,
   Loader2,
+  RotateCcw,
 } from "lucide-react";
 import { SCORE_DIMENSIONS } from "./data";
 
@@ -208,6 +209,15 @@ export function AIScoringAgentPanel() {
     URL.revokeObjectURL(url);
   };
 
+  const handleRegenerate = () => {
+    try {
+      sessionStorage.removeItem(REPORT_READY_KEY);
+    } catch {
+      /* ignore */
+    }
+    setReportReady(false);
+  };
+
   return (
 
     <Card id="ai-scoring" className="panel scroll-mt-24 relative overflow-hidden">
@@ -239,22 +249,35 @@ export function AIScoringAgentPanel() {
               <Sparkles className="mr-1 h-3 w-3" />
             </Badge>
           </span>
-          {reportReady ? (
+          <span className="flex items-center gap-2">
+            {reportReady ? (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
+                onClick={handleDownloadReport}
+              >
+                <Download className="mr-1 h-3.5 w-3.5" />
+                下载技改报告
+              </Button>
+            ) : (
+              <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-dashed border-muted-foreground/40 bg-muted/30 px-3 text-xs text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                技改报告生成需要几分钟，请稍候~
+              </span>
+            )}
             <Button
-              size="sm"
-              variant="outline"
-              className="h-8 border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
-              onClick={handleDownloadReport}
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 text-muted-foreground hover:text-primary"
+              onClick={handleRegenerate}
+              title="重新生成技改报告"
+              aria-label="重新生成技改报告"
+              disabled={!reportReady}
             >
-              <Download className="mr-1 h-3.5 w-3.5" />
-              下载技改报告
+              <RotateCcw className="h-3.5 w-3.5" />
             </Button>
-          ) : (
-            <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-dashed border-muted-foreground/40 bg-muted/30 px-3 text-xs text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-              技改报告生成需要几分钟，请稍候~
-            </span>
-          )}
+          </span>
         </CardTitle>
 
         <p className="mt-1 text-xs text-muted-foreground">
