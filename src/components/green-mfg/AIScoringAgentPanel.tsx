@@ -228,7 +228,7 @@ export function AIScoringAgentPanel() {
               下载技改报告
             </Button>
           ) : (
-            <span className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary/5 px-3 text-xs text-primary/80 animate-pulse">
+            <span className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary/5 px-3 text-xs text-primary/80">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
               技改报告生成需要几分钟，请稍候~
             </span>
