@@ -160,21 +160,28 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
+const REPORT_READY_KEY = "green-mfg-ai-report-ready";
+const REPORT_DELAY_MS = 8000;
+
 export function AIScoringAgentPanel() {
   const animatedScore = 91;
-  const [generated, setGenerated] = useState<boolean>(() => {
+  const [reportReady, setReportReady] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
-    return sessionStorage.getItem(GENERATED_KEY) === "1";
+    return sessionStorage.getItem(REPORT_READY_KEY) === "1";
   });
 
-  const handleBackToWaiting = () => {
-    try {
-      sessionStorage.removeItem(GENERATED_KEY);
-    } catch {
-      /* ignore */
-    }
-    setGenerated(false);
-  };
+  useEffect(() => {
+    if (reportReady) return;
+    const t = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem(REPORT_READY_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+      setReportReady(true);
+    }, REPORT_DELAY_MS);
+    return () => window.clearTimeout(t);
+  }, [reportReady]);
 
   const handleDownloadReport = () => {
     const weakLines: string[] = [];
@@ -201,24 +208,8 @@ export function AIScoringAgentPanel() {
     URL.revokeObjectURL(url);
   };
 
-  if (!generated) {
-    return (
-      <AIScoringGeneratingOverlay
-        onComplete={() => {
-          try {
-            sessionStorage.setItem(GENERATED_KEY, "1");
-          } catch {
-            /* ignore */
-          }
-          setGenerated(true);
-        }}
-      />
-    );
-  }
-
-
-
   return (
+
     <Card id="ai-scoring" className="panel scroll-mt-24 relative overflow-hidden">
       {/* Tech background layers */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.07]"
