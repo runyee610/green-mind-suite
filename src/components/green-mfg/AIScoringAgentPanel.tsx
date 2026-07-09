@@ -159,25 +159,8 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-export function AIScoringAgentPanel() {
+export function AIScoringAgentPanel({ reportReady }: { reportReady: boolean }) {
   const animatedScore = 91;
-  const [reportReady, setReportReady] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return sessionStorage.getItem(REPORT_READY_KEY) === "1";
-  });
-
-  useEffect(() => {
-    if (reportReady) return;
-    const t = window.setTimeout(() => {
-      try {
-        sessionStorage.setItem(REPORT_READY_KEY, "1");
-      } catch {
-        /* ignore */
-      }
-      setReportReady(true);
-    }, REPORT_DELAY_MS);
-    return () => window.clearTimeout(t);
-  }, [reportReady]);
 
   const handleDownloadReport = () => {
     const weakLines: string[] = [];
@@ -207,16 +190,6 @@ export function AIScoringAgentPanel() {
   return (
 
     <Card id="ai-scoring" className="panel scroll-mt-24 relative overflow-hidden">
-      {/* Tech background layers */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.07]"
-        style={{
-          backgroundImage:
-            "linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-          maskImage: "radial-gradient(ellipse at 30% 0%, #000 40%, transparent 80%)",
-          WebkitMaskImage: "radial-gradient(ellipse at 30% 0%, #000 40%, transparent 80%)",
-        }}
-      />
       <div className="pointer-events-none absolute -top-32 -right-32 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
 
