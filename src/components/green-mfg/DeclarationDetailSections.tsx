@@ -1311,9 +1311,26 @@ function IndicatorItem({
                 已修订
               </Badge>
             )}
-            <Badge variant="outline" className="border-primary/40 bg-primary/5 text-xs text-primary">
-              分值 {row.weight ?? "/"}
-            </Badge>
+            {(() => {
+              const w = parseFloat(String(row.weight ?? ""));
+              const hasWeight = Number.isFinite(w) && w > 0;
+              const aiScore = row.aiMeta?.score;
+              const earned = hasWeight && typeof aiScore === "number"
+                ? Math.round((aiScore / 100) * w * 10) / 10
+                : null;
+              return (
+                <Badge variant="outline" className="border-primary/40 bg-primary/5 text-xs text-primary">
+                  {earned !== null ? (
+                    <>
+                      得分 <span className="mx-0.5 font-mono font-semibold">{earned}</span>
+                      <span className="text-primary/60"> / 分值 {row.weight}</span>
+                    </>
+                  ) : (
+                    <>分值 {row.weight ?? "/"}</>
+                  )}
+                </Badge>
+              );
+            })()}
           </div>
         </div>
       ) : (
