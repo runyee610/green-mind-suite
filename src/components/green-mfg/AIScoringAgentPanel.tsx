@@ -159,27 +159,16 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
-const REPORT_DELAY_MS = 8000;
-let moduleTimer: number | null = null;
-let moduleReportReady = false;
+const REPORT_DELAY_MS = 4000;
 
-export function AIScoringAgentPanel({ reportReady: reportReadyProp }: { reportReady?: boolean }) {
-  const [internalReady, setInternalReady] = useState(moduleReportReady);
+export function AIScoringAgentPanel() {
+  const [reportReady, setReportReady] = useState(false);
 
   useEffect(() => {
-    if (moduleReportReady) {
-      setInternalReady(true);
-      return;
-    }
-    if (moduleTimer) return;
-    moduleTimer = window.setTimeout(() => {
-      moduleReportReady = true;
-      moduleTimer = null;
-      setInternalReady(true);
-    }, REPORT_DELAY_MS);
+    const t = window.setTimeout(() => setReportReady(true), REPORT_DELAY_MS);
+    return () => window.clearTimeout(t);
   }, []);
 
-  const reportReady = reportReadyProp ?? internalReady;
   const animatedScore = 91;
 
   const handleDownloadReport = () => {
@@ -239,7 +228,7 @@ export function AIScoringAgentPanel({ reportReady: reportReadyProp }: { reportRe
               下载技改报告
             </Button>
           ) : (
-            <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-dashed border-muted-foreground/40 bg-muted/30 px-3 text-xs text-muted-foreground">
+            <span className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary/5 px-3 text-xs text-primary/80 animate-pulse">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
               技改报告生成需要几分钟，请稍候~
             </span>
