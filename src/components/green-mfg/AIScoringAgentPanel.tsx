@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,9 @@ import {
   Lightbulb,
   ChevronRight,
   Download,
-  RotateCcw,
+  Loader2,
 } from "lucide-react";
 import { SCORE_DIMENSIONS } from "./data";
-import { AIScoringGeneratingOverlay } from "./AIScoringGeneratingOverlay";
 
 const WEAK_THRESHOLD = 0.9;
 const GENERATED_KEY = "green-mfg-ai-scoring-generated";
@@ -161,21 +160,28 @@ const DIMENSIONS = [
   { l: "用地集约化", v: 18.5, m: 20 },
 ];
 
+const REPORT_READY_KEY = "green-mfg-ai-report-ready";
+const REPORT_DELAY_MS = 8000;
+
 export function AIScoringAgentPanel() {
   const animatedScore = 91;
-  const [generated, setGenerated] = useState<boolean>(() => {
+  const [reportReady, setReportReady] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
-    return sessionStorage.getItem(GENERATED_KEY) === "1";
+    return sessionStorage.getItem(REPORT_READY_KEY) === "1";
   });
 
-  const handleBackToWaiting = () => {
-    try {
-      sessionStorage.removeItem(GENERATED_KEY);
-    } catch {
-      /* ignore */
-    }
-    setGenerated(false);
-  };
+  useEffect(() => {
+    if (reportReady) return;
+    const t = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem(REPORT_READY_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+      setReportReady(true);
+    }, REPORT_DELAY_MS);
+    return () => window.clearTimeout(t);
+  }, [reportReady]);
 
   const handleDownloadReport = () => {
     const weakLines: string[] = [];
@@ -202,24 +208,8 @@ export function AIScoringAgentPanel() {
     URL.revokeObjectURL(url);
   };
 
-  if (!generated) {
-    return (
-      <AIScoringGeneratingOverlay
-        onComplete={() => {
-          try {
-            sessionStorage.setItem(GENERATED_KEY, "1");
-          } catch {
-            /* ignore */
-          }
-          setGenerated(true);
-        }}
-      />
-    );
-  }
-
-
-
   return (
+
     <Card id="ai-scoring" className="panel scroll-mt-24 relative overflow-hidden">
       {/* Tech background layers */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.07]"
@@ -249,15 +239,22 @@ export function AIScoringAgentPanel() {
               <Sparkles className="mr-1 h-3 w-3" />
             </Badge>
           </span>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
-            onClick={handleDownloadReport}
-          >
-            <Download className="mr-1 h-3.5 w-3.5" />
-            下载技改报告
-          </Button>
+          {reportReady ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
+              onClick={handleDownloadReport}
+            >
+              <Download className="mr-1 h-3.5 w-3.5" />
+              下载技改报告
+            </Button>
+          ) : (
+            <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-dashed border-muted-foreground/40 bg-muted/30 px-3 text-xs text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+              技改报告生成需要几分钟，请稍候~
+            </span>
+          )}
         </CardTitle>
 
         <p className="mt-1 text-xs text-muted-foreground">
@@ -334,18 +331,6 @@ export function AIScoringAgentPanel() {
 
         {/* 薄弱指标提醒 */}
         <WeakIndicatorsPanel />
-
-        <div className="flex justify-center pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs text-muted-foreground"
-            onClick={handleBackToWaiting}
-          >
-            <RotateCcw className="mr-1 h-3.5 w-3.5" />
-            返回查看等待页
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );
