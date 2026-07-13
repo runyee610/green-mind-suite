@@ -3,13 +3,13 @@ import {
   Search,
   Sprout,
   Filter,
-  Flame,
-  TrendingUp,
   Trash2,
   ArrowUpCircle,
   ArrowDownCircle,
   Pencil,
   Plus,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -50,21 +52,51 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ALL_INDUSTRIES } from "@/components/green-mfg/data";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 // ========== 培育库 Mock 数据 ==========
 type IncubateLevel = "市级" | "区级";
 type IncubateStage = "入库登记" | "诊断评估" | "整改提升" | "复评预审" | "晋级出库" | "退库";
-type EnergyTag = "重点用能单位" | "10亿+非重点规上";
 type Ownership = "国有" | "民营" | "外资" | "中外合资";
-type GreenType = "绿色工厂" | "绿色供应链" | "绿色工厂、绿色供应链";
+type GreenType = "绿色工厂" | "绿色供应链管理";
 
 const DISTRICTS = ["浦东新区", "闵行区", "嘉定区", "金山区", "宝山区", "青浦区", "奉贤区", "松江区", "徐汇区", "杨浦区"];
 const OWNERSHIPS: Ownership[] = ["国有", "民营", "外资", "中外合资"];
-const GREEN_TYPES: GreenType[] = ["绿色工厂", "绿色供应链", "绿色工厂、绿色供应链"];
-const ENERGY_TAGS: EnergyTag[] = ["重点用能单位", "10亿+非重点规上"];
+const GREEN_TYPES: GreenType[] = ["绿色工厂", "绿色供应链管理"];
+
+// 国民经济行业分类（小类）
+export const INDUSTRY_OPTIONS: string[] = [
+  "化学原料和化学制品制造业",
+  "其他未列明金属制品",
+  "锅炉及原动设备制造",
+  "水轮机及辅机制造",
+  "化学药品制剂制造",
+  "特种玻璃制造",
+  "汽车零部件",
+  "化学农药制造 (2631)",
+  "化学试剂和助剂制造 (2661)",
+  "初级形态塑料及合成树脂制造 (2651)",
+  "工业颜料制造 (2643)",
+  "其他专用化学产品制造 (2669)",
+  "日用化学产品制造 (268)",
+  "糕点、面包制造 (1411)",
+  "非织造布制造 (1781)",
+  "肉制品及副产品加工 (1353)",
+  "变压器、整流器和电感器制造 (3821)",
+  "配电开关控制设备制造 (3823)",
+  "塑料丝、绳及编织品制造 (2923)",
+  "纺织带制造 (1783)",
+  "钢压延加工 (3130)",
+  "食用植物油加工 (1331)",
+  "缝制机械制造 (3553)",
+  "药用辅料及包装材料 (2780)",
+  "粘土砖瓦及建筑砌块制造 (3031)",
+  "通用设备制造业 (34)",
+  "水泥制品制造 (3021)",
+  "玻璃保温容器制造 (3056)",
+  "塑料零件及其他塑料制品制造 (2929)",
+];
 
 interface IncubateRecord {
   id: string;
@@ -74,7 +106,6 @@ interface IncubateRecord {
   industry: string;
   subIndustry?: string;
   level: IncubateLevel;
-  energyTag: EnergyTag;
   outputValue: number | null;
   energyConsumption: number;
   carbonIntensity: number;
@@ -86,28 +117,27 @@ interface IncubateRecord {
   nextAction: string;
   improvement: number;
   ownership: Ownership;
-  greenType: GreenType;
+  greenType: GreenType[];
   contactName: string;
   contactPhone: string;
 }
 
 export const INITIAL_INCUBATE_DATA: IncubateRecord[] = [
-  { id: "INC-2025-001", name: "上海石化化工新材料分公司", creditCode: "91310116MA1H23ABC4", district: "金山区", industry: "石化化工行业", subIndustry: "煤制烯烃", level: "市级", energyTag: "重点用能单位", outputValue: 89500, energyConsumption: 36800, carbonIntensity: 1.42, score: 64, prevScore: 58, stage: "整改提升", enterDate: "2025-08-15", reviewer: "金山区生态局", nextAction: "11 月底前完成余热回收改造", improvement: 6, ownership: "国有", greenType: "绿色工厂", contactName: "王欣玮", contactPhone: "13822221712" },
-  { id: "INC-2025-002", name: "宝钢轧辊（上海）有限公司", creditCode: "91310113MA1H23BC02", district: "宝山区", industry: "钢铁行业", subIndustry: "短流程钢铁企业", level: "市级", energyTag: "重点用能单位", outputValue: 156200, energyConsumption: 52400, carbonIntensity: 1.18, score: 71, prevScore: 62, stage: "复评预审", enterDate: "2025-06-20", reviewer: "市经信委", nextAction: "等待 12 月专家组复评打分", improvement: 9, ownership: "国有", greenType: "绿色工厂", contactName: "韩淑哲", contactPhone: "13822221712" },
-  { id: "INC-2025-003", name: "中微半导体设备(上海)股份有限公司", creditCode: "91310115MA1K0DEF56", district: "浦东新区", industry: "电子行业", subIndustry: "集成电路", level: "市级", energyTag: "10亿+非重点规上", outputValue: 134000, energyConsumption: 8900, carbonIntensity: 0.32, score: 76, prevScore: 68, stage: "复评预审", enterDate: "2025-05-10", reviewer: "浦东经委", nextAction: "AI 预审已通过，进入晋级公示", improvement: 8, ownership: "民营", greenType: "绿色工厂、绿色供应链", contactName: "刘海洋", contactPhone: "13822221712" },
-  { id: "INC-2025-004", name: "上海延锋汽车饰件系统有限公司", creditCode: "91310115MA1K38AUTO2", district: "嘉定区", industry: "机械行业", subIndustry: "汽车整车", level: "区级", energyTag: "10亿+非重点规上", outputValue: 218000, energyConsumption: 6200, carbonIntensity: 0.18, score: 68, prevScore: 60, stage: "诊断评估", enterDate: "2025-09-02", reviewer: "嘉定区经委", nextAction: "AI 智能体出具诊断报告中", improvement: 8, ownership: "中外合资", greenType: "绿色工厂、绿色供应链", contactName: "张冠宇", contactPhone: "13822221712" },
-  { id: "INC-2025-005", name: "上海华谊新材料有限公司", creditCode: "91310116MA1H23HUAYI", district: "金山区", industry: "石化化工行业", subIndustry: "涂料", level: "区级", energyTag: "重点用能单位", outputValue: null, energyConsumption: 21300, carbonIntensity: 0.96, score: 59, prevScore: 55, stage: "整改提升", enterDate: "2025-07-28", reviewer: "金山区经委", nextAction: "VOCs 治理方案待审定", improvement: 4, ownership: "民营", greenType: "绿色工厂", contactName: "干俊杰", contactPhone: "13822221712" },
-  { id: "INC-2025-006", name: "上海联影医疗科技股份有限公司", creditCode: "91310115MA1K38UIH01", district: "嘉定区", industry: "电子行业", subIndustry: "显示器件", level: "市级", energyTag: "10亿+非重点规上", outputValue: 312000, energyConsumption: 5800, carbonIntensity: 0.12, score: 82, prevScore: 73, stage: "晋级出库", enterDate: "2024-11-12", reviewer: "市经信委", nextAction: "已颁发市级绿色工厂证书", improvement: 9, ownership: "民营", greenType: "绿色工厂", contactName: "张心雨", contactPhone: "13822221712" },
-  { id: "INC-2025-007", name: "上海三菱电梯有限公司", creditCode: "91310112MA1H23MITS1", district: "闵行区", industry: "机械行业", subIndustry: "电机", level: "市级", energyTag: "10亿+非重点规上", outputValue: 187600, energyConsumption: 7400, carbonIntensity: 0.22, score: 78, prevScore: 70, stage: "复评预审", enterDate: "2025-04-18", reviewer: "闵行区生态局", nextAction: "等待 12 月市级评审", improvement: 8, ownership: "中外合资", greenType: "绿色工厂", contactName: "付开杰", contactPhone: "13822221712" },
-  { id: "INC-2025-008", name: "上海某印染织造有限公司", creditCode: "91310118MA1J23DYE01", district: "青浦区", industry: "纺织行业", subIndustry: "印染", level: "区级", energyTag: "重点用能单位", outputValue: 42300, energyConsumption: 14600, carbonIntensity: 1.58, score: 48, prevScore: 50, stage: "退库", enterDate: "2024-09-10", reviewer: "青浦区生态局", nextAction: "改进无成效，已退库下年度重新自评价", improvement: -2, ownership: "国有", greenType: "绿色工厂", contactName: "陈鑫雨", contactPhone: "13822221712" },
-  { id: "INC-2025-009", name: "上海某轻工日化股份有限公司", creditCode: "91310120MA1A23QG001", district: "奉贤区", industry: "轻工行业", subIndustry: "家用电器", level: "区级", energyTag: "10亿+非重点规上", outputValue: 108200, energyConsumption: 4800, carbonIntensity: 0.16, score: 66, prevScore: 58, stage: "入库登记", enterDate: "2025-10-08", reviewer: "奉贤区经委", nextAction: "完成入库材料归档，待诊断", improvement: 8, ownership: "国有", greenType: "绿色供应链", contactName: "王飞", contactPhone: "13822221712" },
+  { id: "INC-2025-001", name: "上海石化化工新材料分公司", creditCode: "91310116MA1H23ABC4", district: "金山区", industry: "初级形态塑料及合成树脂制造 (2651)", subIndustry: "煤制烯烃", level: "市级", outputValue: 89500, energyConsumption: 36800, carbonIntensity: 1.42, score: 64, prevScore: 58, stage: "整改提升", enterDate: "2025-08-15", reviewer: "金山区生态局", nextAction: "11 月底前完成余热回收改造", improvement: 6, ownership: "国有", greenType: ["绿色工厂"], contactName: "王欣玮", contactPhone: "13822221712" },
+  { id: "INC-2025-002", name: "宝钢轧辊（上海）有限公司", creditCode: "91310113MA1H23BC02", district: "宝山区", industry: "钢压延加工 (3130)", subIndustry: "短流程钢铁企业", level: "市级", outputValue: 156200, energyConsumption: 52400, carbonIntensity: 1.18, score: 71, prevScore: 62, stage: "复评预审", enterDate: "2025-06-20", reviewer: "市经信委", nextAction: "等待 12 月专家组复评打分", improvement: 9, ownership: "国有", greenType: ["绿色工厂"], contactName: "韩淑哲", contactPhone: "13822221712" },
+  { id: "INC-2025-003", name: "中微半导体设备(上海)股份有限公司", creditCode: "91310115MA1K0DEF56", district: "浦东新区", industry: "变压器、整流器和电感器制造 (3821)", subIndustry: "集成电路", level: "市级", outputValue: 134000, energyConsumption: 8900, carbonIntensity: 0.32, score: 76, prevScore: 68, stage: "复评预审", enterDate: "2025-05-10", reviewer: "浦东经委", nextAction: "AI 预审已通过，进入晋级公示", improvement: 8, ownership: "民营", greenType: ["绿色工厂", "绿色供应链管理"], contactName: "刘海洋", contactPhone: "13822221712" },
+  { id: "INC-2025-004", name: "上海延锋汽车饰件系统有限公司", creditCode: "91310115MA1K38AUTO2", district: "嘉定区", industry: "汽车零部件", subIndustry: "汽车整车", level: "区级", outputValue: 218000, energyConsumption: 6200, carbonIntensity: 0.18, score: 68, prevScore: 60, stage: "诊断评估", enterDate: "2025-09-02", reviewer: "嘉定区经委", nextAction: "AI 智能体出具诊断报告中", improvement: 8, ownership: "中外合资", greenType: ["绿色工厂", "绿色供应链管理"], contactName: "张冠宇", contactPhone: "13822221712" },
+  { id: "INC-2025-005", name: "上海华谊新材料有限公司", creditCode: "91310116MA1H23HUAYI", district: "金山区", industry: "工业颜料制造 (2643)", subIndustry: "涂料", level: "区级", outputValue: null, energyConsumption: 21300, carbonIntensity: 0.96, score: 59, prevScore: 55, stage: "整改提升", enterDate: "2025-07-28", reviewer: "金山区经委", nextAction: "VOCs 治理方案待审定", improvement: 4, ownership: "民营", greenType: ["绿色工厂"], contactName: "干俊杰", contactPhone: "13822221712" },
+  { id: "INC-2025-006", name: "上海联影医疗科技股份有限公司", creditCode: "91310115MA1K38UIH01", district: "嘉定区", industry: "通用设备制造业 (34)", subIndustry: "显示器件", level: "市级", outputValue: 312000, energyConsumption: 5800, carbonIntensity: 0.12, score: 82, prevScore: 73, stage: "晋级出库", enterDate: "2024-11-12", reviewer: "市经信委", nextAction: "已颁发市级绿色工厂证书", improvement: 9, ownership: "民营", greenType: ["绿色工厂"], contactName: "张心雨", contactPhone: "13822221712" },
+  { id: "INC-2025-007", name: "上海三菱电梯有限公司", creditCode: "91310112MA1H23MITS1", district: "闵行区", industry: "配电开关控制设备制造 (3823)", subIndustry: "电机", level: "市级", outputValue: 187600, energyConsumption: 7400, carbonIntensity: 0.22, score: 78, prevScore: 70, stage: "复评预审", enterDate: "2025-04-18", reviewer: "闵行区生态局", nextAction: "等待 12 月市级评审", improvement: 8, ownership: "中外合资", greenType: ["绿色工厂"], contactName: "付开杰", contactPhone: "13822221712" },
+  { id: "INC-2025-008", name: "上海某印染织造有限公司", creditCode: "91310118MA1J23DYE01", district: "青浦区", industry: "非织造布制造 (1781)", subIndustry: "印染", level: "区级", outputValue: 42300, energyConsumption: 14600, carbonIntensity: 1.58, score: 48, prevScore: 50, stage: "退库", enterDate: "2024-09-10", reviewer: "青浦区生态局", nextAction: "改进无成效，已退库下年度重新自评价", improvement: -2, ownership: "国有", greenType: ["绿色工厂"], contactName: "陈鑫雨", contactPhone: "13822221712" },
+  { id: "INC-2025-009", name: "上海某轻工日化股份有限公司", creditCode: "91310120MA1A23QG001", district: "奉贤区", industry: "日用化学产品制造 (268)", subIndustry: "家用电器", level: "区级", outputValue: 108200, energyConsumption: 4800, carbonIntensity: 0.16, score: 66, prevScore: 58, stage: "入库登记", enterDate: "2025-10-08", reviewer: "奉贤区经委", nextAction: "完成入库材料归档，待诊断", improvement: 8, ownership: "国有", greenType: ["绿色供应链管理"], contactName: "王飞", contactPhone: "13822221712" },
 ];
 
-const energyTagBadge = (t: EnergyTag) =>
-  t === "重点用能单位"
-    ? "border-orange-400/40 bg-orange-400/10 text-orange-600 dark:text-orange-300"
-    : "border-emerald-400/40 bg-emerald-400/10 text-emerald-600 dark:text-emerald-300";
-
+const greenTypeBadgeClass = (t: GreenType) =>
+  t === "绿色工厂"
+    ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-600 dark:text-emerald-300"
+    : "border-primary/40 bg-primary/10 text-primary";
 
 interface AddFormState {
   name: string;
@@ -115,8 +145,7 @@ interface AddFormState {
   district: string;
   industry: string;
   ownership: Ownership | "";
-  greenType: GreenType | "";
-  energyTag: EnergyTag | "";
+  greenType: GreenType[];
   level: IncubateLevel;
   outputValue: string;
   energyConsumption: string;
@@ -131,8 +160,7 @@ function emptyForm(level: IncubateLevel): AddFormState {
     district: "",
     industry: "",
     ownership: "",
-    greenType: "",
-    energyTag: "",
+    greenType: [],
     level,
     outputValue: "",
     energyConsumption: "",
@@ -146,7 +174,7 @@ export default function GreenMfgGovIncubator() {
   const [viewLevel, setViewLevel] = useState<IncubateLevel>("区级");
   const [keyword, setKeyword] = useState("");
   const [industryFilter, setIndustryFilter] = useState("all");
-  const [energyFilter, setEnergyFilter] = useState<"all" | "绿色工厂" | "绿色供应链">("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | GreenType>("all");
   const [tierFilter, setTierFilter] = useState<"all" | IncubateLevel>("all");
 
   const [removeTarget, setRemoveTarget] = useState<IncubateRecord | null>(null);
@@ -160,7 +188,6 @@ export default function GreenMfgGovIncubator() {
 
   const scopeData = useMemo(() => {
     if (viewLevel === "市级") return data.filter((r) => r.level === "市级");
-    // 区级视角
     if (tierFilter === "all") return data;
     return data.filter((r) => r.level === tierFilter);
   }, [data, viewLevel, tierFilter]);
@@ -171,13 +198,10 @@ export default function GreenMfgGovIncubator() {
         const k = keyword.trim();
         if (k && !r.name.includes(k) && !r.creditCode.includes(k)) return false;
         if (industryFilter !== "all" && r.industry !== industryFilter) return false;
-                if (energyFilter !== "all") {
-                  if (energyFilter === "绿色工厂" && !r.greenType.includes("绿色工厂")) return false;
-                  if (energyFilter === "绿色供应链" && !r.greenType.includes("绿色供应链")) return false;
-                }
+        if (typeFilter !== "all" && !r.greenType.includes(typeFilter)) return false;
         return true;
       }),
-    [scopeData, keyword, industryFilter, energyFilter],
+    [scopeData, keyword, industryFilter, typeFilter],
   );
 
   function handleSwitchView(lv: IncubateLevel) {
@@ -222,8 +246,7 @@ export default function GreenMfgGovIncubator() {
       district: r.district,
       industry: r.industry,
       ownership: r.ownership,
-      greenType: r.greenType,
-      energyTag: r.energyTag,
+      greenType: [...r.greenType],
       level: r.level,
       outputValue: r.outputValue == null ? "" : String(r.outputValue),
       energyConsumption: String(r.energyConsumption),
@@ -233,6 +256,13 @@ export default function GreenMfgGovIncubator() {
     setAddOpen(true);
   }
 
+  function toggleGreenType(t: GreenType) {
+    setForm((f) => ({
+      ...f,
+      greenType: f.greenType.includes(t) ? f.greenType.filter((x) => x !== t) : [...f.greenType, t],
+    }));
+  }
+
   function handleAddSubmit() {
     const required: Array<[keyof AddFormState, string]> = [
       ["name", "企业名称"],
@@ -240,8 +270,6 @@ export default function GreenMfgGovIncubator() {
       ["district", "所属区"],
       ["industry", "行业"],
       ["ownership", "企业性质"],
-      ["greenType", "类型"],
-      ["energyTag", "企业类型"],
       ["energyConsumption", "综合能耗"],
       ["contactName", "联系人"],
       ["contactPhone", "联系方式"],
@@ -251,6 +279,10 @@ export default function GreenMfgGovIncubator() {
         toast.error(`请填写${label}`);
         return;
       }
+    }
+    if (form.greenType.length === 0) {
+      toast.error("请至少选择一项类型");
+      return;
     }
     if (form.creditCode.length !== 18) {
       toast.error("统一社会信用代码需 18 位");
@@ -282,11 +314,10 @@ export default function GreenMfgGovIncubator() {
                 district: form.district,
                 industry: form.industry,
                 level: form.level,
-                energyTag: form.energyTag as EnergyTag,
                 outputValue: output,
                 energyConsumption: energy,
                 ownership: form.ownership as Ownership,
-                greenType: form.greenType as GreenType,
+                greenType: [...form.greenType],
                 contactName: form.contactName.trim(),
                 contactPhone: form.contactPhone.trim(),
               }
@@ -312,7 +343,6 @@ export default function GreenMfgGovIncubator() {
       district: form.district,
       industry: form.industry,
       level: form.level,
-      energyTag: form.energyTag as EnergyTag,
       outputValue: output,
       energyConsumption: energy,
       carbonIntensity: 0,
@@ -324,7 +354,7 @@ export default function GreenMfgGovIncubator() {
       nextAction: "完成入库材料归档，待诊断",
       improvement: 0,
       ownership: form.ownership as Ownership,
-      greenType: form.greenType as GreenType,
+      greenType: [...form.greenType],
       contactName: form.contactName.trim(),
       contactPhone: form.contactPhone.trim(),
     };
@@ -376,19 +406,18 @@ export default function GreenMfgGovIncubator() {
                   </SelectContent>
                 </Select>
               )}
-              <Select value={energyFilter} onValueChange={(v) => setEnergyFilter(v as typeof energyFilter)}>
+              <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as typeof typeFilter)}>
                 <SelectTrigger className="h-8 w-44 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="类型" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">全部类型</SelectItem>
-                  <SelectItem value="绿色工厂">绿色工厂</SelectItem>
-                  <SelectItem value="绿色供应链">绿色供应链</SelectItem>
+                  {GREEN_TYPES.map((t) => (<SelectItem key={t} value={t}>{t}</SelectItem>))}
                 </SelectContent>
               </Select>
               <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                <SelectTrigger className="h-8 w-36 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="行业" /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="h-8 w-48 text-xs"><Filter className="mr-1 h-3 w-3" /><SelectValue placeholder="行业" /></SelectTrigger>
+                <SelectContent className="max-h-72">
                   <SelectItem value="all">全部行业</SelectItem>
-                  {ALL_INDUSTRIES.map((n) => (<SelectItem key={n} value={n}>{n}</SelectItem>))}
+                  {INDUSTRY_OPTIONS.map((n) => (<SelectItem key={n} value={n}>{n}</SelectItem>))}
                 </SelectContent>
               </Select>
               <Button size="sm" className="h-8" onClick={openAdd}>
@@ -443,10 +472,13 @@ export default function GreenMfgGovIncubator() {
                   </TableCell>
                   <TableCell className="text-center font-mono text-xs">{r.energyConsumption.toLocaleString()}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={cn("text-[11px]", energyTagBadge(r.energyTag))}>
-                      {r.energyTag === "重点用能单位" ? <Flame className="mr-1 h-3 w-3" /> : <TrendingUp className="mr-1 h-3 w-3" />}
-                      {r.greenType}
-                    </Badge>
+                    <div className="flex flex-wrap gap-1">
+                      {r.greenType.map((t) => (
+                        <Badge key={t} variant="outline" className={cn("text-[11px]", greenTypeBadgeClass(t))}>
+                          {t}
+                        </Badge>
+                      ))}
+                    </div>
                   </TableCell>
                   <TableCell className="text-xs">{r.contactName}</TableCell>
                   <TableCell className="font-mono text-xs">{r.contactPhone}</TableCell>
@@ -563,7 +595,7 @@ export default function GreenMfgGovIncubator() {
               <Label className="text-xs">行业 <span className="text-destructive">*</span></Label>
               <Select value={form.industry} onValueChange={(v) => setForm({ ...form, industry: v })}>
                 <SelectTrigger className="h-9"><SelectValue placeholder="请选择" /></SelectTrigger>
-                <SelectContent>{ALL_INDUSTRIES.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
+                <SelectContent className="max-h-72">{INDUSTRY_OPTIONS.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
@@ -575,17 +607,36 @@ export default function GreenMfgGovIncubator() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">类型 <span className="text-destructive">*</span></Label>
-              <Select value={form.greenType} onValueChange={(v) => setForm({ ...form, greenType: v as GreenType })}>
-                <SelectTrigger className="h-9"><SelectValue placeholder="请选择" /></SelectTrigger>
-                <SelectContent>{GREEN_TYPES.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">企业类型（能耗） <span className="text-destructive">*</span></Label>
-              <Select value={form.energyTag} onValueChange={(v) => setForm({ ...form, energyTag: v as EnergyTag })}>
-                <SelectTrigger className="h-9"><SelectValue placeholder="请选择" /></SelectTrigger>
-                <SelectContent>{ENERGY_TAGS.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <span className={cn("truncate", form.greenType.length === 0 && "text-muted-foreground")}>
+                      {form.greenType.length === 0 ? "请选择（可多选）" : form.greenType.join("、")}
+                    </span>
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-1" align="start">
+                  {GREEN_TYPES.map((t) => {
+                    const checked = form.greenType.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => toggleGreenType(t)}
+                        className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+                      >
+                        <Checkbox checked={checked} className="pointer-events-none" />
+                        <span className="flex-1 text-left">{t}</span>
+                        {checked && <Check className="h-3.5 w-3.5 text-primary" />}
+                      </button>
+                    );
+                  })}
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">梯队 <span className="text-destructive">*</span></Label>
