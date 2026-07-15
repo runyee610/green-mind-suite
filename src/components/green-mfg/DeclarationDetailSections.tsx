@@ -1241,7 +1241,7 @@ function IndicatorItem({
         unitOptions: ["m3/产品单位"],
         leadPlaceholder: "先进值水平",
         basePlaceholder: "通用值水平",
-        weightLabel: "权重（产品取水量 m3）",
+        weightLabel: "权重",
       }
     : {
         selectorLabel: "是否有适用国家强制性能源消耗限额标准",
@@ -1253,7 +1253,7 @@ function IndicatorItem({
         unitOptions: ["tce/产品单位", "kgce/产品单位"],
         leadPlaceholder: "1级水平",
         basePlaceholder: "2级水平",
-        weightLabel: "权重（吨标煤）",
+        weightLabel: "权重",
       };
   const has = row.hasStandard ?? "无";
   const products: ProductEnergyEntry[] = (isProductRow && has === "有")
@@ -1296,8 +1296,6 @@ function IndicatorItem({
               {!(isProductRow && has === "有") && (
                 <span className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm font-normal">
                   <span><span className="text-muted-foreground">单位</span> <span className="font-mono">{row.unit || "/"}</span></span>
-                  <span><span className="text-muted-foreground">引领值</span> <span className="font-mono text-emerald-600 dark:text-emerald-400">{row.leadValue ?? "/"}</span></span>
-                  <span><span className="text-muted-foreground">基准值</span> <span className="font-mono text-amber-600 dark:text-amber-400">{row.baseValue ?? "/"}</span></span>
                   {row.weight && (
                     <span><span className="text-muted-foreground">权重</span> <span className="font-mono text-primary">{row.weight}</span></span>
                   )}
@@ -1405,8 +1403,6 @@ function IndicatorItem({
                   <tr className="[&>th]:border-r [&>th]:border-border/50 [&>th]:px-1.5 [&>th]:py-1 [&>th]:text-center [&>th]:font-medium last:[&>th]:border-r-0">
                     <th className="w-[100px]">产品名称</th>
                     <th className="w-[110px]">单位</th>
-                    <th className="w-[70px]">引领值</th>
-                    <th className="w-[70px]">基准值</th>
                     <th className="w-[90px]">{productCfg.weightLabel}</th>
                     <th className="w-[100px]">本年度值</th>
                   </tr>
@@ -1434,16 +1430,6 @@ function IndicatorItem({
                             </SelectContent>
                           </Select>
                         ) : (<span className="text-center font-mono">{p.unit || "—"}</span>)}
-                      </td>
-                      <td className="text-center">
-                        {entEditable ? (
-                          <Input value={p.leadValue} placeholder={productCfg.leadPlaceholder} className="h-7 text-center font-mono text-[11px]" onChange={(e) => updateProduct(pi, { leadValue: e.target.value })} />
-                        ) : (<span className="font-mono">{p.leadValue || "—"}</span>)}
-                      </td>
-                      <td className="text-center">
-                        {entEditable ? (
-                          <Input value={p.baseValue} placeholder={productCfg.basePlaceholder} className="h-7 text-center font-mono text-[11px]" onChange={(e) => updateProduct(pi, { baseValue: e.target.value })} />
-                        ) : (<span className="font-mono">{p.baseValue || "—"}</span>)}
                       </td>
                       <td className="text-center">
                         {entEditable ? (
@@ -1695,8 +1681,6 @@ function IndicatorGroupCard({
             <span className="font-semibold">{parent.l2}</span>
             <span className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm font-normal">
               <span><span className="text-muted-foreground">单位</span> <span className="font-mono">{parent.unit || "/"}</span></span>
-              <span><span className="text-muted-foreground">引领值</span> <span className="font-mono text-emerald-600 dark:text-emerald-400">{parent.leadValue ?? "/"}</span></span>
-              <span><span className="text-muted-foreground">基准值</span> <span className="font-mono text-amber-600 dark:text-amber-400">{parent.baseValue ?? "/"}</span></span>
               {parent.weight && (
                 <span><span className="text-muted-foreground">权重</span> <span className="font-mono text-primary">{parent.weight}</span></span>
               )}
